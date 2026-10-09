@@ -1,42 +1,38 @@
-# James Fitness System · Local Edition 0.1
+# James Fitness System
 
-Mobile-first Next.js + TypeScript + Tailwind，黑／白／金介面。此版本為可操作的本機資料測試版；網站可透過 GitHub Pages 開啟，個人紀錄只留在該瀏覽器。
+Mobile-first fitness Web App. Next.js + TypeScript + Tailwind. Installable PWA with responsive black / white / gold interface.
 
-## 已可操作
+## Current working features
 
-- 成人基本資料、CUT 原始 Numbers 公式預覽與確認，三種日型目標。
-- GAIN Baseline 記錄模式，不推算 TDEE。
-- P/C/F 手動紀錄、78 筆來源食物、自訂食物／餐次、份量換算、修正與刪除保留原紀錄。
-- 飲水、體重、恢復、手動訓練、Warm-up／Ramp-up／Working／RP／Drop 段落、RIR、計時、Cardio。
-- 7／30 天／全部趨勢、週回顧、10 天 CUT 建議、Accept／Keep、隔日計畫版本。
-- 本機持久保存、JSON 匯出、資料清除與基本跨分頁版本檢查。
+- Today: one priority reminder, interactive Companion, Nutrition → Training → Water → Recovery.
+- Three-step profile setup, source-matched CUT calculation, confirmed plan versions, shared daily targets.
+- Nutrition sheet flow, manual P/C/F, meal corrections, custom foods, bilingual category lists and portion preview.
+- Food library: 78 James entries + 852 TFDA raw-food entries. Provenance and licenses in `docs/FOOD-SOURCES.md`.
+- User-confirmed training cycles, warm-up/workout/review flow, focused exercise logging, working/warm-up/ramp-up/RP/drop segments, RIR, rest timer, manual Cardio.
+- Individual trend charts for body/nutrition/training/recovery with detail views, exercise-specific performance, weekly review, Accept/Keep and immutable nutrition versions.
+- Knowledge: three complete articles provided by James, searchable full-text reading and original reference text.
+- PWA icons/manifest, safe-area layout, reduced-motion support, offline cache and real local data persistence.
 
-## 尚未接通
-
-Supabase Auth／RLS／雲端同步／資料還原、正式 Training Template／Cycle 排程與版本、Exercise／Warm-up 內容庫、Recipe、Article、Companion State／Renderer。這些保留在 Blueprint，頁面目前明確標示待建立。不是完整 Phase 1 驗收版。
-
-## 開發
-
-Node.js 24（最低依 Next.js 要求）。
+## Run and verify
 
 ```sh
 npm ci
 npm run dev
 npm test
 npm run typecheck
-npm run build
 npx playwright install chromium
 npm run test:e2e
+npm run build
 ```
 
-開發位址 http://127.0.0.1:3000。靜態建置在 `out/`，`npm start` 可於 3100 預覽不含 basePath 的本機建置。
+Development: http://127.0.0.1:3000 . Build output: `out/`.
 
-GitHub Pages 子路徑建置：
+Inside the published repository's `app-source/`, run `npm run pages:prepare`, then review, commit and push the repository. This builds the `/james-fitness-system` path and updates root Pages assets.
 
-```sh
-NEXT_PUBLIC_BASE_PATH=/summergym.github.io npm run build
-```
+## Remaining final-product work
 
-來源核對見 `docs/FORMULA-AUDIT.md`；完整持續開發架構見 `docs/ARCHITECTURE.md`。
+Cloud accounts, Supabase database/RLS, cross-device synchronization, verified backup restore, native App Store packaging, approved safety/GAIN rules and detailed training content. No cloud login, medical validation, or native distribution is implied by PWA installation.
 
-請勿提交 .env、登入憑證、Numbers 原檔或匯出的個人紀錄。不同瀏覽器／網址不共用資料。不要依賴本機儲存作為唯一備份。
+Personal data currently stays in the browser and can be exported in Settings. Existing records use the same storage key across the URL rename. Never commit personal exports, source Numbers files, .env values or credentials.
+
+Architecture: `docs/ARCHITECTURE.md`. Formula audit: `docs/FORMULA-AUDIT.md`. Current release: `docs/RELEASE-0.2.md`. App migration: `docs/APP-DELIVERY.md`.

@@ -101,6 +101,7 @@ export type PlanVersion = {
   reason: string;
 };
 export type Food = {
+  nameEn?: string;
   id: string;
   name: string;
   category: string;
@@ -161,6 +162,9 @@ export type Segment = {
   createdAt: string;
 };
 export type Session = {
+  cycleId?: string;
+  cycleDayIndex?: number;
+  phase?: "warmup" | "workout";
   id: string;
   date: string;
   name: string;
@@ -193,7 +197,22 @@ export type NutritionDay = {
   target: Macros | null;
   complete: boolean;
 };
+export type Cycle = {
+  id: string;
+  name: string;
+  days: { name: string }[];
+  createdAt: string;
+};
+export type CycleEvent = {
+  id: string;
+  cycleId: string;
+  type: "completed" | "skipped";
+  date: string;
+  sessionId?: string;
+};
 export type AppState = {
+  cycles?: Cycle[];
+  cycleEvents?: CycleEvent[];
   schemaVersion: 1;
   revision: number;
   profile: Profile | null;
@@ -219,6 +238,8 @@ export type AppState = {
 };
 export const initialState = (): AppState => ({
   schemaVersion: 1,
+  cycles: [],
+  cycleEvents: [],
   revision: 0,
   profile: null,
   versions: [],
@@ -278,7 +299,10 @@ export function waterTotal(state: AppState, date: string) {
 }
 export function resolveDay(state: AppState, date: string): NutritionDay {
   const saved = state.days.find((d) => d.date === date);
-  if (saved) return saved;
+  if (saved) {
+    const plan=activePlan(state,date);
+    return !saved.versionId&&plan?{...saved,versionId:plan.id,target:plan.targets[saved.dayType]}:saved;
+  }
   const v = activePlan(state, date);
   return {
     date,
@@ -326,6 +350,11 @@ export function createInitialPlan(
     targets: cutTargets(state.profile),
     reason: "使用者確認 Numbers 3.0 初始計畫",
   });
+  const day = state.days.find((d) => d.date === date && !d.versionId);
+  if (day) {
+    day.versionId = id;
+    day.target = structuredClone(state.versions.at(-1)!.targets[day.dayType]);
+  }
 }
 // Exact decision boundaries from Numbers 90天追踪::C32/C33. Reference-table prose differs.
 export function cutReview(

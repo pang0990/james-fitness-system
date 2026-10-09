@@ -1,4 +1,4 @@
-:HL["/summergym.github.io/_next/static/css/0a3b76af1839a6c8.css","style"]
+:HL["/james-fitness-system/_next/static/css/51e85cdb75d783e0.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"progress/body","s":["_not-found","_global-error"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"srLdz6MwmzwjFniBcJqw6","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"B5CqGBsnUL-D_0Toot0JW","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}

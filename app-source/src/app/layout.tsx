@@ -1,15 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import { StoreProvider } from "@/lib/store";
 import "./globals.css";
+import { AppInstall } from "@/components/app-install";
 export const metadata: Metadata = {
   title: "James · Fitness System",
-  description: "飲食、訓練與每一次進步。James Fitness System 本機測試版。",
+  description: "Nutrition · Training · Progress",
+  manifest: (process.env.NEXT_PUBLIC_BASE_PATH || "") + "/manifest.webmanifest",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "James" },
+  icons: { apple: (process.env.NEXT_PUBLIC_BASE_PATH || "") + "/icon-192.png" },
   robots: { index: false, follow: false },
 };
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#121411",
+  themeColor: "#171717",
+  viewportFit: "cover",
 };
 export default function RootLayout({
   children,
@@ -19,7 +24,10 @@ export default function RootLayout({
   return (
     <html lang="zh-Hant">
       <body>
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          {children}
+          <AppInstall />
+        </StoreProvider>
       </body>
     </html>
   );

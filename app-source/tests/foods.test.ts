@@ -1,0 +1,4 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+const master=JSON.parse(fs.readFileSync('src/content/foods.json','utf8'));const fda=JSON.parse(fs.readFileSync('src/content/fda-foods.json','utf8'));
+test('all food records have bilingual labels and complete finite nutrition',()=>{const all=[...master,...fda];assert.equal(master.length,78);assert.equal(fda.length,852);assert.equal(new Set(all.map(f=>f.id)).size,all.length);for(const f of all){assert.ok(f.name&&f.nameEn);for(const k of ['p','c','f','kcal'])assert.ok(Number.isFinite(f[k])&&f[k]>=0);assert.ok(f.base>0)}});
+test('official raw foods retain source, preparation state, units and license',()=>{for(const f of fda){assert.equal(f.base,100);assert.equal(f.unit,'g');assert.equal(f.sourceUrl,'https://data.gov.tw/dataset/8543');assert.match(f.sourceDescription,/樣品狀態:生/);assert.ok(f.license&&f.sourceId)}});

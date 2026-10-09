@@ -1,8 +1,8 @@
 # James Fitness System
 
-測試入口：https://pang0990.github.io/summergym.github.io/
+測試入口：https://pang0990.github.io/james-fitness-system/
 
-目前為 Local Edition 0.1，資料僅保存在各自瀏覽器，尚無雲端帳戶或同步。
+目前為 Web App，資料僅保存在各自瀏覽器，尚無雲端帳戶或同步。
 
 可編輯原始碼在 `app-source/`。完整範圍與待辦見 [App README](app-source/README.md) 和 [Development Blueprint](app-source/docs/ARCHITECTURE.md)。公式核對見 [Numbers audit](app-source/docs/FORMULA-AUDIT.md)。
 

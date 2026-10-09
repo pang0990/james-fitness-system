@@ -6,16 +6,21 @@
   "index.html",
   "progress",
   "today",
+  "icon-192.png",
   "signup",
   "training",
   "__next._full.txt",
   "index.txt",
   "404.html",
+  "icon.svg",
   "__next.__PAGE__.txt",
   "profile",
   "_not-found",
+  "manifest.webmanifest",
   "nutrition",
   "404",
   "login",
-  "onboarding"
+  "onboarding",
+  "sw.js",
+  "icon-512.png"
 ]

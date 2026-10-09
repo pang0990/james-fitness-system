@@ -1,419 +1,483 @@
 [
   {
     "id": "numbers-001",
-    "name": "燕麦（干）",
-    "category": "主食",
+    "name": "燕麥（乾）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 60.0,
     "p": 13.0,
     "f": 7.0,
     "kcal": 377.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 4",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Oats, dry",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 4"
   },
   {
     "id": "numbers-002",
-    "name": "熟米饭",
-    "category": "主食",
+    "name": "白飯（熟）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 28.5,
     "p": 2.5,
     "f": 0.3,
     "kcal": 130.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 5",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Rice, cooked",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 5"
   },
   {
     "id": "numbers-003",
-    "name": "大米（生）",
-    "category": "主食",
+    "name": "白米（生）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 78.5,
     "p": 7.4,
     "f": 0.8,
     "kcal": 346.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 6",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "White rice, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 6"
   },
   {
     "id": "numbers-004",
-    "name": "红薯（生）",
-    "category": "主食",
+    "name": "地瓜（生）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 22.0,
     "p": 1.6,
     "f": 0.1,
     "kcal": 99.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 7",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Sweet potato, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 7"
   },
   {
     "id": "numbers-005",
-    "name": "紫薯（生）",
-    "category": "主食",
+    "name": "紫地瓜（生）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 22.0,
     "p": 1.5,
     "f": 0.2,
     "kcal": 90.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 8",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Purple sweet potato, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 8"
   },
   {
     "id": "numbers-006",
-    "name": "土豆（生）",
-    "category": "主食",
+    "name": "馬鈴薯（生）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 22.0,
     "p": 2.0,
     "f": 0.2,
     "kcal": 81.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 9",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Potato, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 9"
   },
   {
     "id": "numbers-007",
-    "name": "贝贝南瓜（生）",
-    "category": "主食",
+    "name": "栗子南瓜（生）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 22.0,
     "p": 1.5,
     "f": 0.1,
     "kcal": 85.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 10",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Kabocha squash, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 10"
   },
   {
     "id": "numbers-008",
-    "name": "荞麦面（干）",
-    "category": "主食",
+    "name": "蕎麥麵（乾）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 70.0,
     "p": 12.0,
     "f": 2.0,
     "kcal": 343.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 11",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Soba noodles, dry",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 11"
   },
   {
     "id": "numbers-009",
-    "name": "全麦面包",
-    "category": "主食",
+    "name": "全麥麵包",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 45.0,
     "p": 9.0,
     "f": 3.0,
     "kcal": 250.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 12",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Whole wheat bread",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 12"
   },
   {
     "id": "numbers-010",
-    "name": "玉米（鲜）",
-    "category": "主食",
+    "name": "玉米（鮮）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 19.0,
     "p": 3.5,
     "f": 1.5,
     "kcal": 106.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 13",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Sweet corn, fresh",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 13"
   },
   {
     "id": "numbers-011",
     "name": "糙米（生）",
-    "category": "主食",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 77.0,
     "p": 7.7,
     "f": 2.7,
     "kcal": 348.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 14",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Brown rice, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 14"
   },
   {
     "id": "numbers-012",
-    "name": "藜麦（生）",
-    "category": "主食",
+    "name": "藜麥（生）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 64.0,
     "p": 14.0,
     "f": 6.0,
     "kcal": 368.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 15",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Quinoa, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 15"
   },
   {
     "id": "numbers-013",
-    "name": "山药（生）",
-    "category": "主食",
+    "name": "山藥（生）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 12.0,
     "p": 1.9,
     "f": 0.2,
     "kcal": 57.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 16",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Yam, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 16"
   },
   {
     "id": "numbers-014",
-    "name": "芋头（生）",
-    "category": "主食",
+    "name": "芋頭（生）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 18.0,
     "p": 2.2,
     "f": 0.2,
     "kcal": 81.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 17",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Taro, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 17"
   },
   {
     "id": "numbers-015",
-    "name": "意面（干）",
-    "category": "主食",
+    "name": "義大利麵（乾）",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 75.0,
     "p": 11.0,
     "f": 1.5,
     "kcal": 351.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 18",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Pasta, dry",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 18"
   },
   {
     "id": "numbers-016",
     "name": "米糊",
-    "category": "主食",
+    "category": "碳水化合物",
     "base": 100.0,
     "unit": "g",
     "c": 90.0,
     "p": 5.4,
     "f": 0.8,
     "kcal": 395.0,
-    "source": "Numbers 3.0 · 食材库-主食 · row 19",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Rice cereal",
+    "sourceReference": "Numbers 3.0 · 食材库-主食 · row 19"
   },
   {
     "id": "numbers-017",
-    "name": "全蛋（按个）",
-    "category": "蛋白质",
+    "name": "全蛋（每顆）",
+    "category": "蛋白質",
     "base": 1.0,
     "unit": "個",
     "c": 0.4,
     "p": 7.0,
     "f": 4.0,
     "kcal": 72.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 4",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Whole egg, each",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 4"
   },
   {
     "id": "numbers-018",
-    "name": "蛋白（按个）",
-    "category": "蛋白质",
+    "name": "蛋白（每顆）",
+    "category": "蛋白質",
     "base": 1.0,
     "unit": "個",
     "c": 0.2,
     "p": 3.6,
     "f": 0.1,
     "kcal": 17.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 5",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Egg white, each",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 5"
   },
   {
     "id": "numbers-019",
-    "name": "鸡胸肉（生）",
-    "category": "蛋白质",
+    "name": "雞胸肉（生）",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 0.0,
     "p": 24.0,
     "f": 1.0,
     "kcal": 110.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 6",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Chicken breast, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 6"
   },
   {
     "id": "numbers-020",
-    "name": "去皮去骨鸡腿（生）",
-    "category": "蛋白质",
+    "name": "去皮去骨雞腿（生）",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 0.0,
     "p": 24.0,
     "f": 4.0,
     "kcal": 130.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 7",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Chicken thigh, skinless boneless, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 7"
   },
   {
     "id": "numbers-021",
     "name": "牛肉（生）",
-    "category": "蛋白质",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 0.0,
     "p": 24.0,
     "f": 5.0,
     "kcal": 145.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 8",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Beef, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 8"
   },
   {
     "id": "numbers-022",
-    "name": "瘦猪肉（生）",
-    "category": "蛋白质",
+    "name": "瘦豬肉（生）",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 0.0,
     "p": 22.0,
     "f": 6.0,
     "kcal": 143.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 9",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Lean pork, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 9"
   },
   {
     "id": "numbers-023",
-    "name": "虾仁（生）",
-    "category": "蛋白质",
+    "name": "蝦仁（生）",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 0.0,
     "p": 20.0,
     "f": 0.5,
     "kcal": 85.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 10",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Peeled shrimp, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 10"
   },
   {
     "id": "numbers-024",
-    "name": "龙利鱼（生）",
-    "category": "蛋白质",
+    "name": "龍利魚（生）",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 0.0,
     "p": 18.0,
     "f": 2.0,
     "kcal": 88.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 11",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Tongue sole, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 11"
   },
   {
     "id": "numbers-025",
-    "name": "巴沙鱼（生）",
-    "category": "蛋白质",
+    "name": "巴沙魚（生）",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 0.0,
     "p": 14.0,
     "f": 5.0,
     "kcal": 100.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 12",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Basa fish, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 12"
   },
   {
     "id": "numbers-026",
-    "name": "三文鱼（生）",
-    "category": "蛋白质",
+    "name": "鮭魚（生）",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 0.0,
     "p": 20.0,
     "f": 13.0,
     "kcal": 200.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 13",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Salmon, raw",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 13"
   },
   {
     "id": "numbers-027",
     "name": "蛋白粉",
-    "category": "蛋白质",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 5.0,
     "p": 75.0,
     "f": 2.0,
     "kcal": 340.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 14",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Protein powder",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 14"
   },
   {
     "id": "numbers-028",
     "name": "牛奶",
-    "category": "蛋白质",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 5.0,
     "p": 3.0,
     "f": 3.2,
     "kcal": 65.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 15",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Milk",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 15"
   },
   {
     "id": "numbers-029",
-    "name": "无糖酸奶",
-    "category": "蛋白质",
+    "name": "無糖優格",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 4.0,
     "p": 3.0,
     "f": 3.0,
     "kcal": 59.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 16",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Plain unsweetened yogurt",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 16"
   },
   {
     "id": "numbers-030",
     "name": "豆腐",
-    "category": "蛋白质",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 2.0,
     "p": 8.0,
     "f": 4.0,
     "kcal": 76.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 17",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Tofu",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 17"
   },
   {
     "id": "numbers-031",
-    "name": "金枪鱼（水浸）",
-    "category": "蛋白质",
+    "name": "鮪魚（水煮罐頭）",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 0.0,
     "p": 25.0,
     "f": 1.0,
     "kcal": 110.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 18",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Tuna, canned in water",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 18"
   },
   {
     "id": "numbers-032",
-    "name": "蟹柳",
-    "category": "蛋白质",
+    "name": "蟹肉棒",
+    "category": "蛋白質",
     "base": 100.0,
     "unit": "g",
     "c": 8.0,
     "p": 10.0,
     "f": 0.5,
     "kcal": 75.0,
-    "source": "Numbers 3.0 · 食材库-蛋白质 · row 19",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Imitation crab stick",
+    "sourceReference": "Numbers 3.0 · 食材库-蛋白质 · row 19"
   },
   {
     "id": "numbers-033",
@@ -425,12 +489,14 @@
     "p": 30.0,
     "f": 50.0,
     "kcal": 580.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 4",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Pumpkin seeds",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 4"
   },
   {
     "id": "numbers-034",
-    "name": "坚果",
+    "name": "堅果",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -438,8 +504,10 @@
     "p": 18.0,
     "f": 60.0,
     "kcal": 650.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 5",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Mixed nuts",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 5"
   },
   {
     "id": "numbers-035",
@@ -451,8 +519,10 @@
     "p": 21.0,
     "f": 50.0,
     "kcal": 579.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 6",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Almonds",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 6"
   },
   {
     "id": "numbers-036",
@@ -464,12 +534,14 @@
     "p": 15.0,
     "f": 65.0,
     "kcal": 654.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 7",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Walnuts",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 7"
   },
   {
     "id": "numbers-037",
-    "name": "橄榄油",
+    "name": "橄欖油",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -477,12 +549,14 @@
     "p": 0.0,
     "f": 100.0,
     "kcal": 900.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 8",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Olive oil",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 8"
   },
   {
     "id": "numbers-038",
-    "name": "牛油果油",
+    "name": "酪梨油",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -490,12 +564,14 @@
     "p": 0.0,
     "f": 100.0,
     "kcal": 900.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 9",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Avocado oil",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 9"
   },
   {
     "id": "numbers-039",
-    "name": "山茶油",
+    "name": "苦茶油",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -503,12 +579,14 @@
     "p": 0.0,
     "f": 100.0,
     "kcal": 900.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 10",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Camellia oil",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 10"
   },
   {
     "id": "numbers-040",
-    "name": "低芥酸菜籽油",
+    "name": "芥花油",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -516,12 +594,14 @@
     "p": 0.0,
     "f": 100.0,
     "kcal": 900.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 11",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Canola oil",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 11"
   },
   {
     "id": "numbers-041",
-    "name": "猪油",
+    "name": "豬油",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -529,8 +609,10 @@
     "p": 0.0,
     "f": 100.0,
     "kcal": 900.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 12",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Lard",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 12"
   },
   {
     "id": "numbers-042",
@@ -542,12 +624,14 @@
     "p": 0.0,
     "f": 100.0,
     "kcal": 900.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 13",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Beef fat",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 13"
   },
   {
     "id": "numbers-043",
-    "name": "花生酱",
+    "name": "花生醬",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -555,12 +639,14 @@
     "p": 25.0,
     "f": 50.0,
     "kcal": 600.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 14",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Peanut butter",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 14"
   },
   {
     "id": "numbers-044",
-    "name": "牛油果",
+    "name": "酪梨",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -568,12 +654,14 @@
     "p": 2.0,
     "f": 15.0,
     "kcal": 160.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 15",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Avocado",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 15"
   },
   {
     "id": "numbers-045",
-    "name": "奇亚籽",
+    "name": "奇亞籽",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -581,12 +669,14 @@
     "p": 17.0,
     "f": 31.0,
     "kcal": 486.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 16",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Chia seeds",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 16"
   },
   {
     "id": "numbers-046",
-    "name": "亚麻籽",
+    "name": "亞麻籽",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -594,12 +684,14 @@
     "p": 18.0,
     "f": 42.0,
     "kcal": 534.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 17",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Flaxseed",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 17"
   },
   {
     "id": "numbers-047",
-    "name": "芝麻酱",
+    "name": "芝麻醬",
     "category": "脂肪",
     "base": 100.0,
     "unit": "g",
@@ -607,8 +699,10 @@
     "p": 20.0,
     "f": 53.0,
     "kcal": 595.0,
-    "source": "Numbers 3.0 · 食材库-脂肪 · row 18",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Sesame paste",
+    "sourceReference": "Numbers 3.0 · 食材库-脂肪 · row 18"
   },
   {
     "id": "numbers-048",
@@ -620,12 +714,14 @@
     "p": 2.5,
     "f": 0.3,
     "kcal": 30.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 4",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Vegetables",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 4"
   },
   {
     "id": "numbers-049",
-    "name": "西兰花",
+    "name": "青花菜",
     "category": "蔬菜",
     "base": 100.0,
     "unit": "g",
@@ -633,8 +729,10 @@
     "p": 2.8,
     "f": 0.4,
     "kcal": 34.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 5",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Broccoli",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 5"
   },
   {
     "id": "numbers-050",
@@ -646,8 +744,10 @@
     "p": 2.6,
     "f": 0.3,
     "kcal": 28.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 6",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Spinach",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 6"
   },
   {
     "id": "numbers-051",
@@ -659,12 +759,14 @@
     "p": 1.4,
     "f": 0.2,
     "kcal": 15.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 7",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Lettuce",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 7"
   },
   {
     "id": "numbers-052",
-    "name": "羽衣甘蓝",
+    "name": "羽衣甘藍",
     "category": "蔬菜",
     "base": 100.0,
     "unit": "g",
@@ -672,12 +774,14 @@
     "p": 3.0,
     "f": 0.5,
     "kcal": 35.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 8",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Kale",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 8"
   },
   {
     "id": "numbers-053",
-    "name": "苋菜",
+    "name": "莧菜",
     "category": "蔬菜",
     "base": 100.0,
     "unit": "g",
@@ -685,12 +789,14 @@
     "p": 2.5,
     "f": 0.3,
     "kcal": 30.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 9",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Amaranth greens",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 9"
   },
   {
     "id": "numbers-054",
-    "name": "菇类",
+    "name": "菇類",
     "category": "蔬菜",
     "base": 100.0,
     "unit": "g",
@@ -698,12 +804,14 @@
     "p": 2.5,
     "f": 0.3,
     "kcal": 30.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 10",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Mushrooms",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 10"
   },
   {
     "id": "numbers-055",
-    "name": "萝卜",
+    "name": "蘿蔔",
     "category": "蔬菜",
     "base": 100.0,
     "unit": "g",
@@ -711,12 +819,14 @@
     "p": 1.0,
     "f": 0.2,
     "kcal": 22.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 11",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Radish",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 11"
   },
   {
     "id": "numbers-056",
-    "name": "西红柿",
+    "name": "番茄",
     "category": "蔬菜",
     "base": 100.0,
     "unit": "g",
@@ -724,12 +834,14 @@
     "p": 0.9,
     "f": 0.2,
     "kcal": 19.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 12",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Tomato",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 12"
   },
   {
     "id": "numbers-057",
-    "name": "彩椒",
+    "name": "甜椒",
     "category": "蔬菜",
     "base": 100.0,
     "unit": "g",
@@ -737,12 +849,14 @@
     "p": 1.0,
     "f": 0.2,
     "kcal": 26.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 13",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Bell pepper",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 13"
   },
   {
     "id": "numbers-058",
-    "name": "黄瓜",
+    "name": "小黃瓜",
     "category": "蔬菜",
     "base": 100.0,
     "unit": "g",
@@ -750,8 +864,10 @@
     "p": 0.8,
     "f": 0.2,
     "kcal": 16.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 14",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Cucumber",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 14"
   },
   {
     "id": "numbers-059",
@@ -763,8 +879,10 @@
     "p": 1.2,
     "f": 0.2,
     "kcal": 18.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 15",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Celery",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 15"
   },
   {
     "id": "numbers-060",
@@ -776,12 +894,14 @@
     "p": 2.0,
     "f": 0.2,
     "kcal": 22.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 16",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Bean sprouts",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 16"
   },
   {
     "id": "numbers-061",
-    "name": "芦笋",
+    "name": "蘆筍",
     "category": "蔬菜",
     "base": 100.0,
     "unit": "g",
@@ -789,8 +909,10 @@
     "p": 2.6,
     "f": 0.2,
     "kcal": 27.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 17",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Asparagus",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 17"
   },
   {
     "id": "numbers-062",
@@ -802,8 +924,10 @@
     "p": 1.0,
     "f": 0.2,
     "kcal": 28.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 18",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Eggplant",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 18"
   },
   {
     "id": "numbers-063",
@@ -815,12 +939,14 @@
     "p": 0.4,
     "f": 0.2,
     "kcal": 12.0,
-    "source": "Numbers 3.0 · 食材库-蔬菜 · row 19",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Winter melon",
+    "sourceReference": "Numbers 3.0 · 食材库-蔬菜 · row 19"
   },
   {
     "id": "numbers-064",
-    "name": "蓝莓",
+    "name": "藍莓",
     "category": "水果",
     "base": 100.0,
     "unit": "g",
@@ -828,8 +954,10 @@
     "p": 0.7,
     "f": 0.3,
     "kcal": 57.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 4",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Blueberries",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 4"
   },
   {
     "id": "numbers-065",
@@ -841,12 +969,14 @@
     "p": 0.7,
     "f": 0.3,
     "kcal": 32.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 5",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Strawberries",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 5"
   },
   {
     "id": "numbers-066",
-    "name": "苹果",
+    "name": "蘋果",
     "category": "水果",
     "base": 100.0,
     "unit": "g",
@@ -854,8 +984,10 @@
     "p": 0.3,
     "f": 0.2,
     "kcal": 53.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 6",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Apple",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 6"
   },
   {
     "id": "numbers-067",
@@ -867,8 +999,10 @@
     "p": 1.1,
     "f": 0.3,
     "kcal": 91.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 7",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Banana",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 7"
   },
   {
     "id": "numbers-068",
@@ -880,12 +1014,14 @@
     "p": 0.6,
     "f": 0.1,
     "kcal": 42.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 8",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Peach",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 8"
   },
   {
     "id": "numbers-069",
-    "name": "橙子",
+    "name": "柳橙",
     "category": "水果",
     "base": 100.0,
     "unit": "g",
@@ -893,8 +1029,10 @@
     "p": 0.9,
     "f": 0.1,
     "kcal": 47.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 9",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Orange",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 9"
   },
   {
     "id": "numbers-070",
@@ -906,12 +1044,14 @@
     "p": 0.8,
     "f": 0.2,
     "kcal": 38.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 10",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Pomelo",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 10"
   },
   {
     "id": "numbers-071",
-    "name": "猕猴桃",
+    "name": "奇異果",
     "category": "水果",
     "base": 100.0,
     "unit": "g",
@@ -919,12 +1059,14 @@
     "p": 1.1,
     "f": 0.5,
     "kcal": 56.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 11",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Kiwifruit",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 11"
   },
   {
     "id": "numbers-072",
-    "name": "火龙果",
+    "name": "火龍果",
     "category": "水果",
     "base": 100.0,
     "unit": "g",
@@ -932,12 +1074,14 @@
     "p": 1.2,
     "f": 0.2,
     "kcal": 55.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 12",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Dragon fruit",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 12"
   },
   {
     "id": "numbers-073",
-    "name": "樱桃",
+    "name": "櫻桃",
     "category": "水果",
     "base": 100.0,
     "unit": "g",
@@ -945,8 +1089,10 @@
     "p": 1.1,
     "f": 0.3,
     "kcal": 63.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 13",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Cherries",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 13"
   },
   {
     "id": "numbers-074",
@@ -958,8 +1104,10 @@
     "p": 0.5,
     "f": 0.2,
     "kcal": 69.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 14",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Grapes",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 14"
   },
   {
     "id": "numbers-075",
@@ -971,8 +1119,10 @@
     "p": 0.6,
     "f": 0.1,
     "kcal": 30.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 15",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Watermelon",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 15"
   },
   {
     "id": "numbers-076",
@@ -984,8 +1134,10 @@
     "p": 0.4,
     "f": 0.2,
     "kcal": 57.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 16",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Pear",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 16"
   },
   {
     "id": "numbers-077",
@@ -997,12 +1149,14 @@
     "p": 0.5,
     "f": 0.1,
     "kcal": 42.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 17",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Papaya",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 17"
   },
   {
     "id": "numbers-078",
-    "name": "菠萝",
+    "name": "鳳梨",
     "category": "水果",
     "base": 100.0,
     "unit": "g",
@@ -1010,7 +1164,9 @@
     "p": 0.5,
     "f": 0.1,
     "kcal": 50.0,
-    "source": "Numbers 3.0 · 食材库-水果 · row 18",
-    "version": 1
+    "source": "James Master",
+    "version": 2,
+    "nameEn": "Pineapple",
+    "sourceReference": "Numbers 3.0 · 食材库-水果 · row 18"
   }
 ]

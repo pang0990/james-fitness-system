@@ -1,5 +1,9 @@
 "use client";
 import Link from "next/link";
+import { TodayV2, NutritionV2 } from "./daily";
+import { TrainingFlow } from "./training-flow";
+import { Trends } from "./trends";
+import { Knowledge } from "./knowledge";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import {
@@ -277,43 +281,21 @@ function MacrosView({
 }
 function NutritionLinks({ path }: { path: string }) {
   return (
-    <div className="subnav">
-      {[
-        ["nutrition", "今日營養"],
-        ["nutrition/log", "飲食紀錄"],
-        ["nutrition/plan", "我的計畫"],
-        ["nutrition/foods", "食物庫"],
-        ["nutrition/recipes", "食譜"],
-      ].map(([p, l]) => (
-        <Link className={path === p ? "active" : ""} key={p} href={"/" + p}>
-          {l}
-        </Link>
-      ))}
-    </div>
+    <Link href="/nutrition" className="text-link">
+      ← Nutrition
+    </Link>
   );
 }
 function ProgressLinks({ path }: { path: string }) {
   return (
-    <div className="subnav">
-      {[
-        ["progress", "總覽"],
-        ["progress/body", "身體"],
-        ["progress/nutrition", "營養"],
-        ["progress/training", "訓練"],
-        ["progress/recovery", "恢復"],
-        ["progress/weekly", "週回顧"],
-        ["progress/history", "版本歷史"],
-      ].map(([p, l]) => (
-        <Link className={path === p ? "active" : ""} key={p} href={"/" + p}>
-          {l}
-        </Link>
-      ))}
-    </div>
+    <Link href="/progress" className="text-link">
+      ← Progress
+    </Link>
   );
 }
 
 export function FitnessApp({ path }: { path: string }) {
-  const { state, ready, error } = useStore();
+  const { state, ready, error, saving } = useStore();
   const section = path.split("/")[0];
   const [toast, setToast] = useState("");
   useEffect(() => {
@@ -321,10 +303,17 @@ export function FitnessApp({ path }: { path: string }) {
     const t = setTimeout(() => setToast(""), 2600);
     return () => clearTimeout(t);
   }, [toast]);
-  const notify = (message = "已儲存至這個瀏覽器") => setToast(message);
+  const notify = (message = "已儲存") => setToast(message);
   const date = dateInZone(state.profile?.timezone);
   return (
-    <div className="app">
+    <div
+      className={
+        path === "training/session" &&
+        state.sessions.some((s) => s.status === "in_progress")
+          ? "app workout-active"
+          : "app"
+      }
+    >
       <aside className="sidebar">
         <Link href="/today" className="brand">
           <div className="brand-mark">J</div>
@@ -333,7 +322,7 @@ export function FitnessApp({ path }: { path: string }) {
             <small>FITNESS SYSTEM</small>
           </div>
         </Link>
-        <p className="nav-caption">YOUR DAILY PRACTICE</p>
+
         <nav>
           {nav.map((n) => (
             <Link
@@ -347,7 +336,7 @@ export function FitnessApp({ path }: { path: string }) {
             </Link>
           ))}
         </nav>
-        <p className="nav-caption">EXPLORE</p>
+
         <Link
           className={`nav-item ${section === "learn" ? "active" : ""}`}
           href="/learn"
@@ -355,32 +344,27 @@ export function FitnessApp({ path }: { path: string }) {
           <BookOpen size={17} />
           Knowledge
         </Link>
-        <Link className="nav-item" href="/progress/history">
-          <History size={17} />
-          Version history
-        </Link>
         <div className="side-bottom">
           <Link className="nav-item" href="/settings">
             <Settings size={17} />
             Settings
           </Link>
-          <div className="local-status">
-            <span className="status-dot" />
-            LOCAL EDITION · 0.1
-            <br />
-            <span style={{ fontSize: 10 }}>資料只保存在目前瀏覽器</span>
-          </div>
         </div>
       </aside>
       <main className="main">
         <header className="topbar">
           <div className="breadcrumb">
-            PERSONAL FITNESS{" "}
+            JAMES FITNESS{" "}
             <span style={{ padding: "0 10px", color: "#b2b7a8" }}>/</span>{" "}
             {labelMap[section] ?? "James"}
           </div>
           <div className="top-actions">
-            <span className="local-pill">本機測試版</span>
+            <Link href="/learn" aria-label="知識庫">
+              <BookOpen size={19} />
+            </Link>
+            <Link href="/settings" aria-label="設定">
+              <Settings size={19} />
+            </Link>
             <Link href="/settings/privacy" aria-label="隱私說明">
               <ShieldCheck size={17} color="#8b947f" />
             </Link>
@@ -391,6 +375,11 @@ export function FitnessApp({ path }: { path: string }) {
             </Link>
           </div>
         </header>
+        {saving && (
+          <div className="save-indicator" role="status">
+            儲存中…
+          </div>
+        )}
         {error && (
           <div className="notice error" role="alert">
             {error} <Link href="/settings/data">資料管理 →</Link>
@@ -405,15 +394,29 @@ export function FitnessApp({ path }: { path: string }) {
             ) : section === "login" || section === "signup" ? (
               <Login />
             ) : section === "today" ? (
-              <Today date={date} notify={notify} />
+              <TodayV2 date={date} notify={notify} />
             ) : section === "nutrition" ? (
-              <Nutrition path={path} date={date} notify={notify} />
+              ["nutrition", "nutrition/log", "nutrition/foods"].includes(
+                path,
+              ) ? (
+                <NutritionV2 path={path} date={date} notify={notify} />
+              ) : (
+                <Nutrition path={path} date={date} notify={notify} />
+              )
             ) : section === "training" ? (
-              <Training path={path} date={date} notify={notify} />
+              path === "training/activity" ? (
+                <Training path={path} date={date} notify={notify} />
+              ) : (
+                <TrainingFlow path={path} date={date} notify={notify} />
+              )
             ) : section === "progress" ? (
-              <Progress path={path} date={date} notify={notify} />
+              path === "progress" ? (
+                <Trends date={date} />
+              ) : (
+                <Progress path={path} date={date} notify={notify} />
+              )
             ) : section === "learn" ? (
-              <Learn />
+              <Knowledge path={path} />
             ) : section === "settings" ? (
               <SettingsPage path={path} notify={notify} />
             ) : null}
@@ -421,7 +424,6 @@ export function FitnessApp({ path }: { path: string }) {
         )}
         <footer className="page-foot">
           <span>JAMES FITNESS SYSTEM</span>
-          <span>一步一步，建立自己的節奏。</span>
         </footer>
       </main>
       <nav className="bottom-nav" aria-label="主要導覽">
@@ -445,281 +447,6 @@ export function FitnessApp({ path }: { path: string }) {
   );
 }
 
-function Today({
-  date,
-  notify,
-}: {
-  date: string;
-  notify: (m?: string) => void;
-}) {
-  const { state, save } = useStore();
-  const profile = state.profile;
-  const target = resolveDay(state, date).target;
-  const total = mealTotals(state, date);
-  const water = waterTotal(state, date);
-  const recovery = state.recoveries.filter((r) => r.date === date).at(-1);
-  const session = state.sessions.find((s) => s.status === "in_progress");
-  const pending = state.recommendations.find((r) => r.status === "pending");
-  const addWater = (ml: number) => {
-    if (
-      save("新增飲水", (s) =>
-        s.waters.push({ id: id(), date, ml, createdAt: now() }),
-      )
-    )
-      notify();
-  };
-  return (
-    <>
-      <Heading
-        eyebrow="MAKE TODAY COUNT"
-        title={
-          profile ? `${profile.name}，今天也為自己。` : "每一次紀錄，都是起點。"
-        }
-        description="飲食、訓練、恢復。專注今天最重要的一步。"
-      >
-        <span className="date-chip">
-          <CalendarDays size={14} />
-          {new Date(date + "T12:00:00").toLocaleDateString("zh-TW", {
-            month: "long",
-            day: "numeric",
-            weekday: "short",
-          })}
-        </span>
-      </Heading>
-      <div className="dashboard-grid">
-        <div className="stack">
-          <section className="hero">
-            <div className="hero-copy">
-              <span className="eyebrow">
-                {!profile
-                  ? "YOUR FIRST STEP"
-                  : pending
-                    ? "YOUR NEXT STEP"
-                    : "YOUR DAILY FOCUS"}
-              </span>
-              <h2>
-                {!profile ? (
-                  <>
-                    從了解自己開始，
-                    <br />
-                    找到你的節奏。
-                  </>
-                ) : pending ? (
-                  <>
-                    先看懂原因，
-                    <br />
-                    再決定下一步。
-                  </>
-                ) : (
-                  <>
-                    把今天做好，
-                    <br />
-                    讓進步慢慢累積。
-                  </>
-                )}
-              </h2>
-              <p>
-                {!profile
-                  ? "建立基本資料，確認你的第一份營養計畫。"
-                  : pending
-                    ? "有一項飲食調整等待你決定。採用或保留，都由你選擇。"
-                    : !target
-                      ? "先記錄飲食與體重，為接下來的計畫建立基準。"
-                      : "記下今天吃的、練的與身體感受，保留每一次努力。"}
-              </p>
-              <Link
-                className="button gold"
-                href={
-                  !profile
-                    ? "/onboarding"
-                    : pending
-                      ? "/progress/recommendations"
-                      : "/nutrition/log"
-                }
-              >
-                {!profile
-                  ? "建立我的資料"
-                  : pending
-                    ? "查看主要建議"
-                    : "記錄一餐"}
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-            <div className="orb" aria-hidden="true" />
-          </section>
-          <Card
-            title="今日營養"
-            kicker="NUTRITION"
-            icon={Utensils}
-            link={{ href: "/nutrition", label: "查看全部" }}
-          >
-            <MacrosView eaten={total} target={target} />
-            <div className="card-footer">
-              <Link href="/nutrition/log" className="button secondary small">
-                <Plus size={13} />
-                記錄飲食
-              </Link>
-              <span className="tag">
-                {dayNames[resolveDay(state, date).dayType]}
-              </span>
-            </div>
-          </Card>
-          <div className="mini-cards">
-            <Card title="喝點水" kicker="HYDRATION" icon={Droplet}>
-              <p className="water-number">
-                {round(water / 1000, 2)}{" "}
-                <small>
-                  /{" "}
-                  {profile?.waterTarget
-                    ? round(profile.waterTarget / 1000, 2)
-                    : "—"}{" "}
-                  L
-                </small>
-              </p>
-              <div className="water-drops">
-                {Array.from({ length: 6 }, (_, i) => (
-                  <Droplet
-                    key={i}
-                    size={20}
-                    className={
-                      profile?.waterTarget &&
-                      i < (water / profile.waterTarget) * 6
-                        ? "filled"
-                        : ""
-                    }
-                  />
-                ))}
-              </div>
-              <div className="card-footer">
-                <button
-                  className="button secondary small"
-                  onClick={() => addWater(250)}
-                >
-                  +250 ml
-                </button>
-                <button
-                  className="button secondary small"
-                  onClick={() => addWater(500)}
-                >
-                  +500 ml
-                </button>
-              </div>
-            </Card>
-            <Card title="身體的聲音" kicker="RECOVERY" icon={Sun}>
-              <div className="recovery-values">
-                <div>
-                  <strong>
-                    {recovery?.sleep ?? "—"}
-                    <small> h</small>
-                  </strong>
-                  <span>睡眠</span>
-                </div>
-                <div>
-                  <strong>
-                    {recovery?.fatigue ?? "—"}
-                    <small> /5</small>
-                  </strong>
-                  <span>疲勞</span>
-                </div>
-              </div>
-              <p className="muted" style={{ fontSize: 10 }}>
-                先記錄感受，再觀察變化。
-              </p>
-              <div className="card-footer">
-                <Link className="text-link" href="/progress/recovery">
-                  記錄今日狀態
-                  <ArrowRight size={12} />
-                </Link>
-              </div>
-            </Card>
-          </div>
-        </div>
-        <div className="stack">
-          <Card
-            title="今天，動起來"
-            kicker="TRAINING"
-            icon={Dumbbell}
-            link={{ href: "/training", label: "前往訓練" }}
-          >
-            <span className="tag gold">
-              {session ? "進行中" : "依自己的節奏"}
-            </span>
-            <div style={{ padding: "22px 0 9px" }}>
-              <h2>{session?.name ?? "準備好開始了嗎？"}</h2>
-              <p className="muted" style={{ fontSize: 11, marginTop: 8 }}>
-                {session
-                  ? "每一組都會保留，隨時接著練。"
-                  : "先記錄實際訓練，正式 Cycle 模板持續建置。"}
-              </p>
-            </div>
-            <div className="progress-dots">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <span key={i} />
-              ))}
-            </div>
-            <Link
-              href="/training/session"
-              className="button"
-              style={{ width: "100%" }}
-            >
-              {session ? "繼續訓練" : "開始訓練"}
-              <ArrowRight size={14} />
-            </Link>
-          </Card>
-          <Card title="累積，從今天開始" kicker="YOUR PRACTICE">
-            <div className="summary-list">
-              {[
-                {
-                  icon: ClipboardList,
-                  title: "飲食紀錄",
-                  text: `今天已記錄 ${visibleMeals(state, date).length} 筆`,
-                  href: "/nutrition/log",
-                },
-                {
-                  icon: TrendingUp,
-                  title: "體重趨勢",
-                  text: visibleMeasurements(state).length
-                    ? `已累積 ${visibleMeasurements(state).length} 次實測`
-                    : "留下第一筆身體紀錄",
-                  href: "/progress/body",
-                },
-                {
-                  icon: History,
-                  title: "我的計畫版本",
-                  text: state.versions.length
-                    ? `已建立 ${state.versions.length} 個版本`
-                    : "確認後才建立計畫",
-                  href: "/progress/history",
-                },
-              ].map((item) => (
-                <Link
-                  className="summary-item"
-                  key={item.title}
-                  href={item.href}
-                >
-                  <div className="summary-icon">
-                    <item.icon size={16} />
-                  </div>
-                  <div className="meta">
-                    <strong>{item.title}</strong>
-                    <p>{item.text}</p>
-                  </div>
-                  <ChevronRight size={13} color="#9aa38e" />
-                </Link>
-              ))}
-            </div>
-          </Card>
-          <div className="notice">
-            <strong>你的資料，留在這裡。</strong>
-            <br />
-            目前使用本機儲存。清除瀏覽器資料前，請先到設定匯出備份。
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
 function Onboarding({
   editing,
   notify,
@@ -732,6 +459,7 @@ function Onboarding({
   const p = state.profile;
   const [preview, setPreview] = useState<Profile | null>(null);
   const [error, setError] = useState("");
+  const [step, setStep] = useState(0);
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const d = new FormData(e.currentTarget);
@@ -780,15 +508,25 @@ function Onboarding({
     <>
       <Heading
         eyebrow={editing ? "YOUR PROFILE" : "LET’S BEGIN"}
-        title={editing ? "你的基本資料" : "先認識現在的你。"}
-        description="不需要一次做到完美。先留下起點，再慢慢調整。"
+        title={editing ? "個人資料" : "設定營養目標"}
       />
       <div className="narrow">
         <Card>
           {!preview ? (
             <form onSubmit={submit}>
-              <p className="step-label">01 / 基本資料</p>
-              <div className="form-grid">
+              <p className="step-label">
+                {
+                  ["1 / 3 基本資料", "2 / 3 目標與運動", "3 / 3 飲水與確認"][
+                    step
+                  ]
+                }
+              </p>
+              <div className="onboarding-step">
+                {[0, 1, 2].map((i) => (
+                  <span key={i} className={i <= step ? "active" : ""} />
+                ))}
+              </div>
+              <div className="form-grid onboarding-grid" data-step={step}>
                 <Field label="稱呼">
                   <input
                     name="name"
@@ -873,10 +611,39 @@ function Onboarding({
                 </div>
               </div>
               <div className="form-actions">
-                <button className="button" type="submit">
-                  查看資料與計畫預覽
-                  <ArrowRight size={14} />
-                </button>
+                {step > 0 && (
+                  <button
+                    type="button"
+                    className="button secondary"
+                    onClick={() => setStep(step - 1)}
+                  >
+                    上一步
+                  </button>
+                )}
+                {step < 2 ? (
+                  <button
+                    className="button"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const form = e.currentTarget.form!;
+                      const visible = Array.from(
+                        form.querySelectorAll<HTMLInputElement>(
+                          ".onboarding-grid input",
+                        ),
+                      ).filter((i) => i.offsetParent !== null);
+                      if (visible.every((i) => i.reportValidity()))
+                        setStep(step + 1);
+                    }}
+                  >
+                    下一步
+                  </button>
+                ) : (
+                  <button key="preview" className="button" type="submit">
+                    查看資料與計畫預覽
+                    <ArrowRight size={14} />
+                  </button>
+                )}
               </div>
               {error && (
                 <p className="form-error" role="alert">
@@ -1002,493 +769,9 @@ function Login() {
   );
 }
 
-function Nutrition({
-  path,
-  date,
-  notify,
-}: {
-  path: string;
-  date: string;
-  notify: (m?: string) => void;
-}) {
-  const { state, save } = useStore();
-  const [selectedDate, setSelectedDate] = useState(date);
-  const day = resolveDay(state, selectedDate);
-  const total = mealTotals(state, selectedDate);
-  const [mode, setMode] = useState<"manual" | "food">("manual");
-  const [selectedFood, setSelectedFood] = useState<Food | null>(null);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("全部");
-  const [editId, setEditId] = useState<string | null>(null);
-  const foods = [...(sourceFoods as Food[]), ...state.foods];
-  const meals = visibleMeals(state, selectedDate);
-  const editing = meals.find((m) => m.id === editId);
-  const plan = activePlan(state, date);
-  function log(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const d = new FormData(e.currentTarget);
-    const quantity = Number(d.get("quantity") || 1);
-    const food = mode === "food" ? selectedFood : null;
-    if (mode === "food" && !food) return;
-    const factor = food ? quantity / food.base : 1;
-    const p = round(food ? food.p * factor : Number(d.get("p")));
-    const c = round(food ? food.c * factor : Number(d.get("c")));
-    const f = round(food ? food.f * factor : Number(d.get("f")));
-    const kcal = round(food ? food.kcal * factor : p * 4 + c * 4 + f * 9);
-    if (
-      save(editId ? "修正飲食紀錄" : "新增飲食紀錄", (s) => {
-        pinDay(s, selectedDate);
-        s.meals.push({
-          id: id(),
-          date: selectedDate,
-          slot: String(d.get("slot")),
-          name: food?.name ?? String(d.get("name")),
-          quantity: food ? quantity : 1,
-          unit: food?.unit ?? "份",
-          foodId: food?.id,
-          foodVersion: food?.version,
-          p,
-          c,
-          f,
-          kcal,
-          createdAt: now(),
-          ...(editId ? { supersedes: editId } : {}),
-        });
-      })
-    ) {
-      notify();
-      e.currentTarget.reset();
-      setEditId(null);
-    }
-  }
-  function addFood(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const d = new FormData(e.currentTarget);
-    const p = Number(d.get("p")),
-      c = Number(d.get("c")),
-      f = Number(d.get("f"));
-    if (
-      save("新增自訂食物", (s) =>
-        s.foods.push({
-          id: id(),
-          name: String(d.get("name")),
-          category: "自訂",
-          base: Number(d.get("base")),
-          unit: String(d.get("unit")),
-          p,
-          c,
-          f,
-          kcal: round(p * 4 + c * 4 + f * 9),
-          version: 1,
-          source: "User · 手動輸入",
-        }),
-      )
-    ) {
-      notify();
-      e.currentTarget.reset();
-    }
-  }
-  const filtered = foods.filter(
-    (f) =>
-      (category === "全部" || f.category === category) &&
-      f.name.toLowerCase().includes(search.toLowerCase()),
-  );
-  return (
-    <>
-      <Heading
-        eyebrow="NOURISH YOUR EVERYDAY"
-        title={
-          path.endsWith("/plan")
-            ? "你的營養計畫"
-            : path.endsWith("/foods")
-              ? "從熟悉的食物開始。"
-              : path.endsWith("/recipes")
-                ? "好好吃，也可以很簡單。"
-                : "吃得清楚，走得穩。"
-        }
-        description="以營養素為核心，記下每一餐。"
-      />
-      <NutritionLinks path={path} />
-      {path === "nutrition/plan" ? (
-        <div className="stack">
-          {plan ? (
-            <Card
-              title={`Nutrition v${plan.number}`}
-              kicker={`${plan.inputs.goal} · ${plan.ruleId}`}
-              link={{ href: "/progress/history", label: "版本歷史" }}
-            >
-              <TargetTable targets={plan.targets} />
-              <p className="muted" style={{ marginTop: 18, fontSize: 12 }}>
-                計算用體重 {plan.inputs.weight} kg ·{" "}
-                {frequencies[plan.inputs.frequency]} · 生效日{" "}
-                {plan.effectiveDate}
-              </p>
-              <div className="notice" style={{ marginTop: 20 }}>
-                三種日型都屬於同一版本。選擇日型不會改變基準計畫；後續調整必須由你採用。
-              </div>
-            </Card>
-          ) : (
-            <Card>
-              <Empty
-                title={
-                  state.profile?.goal === "GAIN"
-                    ? "正在建立 GAIN Baseline"
-                    : "尚未建立營養計畫"
-                }
-                detail={
-                  state.profile?.goal === "GAIN"
-                    ? "先記錄日常飲食與體重，增肌判斷門檻尚待核定。"
-                    : "完成基本資料，預覽並確認 Numbers 計畫。"
-                }
-                href="/onboarding"
-                action="檢視初始設定"
-              />
-            </Card>
-          )}
-          <Card title="公式來源與移植狀態" icon={Info}>
-            <p className="muted">
-              Numbers 3.0 · 實際體重 × 頻率係數。訓練日／輕訓日／休息日碳水倍率
-              100%／70%／50%；P、F 不變。
-            </p>
-            <div className="divider" />
-            <p style={{ fontSize: 12 }}>
-              已依原始 C25:F28 與跨表 C32／C33 實作計算。高
-              BMI／高體脂換算未出現在這份原表，不另行套用。額外安全門檻仍待核定，本版本為使用者測試用途。
-            </p>
-          </Card>
-        </div>
-      ) : path === "nutrition/recipes" ? (
-        <Card>
-          <Empty
-            title="食譜庫已保留位置"
-            detail="第一階段保留 Recipe 版本與加入餐次流程；待你提供首批食譜後填入內容。"
-          />
-          <Link href="/nutrition/foods" className="button secondary">
-            先從食物庫記錄
-            <ArrowRight size={14} />
-          </Link>
-        </Card>
-      ) : path === "nutrition/foods" ? (
-        <div className="stack">
-          <div className="toolbar">
-            <input
-              className="control"
-              aria-label="搜尋食物"
-              placeholder="搜尋食物名稱…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <select
-              className="control"
-              aria-label="食物分類"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              {["全部", "主食", "蛋白质", "脂肪", "蔬菜", "水果", "自訂"].map(
-                (c) => (
-                  <option key={c}>{c}</option>
-                ),
-              )}
-            </select>
-            <span className="muted" style={{ fontSize: 11 }}>
-              {filtered.length} 項 · Numbers / User
-            </span>
-          </div>
-          <div className="food-grid">
-            {filtered.map((f) => (
-              <div className="food-card" key={f.id}>
-                <span className="food-token">{f.name.slice(0, 1)}</span>
-                <h3>{f.name}</h3>
-                <p>
-                  每 {f.base} {f.unit} · {f.kcal} kcal
-                </p>
-                <p className="macro-inline">
-                  P {f.p} C {f.c} F {f.f}
-                </p>
-                <p className="wrap">{f.source}</p>
-              </div>
-            ))}
-          </div>
-          <Card title="新增自己的食物" kicker="YOUR FOOD">
-            <form onSubmit={addFood}>
-              <div className="form-grid">
-                <Field label="名稱（請包含生／熟狀態）">
-                  <input name="name" required maxLength={80} />
-                </Field>
-                <NumberField
-                  name="base"
-                  label="基準份量"
-                  min={0.1}
-                  max={10000}
-                />
-                <Field label="單位">
-                  <select name="unit">
-                    <option>g</option>
-                    <option>ml</option>
-                    <option>個</option>
-                    <option>份</option>
-                  </select>
-                </Field>
-                <NumberField label="蛋白質 g" name="p" />
-                <NumberField label="碳水 g" name="c" />
-                <NumberField label="脂肪 g" name="f" />
-              </div>
-              <div className="form-actions">
-                <button className="button">
-                  新增食物
-                  <Plus size={14} />
-                </button>
-              </div>
-            </form>
-          </Card>
-        </div>
-      ) : (
-        <>
-          <div className="toolbar">
-            <DateField
-              value={selectedDate}
-              onChange={(d) => {
-                setSelectedDate(d);
-                setEditId(null);
-              }}
-            />
-            <select
-              className="control"
-              aria-label="今日類型"
-              value={day.dayType}
-              onChange={(e) => {
-                if (
-                  save("選擇當日日型", (s) =>
-                    setDayType(s, selectedDate, e.target.value as DayType),
-                  )
-                )
-                  notify();
-              }}
-            >
-              {(Object.keys(dayNames) as DayType[]).map((d) => (
-                <option key={d} value={d}>
-                  {dayNames[d]}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="dashboard-grid">
-            <div className="stack">
-              <Card title="這一天的營養" kicker={selectedDate}>
-                <MacrosView eaten={total} target={day.target} />
-                <div className="card-footer">
-                  <label className="check">
-                    <input
-                      type="checkbox"
-                      checked={day.complete}
-                      onChange={(e) => {
-                        const complete = e.target.checked;
-                        save("更新飲食紀錄完整度", (s) => {
-                          pinDay(s, selectedDate);
-                          s.days.find(
-                            (d) => d.date === selectedDate,
-                          )!.complete = complete;
-                        });
-                      }}
-                    />
-                    <span>今天所有飲食已記錄完整</span>
-                  </label>
-                </div>
-              </Card>
-              <Card title="Meal Cards" kicker="ONE MEAL AT A TIME">
-                {state.mealSlots.map((slot) => (
-                  <div key={slot}>
-                    <div className="list-row">
-                      <div className="summary-icon">
-                        <Utensils size={15} />
-                      </div>
-                      <div className="grow">
-                        <h3>{slot}</h3>
-                        <p>
-                          {meals.filter((m) => m.slot === slot).length} 筆紀錄
-                        </p>
-                      </div>
-                    </div>
-                    {meals
-                      .filter((m) => m.slot === slot)
-                      .map((m) => (
-                        <div
-                          key={m.id}
-                          className="list-row"
-                          style={{ paddingLeft: 15 }}
-                        >
-                          <div className="grow">
-                            <h3>{m.name}</h3>
-                            <p>
-                              {m.quantity} {m.unit} · {m.kcal} kcal
-                            </p>
-                            <p className="macro-inline">
-                              P {m.p} C {m.c} F {m.f}
-                            </p>
-                          </div>
-                          <button
-                            className="text-link"
-                            onClick={() => {
-                              setMode("manual");
-                              setEditId(m.id);
-                            }}
-                          >
-                            修正
-                          </button>
-                          <button
-                            className="icon-button"
-                            aria-label={`刪除 ${m.name}`}
-                            onClick={() => {
-                              if (
-                                save("刪除飲食（保留原始版本）", (s) =>
-                                  s.meals.push({
-                                    ...m,
-                                    id: id(),
-                                    supersedes: m.id,
-                                    deleted: true,
-                                    createdAt: now(),
-                                  }),
-                                )
-                              )
-                                notify("已移除，原始紀錄保留在歷史");
-                            }}
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      ))}
-                  </div>
-                ))}
-              </Card>
-              <WaterLog date={selectedDate} notify={notify} />
-            </div>
-            <div className="stack">
-              <Card title={editing ? "修正這筆飲食" : "記錄一餐"} icon={Plus}>
-                <div className="pill-row" style={{ marginBottom: 19 }}>
-                  <button
-                    onClick={() => {
-                      setMode("manual");
-                      setEditId(null);
-                    }}
-                  >
-                    直接輸入 P/C/F
-                  </button>
-                  <button
-                    onClick={() => {
-                      setMode("food");
-                      setEditId(null);
-                    }}
-                  >
-                    選擇食物
-                  </button>
-                </div>
-                {mode === "food" && (
-                  <Field label="食物">
-                    <select
-                      value={selectedFood?.id ?? ""}
-                      onChange={(e) =>
-                        setSelectedFood(
-                          foods.find((f) => f.id === e.target.value) ?? null,
-                        )
-                      }
-                    >
-                      <option value="">請選擇</option>
-                      {foods.map((f) => (
-                        <option key={f.id} value={f.id}>
-                          {f.name} · 每 {f.base}
-                          {f.unit}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                )}
-                <form
-                  key={`${editId}-${mode}`}
-                  onSubmit={log}
-                  style={{ marginTop: 16 }}
-                >
-                  <div className="form-grid">
-                    <div className="full">
-                      <Field label="餐次">
-                        <select name="slot" defaultValue={editing?.slot}>
-                          {state.mealSlots.map((s) => (
-                            <option key={s}>{s}</option>
-                          ))}
-                        </select>
-                      </Field>
-                    </div>
-                    {mode === "manual" ? (
-                      <>
-                        <div className="full">
-                          <Field label="這餐吃了什麼？">
-                            <input
-                              name="name"
-                              required
-                              maxLength={80}
-                              defaultValue={editing?.name}
-                              placeholder="例如：午餐便當"
-                            />
-                          </Field>
-                        </div>
-                        <NumberField
-                          label="蛋白質 g"
-                          name="p"
-                          value={editing?.p}
-                        />
-                        <NumberField
-                          label="碳水 g"
-                          name="c"
-                          value={editing?.c}
-                        />
-                        <NumberField
-                          label="脂肪 g"
-                          name="f"
-                          value={editing?.f}
-                        />
-                      </>
-                    ) : (
-                      <div className="full">
-                        <NumberField
-                          label={`食用量 ${selectedFood?.unit ?? "g"}`}
-                          name="quantity"
-                          min={0.1}
-                          max={10000}
-                          value={selectedFood?.base}
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <div className="form-actions">
-                    <button
-                      className="button"
-                      disabled={mode === "food" && !selectedFood}
-                      type="submit"
-                    >
-                      {editing ? "保存修正" : "加入紀錄"}
-                      <Check size={14} />
-                    </button>
-                    {editing && (
-                      <button
-                        type="button"
-                        className="text-link"
-                        onClick={() => setEditId(null)}
-                      >
-                        取消
-                      </button>
-                    )}
-                  </div>
-                </form>
-              </Card>
-              <div className="notice">
-                紀錄完整度與營養達成度分開計算。未記錄的日子，不會被當成吃了 0
-                kcal。
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-    </>
-  );
+function Nutrition({path,date,notify}:{path:string;date:string;notify:(m?:string)=>void}) {
+ const {state}=useStore();const plan=activePlan(state,date);
+ return <div className="daily-page"><Heading eyebrow="" title={path==='nutrition/plan'?'營養計畫':'食譜'}/><NutritionLinks path={path}/>{path==='nutrition/plan'?(plan?<Card title={`目前計畫 · ${plan.inputs.goal}`}><TargetTable targets={plan.targets}/><p className="muted" style={{marginTop:20}}>v{plan.number} · {plan.effectiveDate} 生效</p><Link className="text-link" href="/nutrition">查看今日營養<ArrowRight size={16}/></Link><details className="source-details"><summary>計算依據</summary><p>依已確認的個人資料與 James 計算規則建立。計算用體重 {plan.inputs.weight} kg；{frequencies[plan.inputs.frequency]}。</p><Link href="/progress/history">計畫變更紀錄</Link></details></Card>:<Card><Empty title={state.profile?.goal==='GAIN'?'GAIN 基準追蹤中':'尚未設定營養目標'} detail={state.profile?.goal==='GAIN'?'先記錄實際飲食與體重。':'完成基本資料並確認計畫後，目標會顯示於今日營養。'} href="/onboarding" action="設定營養目標"/></Card>):<Card><Empty title="尚未新增食譜" detail="目前可以從食物庫記錄每餐食材。" href="/nutrition/foods" action="選擇食物"/></Card>}</div>
 }
 
 function WaterLog({
@@ -1642,24 +925,10 @@ function Training({
     <>
       <Heading
         eyebrow="TRAIN WITH INTENTION"
-        title="專注每一組。"
+        title="Cardio"
         description="保留真實的重量、次數與感受，讓每次訓練都有跡可循。"
       />
-      <div className="subnav">
-        {[
-          ["training", "訓練總覽"],
-          ["training/session", "Workout Logger"],
-          ["training/cycle", "Cycle"],
-          ["training/templates", "Templates"],
-          ["training/exercises", "動作庫"],
-          ["training/warmups", "暖身"],
-          ["training/activity", "Cardio"],
-        ].map(([p, l]) => (
-          <Link key={p} href={"/" + p} className={path === p ? "active" : ""}>
-            {l}
-          </Link>
-        ))}
-      </div>
+      <Link href="/training" className="text-link">← Training</Link>
       {path === "training/activity" ? (
         <div className="dashboard-grid">
           <Card title="手動記錄有氧" icon={Activity}>
@@ -2106,10 +1375,10 @@ function Progress({
         eyebrow="SEE THE BIGGER PICTURE"
         title={
           path === "progress/history"
-            ? "每一次調整，都有原因。"
+            ? "Plan Changes"
             : path === "progress/weekly"
-              ? "回頭看，才能往前走。"
-              : "看見你的累積。"
+              ? "Weekly Review"
+              : "Progress"
         }
         description="看趨勢，也看過程。資料不足時，先記錄，不急著下結論。"
       />
@@ -2376,7 +1645,7 @@ function Progress({
           )}
           {path === "progress/recovery" && (
             <div className="dashboard-grid">
-              <Card title="記錄身體的聲音" icon={Sun}>
+              <Card title="記錄恢復" icon={Sun}>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -2459,7 +1728,7 @@ function Progress({
                     ))
                 ) : (
                   <Empty
-                    title="先聽見自己的感受"
+                    title="尚未紀錄"
                     detail="沒有紀錄不等於已完全恢復。"
                   />
                 )}
@@ -2837,7 +2106,7 @@ function Recommendations({
       {!state.recommendations.length && (
         <Card>
           <Empty
-            title="現在先把資料留下來"
+            title="尚無建議"
             detail="到評估日後，使用真實紀錄檢查是否需要調整。"
             href="/progress/body"
             action="記錄體重"
@@ -2845,39 +2114,6 @@ function Recommendations({
         </Card>
       )}
     </div>
-  );
-}
-function Learn() {
-  return (
-    <>
-      <Heading
-        eyebrow="UNDERSTAND YOUR PRACTICE"
-        title="學會，照顧自己的方式。"
-        description="知識會出現在需要它的地方。"
-      />
-      <div className="food-grid">
-        {[
-          ["Nutrition", "理解 P / C / F", "飲食與紀錄"],
-          ["Training", "從每一組開始", "重量、次數與 RIR"],
-          ["Recovery", "恢復與訓練就緒度", "睡眠、疲勞與表現"],
-        ].map(([k, t, d]) => (
-          <Card key={k}>
-            <BookOpen size={24} color="#a28c54" />
-            <p className="eyebrow" style={{ marginTop: 22, color: "#a28c54" }}>
-              {k}
-            </p>
-            <h2 style={{ marginTop: 10 }}>{t}</h2>
-            <p className="muted" style={{ margin: "9px 0 18px", fontSize: 12 }}>
-              {d}
-            </p>
-            <span className="tag">文章整理中</span>
-          </Card>
-        ))}
-      </div>
-      <div className="notice" style={{ marginTop: 20 }}>
-        已保留文章分類、來源、版本與閱讀進度架構。研究內容審閱完成後才發布，不把待審內容當成正式規則。
-      </div>
-    </>
   );
 }
 function SettingsPage({
@@ -2910,10 +2146,10 @@ function SettingsPage({
         eyebrow="MAKE IT YOURS"
         title={
           path === "settings/privacy"
-            ? "你的資料，你掌握。"
+            ? "隱私說明"
             : path === "settings/data"
-              ? "保留你的每一步。"
-              : "用自己的方式。"
+              ? "資料管理"
+              : "Settings"
         }
         description="設定、資料與使用方式，集中在這裡。"
       />

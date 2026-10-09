@@ -13,6 +13,7 @@ type Store = {
   state: AppState;
   ready: boolean;
   error: string;
+  saving: boolean;
   save: (action: string, change: (s: AppState) => void) => boolean;
   reset: () => void;
 };
@@ -22,6 +23,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const ref = useRef(state);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const blocked = useRef(false);
   useEffect(() => {
     try {
@@ -54,6 +56,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
   function save(action: string, change: (s: AppState) => void) {
     if (!ready || blocked.current) return false;
+    setSaving(true);
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       const disk = raw ? validateState(JSON.parse(raw)) : initialState();
@@ -78,6 +81,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       setError(e instanceof Error ? e.message : "儲存失敗，資料未寫入");
       return false;
+    } finally {
+      requestAnimationFrame(() => setSaving(false));
     }
   }
   function reset() {
@@ -93,7 +98,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }
   return (
-    <Context.Provider value={{ state, ready, error, save, reset }}>
+    <Context.Provider value={{ state, ready, error, saving, save, reset }}>
       {children}
     </Context.Provider>
   );

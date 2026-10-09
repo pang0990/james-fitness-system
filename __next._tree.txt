@@ -1,3 +1,3 @@
-:HL["/summergym.github.io/_next/static/css/0a3b76af1839a6c8.css","style"]
+:HL["/james-fitness-system/_next/static/css/51e85cdb75d783e0.css","style"]
 1:[["children",{"s":"__PAGE__","h":160}]]
-0:{"b":"srLdz6MwmzwjFniBcJqw6","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"B5CqGBsnUL-D_0Toot0JW","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
