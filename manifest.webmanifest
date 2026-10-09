@@ -7,8 +7,8 @@
   "start_url": "/james-fitness-system/today/",
   "scope": "/james-fitness-system/",
   "display": "standalone",
-  "background_color": "#fafafa",
-  "theme_color": "#171717",
+  "background_color": "#070708",
+  "theme_color": "#070708",
   "icons": [
     {
       "src": "/james-fitness-system/icon-192.png",

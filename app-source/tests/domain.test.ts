@@ -212,4 +212,12 @@ test("selected day type uses version in historical daily snapshot", () => {
   assert.equal(resolveDay(s, "2026-10-09").target?.c, 110.3);
 });
 
-test('confirming a plan attaches an existing unplanned diary to its targets',()=>{const s=initialState();s.profile={...profile};pinDay(s,'2026-10-09');assert.equal(resolveDay(s,'2026-10-09').target,null);createInitialPlan(s,'2026-10-09','v1','now');assert.equal(resolveDay(s,'2026-10-09').target?.c,220.5);assert.equal(s.days[0].versionId,'v1')});
+test("confirming a plan attaches an existing unplanned diary to its targets", () => {
+  const s = initialState();
+  s.profile = { ...profile };
+  pinDay(s, "2026-10-09");
+  assert.equal(resolveDay(s, "2026-10-09").target, null);
+  createInitialPlan(s, "2026-10-09", "v1", "now");
+  assert.equal(resolveDay(s, "2026-10-09").target?.c, 220.5);
+  assert.equal(s.days[0].versionId, "v1");
+});

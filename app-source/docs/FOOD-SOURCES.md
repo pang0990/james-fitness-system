@@ -7,3 +7,6 @@ TFDA：852 筆，下載日期 2026-10-09。來源 https://data.gov.tw/dataset/85
 下載 https://data.fda.gov.tw/data/opendata/export/20/json ，原始 ZIP SHA256 `755d2f0e4a7c1fe80ac0636863117e376773c9342cfd68e7b05e67d81e3c6064`。依整合編號聚合，僅採描述為生、屬指定原型食物分類、有英文名稱且四項營養值完整的項目；排除名稱含加工提示。未提供值不轉為0。每100g可食部分，熱量採官方值，非自行4/4/9重算。生重與熟重不可混用。
 
 英文顯示取官方英文名稱第一個名稱，完整原始中文及處理描述留於詳細資料。同食物不同品種保留獨立官方編號。這是2026-10-09的快照，並非即時連線。
+
+## 0.3 cooked additions
+22 TFDA prepared/cooked entries preserve actual cooking descriptions; raw values are never multiplied by a guessed cooking yield. Two additional records fetched from USDA FoodData Central's official API on 2026-10-09: FDC 171477 (chicken breast, meat only, cooked roasted) and 168250 (pork tenderloin, lean only, cooked roasted). USDA source links, English descriptions, per-100g nutrients and public-domain attribution stored in cooked-foods.json. No personal API key is included.

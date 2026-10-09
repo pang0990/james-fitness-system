@@ -329,3 +329,64 @@ export function Trends({ date }: { date: string }) {
     </div>
   );
 }
+export function MetricDetails({
+  date,
+  group,
+}: {
+  date: string;
+  group: string;
+}) {
+  const { state } = useStore();
+  const [range, setRange] = useState("30"),
+    [selected, setSelected] = useState<string | null>(null);
+  const start =
+    range === "all" ? "0000-01-01" : addDays(date, 1 - Number(range));
+  const entries = defs.filter((d) => d[3] === group);
+  const chosen = entries.find((d) => d[0] === selected);
+  const points = (key: string) =>
+    metricPoints(state, key).filter((p) => p.date >= start && p.date <= date);
+  return (
+    <section className="daily-page" style={{ marginTop: 32 }}>
+      <h2>Detailed trends</h2>
+      <div className="range-control">
+        {["7", "30", "all"].map((r) => (
+          <button
+            key={r}
+            aria-pressed={range === r}
+            onClick={() => setRange(r)}
+          >
+            {r === "all" ? "ALL" : r + "D"}
+          </button>
+        ))}
+      </div>
+      <div className="trend-grid">
+        {entries.map(([key, title, unit]) => (
+          <button
+            className="trend-card"
+            aria-label={title}
+            key={key}
+            onClick={() => setSelected(key)}
+          >
+            <span>{title}</span>
+            <LineChart points={points(key)} unit={unit} />
+          </button>
+        ))}
+      </div>
+      {chosen && (
+        <Sheet title={chosen[1]} onClose={() => setSelected(null)}>
+          <LineChart points={points(chosen[0])} unit={chosen[2]} large />
+          <div className="chart-values">
+            {points(chosen[0]).map((p, i) => (
+              <div key={i}>
+                <time>{p.date}</time>
+                <span>
+                  {p.value} {chosen[2]}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Sheet>
+      )}
+    </section>
+  );
+}

@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { Companion, type CompanionState as PetState } from "./companion";
+import { NoticeCarousel } from "./notices";
 import {
   useEffect,
   useRef,
@@ -39,7 +41,9 @@ import {
   type Food,
   type Meal,
 } from "@/lib/domain";
+import { activeCycle, scheduleKind } from "@/lib/training-model";
 import master from "@/content/foods.json";
+import cooked from "@/content/cooked-foods.json";
 import official from "@/content/fda-foods.json";
 export const uid = () => crypto.randomUUID();
 export const stamp = () => new Date().toISOString();
@@ -159,107 +163,6 @@ export function Num({
     </Field>
   );
 }
-export type PetState = "idle" | "training" | "resting" | "drinking" | "reading";
-export function Companion({
-  state,
-  onTap,
-}: {
-  state: PetState;
-  onTap: () => void;
-}) {
-  return (
-    <button
-      className={`companion pet-${state}`}
-      onClick={onTap}
-      aria-label={`電子寵物：${{ idle: "待機", training: "訓練", resting: "休息", drinking: "喝水", reading: "閱讀" }[state]}`}
-    >
-      <svg viewBox="0 0 200 180" role="img" aria-label="James 電子寵物">
-        <ellipse cx="100" cy="161" rx="44" ry="7" fill="#000" opacity=".13" />
-        <g className="pet-body">
-          <path
-            d="M67 76 Q57 90 62 118 Q64 141 100 142 Q137 141 139 118 Q144 92 132 76"
-            fill="#dededc"
-            stroke="#222"
-            strokeWidth="2"
-          />
-          <rect
-            x="58"
-            y="28"
-            width="84"
-            height="69"
-            rx="29"
-            fill="#f8f8f6"
-            stroke="#222"
-            strokeWidth="2"
-          />
-          <path
-            d="M72 34 L67 13 Q78 9 83 29 M119 29 Q125 8 135 14 L129 35"
-            fill="#f8f8f6"
-            stroke="#222"
-            strokeWidth="2"
-          />
-          <rect x="71" y="47" width="58" height="31" rx="13" fill="#202020" />
-          <g className="pet-eyes">
-            <circle cx="86" cy="61" r="4" fill="#d4b66e" />
-            <circle cx="113" cy="61" r="4" fill="#d4b66e" />
-          </g>
-          <path
-            d="M94 72 Q100 77 106 72"
-            fill="none"
-            stroke="#d4b66e"
-            strokeWidth="2"
-          />
-          <path
-            d="M76 138 L74 151 M123 138 L126 151"
-            stroke="#222"
-            strokeWidth="14"
-            strokeLinecap="round"
-          />
-          <path
-            className="pet-arm"
-            d="M137 100 L151 114"
-            stroke="#222"
-            strokeWidth="10"
-            strokeLinecap="round"
-          />
-          <path
-            d="M63 100 L50 112"
-            stroke="#222"
-            strokeWidth="10"
-            strokeLinecap="round"
-          />
-          <path
-            d="M95 107 L105 107 L101 122 L91 122"
-            fill="none"
-            stroke="#a58b50"
-            strokeWidth="4"
-          />
-          {state === "drinking" && (
-            <path d="M142 104 H160 L157 126 H145 Z" fill="#d4b66e" />
-          )}
-          {state === "training" && (
-            <g stroke="#a58b50" strokeWidth="6">
-              <path d="M138 111 H167 M138 103 V119 M166 103 V119" />
-            </g>
-          )}
-          {state === "reading" && (
-            <path
-              d="M75 114 Q89 110 100 117 Q114 110 126 114 V136 Q113 132 100 139 Q87 132 75 136Z"
-              fill="#d4b66e"
-              stroke="#222"
-              strokeWidth="2"
-            />
-          )}
-          {state === "resting" && (
-            <text x="148" y="44" fontSize="18" fill="#999">
-              z
-            </text>
-          )}
-        </g>
-      </svg>
-    </button>
-  );
-}
 export function NutritionSummary({ date }: { date: string }) {
   const { state } = useStore();
   const d = resolveDay(state, date);
@@ -318,10 +221,19 @@ export function TodayV2({
   notify: (s?: string) => void;
 }) {
   const { state, save } = useStore();
-  const [pet, setPet] = useState<PetState>("idle");
+  const [pet, setPet] = useState<PetState>(() =>
+    state.sessions.some(
+      (s) =>
+        s.date === date &&
+        s.completedAt &&
+        Date.now() - Date.parse(s.completedAt) < 60000,
+    )
+      ? "celebrating"
+      : "idle",
+  );
   const [adjust, setAdjust] = useState(false);
   const current = state.sessions.find((s) => s.status === "in_progress");
-  const cycle = state.cycles?.at(-1);
+  const cycle = activeCycle(state);
   const completed = cycle
     ? (state.cycleEvents?.filter(
         (e) =>
@@ -352,50 +264,35 @@ export function TodayV2({
   return (
     <div className="daily-page">
       <PageTitle title="Today">
-        <span className="muted">{date.slice(5).replace("-", " / ")}</span>
+        <span className="muted">
+          {new Intl.DateTimeFormat("en-US", {
+            weekday: "long",
+            month: "short",
+            day: "2-digit",
+            timeZone: "UTC",
+          })
+            .format(new Date(date + "T12:00:00Z"))
+            .toUpperCase()}
+        </span>
       </PageTitle>
       <section className="companion-stage">
         <Companion
           state={
             pet === "idle" && current
               ? "training"
-              : pet === "idle" && resolveDay(state, date).dayType === "rest"
+              : pet === "idle" && scheduleKind(state, date) !== "train"
                 ? "resting"
                 : pet
           }
           onTap={() => setPet(pet === "reading" ? "idle" : "reading")}
         />
-        <Link
-          className="primary-reminder"
-          href={
-            rec
-              ? "/progress/recommendations"
-              : !target
-                ? "/onboarding"
-                : current
-                  ? "/training/session"
-                  : "/nutrition"
-          }
-        >
-          <span>
-            {rec
-              ? "有 1 項營養調整待確認"
-              : !target
-                ? state.profile?.goal === "GAIN"
-                  ? "GAIN · 基準紀錄中"
-                  : "尚未設定營養目標"
-                : current
-                  ? `訓練進行中 · ${current.name}`
-                  : "今日營養目標已設定"}
-          </span>
-          <ChevronRight size={16} />
-        </Link>
+        <NoticeCarousel date={date} />
       </section>
       <section className="card">
         <div className="card-head">
           <h2>
             <Utensils size={19} />
-            Nutrition
+            EAT
           </h2>
           <Link href="/nutrition" aria-label="開啟營養">
             <ChevronRight />
@@ -411,7 +308,7 @@ export function TodayV2({
         <div className="card-head">
           <h2>
             <Dumbbell size={19} />
-            Training
+            TRAIN
           </h2>
           <Link href="/training" aria-label="開啟訓練">
             <ChevronRight />
@@ -431,57 +328,62 @@ export function TodayV2({
           <ArrowRight size={16} />
         </Link>
       </section>
-      <section className="card">
-        <div className="card-head">
-          <h2>
-            <Droplet size={19} />
-            Water
-          </h2>
-          <button
-            className="icon-button"
-            aria-label="修正飲水"
-            onClick={() => setAdjust(true)}
-          >
-            <Undo2 size={19} />
-          </button>
-        </div>
-        <p className="water-number">
-          {hasWater ? round(water / 1000, 2) : "尚未紀錄"}{" "}
-          <small>
-            /{" "}
-            {state.profile?.waterTarget
-              ? round(state.profile.waterTarget / 1000, 2)
-              : "—"}{" "}
-            L
-          </small>
-        </p>
-        <div className="two-actions">
-          <button className="button secondary" onClick={() => add(250)}>
-            +250 ml
-          </button>
-          <button className="button secondary" onClick={() => add(500)}>
-            +500 ml
-          </button>
-        </div>
-      </section>
-      <section className="card">
-        <div className="card-head">
-          <h2>
-            <Heart size={19} />
-            Recovery
-          </h2>
-          <Link href="/progress/recovery" aria-label="記錄恢復">
-            <Plus />
-          </Link>
-        </div>
-        <div className="recovery-values">
-          <div>
-            <strong>{recovery ? `${recovery.sleep} h` : "尚未紀錄"}</strong>
-            <span>睡眠</span>
+      <section className="daily-status">
+        <p className="eyebrow">DAILY STATUS</p>
+        <div className="daily-status-block">
+          <div className="card-head">
+            <h2>
+              <Droplet size={19} />
+              Water
+            </h2>
+            <button
+              className="icon-button"
+              aria-label="修正飲水"
+              onClick={() => setAdjust(true)}
+            >
+              <Undo2 size={19} />
+            </button>
           </div>
-          <div>
-            <strong>{recovery ? `${recovery.fatigue} / 5` : "尚未紀錄"}</strong>
-            <span>疲勞</span>
+          <p className="water-number">
+            {hasWater ? round(water / 1000, 2) : "尚未紀錄"}{" "}
+            <small>
+              /{" "}
+              {state.profile?.waterTarget
+                ? round(state.profile.waterTarget / 1000, 2)
+                : "—"}{" "}
+              L
+            </small>
+          </p>
+          <div className="two-actions">
+            <button className="button secondary" onClick={() => add(250)}>
+              +250 ml
+            </button>
+            <button className="button secondary" onClick={() => add(500)}>
+              +500 ml
+            </button>
+          </div>
+        </div>
+        <div className="daily-status-block">
+          <div className="card-head">
+            <h2>
+              <Heart size={19} />
+              Recovery
+            </h2>
+            <Link href="/progress/recovery" aria-label="記錄恢復">
+              <Plus />
+            </Link>
+          </div>
+          <div className="recovery-values">
+            <div>
+              <strong>{recovery ? `${recovery.sleep} h` : "尚未紀錄"}</strong>
+              <span>睡眠</span>
+            </div>
+            <div>
+              <strong>
+                {recovery ? `${recovery.fatigue} / 5` : "尚未紀錄"}
+              </strong>
+              <span>疲勞</span>
+            </div>
           </div>
         </div>
       </section>
@@ -522,7 +424,9 @@ export type LibraryFood = Food & {
 };
 export function FoodPicker({
   onSelect,
+  mine = false,
 }: {
+  mine?: boolean;
   onSelect: (f: LibraryFood) => void;
 }) {
   const { state } = useStore();
@@ -530,11 +434,12 @@ export function FoodPicker({
   const [search, setSearch] = useState("");
   const [source, setSource] = useState("all");
   const [limit, setLimit] = useState(30);
-  const foods = [...master, ...official, ...state.foods] as LibraryFood[];
+  const foods = (
+    mine ? state.foods : [...master, ...cooked, ...official]
+  ) as LibraryFood[];
   const filtered = foods.filter(
     (f) =>
-      f.category === category &&
-      (source === "all" || f.source === source) &&
+      (!category || f.category === category) &&
       `${f.name} ${f.nameEn ?? ""}`
         .toLowerCase()
         .includes(search.toLowerCase()),
@@ -549,13 +454,13 @@ export function FoodPicker({
             setLimit(30);
           }}
         >
-          <option value="">先選擇分類</option>
+          <option value="">所有分類</option>
           {categories.map((c) => (
             <option key={c}>{c}</option>
           ))}
         </select>
       </Field>
-      {category && (
+      {true && (
         <>
           <div className="food-filter">
             <Field label="搜尋食物">
@@ -567,19 +472,6 @@ export function FoodPicker({
                 }}
                 placeholder="中文或 English"
               />
-            </Field>
-            <Field label="來源">
-              <select
-                value={source}
-                onChange={(e) => {
-                  setSource(e.target.value);
-                  setLimit(30);
-                }}
-              >
-                <option value="all">所有來源</option>
-                <option value="TFDA">食藥署原型食物</option>
-                <option value="James Master">James 食物</option>
-              </select>
             </Field>
           </div>
           <p className="muted food-count">{filtered.length} 項</p>
@@ -625,12 +517,21 @@ export function NutritionV2({
   const { state, save } = useStore();
   const [selectedDate, setDate] = useState(date);
   const [sheet, setSheet] = useState<
-    "add" | "manual" | "food" | "portion" | "custom" | null
-  >(path === "nutrition/log" ? "add" : null);
+    | "meal"
+    | "slots"
+    | "myfood"
+    | "add"
+    | "manual"
+    | "food"
+    | "portion"
+    | "custom"
+    | null
+  >(path === "nutrition/log" ? "meal" : null);
   const [food, setFood] = useState<LibraryFood | null>(null);
   const [edit, setEdit] = useState<Meal | null>(null);
   const [slot, setSlot] = useState(state.mealSlots[0]);
   const [quantity, setQuantity] = useState(100);
+  const [slotText, setSlotText] = useState(state.mealSlots.join("\n"));
   const day = resolveDay(state, selectedDate);
   const meals = visibleMeals(state, selectedDate);
   const isLibrary = path === "nutrition/foods";
@@ -750,7 +651,9 @@ export function NutritionV2({
             <NutritionSummary date={selectedDate} />
           </section>
           <section className="meal-list">
-            {state.mealSlots.map((name) => (
+            {Array.from(
+              new Set([...state.mealSlots, ...meals.map((m) => m.slot)]),
+            ).map((name) => (
               <div key={name} className="meal-section">
                 <div className="meal-head">
                   <h2>{name}</h2>
@@ -797,9 +700,12 @@ export function NutritionV2({
               </div>
             ))}
           </section>
-          <button className="button add-meal" onClick={() => setSheet("add")}>
+          <button className="button add-meal" onClick={() => setSheet("meal")}>
             <Plus size={18} />
             新增飲食
+          </button>
+          <button className="text-link" onClick={() => setSheet("slots")}>
+            編輯餐次
           </button>
           <label className="check">
             <input
@@ -822,8 +728,11 @@ export function NutritionV2({
         <Sheet
           title={
             {
-              add: "新增飲食",
-              manual: edit ? "修正飲食" : "直接輸入",
+              meal: "加入哪一餐",
+              slots: "編輯每日餐次",
+              myfood: "My Foods",
+              add: `${slot} · 新增飲食`,
+              manual: edit ? "修正飲食" : "Quick Macro",
               food: "選擇食物",
               portion: food?.name ?? "食用份量",
               custom: "新增自訂食物",
@@ -831,11 +740,67 @@ export function NutritionV2({
           }
           onClose={close}
         >
-          {sheet === "add" ? (
+          {sheet === "meal" ? (
+            <div className="action-list">
+              {state.mealSlots.map((n) => (
+                <button
+                  key={n}
+                  onClick={() => {
+                    setSlot(n);
+                    setSheet("add");
+                  }}
+                >
+                  {n}
+                  <ChevronRight />
+                </button>
+              ))}
+              <button onClick={() => setSheet("slots")}>編輯餐次</button>
+            </div>
+          ) : sheet === "slots" ? (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const names = slotText
+                  .split("\n")
+                  .map((n) => n.trim())
+                  .filter(Boolean);
+                if (!names.length || new Set(names).size !== names.length) {
+                  notify("請保留至少一個餐次，名稱不可重複");
+                  return;
+                }
+                if (
+                  save("更新往後每日餐次", (s) => {
+                    s.mealSlots = names;
+                  })
+                ) {
+                  setSlot(names[0]);
+                  setSheet("meal");
+                  notify();
+                }
+              }}
+            >
+              <p className="muted">
+                每行一餐。可改名、刪除或調整順序；之後每日沿用，過去紀錄保留原餐次。
+              </p>
+              <textarea
+                aria-label="每日餐次"
+                value={slotText}
+                onChange={(e) => setSlotText(e.target.value)}
+                required
+                maxLength={300}
+              />
+              <button className="button">保存餐次</button>
+            </form>
+          ) : sheet === "add" ? (
             <div className="action-list">
               <button onClick={() => setSheet("food")}>
                 <Utensils />
-                從食物庫選擇
+                James Foods
+                <ChevronRight />
+              </button>
+              <button onClick={() => setSheet("myfood")}>
+                <Utensils />
+                My Foods
                 <ChevronRight />
               </button>
               <button
@@ -845,22 +810,39 @@ export function NutritionV2({
                 }}
               >
                 <Plus />
-                直接輸入 P / C / F<ChevronRight />
+                Quick Macro
+                <ChevronRight />
               </button>
-              <Link href="/nutrition/recipes">
+              <Link
+                href={`/nutrition/recipes?meal=${encodeURIComponent(slot)}&date=${selectedDate}`}
+              >
                 <BookOpen />
                 食譜
                 <ChevronRight />
               </Link>
             </div>
-          ) : sheet === "food" ? (
-            <FoodPicker
-              onSelect={(f) => {
-                setFood(f);
-                setQuantity(f.base);
-                setSheet("portion");
-              }}
-            />
+          ) : sheet === "food" || sheet === "myfood" ? (
+            <>
+              <button className="text-link" onClick={() => setSheet("add")}>
+                ← {slot}
+              </button>
+              {sheet === "myfood" && (
+                <button
+                  className="button secondary"
+                  onClick={() => setSheet("custom")}
+                >
+                  新增自訂食物
+                </button>
+              )}
+              <FoodPicker
+                mine={sheet === "myfood"}
+                onSelect={(f) => {
+                  setFood(f);
+                  setQuantity(f.base);
+                  setSheet("portion");
+                }}
+              />
+            </>
           ) : sheet === "custom" ? (
             <form
               onSubmit={(e) => {
@@ -938,6 +920,36 @@ export function NutritionV2({
                       onChange={(e) => setQuantity(Number(e.target.value))}
                     />
                   </Field>
+                  <div className="form-grid">
+                    {(["p", "c", "f"] as const).map((key, i) => (
+                      <Field
+                        key={key}
+                        label={`想攝取${["蛋白質", "碳水", "脂肪"][i]} g`}
+                      >
+                        <input
+                          type="number"
+                          min="0"
+                          max="1000"
+                          step="0.1"
+                          disabled={!food[key]}
+                          value={
+                            food[key]
+                              ? round((food[key] * quantity) / food.base)
+                              : ""
+                          }
+                          placeholder="此食物不含此營養素"
+                          onChange={(e) =>
+                            setQuantity(
+                              round(
+                                (Number(e.target.value) * food.base) /
+                                  food[key],
+                              ),
+                            )
+                          }
+                        />
+                      </Field>
+                    ))}
+                  </div>
                   <div className="portion-preview">
                     P {round((food.p * quantity) / food.base)} · C{" "}
                     {round((food.c * quantity) / food.base)} · F{" "}

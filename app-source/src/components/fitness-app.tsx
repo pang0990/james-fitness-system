@@ -1,4 +1,9 @@
 "use client";
+import { MetricDetails } from "./trends";
+import { TrainingReview } from "./training-review";
+import { GainReview } from "./gain-review";
+import { Recipes } from "./recipes";
+import { ProgressDirection } from "./progress-direction";
 import Link from "next/link";
 import { TodayV2, NutritionV2 } from "./daily";
 import { TrainingFlow } from "./training-flow";
@@ -310,8 +315,8 @@ export function FitnessApp({ path }: { path: string }) {
       className={
         path === "training/session" &&
         state.sessions.some((s) => s.status === "in_progress")
-          ? "app workout-active"
-          : "app"
+          ? `app page-${section} workout-active`
+          : `app page-${section}`
       }
     >
       <aside className="sidebar">
@@ -329,27 +334,14 @@ export function FitnessApp({ path }: { path: string }) {
               className={`nav-item ${section === n.path ? "active" : ""}`}
               href={"/" + n.path}
               key={n.path}
+              aria-label={n.label}
+              title={n.label}
             >
               <n.icon size={17} />
-              {n.label}
-              <span>{n.zh}</span>
+              <span className="rail-label">{n.label}</span>
             </Link>
           ))}
         </nav>
-
-        <Link
-          className={`nav-item ${section === "learn" ? "active" : ""}`}
-          href="/learn"
-        >
-          <BookOpen size={17} />
-          Knowledge
-        </Link>
-        <div className="side-bottom">
-          <Link className="nav-item" href="/settings">
-            <Settings size={17} />
-            Settings
-          </Link>
-        </div>
       </aside>
       <main className="main">
         <header className="topbar">
@@ -358,22 +350,18 @@ export function FitnessApp({ path }: { path: string }) {
             <span style={{ padding: "0 10px", color: "#b2b7a8" }}>/</span>{" "}
             {labelMap[section] ?? "James"}
           </div>
-          <div className="top-actions">
-            <Link href="/learn" aria-label="知識庫">
-              <BookOpen size={19} />
-            </Link>
-            <Link href="/settings" aria-label="設定">
-              <Settings size={19} />
-            </Link>
-            <Link href="/settings/privacy" aria-label="隱私說明">
-              <ShieldCheck size={17} color="#8b947f" />
-            </Link>
-            <Link href="/profile" aria-label="個人資料" className="avatar">
-              {state.profile?.name.slice(0, 1).toUpperCase() ?? (
-                <User size={15} />
-              )}
-            </Link>
-          </div>
+          <details className="account-menu">
+            <summary aria-label="帳戶選單">
+              <User size={20} />
+            </summary>
+            <div>
+              <Link href="/profile">個人資料</Link>
+              <Link href="/learn">Knowledge</Link>
+              <Link href="/settings">設定</Link>
+              <Link href="/settings/data">資料管理</Link>
+              <Link href="/settings/privacy">隱私說明</Link>
+            </div>
+          </details>
         </header>
         {saving && (
           <div className="save-indicator" role="status">
@@ -386,7 +374,12 @@ export function FitnessApp({ path }: { path: string }) {
           </div>
         )}
         {!ready ? (
-          <div className="loading">正在讀取本機資料…</div>
+          <div className="loading" role="status" aria-label="正在讀取本機資料">
+            <span className="loading-mark">J</span>
+            <div className="loading-line" />
+            <div className="skeleton" />
+            <div className="skeleton" />
+          </div>
         ) : (
           <div key={path}>
             {section === "onboarding" || section === "profile" ? (
@@ -396,9 +389,13 @@ export function FitnessApp({ path }: { path: string }) {
             ) : section === "today" ? (
               <TodayV2 date={date} notify={notify} />
             ) : section === "nutrition" ? (
-              ["nutrition", "nutrition/log", "nutrition/foods"].includes(
-                path,
-              ) ? (
+              path === "nutrition/plan" && state.profile?.goal === "GAIN" ? (
+                <GainReview date={date} notify={notify} />
+              ) : path === "nutrition/recipes" ? (
+                <Recipes date={date} notify={notify} />
+              ) : ["nutrition", "nutrition/log", "nutrition/foods"].includes(
+                  path,
+                ) ? (
                 <NutritionV2 path={path} date={date} notify={notify} />
               ) : (
                 <Nutrition path={path} date={date} notify={notify} />
@@ -410,10 +407,30 @@ export function FitnessApp({ path }: { path: string }) {
                 <TrainingFlow path={path} date={date} notify={notify} />
               )
             ) : section === "progress" ? (
-              path === "progress" ? (
-                <Trends date={date} />
+              ["progress/weekly", "progress/recommendations"].includes(path) ? (
+                <div className="daily-page">
+                  {state.profile?.goal === "GAIN" ? (
+                    <GainReview date={date} notify={notify} />
+                  ) : (
+                    <>
+                      <Heading eyebrow="" title="Progress Review" />
+                      <Recommendations date={date} notify={notify} />
+                      <Link className="text-link" href="/progress/history">
+                        Previous decisions →
+                      </Link>
+                    </>
+                  )}
+                  <TrainingReview date={date} />
+                </div>
+              ) : path === "progress" ? (
+                <ProgressDirection date={date} />
               ) : (
-                <Progress path={path} date={date} notify={notify} />
+                <>
+                  <Progress path={path} date={date} notify={notify} />
+                  {["body", "nutrition", "training", "recovery"].includes(
+                    path.split("/")[1],
+                  ) && <MetricDetails date={date} group={path.split("/")[1]} />}
+                </>
               )
             ) : section === "learn" ? (
               <Knowledge path={path} />
@@ -769,9 +786,74 @@ function Login() {
   );
 }
 
-function Nutrition({path,date,notify}:{path:string;date:string;notify:(m?:string)=>void}) {
- const {state}=useStore();const plan=activePlan(state,date);
- return <div className="daily-page"><Heading eyebrow="" title={path==='nutrition/plan'?'營養計畫':'食譜'}/><NutritionLinks path={path}/>{path==='nutrition/plan'?(plan?<Card title={`目前計畫 · ${plan.inputs.goal}`}><TargetTable targets={plan.targets}/><p className="muted" style={{marginTop:20}}>v{plan.number} · {plan.effectiveDate} 生效</p><Link className="text-link" href="/nutrition">查看今日營養<ArrowRight size={16}/></Link><details className="source-details"><summary>計算依據</summary><p>依已確認的個人資料與 James 計算規則建立。計算用體重 {plan.inputs.weight} kg；{frequencies[plan.inputs.frequency]}。</p><Link href="/progress/history">計畫變更紀錄</Link></details></Card>:<Card><Empty title={state.profile?.goal==='GAIN'?'GAIN 基準追蹤中':'尚未設定營養目標'} detail={state.profile?.goal==='GAIN'?'先記錄實際飲食與體重。':'完成基本資料並確認計畫後，目標會顯示於今日營養。'} href="/onboarding" action="設定營養目標"/></Card>):<Card><Empty title="尚未新增食譜" detail="目前可以從食物庫記錄每餐食材。" href="/nutrition/foods" action="選擇食物"/></Card>}</div>
+function Nutrition({
+  path,
+  date,
+  notify,
+}: {
+  path: string;
+  date: string;
+  notify: (m?: string) => void;
+}) {
+  const { state } = useStore();
+  const plan = activePlan(state, date);
+  return (
+    <div className="daily-page">
+      <Heading
+        eyebrow=""
+        title={path === "nutrition/plan" ? "營養計畫" : "食譜"}
+      />
+      <NutritionLinks path={path} />
+      {path === "nutrition/plan" ? (
+        plan ? (
+          <Card title={`目前計畫 · ${plan.inputs.goal}`}>
+            <TargetTable targets={plan.targets} />
+            <p className="muted" style={{ marginTop: 20 }}>
+              v{plan.number} · {plan.effectiveDate} 生效
+            </p>
+            <Link className="text-link" href="/nutrition">
+              查看今日營養
+              <ArrowRight size={16} />
+            </Link>
+            <details className="source-details">
+              <summary>計算依據</summary>
+              <p>
+                依已確認的個人資料與 James 計算規則建立。計算用體重{" "}
+                {plan.inputs.weight} kg；{frequencies[plan.inputs.frequency]}。
+              </p>
+              <Link href="/progress/history">計畫變更紀錄</Link>
+            </details>
+          </Card>
+        ) : (
+          <Card>
+            <Empty
+              title={
+                state.profile?.goal === "GAIN"
+                  ? "GAIN 基準追蹤中"
+                  : "尚未設定營養目標"
+              }
+              detail={
+                state.profile?.goal === "GAIN"
+                  ? "先記錄實際飲食與體重。"
+                  : "完成基本資料並確認計畫後，目標會顯示於今日營養。"
+              }
+              href="/onboarding"
+              action="設定營養目標"
+            />
+          </Card>
+        )
+      ) : (
+        <Card>
+          <Empty
+            title="尚未新增食譜"
+            detail="目前可以從食物庫記錄每餐食材。"
+            href="/nutrition/foods"
+            action="選擇食物"
+          />
+        </Card>
+      )}
+    </div>
+  );
 }
 
 function WaterLog({
@@ -928,7 +1010,9 @@ function Training({
         title="Cardio"
         description="保留真實的重量、次數與感受，讓每次訓練都有跡可循。"
       />
-      <Link href="/training" className="text-link">← Training</Link>
+      <Link href="/training" className="text-link">
+        ← Training
+      </Link>
       {path === "training/activity" ? (
         <div className="dashboard-grid">
           <Card title="手動記錄有氧" icon={Activity}>
@@ -1372,7 +1456,7 @@ function Progress({
   return (
     <>
       <Heading
-        eyebrow="SEE THE BIGGER PICTURE"
+        eyebrow=""
         title={
           path === "progress/history"
             ? "Plan Changes"
@@ -1380,7 +1464,6 @@ function Progress({
               ? "Weekly Review"
               : "Progress"
         }
-        description="看趨勢，也看過程。資料不足時，先記錄，不急著下結論。"
       />
       <ProgressLinks path={path} />
       {path === "progress/history" ? (
@@ -1416,6 +1499,35 @@ function Progress({
             />
           )}
           <div className="divider" />
+          <h3>GAIN 決策</h3>
+          {state.gainDecisions
+            ?.slice()
+            .reverse()
+            .map((d) => (
+              <div className="list-row" key={d.id}>
+                <p>
+                  {d.periodStart} — {d.periodEnd}
+                  <br />
+                  {d.status === "accepted" ? "Accepted" : "Keep Current"} ·{" "}
+                  {d.reason}
+                </p>
+              </div>
+            ))}
+          <h3>Training Versions</h3>
+          {state.cycles
+            ?.slice()
+            .reverse()
+            .map((c, i) => (
+              <div className="list-row" key={c.id}>
+                <p>
+                  {c.name} · {c.stage ?? "Intensity"}
+                  <br />
+                  {c.days.map((d) => d.name).join(" → ")}
+                  <br />
+                  {c.createdAt.slice(0, 10)}
+                </p>
+              </div>
+            ))}
           <h3>操作歷史</h3>
           {state.audit
             .slice(-12)
@@ -1727,10 +1839,7 @@ function Progress({
                       </div>
                     ))
                 ) : (
-                  <Empty
-                    title="尚未紀錄"
-                    detail="沒有紀錄不等於已完全恢復。"
-                  />
+                  <Empty title="尚未紀錄" detail="沒有紀錄不等於已完全恢復。" />
                 )}
               </Card>
             </div>

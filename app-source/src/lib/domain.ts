@@ -1,3 +1,5 @@
+import type { GainSettings, GainDecision } from "./gain";
+import type { MuscleTarget, ScheduleEntry } from "./training-model";
 import { z } from "zod";
 
 export const RULE_ID = "numbers-3.0-7b135702";
@@ -169,7 +171,15 @@ export type Session = {
   date: string;
   name: string;
   status: "in_progress" | "completed";
-  exercises: { id: string; name: string; sets: Segment[] }[];
+  exercises: {
+    id: string;
+    name: string;
+    sets: Segment[];
+    muscle?: string;
+    allowRestPause?: boolean;
+    allowDropSet?: boolean;
+  }[];
+  warmupIds?: string[];
   createdAt: string;
   completedAt?: string;
   feedback?: string;
@@ -198,6 +208,10 @@ export type NutritionDay = {
   complete: boolean;
 };
 export type Cycle = {
+  activateAfter?: { cycleId: string; eventCount: number };
+  previousId?: string;
+  muscleTargets?: MuscleTarget[];
+  stage?: "Intensity" | "Frequency" | "Volume" | "Deload" | "Next Cycle";
   id: string;
   name: string;
   days: { name: string }[];
@@ -211,6 +225,30 @@ export type CycleEvent = {
   sessionId?: string;
 };
 export type AppState = {
+  trainingDecisions?: {
+    id: string;
+    date: string;
+    cycleId: string;
+    status: "accepted" | "kept";
+    reason: string;
+    newCycleId?: string;
+  }[];
+  gainSettings?: GainSettings;
+  gainDecisions?: GainDecision[];
+  schedule?: ScheduleEntry[];
+  warmupPreset?: string[];
+  recipes?: {
+    id: string;
+    name: string;
+    category: string;
+    ingredients: string;
+    steps: string;
+    p: number;
+    c: number;
+    f: number;
+    kcal: number;
+    version: number;
+  }[];
   cycles?: Cycle[];
   cycleEvents?: CycleEvent[];
   schemaVersion: 1;
@@ -300,8 +338,10 @@ export function waterTotal(state: AppState, date: string) {
 export function resolveDay(state: AppState, date: string): NutritionDay {
   const saved = state.days.find((d) => d.date === date);
   if (saved) {
-    const plan=activePlan(state,date);
-    return !saved.versionId&&plan?{...saved,versionId:plan.id,target:plan.targets[saved.dayType]}:saved;
+    const plan = activePlan(state, date);
+    return !saved.versionId && plan
+      ? { ...saved, versionId: plan.id, target: plan.targets[saved.dayType] }
+      : saved;
   }
   const v = activePlan(state, date);
   return {

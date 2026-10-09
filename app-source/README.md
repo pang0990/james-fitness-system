@@ -2,16 +2,11 @@
 
 Mobile-first fitness Web App. Next.js + TypeScript + Tailwind. Installable PWA with responsive black / white / gold interface.
 
-## Current working features
+## Current release: 0.3
 
-- Today: one priority reminder, interactive Companion, Nutrition → Training → Water → Recovery.
-- Three-step profile setup, source-matched CUT calculation, confirmed plan versions, shared daily targets.
-- Nutrition sheet flow, manual P/C/F, meal corrections, custom foods, bilingual category lists and portion preview.
-- Food library: 78 James entries + 852 TFDA raw-food entries. Provenance and licenses in `docs/FOOD-SOURCES.md`.
-- User-confirmed training cycles, warm-up/workout/review flow, focused exercise logging, working/warm-up/ramp-up/RP/drop segments, RIR, rest timer, manual Cardio.
-- Individual trend charts for body/nutrition/training/recovery with detail views, exercise-specific performance, weekly review, Accept/Keep and immutable nutrition versions.
-- Knowledge: three complete articles provided by James, searchable full-text reading and original reference text.
-- PWA icons/manifest, safe-area layout, reduced-motion support, offline cache and real local data persistence.
+Visual Direction v2.0, procedural 3D Companion, meal-first logging with editable persistent meal names, searchable bilingual foods and cooked portions, macro-to-quantity calculation, recipe authoring, versioned training cycles with monthly scheduling, warm-up presets, focused workouts, GAIN v1 review and versioned Accept/Keep.
+
+See [Release 0.3](docs/RELEASE-0.3.md) for scope and explicit remaining boundaries; [Visual System](docs/VISUAL-SYSTEM.md) for tokens and motion. Knowledge retains three complete James articles.
 
 ## Run and verify
 
@@ -31,7 +26,7 @@ Inside the published repository's `app-source/`, run `npm run pages:prepare`, th
 
 ## Remaining final-product work
 
-Cloud accounts, Supabase database/RLS, cross-device synchronization, verified backup restore, native App Store packaging, approved safety/GAIN rules and detailed training content. No cloud login, medical validation, or native distribution is implied by PWA installation.
+Cloud accounts, Supabase database/RLS, cross-device synchronization, verified backup restore, native App Store packaging, approved safety and advanced volume-credit rules, full exercise/video/recipe content. No cloud login, medical validation, or native distribution is implied by PWA installation.
 
 Personal data currently stays in the browser and can be exported in Settings. Existing records use the same storage key across the URL rename. Never commit personal exports, source Numbers files, .env values or credentials.
 

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "usda-171477",
+    "name": "雞胸肉（去皮，烤熟）",
+    "nameEn": "Chicken, broilers or fryers, breast, meat only, cooked, roasted",
+    "category": "蛋白質",
+    "base": 100,
+    "unit": "g",
+    "p": 31.02,
+    "c": 0.0,
+    "f": 3.57,
+    "kcal": 165.0,
+    "source": "USDA",
+    "sourceId": "171477",
+    "sourceUrl": "https://fdc.nal.usda.gov/food-details/171477/nutrients",
+    "sourceDescription": "Chicken, broilers or fryers, breast, meat only, cooked, roasted",
+    "license": "USDA public domain",
+    "preparation": "cooked",
+    "retrievedAt": "2026-10-09",
+    "version": 1
+  },
+  {
+    "id": "usda-168250",
+    "name": "豬里肌（瘦肉，烤熟）",
+    "nameEn": "Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted",
+    "category": "蛋白質",
+    "base": 100,
+    "unit": "g",
+    "p": 26.17,
+    "c": 0.0,
+    "f": 3.51,
+    "kcal": 143.0,
+    "source": "USDA",
+    "sourceId": "168250",
+    "sourceUrl": "https://fdc.nal.usda.gov/food-details/168250/nutrients",
+    "sourceDescription": "Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted",
+    "license": "USDA public domain",
+    "preparation": "cooked",
+    "retrievedAt": "2026-10-09",
+    "version": 1
+  }
+]

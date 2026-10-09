@@ -1,6 +1,6 @@
 {
   "name": "james-fitness-system",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack --hostname 127.0.0.1",
@@ -12,7 +12,9 @@
     "pages:prepare": "node scripts/prepare-pages.mjs"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.8.1",
     "@tailwindcss/postcss": "^4.1.0",
+    "@types/three": "^0.186.0",
     "lucide-react": "^0.468.0",
     "next": "16.4.0",
     "react": "^19.2.0",
@@ -20,6 +22,7 @@
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
     "tailwindcss": "^4.1.0",
+    "three": "^0.186.1",
     "zod": "^4.1.0"
   },
   "devDependencies": {
@@ -27,6 +30,7 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "prettier": "^3.9.9",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0"
   }

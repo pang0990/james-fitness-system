@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { StoreProvider } from "@/lib/store";
 import "./globals.css";
+import {NavigationMotion} from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
 export const metadata: Metadata = {
   title: "James · Fitness System",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#171717",
+  themeColor: "#070708",
   viewportFit: "cover",
 };
 export default function RootLayout({
@@ -26,7 +27,7 @@ export default function RootLayout({
       <body>
         <StoreProvider>
           {children}
-          <AppInstall />
+          <AppInstall /><NavigationMotion />
         </StoreProvider>
       </body>
     </html>
