@@ -1,0 +1,31 @@
+1:"$Sreact.fragment"
+2:"static/chunks/64-a81ca9a0a82d6247.js"
+3:"static/chunks/app/layout-58467c9ffc5c87ea.js"
+4:I[1822,["64","$2","177","$3"],"StoreProvider"]
+5:I[7121,[],""]
+6:I[4581,[],""]
+7:"static/chunks/500-fc3b64d9ff4a32a7.js"
+8:"static/chunks/app/not-found-efbfd28ca649b2a4.js"
+9:I[8500,["500","$7","345","$8"],""]
+10:I[484,[],"OutletBoundary"]
+11:"$Sreact.suspense"
+14:"ViewportBoundary"
+15:I[484,[],"$14"]
+16:"MetadataBoundary"
+17:I[484,[],"$16"]
+:HL["/summergym.github.io/_next/static/css/0a3b76af1839a6c8.css","style"]
+b:X
+e:X
+e:C
+f:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[["$","main",null,{"className":"standalone","children":[["$","span",null,{"className":"eyebrow","children":"JAMES FITNESS SYSTEM"}],["$","h1",null,{"children":"找不到這個頁面"}],["$","p",null,{"children":"這個連結可能已經變更。"}],["$","$L9",null,{"className":"button","href":"/today","children":"回到 Today"}]]}],null,["$","$L10",null,{"children":["$","$11",null,{"name":"Next.MetadataOutlet","children":"$@12"}]}]]}],"p":"$@13","v":null,"s":"$b"}}]]
+c:[["children",{"s":"_not-found","h":96,"d":{"r":["$","$1","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@d","v":"$e","s":"$b"},"c":"$Qf"}]]
+0:{"t":{"t":{"s":"","h":80,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/summergym.github.io/_next/static/css/0a3b76af1839a6c8.css","precedence":"next"}]],["$","html",null,{"lang":"zh-Hant","children":["$","body",null,{"children":["$","$L4",null,{"children":["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}],"notFound":[["$","main",null,{"className":"standalone","children":[["$","span",null,{"className":"eyebrow","children":"JAMES FITNESS SYSTEM"}],["$","h1",null,{"children":"找不到這個頁面"}],["$","p",null,{"children":"這個連結可能已經變更。"}],["$","$L9",null,{"className":"button","href":"/today","children":"回到 Today"}]]}],[]]}]}]}]}]]}],"p":"$@a","v":null,"s":"$b"},"c":"$Qc"},"h":{"r":["$","$1","h",{"children":[["$","meta",null,{"name":"robots","content":"noindex"}],["$","$L15",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#121411"}]]}],["$","$L17",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$11",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"James · Fitness System"}],["$","meta","1",{"name":"description","content":"飲食、訓練與每一次進步。James Fitness System 本機測試版。"}],["$","meta","2",{"name":"robots","content":"noindex, nofollow"}]]}]}],null]}],null]}],"p":"$@18","v":null,"s":"$b"}},"a":"$@19","u":"$@1a","b":"srLdz6MwmzwjFniBcJqw6"}
+12:null
+b:300
+1a:true
+b:C
+19:0
+d:"$undefined"
+a:"$undefined"
+18:"$undefined"
+13:"$undefined"
