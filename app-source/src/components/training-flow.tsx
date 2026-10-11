@@ -1,20 +1,11 @@
 "use client";
 import Link from "next/link";
 import { navigateWithMotion } from "./navigation-motion";
-import {
-  TrainingCalendar,
-  MuscleProgress,
-  MuscleEditor,
-  WarmupPicker,
-} from "./training-planning";
-import {
-  activeCycle,
-  type MuscleTarget,
-  stages,
-  scheduleKind,
-} from "@/lib/training-model";
+import { TrainingCalendar, WarmupPicker } from "./training-planning";
+import { activeCycle, scheduleKind } from "@/lib/training-model";
 import { Companion } from "./companion";
 import catalog from "@/content/exercises.json";
+import media from "@/content/media.json";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -29,7 +20,8 @@ import {
   Play,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { addDays, type Segment } from "@/lib/domain";
+import { type Segment } from "@/lib/domain";
+import { trainingTemplates } from "@/lib/training-templates";
 import { PageTitle, Menu, Sheet, Field, Num, uid, stamp } from "./daily";
 export function TrainingFlow({
   date,
@@ -52,13 +44,6 @@ export function TrainingFlow({
     activeCycle(state)
       ?.days.map((d) => d.name)
       .join("\n") ?? "Upper A\nLower A\nUpper B\nLower B",
-  );
-  const [targets, setTargets] = useState<MuscleTarget[]>(
-    activeCycle(state)?.muscleTargets ?? [],
-  );
-  const [restEvery, setRestEvery] = useState(2);
-  const [stage, setStage] = useState<(typeof stages)[number]>(
-    activeCycle(state)?.stage ?? "Intensity",
   );
   const [exercise, setExercise] = useState(() =>
     typeof window !== "undefined"
@@ -116,11 +101,32 @@ export function TrainingFlow({
     const t = setInterval(update, 500);
     return () => clearInterval(t);
   }, [timerEnd]);
-  function startTimer() {
-    const end = Date.now() + 90000;
+  function startTimer(seconds = ex?.restSeconds ?? 90) {
+    const end = Date.now() + seconds * 1000;
     sessionStorage.setItem("james-rest-end", String(end));
     setTimerEnd(end);
   }
+  function startEmpty() {
+    if (
+      save("開始空白訓練", (s) => {
+        if (s.sessions.some((x) => x.status === "in_progress")) return;
+        s.sessions.push({
+          id: uid(),
+          date,
+          name: "Empty Workout",
+          status: "in_progress",
+          phase: "warmup",
+          exercises: [],
+          warmupIds: [...(s.warmupPreset ?? [])],
+          createdAt: stamp(),
+        });
+      })
+    ) {
+      navigateWithMotion(router.push, "/training/session");
+      notify("空白訓練已開始");
+    }
+  }
+
   function start() {
     if (!cycle || !day) return;
     if (
@@ -134,51 +140,59 @@ export function TrainingFlow({
           phase: "warmup",
           cycleId: cycle.id,
           cycleDayIndex: dayIndex,
-          exercises: catalog
-            .filter((e) => {
-              const allocation = cycle.muscleTargets?.find(
-                (m) => m.muscle === e.muscle && m.target > 0,
-              );
-              if (allocation) return allocation.allocation.includes(dayIndex);
-              const n = day.name.toLowerCase();
-              return n.includes("upper")
-                ? ["Chest", "Back", "Shoulders", "Biceps", "Triceps"].includes(
-                    e.muscle,
-                  )
-                : n.includes("lower") || n === "legs"
-                  ? ["Quads", "Hamstrings", "Glutes", "Calves"].includes(
-                      e.muscle,
-                    )
-                  : n === "push"
-                    ? ["Chest", "Shoulders", "Triceps"].includes(e.muscle)
-                    : n === "pull"
-                      ? ["Back", "Biceps"].includes(e.muscle)
-                      : n === "arms"
-                        ? ["Biceps", "Triceps"].includes(e.muscle)
-                        : e.muscle.toLowerCase() === n;
-            })
-            .filter(
-              (e, i, all) => all.findIndex((x) => x.muscle === e.muscle) === i,
-            )
-            .sort(
-              (a, b) =>
-                Number(
-                  cycle.muscleTargets?.find((m) => m.muscle === b.muscle)
-                    ?.priority ?? false,
-                ) -
-                Number(
-                  cycle.muscleTargets?.find((m) => m.muscle === a.muscle)
-                    ?.priority ?? false,
-                ),
-            )
-            .map((e) => ({
-              id: uid(),
-              name: e.name,
-              muscle: e.muscle,
-              sets: [],
-              allowRestPause: e.allowRestPause,
-              allowDropSet: e.allowDropSet,
-            })),
+          exercises: day.exercises?.length
+            ? day.exercises.map((planned) => {
+                const entry = catalog.find(
+                  (item) =>
+                    item.id === planned.exerciseId || item.name === planned.name,
+                );
+                return {
+                  id: uid(),
+                  name: planned.name,
+                  muscle: entry?.muscle,
+                  sets: [],
+                  allowRestPause:
+                    planned.allowRestPause ?? entry?.allowRestPause ?? false,
+                  allowDropSet:
+                    planned.allowDropSet ?? entry?.allowDropSet ?? false,
+                  plannedSets: planned.sets,
+                  repMin: planned.reps[0],
+                  repMax: planned.reps[1],
+                  targetRir: planned.rir,
+                  restSeconds: planned.restSeconds,
+                };
+              })
+            : catalog
+                .filter((e) => {
+                  const n = day.name.toLowerCase();
+                  return n.includes("upper")
+                    ? ["Chest", "Back", "Shoulders", "Biceps", "Triceps"].includes(
+                        e.muscle,
+                      )
+                    : n.includes("lower") || n === "legs"
+                      ? ["Quads", "Hamstrings", "Glutes", "Calves"].includes(
+                          e.muscle,
+                        )
+                      : n === "push"
+                        ? ["Chest", "Shoulders", "Triceps"].includes(e.muscle)
+                        : n === "pull"
+                          ? ["Back", "Biceps"].includes(e.muscle)
+                          : n === "arms"
+                            ? ["Biceps", "Triceps"].includes(e.muscle)
+                            : e.muscle.toLowerCase() === n;
+                })
+                .filter(
+                  (e, i, all) =>
+                    all.findIndex((x) => x.muscle === e.muscle) === i,
+                )
+                .map((e) => ({
+                  id: uid(),
+                  name: e.name,
+                  muscle: e.muscle,
+                  sets: [],
+                  allowRestPause: e.allowRestPause,
+                  allowDropSet: e.allowDropSet,
+                })),
           warmupIds: [...(s.warmupPreset ?? [])],
           createdAt: stamp(),
         });
@@ -244,8 +258,8 @@ export function TrainingFlow({
         ) : (
           <Menu
             items={[
-              ["/training/cycle", "Cycle 設定"],
-              ["/training/templates", "選擇分化"],
+              ["/training/cycle", "Edit Training Plan"],
+              ["/training/templates", "Plan Templates"],
               ["/training/exercises", "動作紀錄"],
               ["/training/activity", "Cardio"],
             ]}
@@ -394,6 +408,13 @@ export function TrainingFlow({
                       ? `${previous.weight} kg × ${previous.reps}`
                       : "尚未紀錄"}
                   </p>
+                  {ex.plannedSets && (
+                    <p className="muted">
+                      Plan · {ex.plannedSets} sets · {ex.repMin}–{ex.repMax} reps
+                      {ex.targetRir !== undefined ? ` · RIR ${ex.targetRir}` : ""}
+                      {ex.restSeconds ? ` · Rest ${Math.floor(ex.restSeconds / 60)}:${String(ex.restSeconds % 60).padStart(2, "0")}` : ""}
+                    </p>
+                  )}
                   <details>
                     <summary>動作設定</summary>
                     {(
@@ -585,7 +606,7 @@ export function TrainingFlow({
       ) : (
         <>
           <section className="card cycle-overview">
-            <span className="eyebrow">CURRENT CYCLE</span>
+            <span className="eyebrow">TRAINING PLAN</span>
             <h2>{cycle?.name ?? "尚未設定"}</h2>
             {cycle ? (
               <>
@@ -598,13 +619,13 @@ export function TrainingFlow({
                   ))}
                 </div>
                 <p className="muted">
-                  Cycle {Math.floor(count / cycle.days.length) + 1} · 已完成{" "}
+                  Round {Math.floor(count / cycle.days.length) + 1} · 已完成{" "}
                   {dayIndex} / {cycle.days.length} 個訓練日
                 </p>
               </>
             ) : (
               <button className="button" onClick={() => setSetup(true)}>
-                設定 Cycle
+                建立 Training Plan
                 <ArrowRight size={16} />
               </button>
             )}
@@ -620,24 +641,37 @@ export function TrainingFlow({
                 繼續訓練
                 <ArrowRight size={16} />
               </Link>
-            ) : day ? (
+            ) : (
               <>
-                {scheduleKind(state, date) !== "train" && (
+                {day ? (
+                  <>
+                    {scheduleKind(state, date) !== "train" && (
+                      <p className="muted">
+                        今天已安排休息。你仍可臨時開始下一個 Training Day，或直接開空白訓練。
+                      </p>
+                    )}
+                    <button className="button" onClick={start}>
+                      {scheduleKind(state, date) === "train"
+                        ? "開始今天的訓練"
+                        : "開始下一個 Training Day"}
+                      <ArrowRight size={16} />
+                    </button>
+                    <button className="text-link" onClick={() => setSkip(true)}>
+                      略過這個 Training Day
+                    </button>
+                  </>
+                ) : (
                   <p className="muted">
-                    今天已安排休息；仍可自行決定開始下一個訓練日。
+                    尚未建立 Training Plan，也可以直接開始一個空白訓練。
                   </p>
                 )}
-                <button className="button" onClick={start}>
-                  開始訓練
-                  <ArrowRight size={16} />
-                </button>
-                <button className="text-link" onClick={() => setSkip(true)}>
-                  略過這個訓練日
+                <button className="button secondary" onClick={startEmpty}>
+                  <Plus size={16} />
+                  Start Empty Workout
                 </button>
               </>
-            ) : null}
+            )}
           </section>
-          {cycle && <MuscleProgress cycle={cycle} />}
           <TrainingCalendar date={date} />
           <details className="history-list">
             <summary>訓練紀錄</summary>
@@ -675,12 +709,12 @@ export function TrainingFlow({
         </>
       )}
       {setup && (
-        <Sheet title="設定 Cycle" onClose={() => setSetup(false)}>
+        <Sheet title="Training Plan" onClose={() => setSetup(false)}>
           {current ? (
             <>
-              <p>目前使用 {cycle?.name}。現行 Cycle 保留原設定。</p>
+              <p>目前使用 {cycle?.name}。現行 Training Plan 保留原設定。</p>
               <p className="muted">
-                請先完成進行中的訓練，再確認新的 Cycle 版本。
+                目前 Session 已開始。完成或重置今天的 Session 後，再套用新的 Training Plan 版本。
               </p>
               {dayIndex === 0 && !current && (
                 <button
@@ -695,118 +729,77 @@ export function TrainingFlow({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const days = dayText
+                const names = dayText
                   .split("\n")
-                  .map((n) => n.trim())
+                  .map((name) => name.trim())
                   .filter(Boolean);
-                if (!days.length) return;
+                if (!names.length) return;
+                const preset = trainingTemplates.find((item) => item.name === template);
                 if (
-                  targets.some(
-                    (t) =>
-                      t.target > 0 &&
-                      (t.frequency !== t.allocation.length ||
-                        t.allocation.some((i) => i >= days.length)),
-                  )
-                ) {
-                  notify("肌群 Frequency 需符合分配的 Cycle 日數");
-                  return;
-                }
-                if (
-                  save("確認建立 Training Cycle", (s) => {
-                    for (let i = 0; i < 90; i++) {
-                      const scheduled = addDays(date, i);
-                      if (!s.schedule?.some((e) => e.date === scheduled))
-                        (s.schedule ??= []).push({
-                          id: uid(),
-                          date: scheduled,
-                          kind:
-                            restEvery > 0 && i % (restEvery + 1) === restEvery
-                              ? "rest"
-                              : "train",
-                          createdAt: stamp(),
-                        });
-                    }
+                  save("確認建立 Training Plan", (s) => {
                     (s.cycles ??= []).push({
                       id: uid(),
-                      name: template,
+                      name: template === "Build from Scratch" ? "Personal Plan" : template,
                       previousId: cycle?.id,
-                      muscleTargets: targets,
-                      stage,
-                      days: days.map((name) => ({ name })),
+                      stage: "Intensity",
+                      days: names.map((name, i) => ({
+                        name,
+                        templateId: preset?.days[i]?.id,
+                        exercises: preset?.days[i]?.exercises.map((exercise) => ({
+                          exerciseId: exercise.exerciseId,
+                          name: exercise.name,
+                          sets: exercise.sets,
+                          reps: exercise.reps,
+                          rir: exercise.rir,
+                          restSeconds: exercise.restSeconds,
+                          allowRestPause: exercise.allowRestPause,
+                          allowDropSet: exercise.allowDropSet,
+                        })),
+                      })),
                       createdAt: stamp(),
                     });
                   })
                 ) {
                   setSetup(false);
-                  router.push("/training");
-                  notify();
+                  notify("Training Plan 已建立");
                 }
               }}
             >
-              <Field label="分化方式">
+              <Field label="建立方式">
                 <select
                   value={template}
                   onChange={(e) => {
-                    setTemplate(e.target.value);
+                    const name = e.target.value;
+                    setTemplate(name);
+                    const preset = trainingTemplates.find((item) => item.name === name);
                     setDayText(
-                      {
-                        "Upper / Lower": "Upper A\nLower A\nUpper B\nLower B",
-                        PPL: "Push\nPull\nLegs",
-                        五分化: "Chest\nBack\nLegs\nShoulders\nArms",
-                        "James Cycle": "Day A\nDay B",
-                      }[e.target.value]!,
+                      preset?.days.length
+                        ? preset.days.map((day) => day.name).join("\n")
+                        : "",
                     );
                   }}
                 >
-                  {["Upper / Lower", "PPL", "五分化", "James Cycle"].map(
-                    (t) => (
-                      <option key={t}>{t}</option>
-                    ),
-                  )}
+                  {trainingTemplates.map((item) => (
+                    <option key={item.id}>{item.name}</option>
+                  ))}
                 </select>
               </Field>
-              <Field label="訓練日順序（每行一個）">
+              <Field label="Training Day 順序（每行一個）">
                 <textarea
                   value={dayText}
                   onChange={(e) => setDayText(e.target.value)}
                   required
                   maxLength={500}
+                  placeholder={"Upper A\nLower A\n我的胸背日"}
                 />
               </Field>
               <p className="muted">
-                不限制七天，休息後接續下一個訓練日。動作與組數由你安排。
+                Template 只負責預先帶入課表。你可以改名、混搭或從空白建立；休息日直接在 Calendar 設定，不綁固定幾練幾休。
               </p>
-              <Field label="每幾次訓練安排一天休息">
-                <input
-                  type="number"
-                  min="0"
-                  max="7"
-                  value={restEvery}
-                  onChange={(e) => setRestEvery(Number(e.target.value))}
-                />
-              </Field>
               <p className="muted">
-                0 表示自行排休。建立未安排日期的循環，之後可在日曆移動。
+                Upper / Lower、PPL、五分化會帶入 James 預設動作、組數、次數範圍、RIR 與休息時間；歷史 Training Plan 不會被覆寫。
               </p>
-              <MuscleEditor
-                value={targets}
-                onChange={setTargets}
-                dayCount={dayText.split("\n").filter((n) => n.trim()).length}
-              />
-              <Field label="Progression Stage">
-                <select
-                  value={stage}
-                  onChange={(e) => setStage(e.target.value as typeof stage)}
-                >
-                  {stages.map((s) => (
-                    <option key={s}>{s}</option>
-                  ))}
-                </select>
-              </Field>
-              <p className="muted">
-                確認後建立新版本，從 Day 1 開始；歷史課表與紀錄完整保留。
-              </p>
-              <button className="button">確認建立 Cycle</button>
+              <button className="button">建立 Training Plan</button>
             </form>
           )}
         </Sheet>
@@ -963,7 +956,18 @@ function ExerciseCatalog() {
               器材來源
             </a>
           )}
-          <p className="muted">示範影片待補充</p>
+          {((media.exerciseVideos as Record<string, string>)[e.id] || e.video_url) ? (
+            <a
+              className="text-link"
+              href={(media.exerciseVideos as Record<string, string>)[e.id] || e.video_url || "#"}
+              target="_blank"
+              rel="noreferrer"
+            >
+              示範影片
+            </a>
+          ) : (
+            <p className="muted">示範影片尚未提供</p>
+          )}
         </details>
       ))}
     </>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { addDays, round, visibleMeasurements } from "@/lib/domain";
-import { activeCycle, performance } from "@/lib/training-model";
+import { crossCyclePerformance, performance } from "@/lib/training-model";
 import { LineChart } from "./trends";
 import { PageTitle } from "./daily";
 export function ProgressDirection({ date }: { date: string }) {
@@ -17,7 +17,8 @@ export function ProgressDirection({ date }: { date: string }) {
   );
   const results = performance(state),
     improved = results.filter((r) => r.improved),
-    comparable = results.filter((r) => r.comparable);
+    comparable = results.filter((r) => r.comparable),
+    crossCycle = crossCyclePerformance(state);
   const gain = state.profile?.goal === "GAIN";
   const delta =
     weights.length > 1
@@ -156,15 +157,30 @@ export function ProgressDirection({ date }: { date: string }) {
       <section className="training-evidence">
         <p className="eyebrow">TRAINING PROGRESS</p>
         <h2>
-          {activeCycle(state)
-            ?.muscleTargets?.filter((m) => m.priority)
-            .map((m) => m.muscle)
-            .join(" · ") || "Performance"}
+          {crossCycle.direction === "progressing"
+            ? "Cross-cycle performance ↑"
+            : crossCycle.direction === "mixed"
+              ? "Cross-cycle performance mixed"
+              : "Performance"}
         </h2>
         <p className="muted">
-          最近兩次相同動作 · 相同或更高 RIR、重量與次數均未下降，才標示進步。
+          優先比較相鄰兩個 Cycle 的相同動作 e1RM；資料不足時才顯示最近兩次相同動作。
         </p>
-        {results.length ? (
+        {crossCycle.exercises.length ? (
+          crossCycle.exercises.slice(0, 3).map((r) => (
+            <div className="performance-row" key={r.name}>
+              <strong>{r.name}</strong>
+              <span>
+                {r.previousE1rm} → {r.currentE1rm} e1RM
+              </span>
+              <small>
+                {r.improved
+                  ? `↑ +${r.changePct}%`
+                  : `${r.changePct > 0 ? "+" : ""}${r.changePct}% · 持續觀察`}
+              </small>
+            </div>
+          ))
+        ) : results.length ? (
           results.slice(0, 3).map((r) => (
             <div className="performance-row" key={r.name}>
               <strong>{r.name}</strong>
