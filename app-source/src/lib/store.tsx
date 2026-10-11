@@ -10,6 +10,7 @@ import {
 import { initialState, validateState, type AppState } from "./domain";
 import {
   cloudConfigured,
+  deleteCloudAccount,
   pullCloudState,
   pushCloudState,
   restoreCloudSession,
@@ -40,6 +41,7 @@ type Store = {
   signInCloud: (email: string, password: string) => Promise<boolean>;
   signUpCloud: (email: string, password: string) => Promise<boolean>;
   signOutCloudAccount: () => Promise<void>;
+  deleteCloudAccountData: () => Promise<boolean>;
   syncCloudNow: () => Promise<boolean>;
 };
 
@@ -261,6 +263,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setCloud(cloudSnapshot(null));
   }
 
+  async function deleteCloudAccountData() {
+    if (!cloudSession.current) return false;
+    setCloud((c) => ({ ...c, syncing: true, error: "" }));
+    try {
+      await deleteCloudAccount();
+      cloudSession.current = null;
+      localStorage.removeItem(STORAGE_KEY);
+      const next = initialState();
+      ref.current = next;
+      setState(next);
+      blocked.current = false;
+      setError("");
+      setCloud(cloudSnapshot(null));
+      return true;
+    } catch (e) {
+      setCloud((c) => ({
+        ...c,
+        syncing: false,
+        error: e instanceof Error ? e.message : "刪除帳號失敗",
+      }));
+      return false;
+    }
+  }
+
   async function syncCloudNow() {
     if (!cloudSession.current) return false;
     setCloud((c) => ({ ...c, syncing: true, error: "" }));
@@ -298,6 +324,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         signInCloud,
         signUpCloud,
         signOutCloudAccount,
+        deleteCloudAccountData,
         syncCloudNow,
       }}
     >
