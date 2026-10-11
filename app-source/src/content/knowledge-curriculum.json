@@ -1,0 +1,81 @@
+[
+  {
+    "id": "energy-systems",
+    "title": "能量系統與 ATP",
+    "topics": [
+      "ATP 是什麼",
+      "ATP-PCr 系統",
+      "糖解作用",
+      "乳酸與代謝",
+      "氧化磷酸化",
+      "三大能量系統如何同時工作",
+      "訓練強度與時間如何改變能量貢獻",
+      "組間恢復與能量補充",
+      "有氧能力如何影響阻力訓練表現"
+    ],
+    "status": "planned"
+  },
+  {
+    "id": "muscle-contraction",
+    "title": "肌肉結構與收縮",
+    "topics": [
+      "Sarcomere",
+      "Actin / Myosin",
+      "Sliding Filament",
+      "Cross-Bridge",
+      "Ca²⁺",
+      "Troponin / Tropomyosin",
+      "NMJ",
+      "Excitation–Contraction Coupling"
+    ],
+    "status": "planned"
+  },
+  {
+    "id": "motor-unit",
+    "title": "Motor Unit",
+    "topics": [
+      "Motor Unit Recruitment",
+      "Size Principle",
+      "Rate Coding",
+      "接近力竭時的神經反應",
+      "Failure 與招募"
+    ],
+    "status": "planned"
+  },
+  {
+    "id": "fiber-types",
+    "title": "肌纖維類型",
+    "topics": [
+      "Type I / IIa / IIx",
+      "代謝表型",
+      "肌纖維轉換",
+      "重量訓練的實際意義"
+    ],
+    "status": "in_progress"
+  },
+  {
+    "id": "fatigue",
+    "title": "Fatigue",
+    "topics": [
+      "Peripheral Fatigue",
+      "Central Fatigue",
+      "ATP 是否真的用盡",
+      "力量下降的原因"
+    ],
+    "status": "planned"
+  },
+  {
+    "id": "recovery-adaptation",
+    "title": "Recovery / Adaptation",
+    "topics": [
+      "Recovery 定義",
+      "不同系統的恢復速度",
+      "力量與神經恢復",
+      "如何辨識疲勞",
+      "Homeostasis",
+      "SAID",
+      "力量提升不等於肌肉增加"
+    ],
+    "status": "in_progress"
+  }
+]
