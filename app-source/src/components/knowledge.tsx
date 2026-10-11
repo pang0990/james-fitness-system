@@ -5,6 +5,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowLeft, ChevronRight, BookOpen } from "lucide-react";
 import articles from "@/content/articles.json";
+import curriculum from "@/content/knowledge-curriculum.json";
 import { PageTitle, Field } from "./daily";
 export function Knowledge({ path }: { path: string }) {
   const [search, setSearch] = useState("");
@@ -61,6 +62,18 @@ export function Knowledge({ path }: { path: string }) {
                 </Link>
               ))}
           </div>
+          <section className="system-status">
+            <p className="eyebrow">CURRICULUM</p>
+            {curriculum.map((chapter) => (
+              <div className="status-row" key={chapter.id}>
+                <strong>{chapter.title}</strong>
+                <span>
+                  {chapter.topics.length} topics ·{" "}
+                  {chapter.status === "in_progress" ? "建置中" : "待整理"}
+                </span>
+              </div>
+            ))}
+          </section>
         </>
       )}
     </div>
