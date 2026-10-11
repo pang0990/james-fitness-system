@@ -5,6 +5,7 @@ import { TrainingCalendar, WarmupPicker } from "./training-planning";
 import { activeCycle, scheduleKind } from "@/lib/training-model";
 import { Companion } from "./companion";
 import catalog from "@/content/exercises.json";
+import media from "@/content/media.json";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -100,8 +101,8 @@ export function TrainingFlow({
     const t = setInterval(update, 500);
     return () => clearInterval(t);
   }, [timerEnd]);
-  function startTimer() {
-    const end = Date.now() + 90000;
+  function startTimer(seconds = ex?.restSeconds ?? 90) {
+    const end = Date.now() + seconds * 1000;
     sessionStorage.setItem("james-rest-end", String(end));
     setTimerEnd(end);
   }
@@ -236,8 +237,8 @@ export function TrainingFlow({
         ) : (
           <Menu
             items={[
-              ["/training/cycle", "Cycle 設定"],
-              ["/training/templates", "選擇分化"],
+              ["/training/cycle", "Edit Training Plan"],
+              ["/training/templates", "Plan Templates"],
               ["/training/exercises", "動作紀錄"],
               ["/training/activity", "Cardio"],
             ]}
@@ -386,6 +387,13 @@ export function TrainingFlow({
                       ? `${previous.weight} kg × ${previous.reps}`
                       : "尚未紀錄"}
                   </p>
+                  {ex.plannedSets && (
+                    <p className="muted">
+                      Plan · {ex.plannedSets} sets · {ex.repMin}–{ex.repMax} reps
+                      {ex.targetRir !== undefined ? ` · RIR ${ex.targetRir}` : ""}
+                      {ex.restSeconds ? ` · Rest ${Math.floor(ex.restSeconds / 60)}:${String(ex.restSeconds % 60).padStart(2, "0")}` : ""}
+                    </p>
+                  )}
                   <details>
                     <summary>動作設定</summary>
                     {(
@@ -666,12 +674,12 @@ export function TrainingFlow({
         </>
       )}
       {setup && (
-        <Sheet title="設定 Cycle" onClose={() => setSetup(false)}>
+        <Sheet title="Training Plan" onClose={() => setSetup(false)}>
           {current ? (
             <>
-              <p>目前使用 {cycle?.name}。現行 Cycle 保留原設定。</p>
+              <p>目前使用 {cycle?.name}。現行 Training Plan 保留原設定。</p>
               <p className="muted">
-                請先完成進行中的訓練，再確認新的 Cycle 版本。
+                目前 Session 已開始。完成或重置今天的 Session 後，再套用新的 Training Plan 版本。
               </p>
               {dayIndex === 0 && !current && (
                 <button
@@ -913,7 +921,18 @@ function ExerciseCatalog() {
               器材來源
             </a>
           )}
-          <p className="muted">示範影片待補充</p>
+          {((media.exerciseVideos as Record<string, string>)[e.id] || e.video_url) ? (
+            <a
+              className="text-link"
+              href={(media.exerciseVideos as Record<string, string>)[e.id] || e.video_url || "#"}
+              target="_blank"
+              rel="noreferrer"
+            >
+              示範影片
+            </a>
+          ) : (
+            <p className="muted">示範影片尚未提供</p>
+          )}
         </details>
       ))}
     </>
