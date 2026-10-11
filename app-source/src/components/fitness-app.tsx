@@ -384,8 +384,10 @@ export function FitnessApp({ path }: { path: string }) {
           </div>
         ) : (
           <div key={path}>
-            {section === "onboarding" || section === "profile" ? (
-              <Onboarding editing={section === "profile"} notify={notify} />
+            {section === "onboarding" ? (
+              <Onboarding editing={false} notify={notify} />
+            ) : section === "profile" ? (
+              <SettingsPage path="settings/profile" notify={notify} />
             ) : section === "login" || section === "signup" ? (
               <Login />
             ) : section === "today" ? (
@@ -2236,8 +2238,23 @@ function SettingsPage({
   notify: (m?: string) => void;
 }) {
   const { state, save, reset, cloud } = useStore();
-  const [slot, setSlot] = useState("");
   const router = useRouter();
+
+  const key = path.replace("settings/", "");
+  const title =
+    path === "settings"
+      ? "Settings"
+      : {
+          profile: "個人資料",
+          body: "目標與身體資料",
+          nutrition: "營養偏好",
+          training: "訓練偏好",
+          notifications: "通知",
+          account: "帳號與同步",
+          privacy: "隱私說明",
+          data: "資料管理",
+        }[key] ?? "Settings";
+
   function download(raw = false) {
     const content = raw
       ? (localStorage.getItem(STORAGE_KEY) ?? "{}")
@@ -2252,58 +2269,287 @@ function SettingsPage({
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     notify("備份已匯出");
   }
+
+  function requireProfile() {
+    if (!state.profile) {
+      return (
+        <Card title="先完成初始設定">
+          <p className="muted">建立基本資料後，才會出現可編輯的個人設定。</p>
+          <Link className="button" href="/onboarding">
+            開始設定
+            <ArrowRight size={14} />
+          </Link>
+        </Card>
+      );
+    }
+    return null;
+  }
+
   return (
     <>
       <Heading
-        eyebrow="MAKE IT YOURS"
-        title={
-          path === "settings/privacy"
-            ? "隱私說明"
-            : path === "settings/data"
-              ? "資料管理"
-              : path === "settings/account"
-                ? "帳號與同步"
-                : "Settings"
+        eyebrow=""
+        title={title}
+        description={
+          path === "settings"
+            ? "長期偏好、帳號與資料管理集中在這裡；日常操作留在對應主頁。"
+            : undefined
         }
-        description="設定、資料與使用方式，集中在這裡。"
       />
-      <div className="subnav">
-        <Link href="/settings">一般設定</Link>
-        <Link href="/settings/account">帳號與同步</Link>
-        <Link href="/settings/privacy">隱私說明</Link>
-        <Link href="/settings/data">資料管理</Link>
-      </div>
+
+      {path !== "settings" && (
+        <Link className="text-link" href="/settings">
+          ← Settings
+        </Link>
+      )}
+
       <div className="narrow stack">
-        {path === "settings/account" ? (
+        {path === "settings" ? (
+          <div className="settings-list">
+            {[
+              ["/settings/profile", "個人資料", "名稱、年齡、基本帳號資料"],
+              ["/settings/body", "目標與身體資料", "身高、體重、CUT / GAIN"],
+              ["/settings/nutrition", "營養偏好", "營養計算相關長期設定"],
+              ["/settings/training", "訓練偏好", "Training Plan 與訓練工具入口"],
+              ["/settings/notifications", "通知", "每日提醒與原生 App 提醒狀態"],
+              ["/settings/account", "帳號與同步", "Cloud Sync、登入與刪除帳號"],
+              ["/learn", "Knowledge", "健身教材與知識內容"],
+              ["/settings/data", "資料管理", "匯出、備份與清除本機資料"],
+              ["/settings/privacy", "隱私說明", "資料儲存與健康資訊使用方式"],
+            ].map(([href, name, detail]) => (
+              <Link className="status-row" href={href} key={href}>
+                <strong>{name}</strong>
+                <span>{detail}</span>
+                <ChevronRight size={18} />
+              </Link>
+            ))}
+          </div>
+        ) : path === "settings/account" ? (
           <CloudAccount />
+        ) : path === "settings/profile" ? (
+          requireProfile() ?? (
+            <Card title="個人資料" icon={User}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const d = new FormData(e.currentTarget);
+                  const next = profileSchema.parse({
+                    ...state.profile!,
+                    name: String(d.get("name")).trim(),
+                    age: Number(d.get("age")),
+                    sex: String(d.get("sex")),
+                    timezone: String(d.get("timezone")),
+                  });
+                  if (
+                    save("更新個人資料", (s) => {
+                      s.profile = next;
+                    })
+                  )
+                    notify();
+                }}
+              >
+                <Field label="名稱">
+                  <input
+                    name="name"
+                    defaultValue={state.profile!.name}
+                    maxLength={40}
+                    required
+                  />
+                </Field>
+                <div className="form-grid">
+                  <NumberField
+                    label="年齡"
+                    name="age"
+                    value={state.profile!.age}
+                    min={18}
+                    max={100}
+                    step="1"
+                  />
+                  <Field label="生理性別">
+                    <select name="sex" defaultValue={state.profile!.sex}>
+                      <option value="male">男性</option>
+                      <option value="female">女性</option>
+                    </select>
+                  </Field>
+                </div>
+                <Field label="時區">
+                  <input
+                    name="timezone"
+                    defaultValue={state.profile!.timezone}
+                    required
+                  />
+                </Field>
+                <button className="button">保存</button>
+              </form>
+            </Card>
+          )
+        ) : path === "settings/body" ? (
+          requireProfile() ?? (
+            <Card title="目標與身體資料" icon={TrendingUp}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const d = new FormData(e.currentTarget);
+                  const next = profileSchema.parse({
+                    ...state.profile!,
+                    height: Number(d.get("height")),
+                    weight: Number(d.get("weight")),
+                    goal: String(d.get("goal")),
+                  });
+                  if (
+                    save("更新身體與目標資料", (s) => {
+                      s.profile = next;
+                    })
+                  )
+                    notify();
+                }}
+              >
+                <div className="form-grid">
+                  <NumberField
+                    label="身高 cm"
+                    name="height"
+                    value={state.profile!.height}
+                    min={100}
+                    max={250}
+                  />
+                  <NumberField
+                    label="目前體重 kg"
+                    name="weight"
+                    value={state.profile!.weight}
+                    min={30}
+                    max={350}
+                  />
+                </div>
+                <Field label="目前目標">
+                  <select name="goal" defaultValue={state.profile!.goal}>
+                    <option value="CUT">CUT · Fat Loss</option>
+                    <option value="GAIN">GAIN · Muscle Gain</option>
+                  </select>
+                </Field>
+                <p className="muted">
+                  修改目標不會回寫歷史 Plan；正式營養調整仍由 Nutrition 的版本流程處理。
+                </p>
+                <button className="button">保存</button>
+              </form>
+            </Card>
+          )
+        ) : path === "settings/nutrition" ? (
+          requireProfile() ?? (
+            <>
+              <Card title="營養偏好" icon={Utensils}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const d = new FormData(e.currentTarget);
+                    const next = profileSchema.parse({
+                      ...state.profile!,
+                      frequency: Number(d.get("frequency")),
+                      experiencedCut: d.get("experiencedCut") === "on",
+                      waterTarget: Number(d.get("waterTarget")),
+                    });
+                    if (
+                      save("更新營養偏好", (s) => {
+                        s.profile = next;
+                      })
+                    )
+                      notify();
+                  }}
+                >
+                  <Field label="目前訓練頻率">
+                    <select
+                      name="frequency"
+                      defaultValue={String(state.profile!.frequency)}
+                    >
+                      {frequencies.map((f, i) => (
+                        <option key={f} value={i}>
+                          {f}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  <label className="check">
+                    <input
+                      type="checkbox"
+                      name="experiencedCut"
+                      defaultChecked={state.profile!.experiencedCut}
+                    />
+                    有減脂經驗
+                  </label>
+                  <NumberField
+                    label="每日飲水目標 ml"
+                    name="waterTarget"
+                    value={state.profile!.waterTarget}
+                    min={0}
+                    max={10000}
+                    step="50"
+                  />
+                  <button className="button">保存</button>
+                </form>
+              </Card>
+              <Link className="status-row" href="/nutrition">
+                <strong>餐次與飲食紀錄</strong>
+                <span>回到 Nutrition 編輯餐次、Food、Recipe 與每日飲食</span>
+                <ChevronRight size={18} />
+              </Link>
+            </>
+          )
+        ) : path === "settings/training" ? (
+          <>
+            <Link className="status-row" href="/training/cycle">
+              <strong>Training Plan</strong>
+              <span>建立、修改或切換訓練計畫</span>
+              <ChevronRight size={18} />
+            </Link>
+            <Link className="status-row" href="/training/exercises">
+              <strong>Exercise Library</strong>
+              <span>動作、器材與示範內容</span>
+              <ChevronRight size={18} />
+            </Link>
+            <Link className="status-row" href="/training/warmups">
+              <strong>Warm-up Library</strong>
+              <span>暖身預設與影片</span>
+              <ChevronRight size={18} />
+            </Link>
+            <p className="muted">
+              這裡只負責長期訓練偏好的入口；今天要做什麼、休息或臨時換課表仍留在 Training。
+            </p>
+          </>
+        ) : path === "settings/notifications" ? (
+          <Card title="通知" icon={Settings}>
+            <p>
+              Web / PWA 版本目前不強迫開啟通知。原生 iOS 封裝完成後，通知會採 opt-in，並只用於使用者選擇的每日提醒、訓練與 Review。
+            </p>
+            <p className="muted">
+              不會把開啟通知當成使用核心功能的前提；Today 仍會顯示所有當日提醒。
+            </p>
+          </Card>
         ) : path === "settings/privacy" ? (
-          <Card title="本機版隱私說明" icon={ShieldCheck}>
+          <Card title="隱私說明" icon={ShieldCheck}>
             <div className="stack">
               <p>
-                本版本不建立雲端帳號、不收集密碼，也不把健身紀錄傳送至伺服器。資料保存在目前網域、目前瀏覽器的本機儲存。
-              </p>
-              <p>
-                同一瀏覽器的使用者可能讀取這些資料。請避免在共用裝置輸入私人資訊。換裝置、換網址或清除網站資料後，不會自動帶入原紀錄。
-              </p>
-              <p>
-                網站託管平台仍可能處理一般連線紀錄，例如 IP
-                與請求網址；這不等於健身紀錄已上傳。
-              </p>
-              <p>
-                原始紀錄與修訂保存在本機，直到你主動刪除。匯出的備份檔也包含這些資訊，請自行妥善保管。
+                不登入 Cloud Sync 時，健身紀錄保存在目前裝置的本機儲存，不會因為開啟網站就自動上傳。
               </p>
               <p>
                 {cloud.enabled
-                  ? "若你登入 Cloud Sync，健身資料會同步到你的 Supabase 使用者資料列，並由 Row Level Security 限制為本人帳號。未登入時仍維持本機模式。"
-                  : "目前部署尚未設定 Supabase 環境變數，因此仍以本機模式運作；啟用後可使用帳號與跨裝置同步。"}
+                  ? "登入 Cloud Sync 後，資料會同步到你的 Supabase 使用者資料列，並由 Row Level Security 限制為本人帳號。"
+                  : "目前部署尚未設定 Supabase Cloud Sync；啟用後仍維持使用者主動登入才同步。"}
               </p>
+              <p>
+                健康與健身資料不作第三方廣告、行銷資料探勘或資料經紀用途。
+              </p>
+              <p>
+                App Store 正式版會使用公開 Privacy Policy，並依實際送審版本填寫 App Privacy。
+              </p>
+              <a className="text-link" href="/privacy.html" target="_blank">
+                公開 Privacy Policy →
+              </a>
             </div>
           </Card>
         ) : path === "settings/data" ? (
           <>
             <Card title="匯出與備份" icon={Download}>
               <p className="muted">
-                包含個人設定、飲食、飲水、體重、訓練、計畫版本與操作歷史。換裝置前先保留一份。
+                包含個人設定、飲食、飲水、體重、訓練、Plan 版本與操作歷史。
               </p>
               <div className="form-actions">
                 <button className="button" onClick={() => download()}>
@@ -2318,10 +2564,9 @@ function SettingsPage({
                 </button>
               </div>
             </Card>
-            <Card title="清除這個瀏覽器的資料" icon={Trash2}>
+            <Card title="清除這台裝置" icon={Trash2}>
               <p className="muted">
-                此操作無法在 App
-                內復原。請先下載備份。雲端尚未啟用，因此不涉及刪除雲端帳號。
+                只刪除目前裝置的本機資料。若已登入 Cloud Sync，要永久刪除帳號與同步資料，請前往帳號與同步。
               </p>
               <div className="form-actions">
                 <button
@@ -2329,7 +2574,7 @@ function SettingsPage({
                   onClick={() => {
                     if (
                       window.confirm(
-                        "已匯出備份嗎？確定刪除這個瀏覽器內所有 James Fitness 紀錄？",
+                        "確定刪除這台裝置內所有 James Fitness 紀錄？這個動作無法復原。",
                       )
                     ) {
                       reset();
@@ -2340,100 +2585,13 @@ function SettingsPage({
                 >
                   刪除本機資料
                 </button>
-              </div>
-            </Card>
-          </>
-        ) : (
-          <>
-            <Card title="我的餐次" icon={Utensils}>
-              <div className="pill-row">
-                {state.mealSlots.map((s) => (
-                  <span className="tag" key={s}>
-                    {s}
-                  </span>
-                ))}
-              </div>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const name = slot.trim();
-                  if (!name) return;
-                  if (
-                    save("新增餐次", (s) => {
-                      if (s.mealSlots.includes(name)) throw Error("餐次已存在");
-                      s.mealSlots.push(name);
-                    })
-                  ) {
-                    setSlot("");
-                    notify();
-                  }
-                }}
-              >
-                <div className="form-actions">
-                  <Field label="新增餐次">
-                    <input
-                      value={slot}
-                      maxLength={20}
-                      onChange={(e) => setSlot(e.target.value)}
-                      placeholder="例如：午加餐"
-                      required
-                    />
-                  </Field>
-                  <button className="button secondary">
-                    新增
-                    <Plus size={13} />
-                  </button>
-                </div>
-              </form>
-            </Card>
-            <Card title="飲水目標" icon={Droplet}>
-              {state.profile ? (
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const target = Number(
-                      new FormData(e.currentTarget).get("target"),
-                    );
-                    if (
-                      save("更新飲水目標", (s) => {
-                        s.profile!.waterTarget = target;
-                      })
-                    )
-                      notify();
-                  }}
-                >
-                  <NumberField
-                    label="每日 ml（0 代表未設定）"
-                    name="target"
-                    value={state.profile.waterTarget}
-                    step="50"
-                  />
-                  <div className="form-actions">
-                    <button className="button secondary">保存目標</button>
-                  </div>
-                </form>
-              ) : (
-                <Link className="text-link" href="/onboarding">
-                  先建立個人資料 →
-                </Link>
-              )}
-            </Card>
-            <Card title="目前環境" icon={Info}>
-              <p>James Fitness · v0.4 development</p>
-              <p className="muted" style={{ marginTop: 10 }}>
-                時區 Asia/Taipei · kg / g / ml
-                <br />
-                GitHub Pages 可提供網站，但目前不提供雲端資料同步。
-              </p>
-              <div className="form-actions">
-                <Link className="button secondary" href="/settings/data">
-                  資料管理
-                  <ArrowRight size={14} />
+                <Link className="button secondary" href="/settings/account">
+                  管理雲端帳號
                 </Link>
               </div>
             </Card>
           </>
-        )}
+        ) : null}
       </div>
     </>
   );
