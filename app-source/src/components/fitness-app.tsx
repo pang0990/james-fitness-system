@@ -339,6 +339,7 @@ export function FitnessApp({ path }: { path: string }) {
               title={n.label}
             >
               <n.icon size={17} />
+              {section === n.path && <span className="nav-active-light" aria-hidden />}
               <span className="rail-label">{n.label}</span>
             </Link>
           ))}
@@ -452,6 +453,7 @@ export function FitnessApp({ path }: { path: string }) {
             className={section === n.path ? "active" : ""}
           >
             <n.icon size={20} />
+            {section === n.path && <span className="nav-active-light" aria-hidden />}
             {n.label}
           </Link>
         ))}
