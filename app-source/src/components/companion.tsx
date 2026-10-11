@@ -253,7 +253,7 @@ function GLTFModel({
     };
   }, [gltf.animations, mixer, state]);
 
-  useEffect(() => () => mixer.stopAllAction(), [mixer]);
+  useEffect(() => () => { mixer.stopAllAction(); }, [mixer]);
 
   useFrame(({ pointer }, delta) => {
     if (!reduced) mixer.update(delta);
