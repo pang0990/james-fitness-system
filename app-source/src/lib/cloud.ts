@@ -137,3 +137,20 @@ export async function pushCloudState(state: AppState) {
   if (!res.ok) throw Error("同步雲端資料失敗");
   return session;
 }
+
+export async function deleteCloudAccount() {
+  const session = await restoreCloudSession();
+  if (!session) throw Error("尚未登入雲端");
+  const res = await fetch(baseUrl() + "/functions/v1/delete-account", {
+    method: "POST",
+    headers: headers(session.access_token),
+  });
+  let message = "";
+  try {
+    const data = (await res.json()) as { error?: string; message?: string };
+    message = data.error || data.message || "";
+  } catch {}
+  if (!res.ok) throw Error(message || "刪除帳號失敗");
+  persist(null);
+  return true;
+}
