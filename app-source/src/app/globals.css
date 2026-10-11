@@ -1735,3 +1735,216 @@ html[data-transition="immersive"]::view-transition-new(root),
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* v0.4 Motion Pass · clear, directional, reduced-motion aware */
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.nav-active-light {
+  position: absolute;
+  pointer-events: none;
+  view-transition-name: nav-active-light;
+  background: var(--gold-highlight);
+  box-shadow:
+    0 0 10px #c5a46188,
+    0 0 22px #c5a46130;
+}
+.sidebar .nav-active-light {
+  width: 20px;
+  height: 1px;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.bottom-nav .nav-active-light {
+  width: 20px;
+  height: 1px;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.bottom-nav > a.active::after {
+  display: none;
+}
+::view-transition-group(nav-active-light) {
+  animation-duration: 260ms;
+  animation-timing-function: var(--ease);
+}
+::view-transition-old(nav-active-light),
+::view-transition-new(nav-active-light) {
+  mix-blend-mode: plus-lighter;
+}
+
+@keyframes tab-old-forward {
+  to {
+    opacity: 0;
+    transform: translateX(-10px);
+    filter: blur(1px);
+  }
+}
+@keyframes tab-new-forward {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+    filter: blur(1px);
+  }
+}
+@keyframes tab-old-back {
+  to {
+    opacity: 0;
+    transform: translateX(10px);
+    filter: blur(1px);
+  }
+}
+@keyframes tab-new-back {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+    filter: blur(1px);
+  }
+}
+@keyframes detail-old {
+  to {
+    opacity: 0.56;
+    transform: translateX(-16px) scale(0.992);
+    filter: blur(0.6px);
+  }
+}
+@keyframes detail-new {
+  from {
+    opacity: 0;
+    transform: translateX(22px) scale(0.995);
+  }
+}
+@keyframes immersive-old {
+  to {
+    opacity: 0.12;
+    transform: scale(0.97);
+    filter: blur(4px);
+  }
+}
+@keyframes immersive-new {
+  from {
+    opacity: 0;
+    transform: scale(1.018);
+    filter: blur(3px);
+  }
+}
+@keyframes gold-bloom {
+  0% {
+    box-shadow: 0 0 0 #c5a46100;
+  }
+  45% {
+    box-shadow: 0 0 28px #c5a46128;
+  }
+  100% {
+    box-shadow: 0 0 0 #c5a46100;
+  }
+}
+
+html[data-transition="tab"][data-direction="forward"]::view-transition-old(root) {
+  animation: tab-old-forward 240ms var(--ease) both;
+}
+html[data-transition="tab"][data-direction="forward"]::view-transition-new(root) {
+  animation: tab-new-forward 240ms var(--ease) both;
+}
+html[data-transition="tab"][data-direction="back"]::view-transition-old(root) {
+  animation: tab-old-back 240ms var(--ease) both;
+}
+html[data-transition="tab"][data-direction="back"]::view-transition-new(root) {
+  animation: tab-new-back 240ms var(--ease) both;
+}
+html[data-transition="detail"]::view-transition-old(root) {
+  animation: detail-old 300ms var(--ease) both;
+}
+html[data-transition="detail"]::view-transition-new(root) {
+  animation: detail-new 300ms var(--ease) both;
+}
+html[data-transition="immersive"]::view-transition-old(root) {
+  animation: immersive-old 450ms var(--ease) both;
+}
+html[data-transition="immersive"]::view-transition-new(root) {
+  animation: immersive-new 450ms var(--ease) both;
+}
+html[data-transition="immersive"]::view-transition-group(workout-stage) {
+  animation-duration: 450ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.button {
+  position: relative;
+  overflow: hidden;
+}
+.button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    #fff2 45%,
+    #fff5 50%,
+    transparent 72%
+  );
+  transform: translateX(-130%);
+  transition: transform 420ms var(--ease);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .button:hover::after {
+    transform: translateX(130%);
+  }
+}
+.session-set {
+  animation:
+    saved var(--motion),
+    gold-bloom 520ms var(--ease);
+}
+.review-glass {
+  animation: detail-new 360ms var(--ease) both;
+}
+.status-row {
+  animation: enter 260ms var(--ease) both;
+}
+.status-row:nth-child(2) { animation-delay: 30ms; }
+.status-row:nth-child(3) { animation-delay: 60ms; }
+.status-row:nth-child(4) { animation-delay: 90ms; }
+.status-row:nth-child(5) { animation-delay: 120ms; }
+
+@media (max-width: 760px) {
+  input:not([type="checkbox"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+  .sheet {
+    max-height: 100dvh;
+  }
+  .sheet-body {
+    overscroll-behavior: contain;
+  }
+  body:has(dialog[open]) .bottom-nav {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-active-light {
+    view-transition-name: none;
+    box-shadow: none;
+  }
+  .button::after {
+    display: none;
+  }
+  html[data-transition]::view-transition-old(root),
+  html[data-transition]::view-transition-new(root),
+  ::view-transition-group(nav-active-light),
+  ::view-transition-group(workout-stage) {
+    animation: none !important;
+  }
+}
