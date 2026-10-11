@@ -1,12 +1,18 @@
 "use client";
 import { useState, type FormEvent } from "react";
-import { Cloud, RefreshCw, LogOut } from "lucide-react";
+import { Cloud, RefreshCw, LogOut, Trash2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Field } from "./daily";
 
 export function CloudAccount() {
-  const { cloud, signInCloud, signUpCloud, signOutCloudAccount, syncCloudNow } =
-    useStore();
+  const {
+    cloud,
+    signInCloud,
+    signUpCloud,
+    signOutCloudAccount,
+    deleteCloudAccountData,
+    syncCloudNow,
+  } = useStore();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -42,6 +48,24 @@ export function CloudAccount() {
             </button>
             <button className="button secondary" onClick={() => signOutCloudAccount()}>
               <LogOut size={15} /> 登出雲端
+            </button>
+          </div>
+          <div className="danger-zone">
+            <h3>Delete account</h3>
+            <p className="muted">
+              永久刪除雲端帳號與同步資料，並清除這台裝置上的本機資料。這不是停用帳號。
+            </p>
+            <button
+              className="button secondary danger"
+              disabled={cloud.syncing}
+              onClick={async () => {
+                const ok = window.confirm(
+                  "確定要永久刪除帳號與所有同步資料嗎？這個動作無法復原。",
+                );
+                if (ok) await deleteCloudAccountData();
+              }}
+            >
+              <Trash2 size={15} /> 永久刪除帳號
             </button>
           </div>
         </>
