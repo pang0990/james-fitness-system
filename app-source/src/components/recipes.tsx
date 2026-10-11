@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import { mealTotals, pinDay, round } from "@/lib/domain";
 import { PageTitle, Field, Sheet, NutritionSummary, uid, stamp } from "./daily";
+import jamesRecipes from "@/content/james-recipes.json";
 export function Recipes({
   date,
   notify,
@@ -24,7 +25,21 @@ export function Recipes({
     const d = p.get("date");
     if (d && /^\d{4}-\d{2}-\d{2}$/.test(d) && d <= date) setLogDate(d);
   }, [date]);
-  const recipes = state.recipes ?? [],
+  const recipes = [
+      ...(jamesRecipes as {
+        id: string;
+        name: string;
+        category: string;
+        ingredients: string;
+        steps: string;
+        p: number;
+        c: number;
+        f: number;
+        kcal: number;
+        version: number;
+      }[]),
+      ...(state.recipes ?? []),
+    ],
     recipe = recipes.find((r) => r.id === selected);
   return (
     <div className="daily-page">
