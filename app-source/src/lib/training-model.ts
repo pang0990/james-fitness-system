@@ -1,4 +1,5 @@
 import { type AppState, type Cycle, addDays, round } from "./domain";
+import media from "@/content/media.json";
 export const muscles = [
   "Chest",
   "Back",
@@ -37,12 +38,13 @@ export type WarmupItem = {
   minutes: number;
   video_url: string | null;
 };
+const warmupVideos = media.warmupVideos as Record<string, string>;
 export const warmups: WarmupItem[] = [
-  { id: "walk", name: "快走或腳踏車", minutes: 3, video_url: null },
-  { id: "shoulder", name: "肩部繞環", minutes: 1, video_url: null },
-  { id: "hip", name: "髖關節活動", minutes: 1, video_url: null },
-  { id: "squat", name: "徒手深蹲", minutes: 1, video_url: null },
-  { id: "band", name: "彈力帶拉開", minutes: 1, video_url: null },
+  { id: "walk", name: "快走或腳踏車", minutes: 3, video_url: warmupVideos.walk ?? null },
+  { id: "shoulder", name: "肩部繞環", minutes: 1, video_url: warmupVideos.shoulder ?? null },
+  { id: "hip", name: "髖關節活動", minutes: 1, video_url: warmupVideos.hip ?? null },
+  { id: "squat", name: "徒手深蹲", minutes: 1, video_url: warmupVideos.squat ?? null },
+  { id: "band", name: "彈力帶拉開", minutes: 1, video_url: warmupVideos.band ?? null },
 ];
 export function scheduleKind(state: AppState, date: string) {
   return state.schedule?.filter((e) => e.date === date).at(-1)?.kind ?? "train";
