@@ -2235,7 +2235,7 @@ function SettingsPage({
   path: string;
   notify: (m?: string) => void;
 }) {
-  const { state, save, reset } = useStore();
+  const { state, save, reset, cloud } = useStore();
   const [slot, setSlot] = useState("");
   const router = useRouter();
   function download(raw = false) {
@@ -2293,8 +2293,9 @@ function SettingsPage({
                 原始紀錄與修訂保存在本機，直到你主動刪除。匯出的備份檔也包含這些資訊，請自行妥善保管。
               </p>
               <p>
-                Supabase 的登入、RLS
-                與跨裝置同步尚未啟用；本機模式不宣稱具備雲端使用者隔離。
+                {cloud.enabled
+                  ? "若你登入 Cloud Sync，健身資料會同步到你的 Supabase 使用者資料列，並由 Row Level Security 限制為本人帳號。未登入時仍維持本機模式。"
+                  : "目前部署尚未設定 Supabase 環境變數，因此仍以本機模式運作；啟用後可使用帳號與跨裝置同步。"}
               </p>
             </div>
           </Card>
@@ -2418,7 +2419,7 @@ function SettingsPage({
               )}
             </Card>
             <Card title="目前環境" icon={Info}>
-              <p>本機資料版 · v0.1</p>
+              <p>James Fitness · v0.4 development</p>
               <p className="muted" style={{ marginTop: 10 }}>
                 時區 Asia/Taipei · kg / g / ml
                 <br />
