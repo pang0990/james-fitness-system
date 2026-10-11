@@ -178,6 +178,11 @@ export type Session = {
     muscle?: string;
     allowRestPause?: boolean;
     allowDropSet?: boolean;
+    plannedSets?: number;
+    repMin?: number;
+    repMax?: number;
+    targetRir?: number;
+    restSeconds?: number;
   }[];
   warmupIds?: string[];
   createdAt: string;
@@ -214,7 +219,20 @@ export type Cycle = {
   stage?: "Intensity" | "Frequency" | "Volume" | "Deload" | "Next Cycle";
   id: string;
   name: string;
-  days: { name: string }[];
+  days: {
+    name: string;
+    templateId?: string;
+    exercises?: {
+      exerciseId?: string;
+      name: string;
+      sets: number;
+      reps: [number, number];
+      rir: number;
+      restSeconds: number;
+      allowRestPause?: boolean;
+      allowDropSet?: boolean;
+    }[];
+  }[];
   createdAt: string;
 };
 export type CycleEvent = {
