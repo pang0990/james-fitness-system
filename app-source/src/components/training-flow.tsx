@@ -106,6 +106,27 @@ export function TrainingFlow({
     sessionStorage.setItem("james-rest-end", String(end));
     setTimerEnd(end);
   }
+  function startEmpty() {
+    if (
+      save("開始空白訓練", (s) => {
+        if (s.sessions.some((x) => x.status === "in_progress")) return;
+        s.sessions.push({
+          id: uid(),
+          date,
+          name: "Empty Workout",
+          status: "in_progress",
+          phase: "warmup",
+          exercises: [],
+          warmupIds: [...(s.warmupPreset ?? [])],
+          createdAt: stamp(),
+        });
+      })
+    ) {
+      navigateWithMotion(router.push, "/training/session");
+      notify("空白訓練已開始");
+    }
+  }
+
   function start() {
     if (!cycle || !day) return;
     if (
@@ -620,22 +641,36 @@ export function TrainingFlow({
                 繼續訓練
                 <ArrowRight size={16} />
               </Link>
-            ) : day ? (
+            ) : (
               <>
-                {scheduleKind(state, date) !== "train" && (
+                {day ? (
+                  <>
+                    {scheduleKind(state, date) !== "train" && (
+                      <p className="muted">
+                        今天已安排休息。你仍可臨時開始下一個 Training Day，或直接開空白訓練。
+                      </p>
+                    )}
+                    <button className="button" onClick={start}>
+                      {scheduleKind(state, date) === "train"
+                        ? "開始今天的訓練"
+                        : "開始下一個 Training Day"}
+                      <ArrowRight size={16} />
+                    </button>
+                    <button className="text-link" onClick={() => setSkip(true)}>
+                      略過這個 Training Day
+                    </button>
+                  </>
+                ) : (
                   <p className="muted">
-                    今天已安排休息；仍可自行決定開始下一個訓練日。
+                    尚未建立 Training Plan，也可以直接開始一個空白訓練。
                   </p>
                 )}
-                <button className="button" onClick={start}>
-                  開始訓練
-                  <ArrowRight size={16} />
-                </button>
-                <button className="text-link" onClick={() => setSkip(true)}>
-                  略過這個訓練日
+                <button className="button secondary" onClick={startEmpty}>
+                  <Plus size={16} />
+                  Start Empty Workout
                 </button>
               </>
-            ) : null}
+            )}
           </section>
           <TrainingCalendar date={date} />
           <details className="history-list">
