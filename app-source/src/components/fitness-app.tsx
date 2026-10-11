@@ -4,6 +4,7 @@ import { TrainingReview } from "./training-review";
 import { GainReview } from "./gain-review";
 import { Recipes } from "./recipes";
 import { ProgressDirection } from "./progress-direction";
+import { CloudAccount } from "./cloud-account";
 import Link from "next/link";
 import { TodayV2, NutritionV2 } from "./daily";
 import { TrainingFlow } from "./training-flow";
@@ -355,9 +356,9 @@ export function FitnessApp({ path }: { path: string }) {
               <User size={20} />
             </summary>
             <div>
-              <Link href="/profile">個人資料</Link>
-              <Link href="/learn">Knowledge</Link>
               <Link href="/settings">設定</Link>
+              <Link href="/settings/account">帳號與同步</Link>
+              <Link href="/learn">Knowledge</Link>
               <Link href="/settings/data">資料管理</Link>
               <Link href="/settings/privacy">隱私說明</Link>
             </div>
@@ -2258,18 +2259,22 @@ function SettingsPage({
             ? "隱私說明"
             : path === "settings/data"
               ? "資料管理"
-              : "Settings"
+              : path === "settings/account"
+                ? "帳號與同步"
+                : "Settings"
         }
         description="設定、資料與使用方式，集中在這裡。"
       />
       <div className="subnav">
         <Link href="/settings">一般設定</Link>
-        <Link href="/profile">個人資料</Link>
+        <Link href="/settings/account">帳號與同步</Link>
         <Link href="/settings/privacy">隱私說明</Link>
         <Link href="/settings/data">資料管理</Link>
       </div>
       <div className="narrow stack">
-        {path === "settings/privacy" ? (
+        {path === "settings/account" ? (
+          <CloudAccount />
+        ) : path === "settings/privacy" ? (
           <Card title="本機版隱私說明" icon={ShieldCheck}>
             <div className="stack">
               <p>
