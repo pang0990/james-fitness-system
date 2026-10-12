@@ -1,4 +1,5 @@
 "use client";
+import { AppearanceSettings } from "./appearance";
 import { MetricDetails } from "./trends";
 import { TrainingReview } from "./training-review";
 import { GainReview } from "./gain-review";
@@ -359,6 +360,7 @@ export function FitnessApp({ path }: { path: string }) {
               <Link href="/learn">Knowledge</Link>
               <Link href="/settings">設定</Link>
               <Link href="/settings/data">資料管理</Link>
+              <Link href="/settings/appearance">外觀</Link>
               <Link href="/settings/privacy">隱私說明</Link>
             </div>
           </details>
@@ -2265,11 +2267,14 @@ function SettingsPage({
       <div className="subnav">
         <Link href="/settings">一般設定</Link>
         <Link href="/profile">個人資料</Link>
+        <Link href="/settings/appearance">外觀</Link>
         <Link href="/settings/privacy">隱私說明</Link>
         <Link href="/settings/data">資料管理</Link>
       </div>
       <div className="narrow stack">
-        {path === "settings/privacy" ? (
+        {path === "settings/appearance" ? (
+          <AppearanceSettings notify={notify} />
+        ) : path === "settings/privacy" ? (
           <Card title="本機版隱私說明" icon={ShieldCheck}>
             <div className="stack">
               <p>
@@ -2411,7 +2416,7 @@ function SettingsPage({
               )}
             </Card>
             <Card title="目前環境" icon={Info}>
-              <p>本機資料版 · v0.1</p>
+              <p>本機資料版 · v0.4.0</p>
               <p className="muted" style={{ marginTop: 10 }}>
                 時區 Asia/Taipei · kg / g / ml
                 <br />

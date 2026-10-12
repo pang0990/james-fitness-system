@@ -173,7 +173,7 @@ export function NutritionSummary({ date }: { date: string }) {
     <>
       <div className="macro-summary">
         {(["p", "c", "f"] as const).map((key, i) => (
-          <div key={key}>
+          <div key={key} data-nutrient={key}>
             <span>{["蛋白質", "碳水化合物", "脂肪"][i]}</span>
             <strong>
               {recorded ? total[key] : "—"}

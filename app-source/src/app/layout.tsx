@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { StoreProvider } from "@/lib/store";
 import "./globals.css";
-import {NavigationMotion} from "@/components/navigation-motion";
+import { AppearanceController } from "@/components/appearance";
+import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
 export const metadata: Metadata = {
   title: "James · Fitness System",
@@ -26,8 +27,10 @@ export default function RootLayout({
     <html lang="zh-Hant">
       <body>
         <StoreProvider>
+          <AppearanceController />
           {children}
-          <AppInstall /><NavigationMotion />
+          <AppInstall />
+          <NavigationMotion />
         </StoreProvider>
       </body>
     </html>

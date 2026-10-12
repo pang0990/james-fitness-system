@@ -32,6 +32,7 @@ export function generateStaticParams() {
     "learn/muscle-fiber-types",
     "profile",
     "settings",
+    "settings/appearance",
     "settings/privacy",
     "settings/data",
   ].map((p) => ({ slug: p.split("/") }));

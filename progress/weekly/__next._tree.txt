@@ -1,4 +1,4 @@
-:HL["/james-fitness-system/_next/static/css/91bfca5f9e32e6bf.css","style"]
+:HL["/james-fitness-system/_next/static/css/914e57e59974c5ff.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"progress/weekly","s":["_not-found","_global-error"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"Sope1EwgmGgmaT4eXKk19","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"y3tgbLilOxqceWQ8PgxbF","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}

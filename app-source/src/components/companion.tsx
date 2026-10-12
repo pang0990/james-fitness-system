@@ -1,5 +1,6 @@
 "use client";
 import { Component, useEffect, useRef, useState, type ReactNode } from "react";
+import { useStore } from "@/lib/store";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Group, MathUtils, PointLight } from "three";
 export type CompanionState =
@@ -243,6 +244,7 @@ export function Companion({
   state: CompanionState;
   onTap: () => void;
 }) {
+  const { state: appState } = useStore();
   const [webgl, setWebgl] = useState(false),
     [reduced, setReduced] = useState(false);
   useEffect(() => {
@@ -258,6 +260,7 @@ export function Companion({
     } catch {}
     return () => m.removeEventListener("change", update);
   }, []);
+  if (appState.appearance?.showCompanion === false) return null;
   const fallback = <SVGRenderer state={state} />;
   return (
     <button

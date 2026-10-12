@@ -225,6 +225,7 @@ export type CycleEvent = {
   sessionId?: string;
 };
 export type AppState = {
+  appearance?: { theme: "dark" | "system"; showCompanion: boolean };
   trainingDecisions?: {
     id: string;
     date: string;
@@ -509,6 +510,12 @@ export function validateState(value: unknown): AppState {
     "audit",
   ] as const)
     if (!Array.isArray(s[key])) throw Error("資料不完整");
+  if (
+    s.appearance &&
+    (!["dark", "system"].includes(s.appearance.theme) ||
+      typeof s.appearance.showCompanion !== "boolean")
+  )
+    throw Error("外觀設定格式無效");
   if (s.profile) profileSchema.parse(s.profile);
   const numeric = (n: unknown) => typeof n === "number" && Number.isFinite(n);
   for (const meal of s.meals)

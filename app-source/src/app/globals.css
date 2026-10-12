@@ -1,50 +1,99 @@
 @import "tailwindcss";
 /* Single design system · James Fitness / Luxury Technology */
 :root {
-  --bg: #070708;
-  --paper: #0e0f11;
-  --ink: #f4f2ec;
-  --muted: #a7a6a2;
-  --line: #ffffff18;
-  --gold: #c5a461;
-  --gold-highlight: #e0c783;
-  --gold-deep: #77613a;
-  --dark: #070708;
-  --green: #7bae8b;
-  --danger: #e4867b;
-  --warning: #dbb66c;
+  /* JFS v2.0: foundation → semantic → existing component aliases. */
+  --neutral-950: #070708;
+  --neutral-900: #070708;
+  --neutral-850: #0e0f11;
+  --neutral-800: #0e0f11;
+  --neutral-750: #18191c;
+  --gold-900: #77613a;
+  --gold-700: #a47a34;
+  --gold-500: #c5a461;
+  --gold-300: #e0c783;
+  --gold-100: #f7e8bd;
+  --color-bg-primary: var(--neutral-900);
+  --color-bg-secondary: var(--neutral-850);
+  --color-surface-primary: var(--neutral-800);
+  --color-surface-elevated: var(--neutral-750);
+  --color-brand-primary: var(--gold-500);
+  --color-brand-bright: var(--gold-300);
+  --color-text-primary: #f4f2ec;
+  --color-text-secondary: #c9c7c0;
+  --color-text-tertiary: #a6a49e;
+  --color-text-muted: #8b8984;
+  --color-border-default: #303741;
+  --color-border-active: var(--gold-500);
+  --color-success: #54c69a;
+  --color-warning: #e8b65e;
+  --color-error: #ef777c;
+  --color-info: #6ba9f8;
+  --color-calories: var(--gold-500);
+  --color-protein: var(--color-success);
+  --color-carbs: var(--color-info);
+  --color-fat: var(--color-warning);
+  --color-water: #60c9e8;
+  --color-recovery: #a998f0;
+  --bg: var(--color-bg-primary);
+  --paper: var(--color-surface-primary);
+  --ink: var(--color-text-primary);
+  --muted: var(--color-text-secondary);
+  --line: var(--color-border-default);
+  --gold: var(--color-brand-primary);
+  --gold-highlight: var(--color-brand-bright);
+  --gold-deep: var(--gold-900);
+  --dark: var(--neutral-950);
+  --green: var(--color-success);
+  --danger: var(--color-error);
+  --warning: var(--color-warning);
   --font-body:
-    -apple-system, BlinkMacSystemFont, "Inter", "PingFang TC", "Noto Sans TC",
+    "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "PingFang TC",
     sans-serif;
   --text-xs: 12px;
   --text-sm: 14px;
   --text-base: 16px;
   --text-lg: 22px;
-  --text-display: clamp(32px, 6vw, 52px);
+  --text-display: 32px;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --space-7: 48px;
-  --space-8: 64px;
-  --space-9: 96px;
-  --radius-sm: 10px;
-  --radius: 18px;
-  --radius-lg: 26px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
+  --radius: var(--radius-lg);
   --border: 1px solid var(--line);
-  --shadow: 0 16px 45px #0003;
-  --glass: linear-gradient(130deg, #ffffff0e, #ffffff03);
-  --glow: 0 0 45px #c9ac6d0c;
-  --motion-fast: 140ms;
-  --motion: 240ms;
+  --shadow: 0 12px 32px #0004;
+  --glass-bg: rgba(24, 25, 28, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-blur: 16px;
+  --glass: linear-gradient(
+    130deg,
+    var(--color-surface-elevated),
+    var(--color-surface-primary)
+  );
+  --glow: 0 0 32px #d6ab5918;
+  --motion-fast: 120ms;
+  --motion-normal: 200ms;
+  --motion-slow: 320ms;
+  --motion: var(--motion-normal);
   --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
   --z-nav: 30;
   --z-menu: 50;
   --z-toast: 80;
-  --breakpoint-mobile: 760px;
-  --breakpoint-wide: 1200px;
+  --breakpoint-mobile: 768px;
+  --breakpoint-wide: 1024px;
   color-scheme: dark;
 }
 * {
@@ -54,7 +103,9 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: var(--text-sm)/1.65 var(--font-body);
+  font: var(--text-base)/1.5625 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
 }
 a {
   color: inherit;
@@ -80,7 +131,7 @@ button:active,
   transform: scale(0.975);
 }
 button:disabled {
-  opacity: 0.4;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 button,
@@ -129,7 +180,7 @@ small {
 }
 .eyebrow,
 .section-kicker {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.12em;
   color: var(--muted);
   font-weight: 600;
@@ -225,7 +276,7 @@ small {
   margin-bottom: 32px;
 }
 .breadcrumb {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 2px;
   color: var(--muted);
 }
@@ -252,7 +303,7 @@ small {
   padding: 8px;
   border: var(--border);
   border-radius: var(--radius);
-  background: #222427;
+  background: var(--color-surface-elevated);
   box-shadow: var(--shadow);
 }
 .account-menu a {
@@ -332,7 +383,7 @@ small {
   justify-content: flex-start;
 }
 .button {
-  min-height: 48px;
+  min-height: 52px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -340,7 +391,9 @@ small {
   border-radius: var(--radius-sm);
   padding: 12px 20px;
   color: #181818;
-  background: var(--gold);
+  background: linear-gradient(160deg, var(--gold-highlight), var(--gold));
+  box-shadow: inset 0 1px 0 #f7e8bd70;
+  border-radius: var(--radius-md);
   font-weight: 600;
   text-align: center;
   transition:
@@ -409,7 +462,9 @@ textarea {
   padding: 12px;
   border: var(--border);
   border-radius: var(--radius-sm);
-  background: #101113;
+  background: var(--color-surface-elevated);
+  font-size: 16px;
+  border-radius: var(--radius-md);
   color: var(--ink);
 }
 textarea {
@@ -475,7 +530,7 @@ legend {
 .sheet {
   border: var(--border);
   border-radius: var(--radius-lg);
-  background: #202226;
+  background: var(--color-surface-elevated);
   color: var(--ink);
   width: min(600px, calc(100vw - 32px));
   max-height: 90dvh;
@@ -540,7 +595,7 @@ legend {
   position: absolute;
   right: 0;
   width: 210px;
-  background: #25272a;
+  background: var(--color-surface-elevated);
   padding: 8px;
   border: var(--border);
   border-radius: var(--radius);
@@ -591,7 +646,7 @@ details > p {
   left: 0;
   right: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 3px;
   text-transform: uppercase;
   pointer-events: none;
@@ -634,7 +689,7 @@ details > p {
   gap: 4px;
 }
 .notice-carousel button {
-  min-width: 36px;
+  min-width: 44px;
   min-height: 40px;
   display: grid;
   place-items: center;
@@ -665,7 +720,7 @@ details > p {
 }
 .macro-summary > div > small {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .track {
   height: 3px;
@@ -868,7 +923,7 @@ details > p {
 .chart-axis {
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
 }
 .chart-readout {
@@ -981,7 +1036,7 @@ details > p {
 }
 .muscle-row small {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
 }
 .muscle-row strong {
@@ -1167,7 +1222,7 @@ details > p {
   color: var(--muted);
 }
 .tag {
-  font-size: 10px;
+  font-size: 12px;
   padding: 4px 8px;
   border: var(--border);
   border-radius: 20px;
@@ -1415,8 +1470,12 @@ th {
     padding: 8px;
     border: var(--border);
     border-radius: 24px;
-    background: #151619db;
-    backdrop-filter: blur(18px);
+    background: var(--glass-bg);
+    box-shadow:
+      var(--shadow),
+      inset 0 1px 0 #ffffff0a;
+    border-color: var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
   }
   .bottom-nav > a {
     flex: 1;
@@ -1427,7 +1486,7 @@ th {
     justify-content: center;
     gap: 5px;
     color: var(--muted);
-    font-size: 10px;
+    font-size: 12px;
   }
   .bottom-nav > a {
     position: relative;
@@ -1449,7 +1508,7 @@ th {
     margin-bottom: 110px;
   }
   .card {
-    padding: 20px;
+    padding: 16px;
   }
   .macro-summary {
     gap: 10px;
@@ -1459,10 +1518,10 @@ th {
   }
   .macro-summary strong small {
     display: block;
-    font-size: 11px;
+    font-size: 12px;
   }
   .macro-summary > div > span {
-    font-size: 11px;
+    font-size: 12px;
   }
   .companion-three {
     height: 300px;
@@ -1477,7 +1536,7 @@ th {
     font-size: 12px;
   }
   .notice-carousel button {
-    min-width: 28px;
+    min-width: 44px;
   }
   .sheet {
     width: 100%;
@@ -1505,10 +1564,10 @@ th {
   }
   .status-row strong {
     min-width: 88px;
-    font-size: 11px;
+    font-size: 12px;
   }
   .status-row span {
-    font-size: 11px;
+    font-size: 12px;
   }
   .month-grid {
     gap: 3px;
@@ -1626,7 +1685,7 @@ th {
 }
 .workout-active {
   background:
-    radial-gradient(ellipse at 50% 0, #c5a46107, transparent 40%), #050506;
+    radial-gradient(ellipse at 50% 0, #c5a46107, transparent 40%), var(--bg);
 }
 .workout-active .exercise-focus {
   view-transition-name: workout-stage;
@@ -1656,7 +1715,7 @@ th {
   touch-action: pan-y;
 }
 .page-today .simple-heading > .muted {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.12em;
 }
 .daily-status .recovery-values strong {
@@ -1734,4 +1793,154 @@ html[data-transition="immersive"]::view-transition-new(root),
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Shared v2 component states and data semantics. */
+.button:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.button.tertiary {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: none;
+}
+.button.danger,
+.button.destructive {
+  background: var(--color-error);
+  color: var(--neutral-950);
+  box-shadow: none;
+}
+.button[aria-busy="true"] {
+  cursor: progress;
+  opacity: 0.7;
+}
+.button.secondary {
+  box-shadow: none;
+  background: var(--color-bg-secondary);
+}
+.macro-summary > div {
+  padding: 12px;
+  border: var(--border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+}
+.macro-summary [data-nutrient="p"] {
+  --nutrient: var(--color-protein);
+}
+.macro-summary [data-nutrient="c"] {
+  --nutrient: var(--color-carbs);
+}
+.macro-summary [data-nutrient="f"] {
+  --nutrient: var(--color-fat);
+}
+.macro-summary .track {
+  height: 6px;
+  border-radius: var(--radius-full);
+}
+.macro-summary .track > span {
+  background: var(--nutrient);
+}
+.macro-summary > div > span {
+  color: var(--color-text-secondary);
+}
+.calorie-line {
+  color: var(--color-calories);
+}
+.companion-stage {
+  background: radial-gradient(ellipse at 50% 45%, #d6ab5914, transparent 65%);
+}
+.workout-active .card,
+.workout-active input {
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.workout-active input {
+  font-size: 18px;
+  min-height: 52px;
+}
+.sheet {
+  background: var(--color-surface-elevated);
+  border-radius: var(--radius-2xl);
+}
+body:has(dialog[open]) .bottom-nav {
+  visibility: hidden;
+}
+@media (max-width: 767px) {
+  .macro-summary {
+    gap: 8px;
+  }
+  .macro-summary > div {
+    padding: 10px 8px;
+  }
+  .button.small {
+    min-height: 44px;
+  }
+  .notice-carousel button {
+    min-height: 44px;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .bottom-nav,
+  .sheet,
+  .account-menu {
+    background: var(--color-surface-elevated);
+    backdrop-filter: none;
+  }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .bottom-nav {
+    background: var(--color-surface-elevated);
+  }
+}
+
+/* Theme overrides preserve semantic data colours with readable light variants. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --neutral-950: #edeae3;
+  --neutral-900: #f5f3ee;
+  --neutral-850: #ffffff;
+  --neutral-800: #ffffff;
+  --neutral-750: #eeece6;
+  --color-text-primary: #20211f;
+  --color-text-secondary: #51534e;
+  --color-text-tertiary: #62645f;
+  --color-text-muted: #686a64;
+  --color-border-default: #d1d0c8;
+  --color-brand-primary: #806020;
+  --color-brand-bright: #a57e35;
+  --color-success: #227052;
+  --color-warning: #875b16;
+  --color-error: #ad3543;
+  --color-info: #2865a8;
+  --color-water: #17687f;
+  --color-recovery: #6c50ac;
+  --color-calories: #806020;
+  --glass-bg: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(30, 30, 28, 0.16);
+  --shadow: 0 12px 32px #20201812;
+}
+:root[data-theme="light"]
+  .button:not(.secondary):not(.tertiary):not(.danger):not(.destructive) {
+  background: #c5a461;
+  color: #191a18;
+}
+:root[data-theme="light"] .track {
+  background: #deddd6;
+}
+:root[data-theme="light"] .rest-dock,
+:root[data-theme="light"] .account-menu,
+:root[data-theme="light"] .nav-item .rail-label {
+  background: var(--color-surface-elevated);
+}
+:root[data-theme="light"] .sheet {
+  color: var(--ink);
+}
+:root[data-theme="light"] .review-glass,
+:root[data-theme="light"] .recipe-card {
+  background: var(--glass);
+}
+.companion-stage:not(:has(.companion-three)) {
+  padding-bottom: 0;
+  border-bottom: 0;
+  background: none;
 }
