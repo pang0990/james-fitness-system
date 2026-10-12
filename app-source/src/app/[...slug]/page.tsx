@@ -1,7 +1,22 @@
 import { FitnessApp } from "@/components/fitness-app";
+import { LegacyRoute } from "@/components/legacy-route";
 export const dynamicParams = false;
 export function generateStaticParams() {
   return [
+    "settings/profile",
+    "settings/body",
+    "settings/nutrition",
+    "settings/training",
+    "settings/recovery",
+    "settings/notifications",
+    "settings/account",
+    "settings/accessibility",
+    "settings/about",
+    "nutrition/meals",
+    "training/plan",
+    "training/calendar",
+    "training/history",
+    "progress/review",
     "today",
     "onboarding",
     "login",
@@ -43,5 +58,17 @@ export default async function Page({
   params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await params;
+  const aliases: Record<string, string> = {
+    profile: "settings/profile",
+    "training/cycle": "training/plan",
+    "training/templates": "training/plan",
+    "progress/weekly": "progress/review",
+    "progress/recommendations": "progress/review",
+    login: "settings/account",
+    signup: "settings/account",
+    "nutrition/log": "nutrition",
+  };
+  const target = aliases[slug.join("/")];
+  if (target) return <LegacyRoute target={"/" + target} />;
   return <FitnessApp path={slug.join("/")} />;
 }

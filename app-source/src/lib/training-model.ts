@@ -26,6 +26,10 @@ export type MuscleTarget = {
   allocation: number[];
 };
 export type ScheduleEntry = {
+  trainingDayId?: string;
+  extra?: boolean;
+  cleared?: boolean;
+  source?: "single"|"batch";
   id: string;
   date: string;
   kind: "train" | "rest" | "temporary_rest";
@@ -44,9 +48,15 @@ export const warmups: WarmupItem[] = [
   { id: "squat", name: "徒手深蹲", minutes: 1, video_url: null },
   { id: "band", name: "彈力帶拉開", minutes: 1, video_url: null },
 ];
-export function scheduleKind(state: AppState, date: string) {
-  return state.schedule?.filter((e) => e.date === date).at(-1)?.kind ?? "train";
+export function scheduleEntry(state:AppState,date:string) {
+ const entries=state.schedule?.filter(e=>e.date===date)??[];
+ const single=entries.filter(e=>e.source!=="batch").at(-1);
+ if(single&&!single.cleared)return single;
+ const batch=entries.filter(e=>e.source==="batch").at(-1);if(batch)return batch;
+ const weekday=new Date(date+"T12:00:00Z").getUTCDay();
+ return {kind:state.weeklySchedule?.includes(weekday)?"train":state.weeklySchedule?"rest":"train"} as ScheduleEntry;
 }
+export function scheduleKind(state:AppState,date:string){return scheduleEntry(state,date).kind;}
 export function performance(state: AppState) {
   const map = new Map<
     string,

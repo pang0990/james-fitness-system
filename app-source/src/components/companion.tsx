@@ -269,7 +269,14 @@ export function Companion({
       aria-label={`電子寵物：${labels[state]}`}
     >
       <Boundary fallback={fallback}>
-        {webgl ? <ThreeRenderer state={state} reduced={reduced} /> : fallback}
+        {webgl ? (
+          <ThreeRenderer
+            state={state}
+            reduced={reduced || appState.preferences?.reduceMotion === true}
+          />
+        ) : (
+          fallback
+        )}
       </Boundary>
       <span>{labels[state]}</span>
     </button>

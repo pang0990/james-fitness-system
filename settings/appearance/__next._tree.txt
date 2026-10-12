@@ -1,4 +1,4 @@
-:HL["/james-fitness-system/_next/static/css/914e57e59974c5ff.css","style"]
+:HL["/james-fitness-system/_next/static/css/894024a60d59eeed.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"settings/appearance","s":["_not-found","_global-error"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"y3tgbLilOxqceWQ8PgxbF","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"u6chi6JysMc6AmyEbXgNe","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}

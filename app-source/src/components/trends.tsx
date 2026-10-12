@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { recoveryEntries } from "@/lib/recovery";
 import { useState } from "react";
 import { ChevronRight, Plus } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -133,8 +134,16 @@ export function metricPoints(state: AppState, key: string): Point[] {
       .sort()
       .map((date) => ({ date, value: waterTotal(state, date) }));
   if (["sleep", "fatigue", "soreness", "stress"].includes(key)) {
-    const byDate = new Map(state.recoveries.map((r) => [r.date, r]));
+    const mapped = new Map<string, any>();
+    for (const r of recoveryEntries(state)) {
+      if (r.type === "pain") continue;
+      const row = mapped.get(r.date) ?? { date: r.date };
+      row[r.type] = r.type === "sleep" ? r.value / 60 : r.value;
+      mapped.set(r.date, row);
+    }
+    const byDate = mapped;
     return [...byDate.values()]
+      .filter((r) => Number.isFinite(r[key]))
       .sort((a, b) => a.date.localeCompare(b.date))
       .map((r) => ({
         date: r.date,
@@ -190,7 +199,7 @@ export function Trends({ date }: { date: string }) {
           items={[
             ["/progress/body", "記錄體重"],
             ["/progress/recovery", "記錄恢復"],
-            ["/progress/weekly", "週回顧"],
+            ["/progress/review", "週回顧"],
           ]}
         />
       </PageTitle>
@@ -272,7 +281,7 @@ export function Trends({ date }: { date: string }) {
       </section>
       <Link
         className="simple-row"
-        href={pending ? "/progress/recommendations" : "/progress/weekly"}
+        href={pending ? "/progress/review" : "/progress/review"}
       >
         <span>
           <strong>Weekly Review</strong>

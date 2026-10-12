@@ -1,0 +1,718 @@
+{
+  "Upper / Lower": [
+    {
+      "name": "Upper A",
+      "exercises": [
+        {
+          "name": "Bench Press",
+          "muscle": "Chest",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Chest-Supported Row",
+          "muscle": "Back",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Lat Pulldown",
+          "muscle": "Back",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Incline DB Press",
+          "muscle": "Chest",
+          "sets": 2,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Lateral Raise",
+          "muscle": "Shoulders",
+          "sets": 2,
+          "reps": "12–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Curl",
+          "muscle": "Biceps",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Triceps Pushdown",
+          "muscle": "Triceps",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    },
+    {
+      "name": "Lower A",
+      "exercises": [
+        {
+          "name": "Squat",
+          "muscle": "Quads",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Romanian Deadlift",
+          "muscle": "Hamstrings",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Leg Press",
+          "muscle": "Quads",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Leg Curl",
+          "muscle": "Hamstrings",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Standing Calf Raise",
+          "muscle": "Calves",
+          "sets": 3,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Cable Crunch",
+          "muscle": "Core",
+          "sets": 2,
+          "reps": "10–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    },
+    {
+      "name": "Upper B",
+      "exercises": [
+        {
+          "name": "Overhead Press",
+          "muscle": "Shoulders",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Pull-Up / Lat Pulldown",
+          "muscle": "Back",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Seated Cable Row",
+          "muscle": "Back",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Dumbbell Bench Press",
+          "muscle": "Chest",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Rear-Delt Fly",
+          "muscle": "Shoulders",
+          "sets": 2,
+          "reps": "12–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Curl",
+          "muscle": "Biceps",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Overhead Triceps Extension",
+          "muscle": "Triceps",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    },
+    {
+      "name": "Lower B",
+      "exercises": [
+        {
+          "name": "Hack Squat / Leg Press",
+          "muscle": "Quads",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Hip Thrust",
+          "muscle": "Glutes",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Bulgarian Split Squat",
+          "muscle": "Quads",
+          "sets": 2,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Leg Curl",
+          "muscle": "Hamstrings",
+          "sets": 3,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Calf Raise",
+          "muscle": "Calves",
+          "sets": 3,
+          "reps": "10–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Hanging Leg Raise",
+          "muscle": "Core",
+          "sets": 2,
+          "reps": "10–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    }
+  ],
+  "PPL": [
+    {
+      "name": "Push",
+      "exercises": [
+        {
+          "name": "Bench Press",
+          "muscle": "Chest",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Incline DB Press",
+          "muscle": "Chest",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Shoulder Press",
+          "muscle": "Shoulders",
+          "sets": 2,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Cable Fly",
+          "muscle": "Chest",
+          "sets": 2,
+          "reps": "12–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Lateral Raise",
+          "muscle": "Shoulders",
+          "sets": 3,
+          "reps": "12–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Triceps Pushdown",
+          "muscle": "Triceps",
+          "sets": 3,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    },
+    {
+      "name": "Pull",
+      "exercises": [
+        {
+          "name": "Pull-Up / Lat Pulldown",
+          "muscle": "Back",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Chest-Supported Row",
+          "muscle": "Back",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Seated Cable Row",
+          "muscle": "Back",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Reverse Fly",
+          "muscle": "Shoulders",
+          "sets": 3,
+          "reps": "12–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "EZ-Bar Curl",
+          "muscle": "Biceps",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Hammer Curl",
+          "muscle": "Biceps",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    },
+    {
+      "name": "Legs",
+      "exercises": [
+        {
+          "name": "Squat",
+          "muscle": "Quads",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Romanian Deadlift",
+          "muscle": "Hamstrings",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Leg Press",
+          "muscle": "Quads",
+          "sets": 3,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Leg Curl",
+          "muscle": "Hamstrings",
+          "sets": 3,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Calf Raise",
+          "muscle": "Calves",
+          "sets": 3,
+          "reps": "10–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Abs",
+          "muscle": "Core",
+          "sets": 2,
+          "reps": "10–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    }
+  ],
+  "五分化": [
+    {
+      "name": "Chest",
+      "exercises": [
+        {
+          "name": "Bench Press",
+          "muscle": "Chest",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Incline DB Press",
+          "muscle": "Chest",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Machine Chest Press",
+          "muscle": "Chest",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Pec Deck / Cable Fly",
+          "muscle": "Chest",
+          "sets": 2,
+          "reps": "12–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    },
+    {
+      "name": "Back",
+      "exercises": [
+        {
+          "name": "Pull-Up / Lat Pulldown",
+          "muscle": "Back",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Chest-Supported Row",
+          "muscle": "Back",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Seated Cable Row",
+          "muscle": "Back",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Straight-Arm Pulldown",
+          "muscle": "Back",
+          "sets": 2,
+          "reps": "12–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    },
+    {
+      "name": "Legs",
+      "exercises": [
+        {
+          "name": "Squat",
+          "muscle": "Quads",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Romanian Deadlift",
+          "muscle": "Hamstrings",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Leg Press",
+          "muscle": "Quads",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Leg Curl",
+          "muscle": "Hamstrings",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Calf Raise",
+          "muscle": "Calves",
+          "sets": 3,
+          "reps": "10–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    },
+    {
+      "name": "Shoulders",
+      "exercises": [
+        {
+          "name": "Overhead Press",
+          "muscle": "Shoulders",
+          "sets": 3,
+          "reps": "6–10",
+          "rir": 2,
+          "restSeconds": 180,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Lateral Raise",
+          "muscle": "Shoulders",
+          "sets": 4,
+          "reps": "12–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Reverse Fly / Rear-Delt Machine",
+          "muscle": "Shoulders",
+          "sets": 3,
+          "reps": "12–20",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    },
+    {
+      "name": "Arms",
+      "exercises": [
+        {
+          "name": "EZ-Bar Curl",
+          "muscle": "Biceps",
+          "sets": 3,
+          "reps": "8–12",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Incline Curl",
+          "muscle": "Biceps",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Hammer Curl",
+          "muscle": "Biceps",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Triceps Pushdown",
+          "muscle": "Triceps",
+          "sets": 3,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        },
+        {
+          "name": "Overhead Triceps Extension",
+          "muscle": "Triceps",
+          "sets": 2,
+          "reps": "10–15",
+          "rir": 2,
+          "restSeconds": 120,
+          "allowRestPause": false,
+          "allowDropSet": false
+        }
+      ]
+    }
+  ]
+}

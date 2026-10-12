@@ -1,5 +1,9 @@
 "use client";
 import { AppearanceSettings } from "./appearance";
+import { SettingsHub } from "./settings-hub";
+import { MealSettings } from "./meal-settings";
+import { DataTools } from "./data-tools";
+import { RecoveryHistory } from "./recovery-log";
 import { MetricDetails } from "./trends";
 import { TrainingReview } from "./training-review";
 import { GainReview } from "./gain-review";
@@ -356,7 +360,7 @@ export function FitnessApp({ path }: { path: string }) {
               <User size={20} />
             </summary>
             <div>
-              <Link href="/profile">個人資料</Link>
+              <Link href="/settings/profile">個人資料</Link>
               <Link href="/learn">Knowledge</Link>
               <Link href="/settings">設定</Link>
               <Link href="/settings/data">資料管理</Link>
@@ -384,6 +388,11 @@ export function FitnessApp({ path }: { path: string }) {
           </div>
         ) : (
           <div key={path}>
+            {path.includes("/") && path !== "training/session" && (
+              <Link className="text-link" href={"/" + section}>
+                ← {section === "settings" ? "Settings" : section}
+              </Link>
+            )}
             {section === "onboarding" || section === "profile" ? (
               <Onboarding editing={section === "profile"} notify={notify} />
             ) : section === "login" || section === "signup" ? (
@@ -391,7 +400,10 @@ export function FitnessApp({ path }: { path: string }) {
             ) : section === "today" ? (
               <TodayV2 date={date} notify={notify} />
             ) : section === "nutrition" ? (
-              path === "nutrition/plan" && state.profile?.goal === "GAIN" ? (
+              path === "nutrition/meals" ? (
+                <MealSettings notify={notify} />
+              ) : path === "nutrition/plan" &&
+                state.profile?.goal === "GAIN" ? (
                 <GainReview date={date} notify={notify} />
               ) : path === "nutrition/recipes" ? (
                 <Recipes date={date} notify={notify} />
@@ -409,7 +421,11 @@ export function FitnessApp({ path }: { path: string }) {
                 <TrainingFlow path={path} date={date} notify={notify} />
               )
             ) : section === "progress" ? (
-              ["progress/weekly", "progress/recommendations"].includes(path) ? (
+              [
+                "progress/review",
+                "progress/weekly",
+                "progress/recommendations",
+              ].includes(path) ? (
                 <div className="daily-page">
                   {state.profile?.goal === "GAIN" ? (
                     <GainReview date={date} notify={notify} />
@@ -424,6 +440,12 @@ export function FitnessApp({ path }: { path: string }) {
                   )}
                   <TrainingReview date={date} />
                 </div>
+              ) : path === "progress/recovery" ? (
+                <div className="daily-page">
+                  <Heading eyebrow="" title="Recovery" />
+                  <RecoveryHistory />
+                  <MetricDetails date={date} group="recovery" />
+                </div>
               ) : path === "progress" ? (
                 <ProgressDirection date={date} />
               ) : (
@@ -437,7 +459,11 @@ export function FitnessApp({ path }: { path: string }) {
             ) : section === "learn" ? (
               <Knowledge path={path} />
             ) : section === "settings" ? (
-              <SettingsPage path={path} notify={notify} />
+              ["settings/data", "settings/privacy"].includes(path) ? (
+                <SettingsPage path={path} notify={notify} />
+              ) : (
+                <SettingsHub path={path} notify={notify} />
+              )
             ) : null}
           </div>
         )}
@@ -1707,7 +1733,7 @@ function Progress({
                 <Empty
                   title="尚無飲食紀錄"
                   detail="開始記錄後即可查看每天營養素。"
-                  href="/nutrition/log"
+                  href="/nutrition"
                   action="記錄一餐"
                 />
               )}
@@ -1874,10 +1900,7 @@ function Progress({
                   次實測體重。
                 </p>
                 <div className="form-actions">
-                  <Link
-                    className="button secondary"
-                    href="/progress/recommendations"
-                  >
+                  <Link className="button secondary" href="/progress/review">
                     查看 CUT 規則結果
                     <ArrowRight size={14} />
                   </Link>
@@ -2266,7 +2289,7 @@ function SettingsPage({
       />
       <div className="subnav">
         <Link href="/settings">一般設定</Link>
-        <Link href="/profile">個人資料</Link>
+        <Link href="/settings/profile">個人資料</Link>
         <Link href="/settings/appearance">外觀</Link>
         <Link href="/settings/privacy">隱私說明</Link>
         <Link href="/settings/data">資料管理</Link>
@@ -2298,6 +2321,7 @@ function SettingsPage({
           </Card>
         ) : path === "settings/data" ? (
           <>
+            <DataTools notify={notify} />
             <Card title="匯出與備份" icon={Download}>
               <p className="muted">
                 包含個人設定、飲食、飲水、體重、訓練、計畫版本與操作歷史。換裝置前先保留一份。

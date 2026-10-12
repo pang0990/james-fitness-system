@@ -1897,16 +1897,16 @@ body:has(dialog[open]) .bottom-nav {
 :root[data-theme="light"] {
   color-scheme: light;
   --neutral-950: #edeae3;
-  --neutral-900: #f5f3ee;
+  --neutral-900: #f7f6f2;
   --neutral-850: #ffffff;
   --neutral-800: #ffffff;
   --neutral-750: #eeece6;
-  --color-text-primary: #20211f;
-  --color-text-secondary: #51534e;
-  --color-text-tertiary: #62645f;
+  --color-text-primary: #111214;
+  --color-text-secondary: #4c4d50;
+  --color-text-tertiary: #6b6c70;
   --color-text-muted: #686a64;
   --color-border-default: #d1d0c8;
-  --color-brand-primary: #806020;
+  --color-brand-primary: #7a6332;
   --color-brand-bright: #a57e35;
   --color-success: #227052;
   --color-warning: #875b16;
@@ -1944,3 +1944,14 @@ body:has(dialog[open]) .bottom-nav {
   border-bottom: 0;
   background: none;
 }
+
+:root[data-reduce-motion="true"] *, :root[data-reduce-motion="true"] *::before, :root[data-reduce-motion="true"] *::after { animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important; }
+:root[data-reduce-transparency="true"] .bottom-nav, :root[data-reduce-transparency="true"] .sheet, :root[data-reduce-transparency="true"] .rest-dock {backdrop-filter:none;background:var(--color-surface-elevated);}
+.plan-exercise {border-top:var(--border);padding-block:16px;}
+
+.inline-nutrition > :not(dialog) {display:none;}
+.inline-nutrition {display:contents;}
+body:has(dialog[open]) {overflow:hidden;}
+
+.food-with-favorite {display:flex;align-items:center;}
+.food-list .favorite-food {width:auto;flex-shrink:0;min-height:44px;padding:8px;color:var(--gold);font-size:12px;}

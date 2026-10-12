@@ -9,45 +9,60 @@ import {
   stages,
   muscleCompleted,
   scheduleKind,
+  scheduleEntry,
   warmups,
   type MuscleTarget,
 } from "@/lib/training-model";
+import { nextDayIndex, dayId } from "@/lib/training-queue";
 import { Field, Sheet, uid, stamp } from "./daily";
 export function TrainingCalendar({ date }: { date: string }) {
   const { state, save } = useStore();
   const [month, setMonth] = useState(date.slice(0, 7)),
     [selected, setSelected] = useState<string | null>(null),
-    [move, setMove] = useState("");
+    [start, setStart] = useState(date),
+    [end, setEnd] = useState(addDays(date, 6)),
+    [week, setWeek] = useState<number[]>(state.weeklySchedule ?? [1, 2, 4, 5]);
+  const plan = activeCycle(state),
+    next = plan ? plan.days[nextDayIndex(state, plan)]?.name : "尚未設定";
   const first = month + "-01",
     length = new Date(
       Number(month.slice(0, 4)),
       Number(month.slice(5)),
       0,
     ).getDate(),
-    offset = new Date(first + "T12:00:00").getDay();
-  const cycle = activeCycle(state);
-  const latestEvent =
-    state.cycleEvents?.filter((e) => e.cycleId === cycle?.id).length ?? 0;
+    weekStart = Number(state.preferences?.weekStart ?? 1),
+    offset = (new Date(first + "T12:00:00Z").getUTCDay() - weekStart + 7) % 7;
   function change(n: number) {
-    const d = new Date(first + "T12:00:00");
-    d.setMonth(d.getMonth() + n);
-    setMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    const d = new Date(first + "T12:00:00Z");
+    d.setUTCMonth(d.getUTCMonth() + n);
+    setMonth(d.toISOString().slice(0, 7));
   }
-  function put(kind: "train" | "rest" | "temporary_rest") {
-    save("更新訓練日曆", (s) =>
-      (s.schedule ??= []).push({
-        id: uid(),
-        date: selected!,
-        kind,
-        createdAt: stamp(),
-      }),
-    );
-    setSelected(null);
+  function put(
+    kind: "train" | "rest",
+    trainingDayId?: string,
+    extra = false,
+    cleared = false,
+  ) {
+    if (
+      save("更新單日安排", (s) => {
+        (s.schedule ??= []).push({
+          id: uid(),
+          date: selected!,
+          kind,
+          trainingDayId,
+          extra,
+          cleared,
+          source: "single",
+          createdAt: stamp(),
+        });
+      })
+    )
+      setSelected(null);
   }
   return (
     <section className="calendar-section">
       <div className="card-head">
-        <h2>{month.replace("-", " / ")}</h2>
+        <h2>{month}</h2>
         <div>
           <button
             className="icon-button"
@@ -66,93 +81,163 @@ export function TrainingCalendar({ date }: { date: string }) {
         </div>
       </div>
       <div className="month-grid">
-        {"日一二三四五六".split("").map((d) => (
-          <small key={d}>{d}</small>
+        {Array.from({ length: 7 }, (_, i) => (
+          <small key={i}>{"日一二三四五六"[(i + weekStart) % 7]}</small>
         ))}
         {Array.from({ length: offset }, (_, i) => (
-          <span key={"blank" + i} />
+          <span key={"b" + i} />
         ))}
         {Array.from({ length }, (_, i) => {
-          const day = addDays(first, i),
-            kind = scheduleKind(state, day),
-            done = state.sessions.find(
-              (s) => s.date === day && s.status === "completed",
+          const d = addDays(first, i),
+            entry = scheduleEntry(state, d),
+            done = state.sessions.some(
+              (s) =>
+                (s.workoutDate ?? s.date) === d && s.status === "completed",
             );
-          let advance = 0;
-          for (let d = date; d < day; d = addDays(d, 1)) {
-            if (
-              scheduleKind(state, d) === "train" &&
-              !state.sessions.some(
-                (s) => s.date === d && s.status === "completed",
-              )
-            )
-              advance++;
-          }
-          const projected =
-            cycle?.days[(latestEvent + advance) % cycle.days.length]?.name;
           return (
             <button
-              key={day}
-              className={`${kind !== "train" ? "rest-day" : ""} ${day === date ? "is-today" : ""}`}
-              onClick={() => {
-                setSelected(day);
-                setMove("");
-              }}
+              key={d}
+              className={`${entry.kind !== "train" ? "rest-day" : ""} ${d === date ? "is-today" : ""}`}
+              onClick={() => setSelected(d)}
             >
               <strong>{i + 1}</strong>
               <small>
                 {done
                   ? "✓"
-                  : kind === "rest"
+                  : entry.kind !== "train"
                     ? "Rest"
-                    : kind === "temporary_rest"
-                      ? "Temp"
-                      : day >= date && cycle
-                        ? projected
-                        : "—"}
+                    : entry.extra
+                      ? "Extra"
+                      : entry.trainingDayId
+                        ? (plan?.days.find(
+                            (x, j) => dayId(plan, j) === entry.trainingDayId,
+                          )?.name ?? "已移除")
+                        : d === date
+                          ? next
+                          : "接續順序"}
               </small>
             </button>
           );
         })}
       </div>
       <p className="muted">
-        點日期安排休息或移動休息日。休息不跳過 Cycle Day；營養日型另行設定。
+        未完成的訓練日仍排在下一次。排程不改變營養日類型。
       </p>
+      <details className="card">
+        <summary>批次安排／每週重複</summary>
+        <div className="two-actions">
+          {[0, 1].map((n) => (
+            <button
+              className="button secondary"
+              key={n}
+              onClick={() => {
+                const weekday =
+                  (new Date(date + "T12:00:00Z").getUTCDay() - weekStart + 7) %
+                  7;
+                const d = addDays(date, -weekday + n * 7);
+                setStart(d);
+                setEnd(addDays(d, 6));
+              }}
+            >
+              {n ? "下週" : "本週"}
+            </button>
+          ))}
+        </div>
+        <Field label="開始日期">
+          <input
+            type="date"
+            value={start}
+            onChange={(e) => setStart(e.target.value)}
+          />
+        </Field>
+        <Field label="結束日期">
+          <input
+            type="date"
+            value={end}
+            onChange={(e) => setEnd(e.target.value)}
+          />
+        </Field>
+        {Array.from({ length: 7 }, (_, i) => (
+          <label className="check" key={i}>
+            <input
+              type="checkbox"
+              checked={week.includes(i)}
+              onChange={(e) =>
+                setWeek(
+                  e.target.checked ? [...week, i] : week.filter((x) => x !== i),
+                )
+              }
+            />
+            星期{"日一二三四五六"[i]}訓練
+          </label>
+        ))}
+        <button
+          className="button"
+          onClick={() => {
+            if (
+              !start ||
+              !end ||
+              start > end ||
+              Date.parse(end) - Date.parse(start) > 366 * 86400000
+            )
+              return;
+            save("批次安排日期", (s) => {
+              for (let d = start; d <= end; d = addDays(d, 1))
+                (s.schedule ??= []).push({
+                  id: uid(),
+                  date: d,
+                  kind: week.includes(new Date(d + "T12:00:00Z").getUTCDay())
+                    ? "train"
+                    : "rest",
+                  source: "batch",
+                  createdAt: stamp(),
+                });
+            });
+          }}
+        >
+          套用日期範圍
+        </button>
+        <button
+          className="button secondary"
+          onClick={() =>
+            save("每週重複安排", (s) => {
+              s.weeklySchedule = week;
+            })
+          }
+        >
+          每週重複
+        </button>
+      </details>
       {selected && (
         <Sheet title={selected} onClose={() => setSelected(null)}>
           <div className="action-list">
-            <button onClick={() => put("train")}>
-              Training Day · 接續下一個 Cycle Day
-            </button>
-            <button onClick={() => put("rest")}>Rest Day</button>
-            <button onClick={() => put("temporary_rest")}>
-              Temporary Rest · 順延訓練
+            <button onClick={() => put("train")}>照訓練順序</button>
+            <button onClick={() => put("rest")}>今天休息</button>
+            {plan?.days.map((d, i) => (
+              <button
+                key={dayId(plan, i)}
+                onClick={() => put("train", dayId(plan, i))}
+              >
+                今天改練 {d.name}
+              </button>
+            ))}
+            {plan && (
+              <button
+                onClick={() =>
+                  put(
+                    "train",
+                    dayId(plan, Math.max(0, nextDayIndex(state, plan))),
+                    true,
+                  )
+                }
+              >
+                額外加一個 Workout
+              </button>
+            )}
+            <button onClick={() => put("train", undefined, false, true)}>
+              清除這天的更改
             </button>
           </div>
-          <Field label="移動此日安排至">
-            <input
-              type="date"
-              value={move}
-              onChange={(e) => setMove(e.target.value)}
-            />
-          </Field>
-          <button
-            disabled={!move || move === selected}
-            className="button secondary"
-            onClick={() => {
-              save("交換訓練日安排", (s) => {
-                const a = scheduleKind(s, selected),
-                  b = scheduleKind(s, move);
-                (s.schedule ??= []).push(
-                  { id: uid(), date: selected, kind: b, createdAt: stamp() },
-                  { id: uid(), date: move, kind: a, createdAt: stamp() },
-                );
-              });
-              setSelected(null);
-            }}
-          >
-            交換日期
-          </button>
         </Sheet>
       )}
     </section>

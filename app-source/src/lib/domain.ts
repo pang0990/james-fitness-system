@@ -170,11 +170,25 @@ export type Session = {
   id: string;
   date: string;
   name: string;
-  status: "in_progress" | "completed";
+  status: "in_progress" | "completed" | "discarded";
+  isExtra?: boolean;
+  workoutDate?: string;
+  scheduledDate?: string;
+  pausedAt?: string;
+  pausedDuration?: number;
+  activeDuration?: number;
+  elapsedDuration?: number;
+  discardedAt?: string;
+  trainingDayId?: string;
+  round?: number;
   exercises: {
     id: string;
     name: string;
     sets: Segment[];
+    restSeconds?: number;
+    plannedSets?: number;
+    reps?: string;
+    rir?: number;
     muscle?: string;
     allowRestPause?: boolean;
     allowDropSet?: boolean;
@@ -214,17 +228,55 @@ export type Cycle = {
   stage?: "Intensity" | "Frequency" | "Volume" | "Deload" | "Next Cycle";
   id: string;
   name: string;
-  days: { name: string }[];
+  days: {
+    name: string;
+    id?: string;
+    exercises?: {
+      name: string;
+      muscle: string;
+      sets: number;
+      reps: string;
+      rir: number;
+      restSeconds: number;
+      allowRestPause: boolean;
+      allowDropSet: boolean;
+    }[];
+  }[];
+  pending?: string[];
+  round?: number;
   createdAt: string;
 };
 export type CycleEvent = {
   id: string;
   cycleId: string;
-  type: "completed" | "skipped";
+  type: "completed" | "skipped" | "skipped_for_round";
+  trainingDayId?: string;
   date: string;
   sessionId?: string;
 };
+export type RecoveryEntry = {
+  id: string;
+  date: string;
+  type: "sleep" | "fatigue" | "stress" | "soreness" | "pain";
+  value: number;
+  area?: string;
+  side?: string;
+  safetyLevel?: number;
+  flags?: string[];
+  createdAt: string;
+};
 export type AppState = {
+  favoriteFoods?: string[];
+  weeklySchedule?: number[];
+  recoveryEntries?: RecoveryEntry[];
+  dismissedNotices?: Record<string, string>;
+  preferences?: Record<string, string | number | boolean>;
+  goalHistory?: {
+    id: string;
+    goal: "CUT" | "GAIN";
+    date: string;
+    previousGoal?: "CUT" | "GAIN";
+  }[];
   appearance?: { theme: "dark" | "system"; showCompanion: boolean };
   trainingDecisions?: {
     id: string;
@@ -525,5 +577,49 @@ export function validateState(value: unknown): AppState {
       )
     )
       throw Error("飲食資料無效");
+  if (s.sessions.filter((x) => x.status === "in_progress").length > 1)
+    throw Error("備份含多個進行中訓練，請先處理衝突");
+  if (
+    s.recoveryEntries &&
+    (!Array.isArray(s.recoveryEntries) ||
+      s.recoveryEntries.some(
+        (r) =>
+          !r.id ||
+          !/^\d{4}-\d{2}-\d{2}$/.test(r.date) ||
+          !["sleep", "fatigue", "stress", "soreness", "pain"].includes(
+            r.type,
+          ) ||
+          !numeric(r.value) ||
+          r.value < 0 ||
+          r.value > (r.type === "sleep" ? 1440 : r.type === "pain" ? 10 : 5),
+      ))
+  )
+    throw Error("恢復紀錄格式無效");
+  if (
+    s.cycles &&
+    s.cycles.some(
+      (c) =>
+        !Array.isArray(c.days) ||
+        !c.days.length ||
+        c.days.some(
+          (d) =>
+            !d.name ||
+            d.exercises?.some(
+              (e) =>
+                !e.name ||
+                !numeric(e.sets) ||
+                e.sets < 1 ||
+                e.sets > 100 ||
+                !numeric(e.restSeconds) ||
+                e.restSeconds < 1 ||
+                e.restSeconds > 3600 ||
+                !numeric(e.rir) ||
+                e.rir < 0 ||
+                e.rir > 10,
+            ),
+        ),
+    )
+  )
+    throw Error("訓練計畫格式無效");
   return s;
 }

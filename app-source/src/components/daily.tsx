@@ -1,5 +1,8 @@
 "use client";
 import Link from "next/link";
+import { RecoveryQuickLog } from "./recovery-log";
+import { latestRecovery } from "@/lib/recovery";
+import { nextDayIndex } from "@/lib/training-queue";
 import { Companion, type CompanionState as PetState } from "./companion";
 import { NoticeCarousel } from "./notices";
 import {
@@ -232,6 +235,8 @@ export function TodayV2({
       : "idle",
   );
   const [adjust, setAdjust] = useState(false);
+  const [quickFood, setQuickFood] = useState(false);
+  const [quickDate, setQuickDate] = useState<string | null>(null);
   const current = state.sessions.find((s) => s.status === "in_progress");
   const cycle = activeCycle(state);
   const completed = cycle
@@ -240,10 +245,19 @@ export function TodayV2({
           e.cycleId === cycle.id && ["completed", "skipped"].includes(e.type),
       ).length ?? 0)
     : 0;
-  const day = cycle?.days[completed % (cycle?.days.length || 1)];
+  const day = cycle?.days[Math.max(0, nextDayIndex(state, cycle))];
   const rec = state.recommendations.find((r) => r.status === "pending");
   const target = resolveDay(state, date).target;
-  const recovery = state.recoveries.filter((r) => r.date === date).at(-1);
+  const latest = latestRecovery(state, date);
+  const sleep = latest.find((r) => r.type === "sleep");
+  const fatigue = latest.find((r) => r.type === "fatigue");
+  const recovery =
+    sleep || fatigue
+      ? {
+          sleep: sleep ? Math.round((sleep.value / 60) * 10) / 10 : null,
+          fatigue: fatigue?.value ?? null,
+        }
+      : null;
   const water = waterTotal(state, date);
   const hasWater = state.waters.some((w) => w.date === date);
   useEffect(() => {
@@ -265,7 +279,7 @@ export function TodayV2({
     <div className="daily-page">
       <PageTitle title="Today">
         <span className="muted">
-          {new Intl.DateTimeFormat("en-US", {
+          {new Intl.DateTimeFormat("zh-TW", {
             weekday: "long",
             month: "short",
             day: "2-digit",
@@ -286,7 +300,14 @@ export function TodayV2({
           }
           onTap={() => setPet(pet === "reading" ? "idle" : "reading")}
         />
-        <NoticeCarousel date={date} />
+        <NoticeCarousel date={date} onLog={setQuickDate} />
+        {quickDate && (
+          <RecoveryQuickLog
+            date={quickDate}
+            close={() => setQuickDate(null)}
+            notify={notify}
+          />
+        )}
       </section>
       <section className="card">
         <div className="card-head">
@@ -299,10 +320,18 @@ export function TodayV2({
           </Link>
         </div>
         <NutritionSummary date={date} />
-        <Link className="button" href="/nutrition/log">
+        <button className="button" onClick={() => setQuickFood(true)}>
           <Plus size={16} />
           記錄飲食
-        </Link>
+        </button>
+        {quickFood && (
+          <NutritionV2
+            path="nutrition/log"
+            date={date}
+            notify={notify}
+            inlineClose={() => setQuickFood(false)}
+          />
+        )}
       </section>
       <section className="card">
         <div className="card-head">
@@ -315,10 +344,7 @@ export function TodayV2({
           </Link>
         </div>
         <p className="today-training">
-          {current?.name ??
-            (day
-              ? `Day ${(completed % cycle!.days.length) + 1} · ${day.name}`
-              : "尚未設定 Cycle")}
+          {current?.name ?? (day ? day.name : "尚未設定 Training Plan")}
         </p>
         <Link
           className="button secondary"
@@ -355,11 +381,17 @@ export function TodayV2({
             </small>
           </p>
           <div className="two-actions">
-            <button className="button secondary" onClick={() => add(250)}>
-              +250 ml
+            <button
+              className="button secondary"
+              onClick={() => add(Number(state.preferences?.waterQuick1 ?? 250))}
+            >
+              +{Number(state.preferences?.waterQuick1 ?? 250)} ml
             </button>
-            <button className="button secondary" onClick={() => add(500)}>
-              +500 ml
+            <button
+              className="button secondary"
+              onClick={() => add(Number(state.preferences?.waterQuick2 ?? 500))}
+            >
+              +{Number(state.preferences?.waterQuick2 ?? 500)} ml
             </button>
           </div>
         </div>
@@ -369,18 +401,22 @@ export function TodayV2({
               <Heart size={19} />
               Recovery
             </h2>
-            <Link href="/progress/recovery" aria-label="記錄恢復">
+            <button onClick={() => setQuickDate(date)} aria-label="記錄恢復">
               <Plus />
-            </Link>
+            </button>
           </div>
           <div className="recovery-values">
             <div>
-              <strong>{recovery ? `${recovery.sleep} h` : "尚未紀錄"}</strong>
+              <strong>
+                {recovery?.sleep != null ? `${recovery.sleep} h` : "尚未紀錄"}
+              </strong>
               <span>睡眠</span>
             </div>
             <div>
               <strong>
-                {recovery ? `${recovery.fatigue} / 5` : "尚未紀錄"}
+                {recovery?.fatigue != null
+                  ? `${recovery.fatigue} / 5`
+                  : "尚未紀錄"}
               </strong>
               <span>疲勞</span>
             </div>
@@ -429,23 +465,48 @@ export function FoodPicker({
   mine?: boolean;
   onSelect: (f: LibraryFood) => void;
 }) {
-  const { state } = useStore();
+  const { state, save } = useStore();
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
   const [source, setSource] = useState("all");
   const [limit, setLimit] = useState(30);
   const foods = (
-    mine ? state.foods : [...master, ...cooked, ...official]
+    mine ? state.foods : [...master, ...cooked, ...official, ...state.foods]
   ) as LibraryFood[];
+  const counts = new Map<string, number>(),
+    recent = new Map<string, string>();
+  for (const m of state.meals) {
+    if (m.foodId) {
+      counts.set(m.foodId, (counts.get(m.foodId) ?? 0) + 1);
+      recent.set(m.foodId, m.createdAt);
+    }
+  }
   const filtered = foods.filter(
     (f) =>
+      (source === "all" ||
+        (source === "favorites" && state.favoriteFoods?.includes(f.id)) ||
+        (["recent", "frequent"].includes(source) && counts.has(f.id))) &&
       (!category || f.category === category) &&
       `${f.name} ${f.nameEn ?? ""}`
         .toLowerCase()
         .includes(search.toLowerCase()),
   );
+  if (source === "frequent")
+    filtered.sort((a, b) => (counts.get(b.id) ?? 0) - (counts.get(a.id) ?? 0));
+  if (source === "recent")
+    filtered.sort((a, b) =>
+      (recent.get(b.id) ?? "").localeCompare(recent.get(a.id) ?? ""),
+    );
   return (
     <div className="food-picker">
+      <Field label="食物清單">
+        <select value={source} onChange={(e) => setSource(e.target.value)}>
+          <option value="all">所有食物</option>
+          <option value="recent">Recent · 最近</option>
+          <option value="favorites">Favorites · 收藏</option>
+          <option value="frequent">Frequent · 常吃</option>
+        </select>
+      </Field>
       <Field label="食物分類">
         <select
           value={category}
@@ -477,7 +538,7 @@ export function FoodPicker({
           <p className="muted food-count">{filtered.length} 項</p>
           <ul className="food-list">
             {filtered.slice(0, limit).map((f) => (
-              <li key={f.id}>
+              <li key={f.id} className="food-with-favorite">
                 <button onClick={() => onSelect(f)}>
                   <div>
                     <strong>{f.name}</strong>
@@ -487,6 +548,20 @@ export function FoodPicker({
                     </span>
                   </div>
                   <ChevronRight size={18} />
+                </button>
+                <button
+                  className="favorite-food"
+                  aria-label={`${state.favoriteFoods?.includes(f.id) ? "取消收藏" : "收藏"} ${f.name}`}
+                  aria-pressed={state.favoriteFoods?.includes(f.id) ?? false}
+                  onClick={() =>
+                    save("更新收藏食物", (s) => {
+                      s.favoriteFoods = s.favoriteFoods?.includes(f.id)
+                        ? s.favoriteFoods.filter((id) => id !== f.id)
+                        : [...(s.favoriteFoods ?? []), f.id];
+                    })
+                  }
+                >
+                  {state.favoriteFoods?.includes(f.id) ? "已收藏" : "收藏"}
                 </button>
               </li>
             ))}
@@ -509,7 +584,9 @@ export function NutritionV2({
   path,
   date,
   notify,
+  inlineClose,
 }: {
+  inlineClose?: () => void;
   path: string;
   date: string;
   notify: (s?: string) => void;
@@ -536,6 +613,7 @@ export function NutritionV2({
   const meals = visibleMeals(state, selectedDate);
   const isLibrary = path === "nutrition/foods";
   function close() {
+    inlineClose?.();
     setSheet(null);
     setEdit(null);
     setFood(null);
@@ -573,7 +651,7 @@ export function NutritionV2({
     }
   }
   return (
-    <div className="daily-page">
+    <div className={inlineClose ? "inline-nutrition" : "daily-page"}>
       <PageTitle title={isLibrary ? "食物庫" : "Nutrition"}>
         <Menu
           items={[
@@ -704,9 +782,9 @@ export function NutritionV2({
             <Plus size={18} />
             新增飲食
           </button>
-          <button className="text-link" onClick={() => setSheet("slots")}>
+          <Link className="text-link" href="/nutrition/meals">
             編輯餐次
-          </button>
+          </Link>
           <label className="check">
             <input
               type="checkbox"
@@ -795,12 +873,7 @@ export function NutritionV2({
             <div className="action-list">
               <button onClick={() => setSheet("food")}>
                 <Utensils />
-                James Foods
-                <ChevronRight />
-              </button>
-              <button onClick={() => setSheet("myfood")}>
-                <Utensils />
-                My Foods
+                Food
                 <ChevronRight />
               </button>
               <button
@@ -826,7 +899,7 @@ export function NutritionV2({
               <button className="text-link" onClick={() => setSheet("add")}>
                 ← {slot}
               </button>
-              {sheet === "myfood" && (
+              {(sheet === "myfood" || sheet === "food") && (
                 <button
                   className="button secondary"
                   onClick={() => setSheet("custom")}

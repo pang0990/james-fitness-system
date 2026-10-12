@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { recoveryEntries } from "@/lib/recovery";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -30,9 +31,11 @@ export function ProgressDirection({ date }: { date: string }) {
   ).length;
   const recoveries = Array.from(
     new Map(
-      state.recoveries
-        .filter((r) => r.date >= reviewStart && r.date <= date)
-        .map((r) => [r.date, r]),
+      recoveryEntries(state)
+        .filter(
+          (r) => r.type === "sleep" && r.date >= reviewStart && r.date <= date,
+        )
+        .map((r) => [r.date, { ...r, sleep: r.value / 60 }]),
     ).values(),
   );
   const pending = state.recommendations.find((r) => r.status === "pending");
@@ -117,7 +120,7 @@ export function ProgressDirection({ date }: { date: string }) {
         </p>
         <Link
           className="button"
-          href={pending ? "/progress/recommendations" : "/progress/weekly"}
+          href={pending ? "/progress/review" : "/progress/review"}
         >
           View review <ChevronRight size={18} />
         </Link>

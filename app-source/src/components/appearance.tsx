@@ -17,6 +17,14 @@ export function AppearanceController() {
     media.addEventListener("change", apply);
     return () => media.removeEventListener("change", apply);
   }, [mode]);
+  useEffect(() => {
+    document.documentElement.dataset.reduceMotion = String(
+      state.preferences?.reduceMotion ?? false,
+    );
+    document.documentElement.dataset.reduceTransparency = String(
+      state.preferences?.reduceTransparency ?? false,
+    );
+  }, [state.preferences]);
   return null;
 }
 export function AppearanceSettings({

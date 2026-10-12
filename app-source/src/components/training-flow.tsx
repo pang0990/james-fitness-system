@@ -1,5 +1,13 @@
 "use client";
 import Link from "next/link";
+import { TrainingPlan } from "./training-plan";
+import {
+  dayId,
+  pendingIds,
+  nextDayIndex,
+  consumeDay,
+  completeSession,
+} from "@/lib/training-queue";
 import { navigateWithMotion } from "./navigation-motion";
 import {
   TrainingCalendar,
@@ -12,6 +20,7 @@ import {
   type MuscleTarget,
   stages,
   scheduleKind,
+  scheduleEntry,
 } from "@/lib/training-model";
 import { Companion } from "./companion";
 import catalog from "@/content/exercises.json";
@@ -42,24 +51,6 @@ export function TrainingFlow({
 }) {
   const { state, save } = useStore();
   const router = useRouter();
-  const [setup, setSetup] = useState(
-    path === "training/templates" || path === "training/cycle",
-  );
-  const [template, setTemplate] = useState(
-    activeCycle(state)?.name ?? "Upper / Lower",
-  );
-  const [dayText, setDayText] = useState(
-    activeCycle(state)
-      ?.days.map((d) => d.name)
-      .join("\n") ?? "Upper A\nLower A\nUpper B\nLower B",
-  );
-  const [targets, setTargets] = useState<MuscleTarget[]>(
-    activeCycle(state)?.muscleTargets ?? [],
-  );
-  const [restEvery, setRestEvery] = useState(2);
-  const [stage, setStage] = useState<(typeof stages)[number]>(
-    activeCycle(state)?.stage ?? "Intensity",
-  );
   const [exercise, setExercise] = useState(() =>
     typeof window !== "undefined"
       ? Number(
@@ -77,26 +68,43 @@ export function TrainingFlow({
   const [skip, setSkip] = useState(false);
   const [timerEnd, setTimerEnd] = useState<number | null>(null);
   const [remaining, setRemaining] = useState(0);
+  const [clock, setClock] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setClock(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
   const cycle = activeCycle(state);
   const count = cycle
     ? (state.cycleEvents?.filter((e) => e.cycleId === cycle.id).length ?? 0)
     : 0;
-  const dayIndex = cycle ? count % cycle.days.length : 0;
+  const planned = scheduleEntry(state, date);
+  const selectedIndex =
+    cycle?.days.findIndex(
+      (d, i) => dayId(cycle, i) === planned.trainingDayId,
+    ) ?? -1;
+  const dayIndex = cycle
+    ? selectedIndex >= 0
+      ? selectedIndex
+      : Math.max(0, nextDayIndex(state, cycle))
+    : 0;
   const day = cycle?.days[dayIndex];
   const current = state.sessions.find((s) => s.status === "in_progress");
   useEffect(() => {
     if (current)
       sessionStorage.setItem("james-exercise-" + current.id, String(exercise));
   }, [exercise, current?.id]);
+  useEffect(() => {
+    if (current && exercise >= current.exercises.length) setExercise(0);
+  }, [current?.id, current?.exercises.length, exercise]);
   const ex = current?.exercises[exercise];
-  const previous = state.sessions
+  const previousSets = state.sessions
     .filter((s) => s.status === "completed")
     .slice()
     .reverse()
     .flatMap((s) => s.exercises)
     .find((e) => e.name === ex?.name)
-    ?.sets.filter((s) => s.type === "working")
-    .at(-1);
+    ?.sets.filter((s) => s.type === "working");
+  const previous = previousSets?.at(-1);
   const workout = path === "training/session" && !!current;
   useEffect(() => {
     const raw = sessionStorage.getItem("james-rest-end");
@@ -116,8 +124,34 @@ export function TrainingFlow({
     const t = setInterval(update, 500);
     return () => clearInterval(t);
   }, [timerEnd]);
+  useEffect(() => {
+    if (!workout || state.preferences?.keepAwake === false) return;
+    let lock: WakeLockSentinel | undefined;
+    let cancelled = false;
+    async function acquire() {
+      try {
+        if (
+          document.visibilityState !== "visible" ||
+          !("wakeLock" in navigator)
+        )
+          return;
+        const held = await navigator.wakeLock.request("screen");
+        if (cancelled) await held.release();
+        else lock = held;
+      } catch {}
+    }
+    acquire();
+    document.addEventListener("visibilitychange", acquire);
+    return () => {
+      cancelled = true;
+      lock?.release();
+      document.removeEventListener("visibilitychange", acquire);
+    };
+  }, [workout, state.preferences?.keepAwake]);
   function startTimer() {
-    const end = Date.now() + 90000;
+    const end =
+      Date.now() +
+      Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120) * 1000;
     sessionStorage.setItem("james-rest-end", String(end));
     setTimerEnd(end);
   }
@@ -131,54 +165,23 @@ export function TrainingFlow({
           date,
           name: `Day ${dayIndex + 1} · ${day.name}`,
           status: "in_progress",
-          phase: "warmup",
+          phase:
+            state.preferences?.warmupDefault === "skip" ? "workout" : "warmup",
           cycleId: cycle.id,
+          trainingDayId: dayId(cycle, dayIndex),
+          isExtra:
+            !!planned.extra ||
+            !pendingIds(state, cycle).includes(dayId(cycle, dayIndex)),
+          workoutDate: date,
+          scheduledDate: date,
+          round: cycle.round ?? 1,
           cycleDayIndex: dayIndex,
-          exercises: catalog
-            .filter((e) => {
-              const allocation = cycle.muscleTargets?.find(
-                (m) => m.muscle === e.muscle && m.target > 0,
-              );
-              if (allocation) return allocation.allocation.includes(dayIndex);
-              const n = day.name.toLowerCase();
-              return n.includes("upper")
-                ? ["Chest", "Back", "Shoulders", "Biceps", "Triceps"].includes(
-                    e.muscle,
-                  )
-                : n.includes("lower") || n === "legs"
-                  ? ["Quads", "Hamstrings", "Glutes", "Calves"].includes(
-                      e.muscle,
-                    )
-                  : n === "push"
-                    ? ["Chest", "Shoulders", "Triceps"].includes(e.muscle)
-                    : n === "pull"
-                      ? ["Back", "Biceps"].includes(e.muscle)
-                      : n === "arms"
-                        ? ["Biceps", "Triceps"].includes(e.muscle)
-                        : e.muscle.toLowerCase() === n;
-            })
-            .filter(
-              (e, i, all) => all.findIndex((x) => x.muscle === e.muscle) === i,
-            )
-            .sort(
-              (a, b) =>
-                Number(
-                  cycle.muscleTargets?.find((m) => m.muscle === b.muscle)
-                    ?.priority ?? false,
-                ) -
-                Number(
-                  cycle.muscleTargets?.find((m) => m.muscle === a.muscle)
-                    ?.priority ?? false,
-                ),
-            )
-            .map((e) => ({
-              id: uid(),
-              name: e.name,
-              muscle: e.muscle,
-              sets: [],
-              allowRestPause: e.allowRestPause,
-              allowDropSet: e.allowDropSet,
-            })),
+          exercises: (day.exercises ?? []).map((e) => ({
+            ...e,
+            id: uid(),
+            plannedSets: e.sets,
+            sets: [],
+          })),
           warmupIds: [...(s.warmupPreset ?? [])],
           createdAt: stamp(),
         });
@@ -188,6 +191,42 @@ export function TrainingFlow({
       notify();
     }
   }
+  if (path === "training/plan") return <TrainingPlan notify={notify} />;
+  if (path === "training/calendar")
+    return (
+      <div className="daily-page">
+        <PageTitle title="Training Calendar" />
+        <TrainingCalendar date={date} />
+      </div>
+    );
+  if (path === "training/history")
+    return (
+      <div className="daily-page">
+        <PageTitle title="Workout History" />
+        {state.sessions
+          .filter((s) => s.status !== "in_progress")
+          .slice()
+          .reverse()
+          .map((s) => (
+            <details className="card" key={s.id}>
+              <summary>
+                {s.workoutDate ?? s.date} · {s.name} ·{" "}
+                {s.status === "discarded" ? "已放棄" : "已完成"}
+              </summary>
+              {s.exercises.map((e) => (
+                <div key={e.id}>
+                  <h3>{e.name}</h3>
+                  {e.sets.map((t) => (
+                    <p key={t.id}>
+                      {t.type} · {t.weight} kg × {t.reps}
+                    </p>
+                  ))}
+                </div>
+              ))}
+            </details>
+          ))}
+      </div>
+    );
   if (completedId) {
     const finished = state.sessions.find((s) => s.id === completedId)!;
     const sets = finished.exercises
@@ -196,7 +235,8 @@ export function TrainingFlow({
     const minutes = Math.max(
       0,
       Math.round(
-        (Date.parse(finished.completedAt!) - Date.parse(finished.createdAt)) /
+        (finished.activeDuration ??
+          Date.parse(finished.completedAt!) - Date.parse(finished.createdAt)) /
           60000,
       ),
     );
@@ -244,8 +284,10 @@ export function TrainingFlow({
         ) : (
           <Menu
             items={[
-              ["/training/cycle", "Cycle 設定"],
-              ["/training/templates", "選擇分化"],
+              ["/training/plan", "Training Plan"],
+              ["/training/calendar", "Calendar"],
+              ["/training/history", "Workout History"],
+              ["/training/warmups", "Warm-ups"],
               ["/training/exercises", "動作紀錄"],
               ["/training/activity", "Cardio"],
             ]}
@@ -255,7 +297,35 @@ export function TrainingFlow({
       {workout ? (
         <>
           <div className="workout-heading">
-            <span>{current.name}</span>
+            <button
+              className="button secondary"
+              onClick={() =>
+                save(current.pausedAt ? "恢復訓練" : "暫停訓練", (s) => {
+                  const x = s.sessions.find((x) => x.id === current.id)!;
+                  if (x.pausedAt) {
+                    x.pausedDuration =
+                      (x.pausedDuration ?? 0) +
+                      Date.now() -
+                      Date.parse(x.pausedAt);
+                    delete x.pausedAt;
+                  } else x.pausedAt = stamp();
+                })
+              }
+            >
+              {current.pausedAt ? "Resume Workout" : "Pause Workout"}
+            </button>
+            <span>
+              {current.name} ·{" "}
+              {Math.floor(
+                Math.max(
+                  0,
+                  (current.pausedAt ? Date.parse(current.pausedAt) : clock) -
+                    Date.parse(current.createdAt) -
+                    (current.pausedDuration ?? 0),
+                ) / 60000,
+              )}{" "}
+              MIN
+            </span>
             <span>
               {current.phase === "warmup"
                 ? "1 / 3 暖身"
@@ -320,17 +390,8 @@ export function TrainingFlow({
                         (x) => x.id === current.id,
                       )!;
                       if (session.status === "completed") return;
-                      session.status = "completed";
-                      session.completedAt = stamp();
+                      completeSession(s, session, stamp());
                       session.feedback = feedback;
-                      if (session.cycleId)
-                        (s.cycleEvents ??= []).push({
-                          id: uid(),
-                          cycleId: session.cycleId,
-                          type: "completed",
-                          date,
-                          sessionId: session.id,
-                        });
                     })
                   ) {
                     setReview(false);
@@ -388,11 +449,19 @@ export function TrainingFlow({
                   </div>
                   <Dumbbell className="exercise-symbol" size={40} />
                   <h2>{ex.name}</h2>
+                  {ex.plannedSets && (
+                    <p className="muted">
+                      計畫 {ex.plannedSets} 組 × {ex.reps} · RIR {ex.rir} · 休息{" "}
+                      {ex.restSeconds} 秒
+                    </p>
+                  )}
                   <p className="muted">
                     上次：
-                    {previous
-                      ? `${previous.weight} kg × ${previous.reps}`
-                      : "尚未紀錄"}
+                    {state.preferences?.showPrevious === false
+                      ? "已隱藏"
+                      : previousSets
+                          ?.map((p) => `${p.weight} kg × ${p.reps}`)
+                          .join(" ／ ") || "尚未紀錄"}
                   </p>
                   <details>
                     <summary>動作設定</summary>
@@ -465,7 +534,9 @@ export function TrainingFlow({
                             weight: Number(d.get("weight")),
                             reps: Number(d.get("reps")),
                             rir:
-                              d.get("rir") === "" ? null : Number(d.get("rir")),
+                              d.get("rir") === "" || d.get("rir") === null
+                                ? null
+                                : Number(d.get("rir")),
                             createdAt: stamp(),
                             ...(["rp", "drop"].includes(type)
                               ? { parentId: parent }
@@ -474,7 +545,11 @@ export function TrainingFlow({
                         })
                       ) {
                         notify("這組已保存");
-                        startTimer();
+                        if (
+                          type === "working" &&
+                          state.preferences?.autoRest !== false
+                        )
+                          startTimer();
                       }
                     }}
                   >
@@ -488,12 +563,14 @@ export function TrainingFlow({
                         <option value="working">Working Set</option>
                         <option value="warmup">Warm-up</option>
                         <option value="rampup">Ramp-up</option>
-                        {ex.allowRestPause && (
-                          <option value="rp">Rest-Pause</option>
-                        )}
-                        {ex.allowDropSet && (
-                          <option value="drop">Drop Set</option>
-                        )}
+                        {ex.allowRestPause &&
+                          state.preferences?.allowRestPause !== false && (
+                            <option value="rp">Rest-Pause</option>
+                          )}
+                        {ex.allowDropSet &&
+                          state.preferences?.allowDropSet !== false && (
+                            <option value="drop">Drop Set</option>
+                          )}
                       </select>
                     </Field>
                     <div className="set-inputs">
@@ -511,7 +588,9 @@ export function TrainingFlow({
                         step="1"
                         value={previous?.reps}
                       />
-                      <Num label="RIR" name="rir" max={10} required={false} />
+                      {state.preferences?.showRIR !== false && (
+                        <Num label="RIR" name="rir" max={10} required={false} />
+                      )}
                     </div>
                     {["rp", "drop"].includes(type) && (
                       <Field label="所屬工作組">
@@ -527,7 +606,7 @@ export function TrainingFlow({
                         </select>
                       </Field>
                     )}
-                    <button className="button">
+                    <button className="button" disabled={!!current.pausedAt}>
                       保存這一組
                       <Check size={16} />
                     </button>
@@ -564,7 +643,7 @@ export function TrainingFlow({
                 <strong>
                   {timerEnd
                     ? `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`
-                    : "1:30"}
+                    : `${Math.floor(Number(state.preferences?.restSeconds ?? 120) / 60)}:${String(Number(state.preferences?.restSeconds ?? 120) % 60).padStart(2, "0")}`}
                 </strong>
                 <button
                   className="icon-button"
@@ -585,7 +664,7 @@ export function TrainingFlow({
       ) : (
         <>
           <section className="card cycle-overview">
-            <span className="eyebrow">CURRENT CYCLE</span>
+            <span className="eyebrow">TRAINING PLAN</span>
             <h2>{cycle?.name ?? "尚未設定"}</h2>
             {cycle ? (
               <>
@@ -598,15 +677,14 @@ export function TrainingFlow({
                   ))}
                 </div>
                 <p className="muted">
-                  Cycle {Math.floor(count / cycle.days.length) + 1} · 已完成{" "}
-                  {dayIndex} / {cycle.days.length} 個訓練日
+                  本輪待完成 {pendingIds(state, cycle).length} /{" "}
+                  {cycle.days.length} 個訓練日
                 </p>
               </>
             ) : (
-              <button className="button" onClick={() => setSetup(true)}>
-                設定 Cycle
-                <ArrowRight size={16} />
-              </button>
+              <Link className="button" href="/training/plan">
+                建立 Training Plan <ArrowRight size={16} />
+              </Link>
             )}
           </section>
           <section className="card">
@@ -616,10 +694,51 @@ export function TrainingFlow({
                 (day ? `Day ${dayIndex + 1} · ${day.name}` : "尚未安排訓練")}
             </h2>
             {current ? (
-              <Link className="button" href="/training/session">
-                繼續訓練
-                <ArrowRight size={16} />
-              </Link>
+              <div className="stack">
+                <Link className="button" href="/training/session">
+                  繼續訓練
+                  <ArrowRight size={16} />
+                </Link>
+                <button
+                  className="button secondary"
+                  onClick={() => {
+                    if (
+                      save("移到今天", (s) => {
+                        const x = s.sessions.find((x) => x.id === current.id)!;
+                        x.workoutDate = date;
+                        x.scheduledDate = date;
+                        x.date = date;
+                      })
+                    )
+                      notify("已移到今天，原始時間與組數保留");
+                  }}
+                >
+                  Make this Today’s Workout
+                </button>
+                <button
+                  className="button danger"
+                  onClick={() => {
+                    if (!confirm("放棄這次訓練？該訓練日仍待完成。")) return;
+                    if (
+                      current.exercises.some((e) => e.sets.length) &&
+                      !confirm(
+                        "已有組數，確定放棄？紀錄將保留在歷史但不計入成果。",
+                      )
+                    )
+                      return;
+                    if (
+                      save("放棄 Session", (s) => {
+                        const x = s.sessions.find((x) => x.id === current.id)!;
+                        x.status = "discarded";
+                        x.discardedAt = stamp();
+                      })
+                    )
+                      notify("已放棄，訓練日仍待完成");
+                  }}
+                >
+                  Discard Workout
+                </button>
+              </div>
             ) : day ? (
               <>
                 {scheduleKind(state, date) !== "train" && (
@@ -631,188 +750,45 @@ export function TrainingFlow({
                   開始訓練
                   <ArrowRight size={16} />
                 </button>
+                <button
+                  className="text-link"
+                  onClick={() => {
+                    save("今天休息", (s) => {
+                      (s.schedule ??= []).push({
+                        id: uid(),
+                        date,
+                        kind: "rest",
+                        createdAt: stamp(),
+                      });
+                    });
+                    notify("今天改休息，待完成順序不變");
+                  }}
+                >
+                  今天不練／改休息
+                </button>
                 <button className="text-link" onClick={() => setSkip(true)}>
-                  略過這個訓練日
+                  本輪不做這一天
                 </button>
               </>
             ) : null}
           </section>
-          {cycle && <MuscleProgress cycle={cycle} />}
-          <TrainingCalendar date={date} />
-          <details className="history-list">
-            <summary>訓練紀錄</summary>
-            {state.sessions
-              .filter((s) => s.status === "completed")
-              .slice()
-              .reverse()
-              .map((s) => (
-                <details key={s.id}>
-                  <summary>
-                    {s.date} · {s.name}
-                  </summary>
-                  {s.exercises.map((e) => (
-                    <div key={e.id}>
-                      <h3>{e.name}</h3>
-                      {e.sets.map((set) => (
-                        <p key={set.id}>
-                          {set.type.toUpperCase()} · {set.weight} kg ×{" "}
-                          {set.reps} · RIR {set.rir ?? "—"}
-                        </p>
-                      ))}
-                    </div>
-                  ))}
-                  {s.feedback && <p>{s.feedback}</p>}
-                </details>
-              ))}
-            {!state.sessions.some((s) => s.status === "completed") && (
-              <p>尚未紀錄</p>
-            )}
-          </details>
+          <Link className="simple-row" href="/training/calendar">
+            安排訓練日曆 →
+          </Link>
+          <Link className="simple-row" href="/training/plan">
+            編輯 Training Plan →
+          </Link>
+          <Link className="simple-row" href="/training/history">
+            Workout History →
+          </Link>
           <Link className="simple-row" href="/training/activity">
             Cardio
             <ChevronRight size={18} />
           </Link>
         </>
       )}
-      {setup && (
-        <Sheet title="設定 Cycle" onClose={() => setSetup(false)}>
-          {current ? (
-            <>
-              <p>目前使用 {cycle?.name}。現行 Cycle 保留原設定。</p>
-              <p className="muted">
-                請先完成進行中的訓練，再確認新的 Cycle 版本。
-              </p>
-              {dayIndex === 0 && !current && (
-                <button
-                  className="button secondary"
-                  onClick={() => setSetup(false)}
-                >
-                  保留目前設定
-                </button>
-              )}
-            </>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const days = dayText
-                  .split("\n")
-                  .map((n) => n.trim())
-                  .filter(Boolean);
-                if (!days.length) return;
-                if (
-                  targets.some(
-                    (t) =>
-                      t.target > 0 &&
-                      (t.frequency !== t.allocation.length ||
-                        t.allocation.some((i) => i >= days.length)),
-                  )
-                ) {
-                  notify("肌群 Frequency 需符合分配的 Cycle 日數");
-                  return;
-                }
-                if (
-                  save("確認建立 Training Cycle", (s) => {
-                    for (let i = 0; i < 90; i++) {
-                      const scheduled = addDays(date, i);
-                      if (!s.schedule?.some((e) => e.date === scheduled))
-                        (s.schedule ??= []).push({
-                          id: uid(),
-                          date: scheduled,
-                          kind:
-                            restEvery > 0 && i % (restEvery + 1) === restEvery
-                              ? "rest"
-                              : "train",
-                          createdAt: stamp(),
-                        });
-                    }
-                    (s.cycles ??= []).push({
-                      id: uid(),
-                      name: template,
-                      previousId: cycle?.id,
-                      muscleTargets: targets,
-                      stage,
-                      days: days.map((name) => ({ name })),
-                      createdAt: stamp(),
-                    });
-                  })
-                ) {
-                  setSetup(false);
-                  router.push("/training");
-                  notify();
-                }
-              }}
-            >
-              <Field label="分化方式">
-                <select
-                  value={template}
-                  onChange={(e) => {
-                    setTemplate(e.target.value);
-                    setDayText(
-                      {
-                        "Upper / Lower": "Upper A\nLower A\nUpper B\nLower B",
-                        PPL: "Push\nPull\nLegs",
-                        五分化: "Chest\nBack\nLegs\nShoulders\nArms",
-                        "James Cycle": "Day A\nDay B",
-                      }[e.target.value]!,
-                    );
-                  }}
-                >
-                  {["Upper / Lower", "PPL", "五分化", "James Cycle"].map(
-                    (t) => (
-                      <option key={t}>{t}</option>
-                    ),
-                  )}
-                </select>
-              </Field>
-              <Field label="訓練日順序（每行一個）">
-                <textarea
-                  value={dayText}
-                  onChange={(e) => setDayText(e.target.value)}
-                  required
-                  maxLength={500}
-                />
-              </Field>
-              <p className="muted">
-                不限制七天，休息後接續下一個訓練日。動作與組數由你安排。
-              </p>
-              <Field label="每幾次訓練安排一天休息">
-                <input
-                  type="number"
-                  min="0"
-                  max="7"
-                  value={restEvery}
-                  onChange={(e) => setRestEvery(Number(e.target.value))}
-                />
-              </Field>
-              <p className="muted">
-                0 表示自行排休。建立未安排日期的循環，之後可在日曆移動。
-              </p>
-              <MuscleEditor
-                value={targets}
-                onChange={setTargets}
-                dayCount={dayText.split("\n").filter((n) => n.trim()).length}
-              />
-              <Field label="Progression Stage">
-                <select
-                  value={stage}
-                  onChange={(e) => setStage(e.target.value as typeof stage)}
-                >
-                  {stages.map((s) => (
-                    <option key={s}>{s}</option>
-                  ))}
-                </select>
-              </Field>
-              <p className="muted">
-                確認後建立新版本，從 Day 1 開始；歷史課表與紀錄完整保留。
-              </p>
-              <button className="button">確認建立 Cycle</button>
-            </form>
-          )}
-        </Sheet>
-      )}
       {skip && (
-        <Sheet title="確認略過訓練日" onClose={() => setSkip(false)}>
+        <Sheet title="本輪不做這一天" onClose={() => setSkip(false)}>
           <p>
             略過 Day {dayIndex + 1} · {day?.name}
             ，將接續下一個訓練日。臨時休息可直接返回，順序不會改變。
@@ -822,14 +798,18 @@ export function TrainingFlow({
             onClick={() => {
               if (
                 cycle &&
-                save("使用者確認略過 Cycle Day", (s) =>
+                window.confirm("確定本輪不做這一天？這會從待完成清單移除。") &&
+                save("使用者確認本輪不做", (s) => {
+                  const plan = s.cycles!.find((p) => p.id === cycle.id)!;
+                  consumeDay(s, plan, dayId(plan, dayIndex));
                   (s.cycleEvents ??= []).push({
                     id: uid(),
                     cycleId: cycle.id,
-                    type: "skipped",
+                    type: "skipped_for_round",
+                    trainingDayId: dayId(cycle, dayIndex),
                     date,
-                  }),
-                )
+                  });
+                })
               ) {
                 setSkip(false);
                 notify();

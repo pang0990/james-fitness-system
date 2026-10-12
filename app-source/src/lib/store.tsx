@@ -67,6 +67,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
       const next = structuredClone(ref.current);
       change(next);
+      if (next.sessions.filter((s) => s.status === "in_progress").length > 1)
+        throw Error("最多只能有一個進行中訓練");
+      validateState(next);
       next.revision++;
       next.audit.push({
         id: crypto.randomUUID(),
