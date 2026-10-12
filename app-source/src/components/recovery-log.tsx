@@ -37,7 +37,9 @@ export function RecoveryQuickLog({
   date,
   close,
   notify,
+  initialKind = "sleep",
 }: {
+  initialKind?: RecoveryEntry["type"];
   date: string;
   close: () => void;
   notify: (s?: string) => void;
@@ -45,7 +47,7 @@ export function RecoveryQuickLog({
   const { state, save } = useStore();
   const [kind, setKind] = useState<
     RecoveryEntry["type"] | "weight" | "nutrition"
-  >("sleep");
+  >(initialKind);
   const [message, setMessage] = useState("");
   const recent = latestRecovery(state, date)
     .filter((r) => r.type === kind)
@@ -102,6 +104,7 @@ export function RecoveryQuickLog({
                   id: uid(),
                   date,
                   type: kind,
+                  unit: kind === "sleep" ? "rating" : undefined,
                   value,
                   area: String(d.get("area") ?? "") || undefined,
                   side: String(d.get("side") ?? "") || undefined,
@@ -126,6 +129,12 @@ export function RecoveryQuickLog({
             />
             這天飲食已記錄完整
           </label>
+        ) : ["sleep", "fatigue", "stress", "soreness"].includes(kind) ? (
+          <fieldset className="recovery-rating">
+            <legend>{labels[kind as keyof typeof labels]}{kind === "sleep" ? "評分（起床當天）" : "程度"}</legend>
+            <p>{kind === "sleep" ? "依感覺選擇，不需要知道睡了幾分鐘。1 很差 · 5 很好" : "分數越高，程度越明顯。"}</p>
+            <div className="rating-options">{(kind === "soreness" ? [0,1,2,3,4,5] : [1,2,3,4,5]).map(n => <label key={n}><input type="radio" name="value" value={n} required defaultChecked={recent?.value === n && (kind !== "sleep" || recent.unit === "rating")} /><span>{n}</span></label>)}</div>
+          </fieldset>
         ) : (
           <Num
             label={
@@ -231,11 +240,28 @@ export function RecoveryHistory() {
             </span>
             <strong>
               {r.value}
-              {r.type === "sleep" ? " min" : r.type === "pain" ? "/10" : "/5"}
+              {r.type === "sleep" && r.unit !== "rating" ? " min" : r.type === "pain" ? "/10" : "/5"}
             </strong>
           </div>
         ))}
       {!recoveryEntries(state).length && <p>尚未紀錄</p>}
     </section>
   );
+}
+
+export function RecoveryEntryPoints({date, editableDate = false}: {date: string; editableDate?: boolean}) {
+  const {state} = useStore();
+  const [logDate, setLogDate] = useState(date);
+  const [kind, setKind] = useState<RecoveryEntry["type"] | null>(null);
+  const records = latestRecovery(state, editableDate ? logDate : date);
+  return <section className="recovery-entry-points" aria-label="恢復紀錄入口">
+    {editableDate && <Field label="補記日期"><input type="date" value={logDate} onChange={e => setLogDate(e.target.value || date)} /></Field>}
+    <div className="recovery-entry-grid">{(["sleep", "fatigue", "soreness", "stress"] as const).map(type => {
+      const entries = records.filter(r => r.type === type);
+      const value = entries.length ? (type === "soreness" ? [...entries].sort((a,b)=>b.value-a.value)[0] : entries.at(-1)) : undefined;
+      return <button key={type} onClick={()=>setKind(type)}><span>{labels[type]}</span><strong>{value ? `${value.value}${type === "sleep" && value.unit !== "rating" ? " 分鐘（舊紀錄）" : " / 5"}` : "尚未紀錄"}</strong><small>{value ? "更新紀錄 +" : "點此填寫 +"}</small></button>;
+    })}</div>
+    <button className="button secondary" onClick={()=>setKind("pain")}>記錄疼痛</button>
+    {kind && <RecoveryQuickLog key={`${logDate}-${kind}`} initialKind={kind} date={editableDate ? logDate : date} close={()=>setKind(null)} notify={()=>{}} />}
+  </section>;
 }

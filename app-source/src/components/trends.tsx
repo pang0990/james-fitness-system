@@ -105,7 +105,8 @@ const defs = [
   ["water", "飲水", "ml", "nutrition"],
   ["sets", "工作組", "組", "training"],
   ["load", "訓練總重量", "kg", "training"],
-  ["sleep", "睡眠", "h", "recovery"],
+  ["sleep", "睡眠時長（舊紀錄）", "h", "recovery"],
+  ["sleepQuality", "睡眠評分", "/5", "recovery"],
   ["fatigue", "疲勞", "/5", "recovery"],
   ["soreness", "痠痛", "/5", "recovery"],
   ["stress", "壓力", "/5", "recovery"],
@@ -133,12 +134,13 @@ export function metricPoints(state: AppState, key: string): Point[] {
     return Array.from(new Set(state.waters.map((w) => w.date)))
       .sort()
       .map((date) => ({ date, value: waterTotal(state, date) }));
-  if (["sleep", "fatigue", "soreness", "stress"].includes(key)) {
+  if (["sleep", "sleepQuality", "fatigue", "soreness", "stress"].includes(key)) {
     const mapped = new Map<string, any>();
     for (const r of recoveryEntries(state)) {
       if (r.type === "pain") continue;
       const row = mapped.get(r.date) ?? { date: r.date };
-      row[r.type] = r.type === "sleep" ? r.value / 60 : r.value;
+      if (r.type === "sleep" && r.unit === "rating") row.sleepQuality = r.value;
+      else row[r.type] = r.type === "sleep" ? r.value / 60 : r.value;
       mapped.set(r.date, row);
     }
     const byDate = mapped;

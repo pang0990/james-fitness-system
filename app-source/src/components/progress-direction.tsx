@@ -33,7 +33,7 @@ export function ProgressDirection({ date }: { date: string }) {
     new Map(
       recoveryEntries(state)
         .filter(
-          (r) => r.type === "sleep" && r.date >= reviewStart && r.date <= date,
+          (r) => r.type === "sleep" && r.unit !== "rating" && r.date >= reviewStart && r.date <= date,
         )
         .map((r) => [r.date, { ...r, sleep: r.value / 60 }]),
     ).values(),

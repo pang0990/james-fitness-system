@@ -3,7 +3,7 @@ import { AppearanceSettings } from "./appearance";
 import { SettingsHub } from "./settings-hub";
 import { MealSettings } from "./meal-settings";
 import { DataTools } from "./data-tools";
-import { RecoveryHistory } from "./recovery-log";
+import { RecoveryHistory, RecoveryEntryPoints } from "./recovery-log";
 import { MetricDetails } from "./trends";
 import { TrainingReview } from "./training-review";
 import { GainReview } from "./gain-review";
@@ -443,6 +443,7 @@ export function FitnessApp({ path }: { path: string }) {
               ) : path === "progress/recovery" ? (
                 <div className="daily-page">
                   <Heading eyebrow="" title="Recovery" />
+                  <RecoveryEntryPoints date={date} editableDate />
                   <RecoveryHistory />
                   <MetricDetails date={date} group="recovery" />
                 </div>

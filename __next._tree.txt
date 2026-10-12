@@ -1,3 +1,3 @@
-:HL["/james-fitness-system/_next/static/css/894024a60d59eeed.css","style"]
+:HL["/james-fitness-system/_next/static/css/85fb8104268f8ad5.css","style"]
 1:[["children",{"s":"__PAGE__","h":160}]]
-0:{"b":"u6chi6JysMc6AmyEbXgNe","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"-91P7y4yBXOGHmbdguVLx","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

@@ -128,11 +128,11 @@ test("Today quick logs stay in Today and independent sleep appears in history", 
 }) => {
   await seed(page);
   await page.getByRole("button", { name: "記錄恢復", exact: true }).click();
-  await page.getByLabel("睡眠分鐘（歸起床當天）").fill("408");
+  await page.getByRole("radio", { name: "4", exact: true }).check();
   await page.getByRole("button", { name: "儲存紀錄", exact: true }).click();
   await expect(page).toHaveURL(/today/);
   await page.getByRole("button", { name: "關閉", exact: true }).click();
-  await expect(page.getByText("6.8 h", { exact: true })).toBeVisible();
+  await expect(page.getByText("4 / 5", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "記錄飲食", exact: true }).click();
   await page.getByRole("button", { name: "早餐", exact: true }).click();
   await page.getByRole("button", { name: "Quick Macro", exact: true }).click();
@@ -148,7 +148,7 @@ test("Today quick logs stay in Today and independent sleep appears in history", 
   await expect(page).toHaveURL(/today/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.goto("/progress/recovery/");
-  await expect(page.getByText("408 min", { exact: true })).toBeVisible();
+  await expect(page.getByText("4/5", { exact: true }).last()).toBeVisible();
   await expect(page.getByRole("button", { name: "保存今日狀態" })).toHaveCount(
     0,
   );
@@ -216,4 +216,26 @@ test("editing plan preserves active snapshot; reset explicitly archives old sess
   );
   expect(sessions[0].status).toBe("discarded");
   expect(sessions[1].name).toBe("Updated Upper");
+});
+
+test("four direct recovery entries persist and Progress supports backfill", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await seed(page);
+  for (const name of ["睡眠", "疲勞", "肌肉痠痛", "壓力"]) {
+    await page.locator(".recovery-entry-grid").getByRole("button", { name: new RegExp(name) }).click();
+    await page.getByRole("radio", { name: "3", exact: true }).check();
+    await page.getByRole("button", { name: "儲存紀錄", exact: true }).click();
+    await expect(page.getByRole("dialog")).toContainText("已儲存，歷史紀錄保留");
+    await page.getByRole("button", { name: "關閉", exact: true }).click();
+  }
+  await page.reload();
+  await expect(page.locator(".recovery-entry-grid strong")).toHaveText(["3 / 5", "3 / 5", "3 / 5", "3 / 5"]);
+  await page.goto("/progress/recovery/");
+  await page.getByLabel("補記日期").fill("2026-10-01");
+  await page.locator(".recovery-entry-grid").getByRole("button", { name: /壓力/ }).click();
+  await page.getByRole("radio", { name: "2", exact: true }).check();
+  await page.getByRole("button", { name: "儲存紀錄", exact: true }).click();
+  await page.getByRole("button", { name: "關閉", exact: true }).click();
+  await expect(page.getByText("2026-10-01 · 壓力", { exact: true })).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 });

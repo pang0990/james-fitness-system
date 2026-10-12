@@ -1955,3 +1955,16 @@ body:has(dialog[open]) {overflow:hidden;}
 
 .food-with-favorite {display:flex;align-items:center;}
 .food-list .favorite-food {width:auto;flex-shrink:0;min-height:44px;padding:8px;color:var(--gold);font-size:12px;}
+
+/* Direct daily recovery entry, with touch-friendly independent ratings. */
+.recovery-entry-points { display: grid; gap: 12px; }
+.recovery-entry-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.recovery-entry-grid > button { display: grid; gap: 8px; text-align: left; padding: 16px; min-height: 112px; border: 1px solid var(--border, #5555); border-radius: 14px; background: var(--surface, #18191c); color: inherit; }
+.recovery-entry-grid small { color: var(--gold, #c5a461); }
+.recovery-rating { border: 0; padding: 0; margin: 20px 0; }
+.rating-options { display: flex; gap: 8px; margin: 16px 0; }
+.rating-options label { flex: 1; position: relative; cursor: pointer; }
+.rating-options input { position: absolute; opacity: 0; width: 100%; height: 100%; }
+.rating-options span { display: grid; place-items: center; min-height: 48px; border: 1px solid #7777; border-radius: 12px; }
+.rating-options input:checked + span { background: #c5a461; color: #070708; border-color: #c5a461; }
+.rating-options input:focus-visible + span { outline: 2px solid currentColor; outline-offset: 3px; }

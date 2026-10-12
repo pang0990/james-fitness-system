@@ -255,6 +255,7 @@ export type CycleEvent = {
   sessionId?: string;
 };
 export type RecoveryEntry = {
+  unit?: "minutes" | "rating";
   id: string;
   date: string;
   type: "sleep" | "fatigue" | "stress" | "soreness" | "pain";
@@ -591,6 +592,8 @@ export function validateState(value: unknown): AppState {
           ) ||
           !numeric(r.value) ||
           r.value < 0 ||
+          (r.unit != null && !["minutes", "rating"].includes(r.unit)) ||
+          (r.unit === "rating" && (r.value < 1 || r.value > 5)) ||
           r.value > (r.type === "sleep" ? 1440 : r.type === "pain" ? 10 : 5),
       ))
   )

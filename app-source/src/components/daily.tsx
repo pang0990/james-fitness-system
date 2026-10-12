@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { RecoveryQuickLog } from "./recovery-log";
+import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
 import { latestRecovery } from "@/lib/recovery";
 import { nextDayIndex } from "@/lib/training-queue";
 import { Companion, type CompanionState as PetState } from "./companion";
@@ -405,22 +405,7 @@ export function TodayV2({
               <Plus />
             </button>
           </div>
-          <div className="recovery-values">
-            <div>
-              <strong>
-                {recovery?.sleep != null ? `${recovery.sleep} h` : "尚未紀錄"}
-              </strong>
-              <span>睡眠</span>
-            </div>
-            <div>
-              <strong>
-                {recovery?.fatigue != null
-                  ? `${recovery.fatigue} / 5`
-                  : "尚未紀錄"}
-              </strong>
-              <span>疲勞</span>
-            </div>
-          </div>
+          <RecoveryEntryPoints date={date} />
         </div>
       </section>
       {adjust && (
