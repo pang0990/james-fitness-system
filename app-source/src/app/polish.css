@@ -355,3 +355,95 @@ body .onboarding-target-table strong{font:600 22px var(--ui-font);color:var(--ui
 }
 :root[data-reduce-transparency="true"] body .bottom-nav,
 :root[data-reduce-transparency="true"] body .sheet{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--ui-overlay)}
+
+/* Knowledge: editorial reading instead of oversized stacked cards */
+body .knowledge{max-width:720px;gap:19px}
+body .article-meta{font-size:12px;letter-spacing:.015em;color:var(--ui-tertiary);margin-top:-10px}
+body .article-list{display:grid;gap:9px}
+body .article-list>a{
+  display:flex;align-items:center;gap:14px;padding:18px;
+  min-width:0;border:1px solid var(--ui-border);border-radius:var(--ui-radius-lg);
+  background:var(--ui-surface);box-shadow:none;text-decoration:none
+}
+body .article-list>a>svg:first-child{width:18px;height:18px;flex:0 0 18px;color:var(--ui-accent)}
+body .article-list>a>svg:last-child{width:17px;height:17px;flex:0 0 17px;color:var(--ui-tertiary);margin-left:auto}
+body .article-list>a>div{min-width:0}
+body .article-list h2{font:600 15px/1.55 var(--ui-font);color:var(--ui-primary);margin:5px 0}
+body .article-list small,body .article-list span{font-size:11px;color:var(--ui-secondary)}
+body .article-body{color:var(--ui-primary);font:400 14px/1.9 var(--ui-font);letter-spacing:.008em;overflow-wrap:anywhere}
+body .article-body>*,body .article-body section>*{margin-bottom:14px}
+body .article-body h1{font-size:24px;line-height:1.4;margin:32px 0 14px}
+body .article-body h2{font-size:19px;line-height:1.45;margin:36px 0 15px}
+body .article-body h3{font-size:16px;margin:27px 0 10px}
+body .article-body :is(p,li,td,th){font-size:14px;line-height:1.9}
+body .article-body :is(ul,ol){padding-left:24px}
+body .article-body li{margin:4px 0}
+body .article-body blockquote{border-left:2px solid var(--ui-accent);padding:2px 15px;color:var(--ui-secondary);background:transparent;margin:22px 0}
+body .article-body pre{overflow:auto;border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:16px;background:var(--ui-surface-raised);font-size:12px;line-height:1.7}
+body .article-body code:not(pre code){background:var(--ui-surface-raised);padding:2px 5px;border-radius:5px;font-size:.9em}
+body .article-body table{display:block;overflow-x:auto;margin:22px 0;border-collapse:collapse}
+body .article-body th,body .article-body td{padding:10px 13px;border-bottom:1px solid var(--ui-border);font-size:12px;min-width:80px}
+body .article-body a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ui-border-strong);color:var(--ui-accent)}
+body .article-body hr{border:0;border-top:1px solid var(--ui-border);margin:28px 0}
+/* Manual single-day calendar: clean cells, clear selected date */
+body .calendar-section{display:grid;gap:16px}
+body .calendar-section>.card-head{margin:0}
+body .calendar-section>.card-head h2{font:600 18px/1.4 var(--ui-font)}
+body .calendar-section .month-grid{gap:5px}
+body .calendar-section .month-grid>small{text-align:center;font-size:11px;color:var(--ui-tertiary)}
+body .calendar-section .month-grid>button{
+  min-width:0;min-height:65px;padding:8px 3px;
+  display:flex;flex-direction:column;justify-content:flex-start;align-items:center;gap:2px;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  border-radius:9px;color:var(--ui-primary);box-shadow:none;overflow:hidden
+}
+body .calendar-section .month-grid>button strong{font:600 14px/1.3 var(--ui-font)}
+body .calendar-section .month-grid>button small{font-size:9px;line-height:1.3;color:var(--ui-tertiary);word-break:break-all;max-width:100%}
+body .calendar-section .month-grid>button.is-today{border-color:var(--ui-accent)}
+body .calendar-section .month-grid>button.rest-day{background:var(--ui-surface-raised)}
+body .calendar-section .month-grid>button.is-today strong{color:var(--ui-accent)}
+body .calendar-section>p{font-size:12px;line-height:1.6;color:var(--ui-secondary)}
+/* System settings, data tools, history and decisions */
+body .settings-home .simple-row,body .daily-page>.simple-row{
+  background:var(--ui-surface);
+  border:1px solid var(--ui-border);border-radius:12px;
+  padding:14px 16px;min-height:52px;margin:0
+}
+body .daily-page>.simple-row span:last-child{color:var(--ui-tertiary)}
+body .daily-page>form.card,body .daily-page>.card.stack{gap:14px}
+body .notice{
+  padding:14px 16px;background:var(--ui-surface-raised);
+  border:1px solid var(--ui-border);border-radius:12px;
+  font-size:13px;line-height:1.65
+}
+body .notice.error{border-color:rgba(225,143,149,.32)}
+body .empty{font-size:13px;line-height:1.6;padding:20px 0}
+body .tag{border-color:var(--ui-border);border-radius:8px;color:var(--ui-secondary);padding:4px 8px}
+body details.card{padding:16px 18px}
+body details.card>summary{font-size:14px;font-weight:550;line-height:1.5;list-style-position:inside}
+body details.card[open]>summary{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--ui-border)}
+body .table-wrap{border:1px solid var(--ui-border);border-radius:12px;overflow:auto}
+body table{font-size:12px}
+body th,body td{padding:12px 10px;border-bottom:1px solid var(--ui-border)}
+body .direction-hero,body .review-glass{
+  border:1px solid var(--ui-border);
+  background:var(--ui-surface);border-radius:var(--ui-radius-lg);
+  padding:20px;box-shadow:none
+}
+body .direction-hero>h2,body .review-glass>h2{font:600 18px/1.4 var(--ui-font)}
+body .direction-evidence strong{font:600 27px/1.3 var(--ui-font);letter-spacing:-.03em}
+body .direction-evidence span{font-size:12px;color:var(--ui-secondary)}
+body .review-glass .button{margin-top:10px}
+body .system-status{border-top:1px solid var(--ui-border);padding-top:16px}
+body .system-status .status-row strong{min-width:82px;letter-spacing:.04em}
+body .workout-success>h1{font:600 25px/1.3 var(--ui-font)}
+@media(max-width:520px){
+ body .article-body{font-size:14px}
+ body .article-body h2{font-size:18px}
+ body .article-list>a{padding:15px}
+ body .calendar-section .month-grid{gap:4px}
+ body .calendar-section .month-grid>button{min-height:60px;padding:7px 2px}
+ body .calendar-section .month-grid>button strong{font-size:13px}
+ body .calendar-section .month-grid>button small{font-size:8px}
+ body .direction-hero,body .review-glass{padding:17px}
+}
