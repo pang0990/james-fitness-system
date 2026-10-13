@@ -45,7 +45,7 @@ export const profileSchema = z.object({
   height: z.number().min(100).max(250),
   weight: z.number().min(30).max(350),
   sex: z.enum(["male", "female"]),
-  frequency: z.number().int().min(0).max(3),
+  frequency: z.number().int().min(-1).max(3),
   experiencedCut: z.boolean(),
   goal: z.enum(["CUT", "GAIN"]),
   eligible: z.boolean(),
