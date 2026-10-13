@@ -347,6 +347,15 @@ export type AppState = {
     calories: number | null;
     createdAt: string;
   }[];
+  /** One snapshot per local calendar day. Optional for compatibility with all existing backups. */
+  dailySteps?: {
+    id: string;
+    date: string;
+    steps: number;
+    source: "manual" | "apple_health";
+    updatedAt: string;
+    externalId?: string;
+  }[];
   audit: { id: string; at: string; action: string }[];
 };
 export const initialState = (): AppState => ({
@@ -366,6 +375,7 @@ export const initialState = (): AppState => ({
   sessions: [],
   recommendations: [],
   cardio: [],
+  dailySteps: [],
   audit: [],
 });
 export function activePlan(state: AppState, date: string) {
@@ -624,6 +634,13 @@ export function validateState(value: unknown): AppState {
   if (s.customWarmups && (!Array.isArray(s.customWarmups) ||
       s.customWarmups.some(w => !w.id || !w.name || !Number.isFinite(w.minutes) || w.minutes <= 0 || w.minutes > 120)))
     throw Error("自訂熱身資料無效");
+  if (s.dailySteps && (!Array.isArray(s.dailySteps) ||
+    s.dailySteps.some(r => !r.id || !/^\\d{4}-\\d{2}-\\d{2}$/.test(r.date) ||
+      !Number.isInteger(r.steps) || r.steps < 0 || r.steps > 100000 ||
+      !["manual","apple_health"].includes(r.source) ||
+      !r.updatedAt || (r.externalId != null && typeof r.externalId !== "string")) ||
+    new Set(s.dailySteps.map(r => r.date)).size !== s.dailySteps.length))
+    throw Error("每日步數資料格式無效或日期重複");
   if (s.profile) profileSchema.parse(s.profile);
   if (s.mealSlotSnapshots &&
       (typeof s.mealSlotSnapshots !== "object" ||
