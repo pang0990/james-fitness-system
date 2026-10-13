@@ -7,13 +7,13 @@ import { type Cycle } from "@/lib/domain";
 import { PageTitle, Field, Num, uid, stamp } from "./daily";
 import templates from "@/content/training-templates.json";
 import catalog from "@/content/exercises.json";
-export function TrainingPlan({ notify }: { notify: (s?: string) => void }) {
+export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: string) => void; startBlank?: boolean }) {
   const { state, save } = useStore();
   const current = activeCycle(state);
-  const [name, setName] = useState(current?.name ?? "My Training Plan");
+  const [name, setName] = useState(startBlank ? "My New Plan" : current?.name ?? "My Training Plan");
   const [days, setDays] = useState<Cycle["days"]>(
     () =>
-      current?.days.map((d, i) => ({
+      (!startBlank ? current?.days : undefined)?.map((d, i) => ({
         ...structuredClone(d),
         id: dayId(current, i),
       })) ?? [],
