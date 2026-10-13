@@ -194,3 +194,17 @@
 @media(prefers-reduced-motion:reduce){
   .recipe-card.recipe-v5-card,.nutrition-cookbook-categories a{transition:none!important}
 }
+
+/* Keep the desktop space outside the phone-width modules consistent with the
+ * restored cinematic hero, instead of retaining the obsolete flat SVG skyline. */
+@media(min-width:770px){
+  body .app.page-nutrition,
+  body .app.page-training,
+  body .app.page-progress{
+    background-image:
+      linear-gradient(90deg,rgba(0,2,6,.77),rgba(1,3,7,.38) 34%,rgba(1,3,7,.39) 62%,rgba(0,2,6,.8)),
+      var(--jfs-hero);
+    background-position:center,center 52%;
+    background-size:cover,cover;
+  }
+}
