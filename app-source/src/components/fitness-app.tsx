@@ -14,7 +14,8 @@ import { ProgressDirection } from "./progress-direction";
 import { ActivityReviewContext } from "./activity-trend";
 import { WeeklyCheckin } from "./weekly-checkin";
 import Link from "next/link";
-import { TodayV2, NutritionV2 } from "./daily";
+import { NutritionV2 } from "./daily";
+import { TodayReference } from "./today-reference";
 import { TrainingFlow } from "./training-flow";
 import { Trends } from "./trends";
 import { Knowledge } from "./knowledge";
@@ -22,6 +23,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import {
   Activity,
+  Bell,
+  Menu as MenuIcon,
   ArrowDownRight,
   ArrowRight,
   BookOpen,
@@ -355,13 +358,28 @@ export function FitnessApp({ path }: { path: string }) {
       <main className="main">
         <header className="topbar">
           <div className="breadcrumb" aria-label="目前所在頁面">
-            <span className="wordmark">JAMES FITNESS</span>
-            <span className="breadcrumb-separator" aria-hidden="true">/</span>
-            <span className="current-section">{labelMap[section] ?? "James"}</span>
+            {section === "today" ? (
+              <div className="today-header-brand">
+                <span className="wordmark">JAMES FITNESS</span>
+                <span className="today-header-subtitle">THE WANDERER</span>
+              </div>
+            ) : (
+              <>
+                <span className="wordmark">JAMES FITNESS</span>
+                <span className="breadcrumb-separator" aria-hidden="true">/</span>
+                <span className="current-section">{labelMap[section] ?? "James"}</span>
+              </>
+            )}
           </div>
+          <div className={section === "today" ? "today-header-actions" : ""}>
+          {section === "today" && (
+            <a className="today-header-bell" href="#today-action-queue" aria-label="查看今日提醒">
+              <Bell size={18} />
+            </a>
+          )}
           <details className="account-menu">
             <summary aria-label="帳戶選單">
-              <User size={20} />
+              {section === "today" ? <MenuIcon size={20} /> : <User size={20} />}
             </summary>
             <div>
               <Link href="/profile">Profile · 個人資料</Link>
@@ -370,6 +388,7 @@ export function FitnessApp({ path }: { path: string }) {
               <Link href="/settings">Settings · 系統設定</Link>
             </div>
           </details>
+          </div>
         </header>
         {saving && (
           <div className="save-indicator" role="status">
@@ -402,7 +421,7 @@ export function FitnessApp({ path }: { path: string }) {
             ) : section === "login" || section === "signup" ? (
               <Login />
             ) : section === "today" ? (
-              <TodayV2 date={date} notify={notify} />
+              <TodayReference date={date} notify={notify} />
             ) : section === "nutrition" ? (
               path === "nutrition/meals" ? (
                 <MealSettings notify={notify} />
