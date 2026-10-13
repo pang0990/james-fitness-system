@@ -855,6 +855,11 @@ export function NutritionV2({
                 <span className="cookbook-card-cta">探索食譜 <ArrowRight size={17} strokeWidth={1.6} /></span>
               </span>
             </Link>
+            <nav className="nutrition-cookbook-categories" aria-label="依食譜類型探索">
+              <Link href="/nutrition/recipes?category=Breakfast"><span>早餐</span><b>{builtInRecipes.filter(r=>r.category==="Breakfast").length}</b><ChevronRight size={13}/></Link>
+              <Link href="/nutrition/recipes?category=Main%20Meals"><span>正餐</span><b>{builtInRecipes.filter(r=>r.category==="Main Meals").length}</b><ChevronRight size={13}/></Link>
+              <Link href="/nutrition/recipes?category=Snacks"><span>點心</span><b>{builtInRecipes.filter(r=>r.category==="Snacks").length}</b><ChevronRight size={13}/></Link>
+            </nav>
             <Link className="nutrition-meal-manage-link" href="/nutrition/meals">管理每日餐次 <ChevronRight size={15}/></Link>
           </section>
 
