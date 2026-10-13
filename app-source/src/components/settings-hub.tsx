@@ -226,6 +226,11 @@ export function SettingsHub({
                 profileSchema.parse(profile);
                 new Intl.DateTimeFormat("en", { timeZone: profile.timezone });
               }
+              if (key === "notifications") {
+                prefs.reminders = prefs.missingLogReminder !== false;
+                if (prefs.workoutReminder === true && !prefs.workoutReminderTime)
+                  throw Error("開啟訓練提醒前請設定提醒時間");
+              }
               for (const name of ["restSeconds", "waterQuick1", "waterQuick2"])
                 if (
                   prefs[name] !== undefined &&
@@ -285,6 +290,7 @@ export function SettingsHub({
                         "restrictions",
                         "allergies",
                         "avoidFoods",
+                        "workoutReminderTime",
                       ].includes(name)
                     }
                   />
