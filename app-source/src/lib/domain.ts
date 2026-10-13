@@ -359,6 +359,7 @@ export type AppState = {
     calories: number | null;
     /** Original activity duration when a historical kcal estimate was recorded. */
     calorieEstimateAppliesToMinutes?: number;
+    calorieEstimateOriginalType?: string;
     /** The old estimate is retained for export/audit but no longer describes edited duration. */
     calorieEstimateStale?: boolean;
     createdAt: string;
