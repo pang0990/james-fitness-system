@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
-import { pinDay, round } from "@/lib/domain";
+import { pinDay, round, syncMealCompletion } from "@/lib/domain";
 import { PageTitle, Field, Sheet, NutritionSummary, uid, stamp } from "./daily";
 import builtInRecipes from "@/content/recipes-seed.json";
 
@@ -64,6 +64,7 @@ export function Recipes({ date, notify, path = "nutrition/recipes" }: {
         f: round(recipe.f * servings), kcal: round(recipe.kcal * servings),
         foodId: recipe.id, foodVersion: recipe.version ?? 1, createdAt: stamp()
       });
+      syncMealCompletion(s, logDate);
     })) { notify("已加入 " + slot); setSelected(null); }
   }
   const details = recipe ? (

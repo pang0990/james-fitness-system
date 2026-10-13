@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { addDays, type Cycle } from "@/lib/domain";
+import { addDays, setDayType, type Cycle } from "@/lib/domain";
 import {
   activeCycle,
   muscles,
@@ -43,6 +43,8 @@ export function TrainingCalendar({ date }: { date: string }) {
     extra = false,
     cleared = false,
   ) {
+    const syncNutrition = selected !== null && selected >= date &&
+      window.confirm(`是否同時更新 ${selected} 的 Nutrition Day Type 為「${kind === "train" ? "訓練日" : "休息日"}」？\n確定＝同步 Nutrition；取消＝只修改 Training Calendar。`);
     if (
       save("更新單日安排", (s) => {
         (s.schedule ??= []).push({
@@ -55,6 +57,7 @@ export function TrainingCalendar({ date }: { date: string }) {
           source: "single",
           createdAt: stamp(),
         });
+        if (syncNutrition) setDayType(s, selected!, kind === "train" ? "training" : "rest");
       })
     )
       setSelected(null);
@@ -121,7 +124,7 @@ export function TrainingCalendar({ date }: { date: string }) {
         })}
       </div>
       <p className="muted">
-        未完成的訓練日仍排在下一次。排程不改變營養日類型。
+        未完成的訓練日仍排在下一次。單日調整可選擇是否同步 Nutrition Day Type；批次安排不會擅自改變營養日期。已保存的歷史日期保持原快照。
       </p>
       <details className="card">
         <summary>批次安排／每週重複</summary>

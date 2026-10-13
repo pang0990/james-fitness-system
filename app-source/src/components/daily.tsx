@@ -35,6 +35,9 @@ import {
   dateInZone,
   dayNames,
   mealTotals,
+  mealCompletion,
+  setMealSkipped,
+  syncMealCompletion,
   resolveDay,
   visibleMeals,
   waterTotal,
@@ -590,6 +593,7 @@ export function NutritionV2({
   const [slotText, setSlotText] = useState(state.mealSlots.join("\n"));
   const [renameSlot, setRenameSlot] = useState("");
   const day = resolveDay(state, selectedDate);
+  const completion = mealCompletion(state, selectedDate);
   const meals = visibleMeals(state, selectedDate);
   const isLibrary = path === "nutrition/foods";
   function close() {
@@ -624,6 +628,7 @@ export function NutritionV2({
           createdAt: stamp(),
           ...(edit ? { supersedes: edit.id } : {}),
         });
+        syncMealCompletion(s, selectedDate);
       })
     ) {
       notify();
@@ -708,9 +713,15 @@ export function NutritionV2({
           <section className="card">
             <NutritionSummary date={selectedDate} />
           </section>
+          <section className="card">
+            <div className="simple-row"><strong>Logging Completion</strong>
+              <span>{completion.slots.filter(s => s.status !== "missing").length} / {completion.slots.length} 餐 {completion.completed ? "✓" : "· 尚未完整"}</span>
+            </div>
+            <p className="muted">每個餐次需有有效食物／食譜紀錄，或標記「未吃」。不必另外按整日完成。</p>
+          </section>
           <section className="meal-list">
             {Array.from(
-              new Set([...state.mealSlots, ...meals.map((m) => m.slot)]),
+              new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map((m) => m.slot)]),
             ).map((name) => (
               <div key={name} className="meal-section">
                 <div className="meal-head">
@@ -763,7 +774,20 @@ export function NutritionV2({
                       </div>
                     ))
                 ) : (
-                  <p className="muted">尚未紀錄</p>
+                  <div className="meal-empty">
+                    <p className="muted">{completion.slots.find(s => s.slot === name)?.status === "skipped" ? "已標記未吃 ✓" : "尚未紀錄"}</p>
+                    {(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots).includes(name) && (
+                      <button type="button" className="button secondary"
+                        onClick={() => {
+                          const skipped = completion.slots.find(s => s.slot === name)?.status === "skipped";
+                          if (save(skipped ? "取消餐次未吃標記" : "標記餐次未吃", draft => {
+                            setMealSkipped(draft, selectedDate, name, !skipped);
+                          })) notify(skipped ? "已取消未吃標記" : "已標記此餐未吃");
+                        }}>
+                        {completion.slots.find(s => s.slot === name)?.status === "skipped" ? "取消未吃" : "這餐未吃"}
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             ))}
@@ -775,21 +799,7 @@ export function NutritionV2({
           <Link className="text-link" href="/nutrition/meals">
             編輯餐次
           </Link>
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={day.complete}
-              onChange={(e) => {
-                const complete = e.target.checked;
-                save("設定飲食紀錄完整度", (s) => {
-                  pinDay(s, selectedDate);
-                  s.days.find((d) => d.date === selectedDate)!.complete =
-                    complete;
-                });
-              }}
-            />
-            今日飲食已記錄完整
-          </label>
+
         </>
       )}
       {sheet && (
@@ -840,6 +850,9 @@ export function NutritionV2({
                 // Keep old meal snapshots unchanged; only current / future entries get successor snapshots.
                 const visible = draft.meals.filter(m => !m.deleted && m.slot === renameSlot && m.date >= today && !draft.meals.some(n => n.supersedes === m.id));
                 for (const m of visible) draft.meals.push({ ...m, id: uid(), slot: next, createdAt: stamp(), supersedes: m.id });
+                for (const day of Object.keys(draft.mealSlotSnapshots ?? {})) {
+                  if (day >= today) draft.mealSlotSnapshots![day] = draft.mealSlotSnapshots![day].map(n => n === renameSlot ? next : n);
+                }
               })) {
                 setSlot(next); setRenameSlot(next); setSlotText(state.mealSlots.map(n => n === renameSlot ? next : n).join("\n"));
                 close(); notify("餐次名稱已更新，歷史紀錄保留");

@@ -1,0 +1,55 @@
+/* JFS Blueprint v1.0 — accessible progressive onboarding and daily logging UI */
+.onboarding-wizard{max-width:820px;margin:0 auto;padding:clamp(22px,5vw,44px) 18px 140px;gap:22px}
+.onboarding-wizard .onboarding-title h1{font:400 clamp(30px,6vw,48px)/1.1 Georgia,"Times New Roman",serif;color:#f2ddb1;margin:12px 0}
+.onboarding-wizard .onboarding-title p{max-width:58ch}
+.onboarding-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.onboarding-progress span{height:4px;border-radius:20px;background:#544b36}
+.onboarding-progress span.active{background:linear-gradient(90deg,#ae8343,#e2c78c)}
+.onboarding-wizard .onboarding-content{padding:clamp(18px,4vw,30px);min-height:370px}
+.onboarding-wizard .onboarding-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));gap:18px}
+.onboarding-wizard .onboarding-fields>p{grid-column:1/-1;line-height:1.6}
+.onboarding-wizard .onboarding-fields>label:not(.check){display:flex;flex-direction:column;gap:9px;font-size:13px;letter-spacing:.3px;color:#dbcda9}
+.onboarding-wizard .onboarding-fields input:not([type=checkbox]),.onboarding-wizard .onboarding-fields select{width:100%;background:#15171a;border:1px solid #6b5a3c;color:#f4f2ec;border-radius:11px;min-height:44px;padding:9px 12px;font:inherit}
+.onboarding-wizard .onboarding-fields label.check{grid-column:1/-1;display:flex;align-items:flex-start;gap:12px;line-height:1.5}
+.onboarding-wizard input:focus-visible,.onboarding-wizard select:focus-visible,.onboarding-wizard button:focus-visible,.onboarding-wizard a:focus-visible{outline:2px solid #e0c783;outline-offset:3px}
+.onboarding-goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px}
+.onboarding-goal{min-height:154px;display:flex;align-items:flex-start;flex-direction:column;justify-content:center;text-align:left;padding:22px;gap:12px;border:1px solid #685337;background:#121416;color:#f4f2ec;border-radius:15px;cursor:pointer}
+.onboarding-goal strong{font:30px Georgia,serif;letter-spacing:1.8px;color:#e2c78c}
+.onboarding-goal span{font-size:13px;line-height:1.6;color:#c9c4b8}
+.onboarding-goal.selected{border-color:#e0c783;background:linear-gradient(140deg,#2d2618,#121416);box-shadow:inset 0 0 0 1px #e0c78366}
+.onboarding-result-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.onboarding-result-summary>div{border:1px solid #665435;border-radius:12px;background:#0c0e12;padding:15px 10px;display:flex;gap:6px;flex-direction:column;min-width:0}
+.onboarding-result-summary small{color:#c4a771;letter-spacing:1px;font-size:10px}
+.onboarding-result-summary strong{font-size:14px;overflow-wrap:anywhere}
+.onboarding-target-table{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
+.onboarding-target-table>.card{display:flex;flex-direction:column;gap:8px;padding:16px}
+.onboarding-target-table h3{font-size:13px;color:#e7c78b}
+.onboarding-target-table strong{font:26px Georgia,serif;color:#f4f2ec}
+.onboarding-target-table span{font-size:12px;color:#c1bbad;line-height:1.5}
+.onboarding-wizard .form-actions{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-top:26px;flex-wrap:wrap}
+.onboarding-wizard .form-actions .button:last-child{margin-left:auto;min-width:125px;text-align:center}
+.onboarding-wizard .muted{font-size:13px}
+.meal-empty{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 16px}
+.meal-empty p{margin:0}
+.meal-empty .button{min-width:110px;padding:9px 12px}
+@media(max-width:520px){
+ .onboarding-wizard .onboarding-fields{grid-template-columns:1fr}
+ .onboarding-result-summary>div{padding:12px 9px}
+ .onboarding-result-summary strong{font-size:12px}
+}
+
+
+/* Progress: real weekly metrics, not placeholder sample cards */
+.progress-direction>.weekly-quick,.progress-direction>.weekly-summary{margin:0 0 18px}
+.weekly-quick h2,.weekly-summary h2{font:25px Georgia,serif;color:#efd09a}
+.weekly-data-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:20px 0}
+.weekly-data-grid>a{min-width:0;display:flex;flex-direction:column;gap:9px;text-decoration:none;padding:15px;border:1px solid #63533866;border-radius:14px;background:#0d0f13;transition:border-color .2s}
+.weekly-data-grid>a:hover,.weekly-data-grid>a:focus-visible{border-color:#e0c783}
+.weekly-data-grid span{color:#c9ad76;font-size:10px;letter-spacing:1.5px;text-transform:uppercase}
+.weekly-data-grid strong{font:20px Georgia,serif;color:#f4f2ec;overflow-wrap:anywhere}
+.weekly-data-grid small{font-size:11px;line-height:1.5;color:#aaa89f}
+.weekly-quick .recovery-entry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media(max-width:420px){.weekly-data-grid{grid-template-columns:1fr}.weekly-data-grid>a{gap:6px}}
+
+/* Authentication and onboarding screens never show the main four-tab dock. */
+.page-auth .bottom-nav,.page-auth .topbar .account-menu,.page-login .topbar .account-menu,.page-onboarding .topbar .account-menu{display:none!important}

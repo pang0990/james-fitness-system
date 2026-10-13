@@ -8,7 +8,8 @@ import {
   type AppState,
   type Macros,
 } from "./domain";
-import { performance } from "./training-model";
+import { performance, scheduleKind } from "./training-model";
+import { GAIN_TEMP_RULE } from "./onboarding";
 export const GAIN_RULE = "james-gain-v1.0";
 export type GainSettings = {
   level: "beginner" | "intermediate" | "advanced";
@@ -67,6 +68,7 @@ export function gainReview(state: AppState, date: string) {
   ) as Macros;
   const currentPlan = activePlan(state, date);
   const plan = currentPlan?.inputs.goal === "GAIN" ? currentPlan : null;
+  const isTemporary = plan?.ruleId === GAIN_TEMP_RULE;
   const settings = state.gainSettings;
   const range = settings ? gainRanges[settings.level] : null;
   const sessions = state.sessions.filter(
@@ -75,6 +77,17 @@ export function gainReview(state: AppState, date: string) {
   const results = performance({ ...state, sessions }).filter(
     (p) => p.comparable,
   );
+  const hasSchedule = Boolean(state.weeklySchedule?.length ||
+    state.schedule?.some(r => r.kind === "train" && !r.cleared));
+  const scheduled = hasSchedule
+    ? Array.from({length:14},(_,i)=>addDays(start,i)).filter(d=>scheduleKind(state,d)==="train")
+    : [];
+  const completedDates = new Set(sessions.filter(s=>!s.isExtra).map(s=>s.workoutDate ?? s.date));
+  const trainingRate = scheduled.length
+    ? scheduled.filter(d=>completedDates.has(d)).length/scheduled.length
+    : null;
+  const recentPainHold = state.recoveryEntries?.some(r =>
+    r.type === "pain" && r.value > 5 && r.date >= addDays(date,-3) && r.date <= date) ?? false;
   let reason = "",
     kind = "observe",
     delta = 0;
@@ -86,6 +99,21 @@ export function gainReview(state: AppState, date: string) {
     state.gainDecisions?.some((d) => daysBetween(d.periodEnd, date) < 14)
   )
     reason = "本次決定後先累積 14 天新資料，再次評估。";
+  else if (isTemporary) {
+    if (daysBetween(plan!.effectiveDate, date) < 13)
+      reason = "Temporary GAIN 尚在最初 14 天觀察期間，不提前調整。";
+    else if (recentPainHold)
+      reason = "近期有需要優先處理的疼痛安全警示，暫緩營養調整。";
+    else if (a.length < 5 || b.length < 5 || complete.length < 10 || sessions.length < 4)
+      reason = "暫時目標尚需兩週各至少 5 天體重、10 天完整飲食及 4 次阻力訓練。";
+    else if (trainingRate === null || trainingRate < 0.75)
+      reason = "需要可核對的訓練排程與至少 75% 完成率，才可從 Temporary 建立正式基準。";
+    else {
+      kind = "temporary-baseline";
+      delta = 0;
+      reason = "已達到 14 天最低資料門檻：建議以實際完整飲食紀錄平均值建立個人 GAIN 基準；僅在 Accept 後隔日生效。";
+    }
+  }
   else if (!settings) reason = "先選擇訓練程度與確認基準條件。";
   else if (plan && daysBetween(plan.effectiveDate, date) < 7)
     reason = "Observation · 新計畫第一週不再次調整。";
@@ -187,7 +215,7 @@ export function applyGainDecision(
     const previousPlan = activePlan(state, date);
     const plan = previousPlan?.inputs.goal === "GAIN" ? previousPlan : null;
     versionId = crypto.randomUUID();
-    const base = plan?.targets ?? {
+    const base = plan && plan.ruleId !== GAIN_TEMP_RULE ? plan.targets : {
       training: review.baseline,
       light: review.baseline,
       rest: review.baseline,

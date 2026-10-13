@@ -3,6 +3,13 @@ import { LegacyRoute } from "@/components/legacy-route";
 export const dynamicParams = false;
 export function generateStaticParams() {
   return [
+    "auth/callback",
+    "auth/error",
+    "onboarding/basic",
+    "onboarding/goal",
+    "onboarding/activity",
+    "onboarding/safety",
+    "onboarding/result",
     "settings/general",
     "settings/companion",
     "settings/data-privacy",
@@ -83,8 +90,7 @@ export default async function Page({
     "training/templates": "training/plan",
     "progress/weekly": "progress/review",
     "progress/recommendations": "progress/review",
-    login: "settings/account",
-    signup: "settings/account",
+    signup: "login",
     "nutrition/log": "nutrition",
   };
   const target = aliases[slug.join("/")];
@@ -97,7 +103,7 @@ export default async function Page({
     "training/plan/edit": "training/plan",
 
 
-    "nutrition/recipes/detail": "nutrition/recipes",
+
     "progress/check-in": "progress/review",
     "progress/check-in/history": "progress/history",
 

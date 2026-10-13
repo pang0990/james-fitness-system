@@ -30,24 +30,42 @@ export type Profile = {
   eligible: boolean;
   timezone: string;
   waterTarget: number;
+  bodyFat?: number;
+  resistanceDays?: number;
+  safety?: {
+    pregnantOrBreastfeeding: boolean;
+    eatingDisorderHistory: boolean;
+    chronicConditionOrMedication: boolean;
+    otherMedicalConcern: boolean;
+  };
 };
 export const profileSchema = z.object({
   name: z.string().trim().min(1).max(40),
-  age: z.number().int().min(18).max(100),
+  age: z.number().int().min(1).max(100),
   height: z.number().min(100).max(250),
   weight: z.number().min(30).max(350),
   sex: z.enum(["male", "female"]),
-  frequency: z.number().int().min(0).max(3),
+  frequency: z.number().int().min(-1).max(3),
   experiencedCut: z.boolean(),
   goal: z.enum(["CUT", "GAIN"]),
   eligible: z.boolean(),
   timezone: z.string().min(1),
   waterTarget: z.number().int().min(0).max(10000),
+  bodyFat: z.number().min(1).max(70).optional(),
+  resistanceDays: z.number().int().min(0).max(7).optional(),
+  safety: z.object({
+    pregnantOrBreastfeeding: z.boolean(),
+    eatingDisorderHistory: z.boolean(),
+    chronicConditionOrMedication: z.boolean(),
+    otherMedicalConcern: z.boolean(),
+  }).optional(),
 });
 export const round = (n: number, places = 1) =>
   Math.round((n + Number.EPSILON) * 10 ** places) / 10 ** places;
 export function cutTargets(profile: Profile): Record<DayType, Macros> {
   profileSchema.parse(profile);
+  if (profile.age < 18 || !profile.eligible || Object.values(profile.safety ?? {}).some(Boolean))
+    throw Error("此使用者不適用自動 CUT 處方");
   const i = profile.frequency;
   const c = round(
     profile.weight *
@@ -267,6 +285,8 @@ export type RecoveryEntry = {
   createdAt: string;
 };
 export type AppState = {
+  mealSlotSnapshots?: Record<string, string[]>;
+  skippedMealSlots?: { date: string; slot: string; createdAt: string }[];
   favoriteFoods?: string[];
   weeklySchedule?: number[];
   recoveryEntries?: RecoveryEntry[];
@@ -422,6 +442,35 @@ export function setDayType(state: AppState, date: string, type: DayType) {
 export function pinDay(state: AppState, date: string) {
   if (!state.days.some((d) => d.date === date))
     state.days.push(resolveDay(state, date));
+  (state.mealSlotSnapshots ??= {})[date] ??= [...state.mealSlots];
+}
+
+export function mealCompletion(state: AppState, date: string) {
+  const slots = state.mealSlotSnapshots?.[date] ?? state.mealSlots;
+  const meals = visibleMeals(state, date);
+  const skipped = state.skippedMealSlots ?? [];
+  const perSlot = slots.map(slot => {
+    const entries = meals.filter(m => m.slot === slot);
+    const valid = entries.length > 0 && entries.every(m =>
+      [m.p, m.c, m.f, m.kcal].every(n => Number.isFinite(n) && n >= 0));
+    const markedNotEaten = !entries.length && skipped.some(r => r.date === date && r.slot === slot);
+    return { slot, status: valid ? "logged" as const : markedNotEaten ? "skipped" as const : "missing" as const };
+  });
+  const completed = perSlot.length > 0 && perSlot.every(s => s.status !== "missing");
+  // Preserve legacy explicit completion on old days that did not have a meal-template snapshot.
+  const legacy = !state.mealSlotSnapshots?.[date] && state.days.find(d => d.date === date)?.complete === true;
+  return { slots: perSlot, completed: completed || legacy };
+}
+export function syncMealCompletion(state: AppState, date: string) {
+  pinDay(state, date);
+  const day = state.days.find(d => d.date === date);
+  if (day) day.complete = mealCompletion(state, date).completed;
+}
+export function setMealSkipped(state: AppState, date: string, slot: string, skipped: boolean) {
+  pinDay(state, date);
+  state.skippedMealSlots = (state.skippedMealSlots ?? []).filter(r => !(r.date === date && r.slot === slot));
+  if (skipped) state.skippedMealSlots.push({ date, slot, createdAt: new Date().toISOString() });
+  syncMealCompletion(state, date);
 }
 export function createInitialPlan(
   state: AppState,
@@ -430,6 +479,8 @@ export function createInitialPlan(
   now: string,
 ) {
   if (!state.profile) throw Error("請先完成個人資料");
+  if (state.profile.age < 18 || Object.values(state.profile.safety ?? {}).some(Boolean))
+    throw Error("安全篩選狀態不允許自動營養處方");
   if (state.versions.length) throw Error("初始計畫已存在");
   if (state.profile.goal !== "CUT" || !state.profile.eligible)
     throw Error("目前僅能建立符合入口條件的 CUT 計畫");
@@ -570,6 +621,14 @@ export function validateState(value: unknown): AppState {
   )
     throw Error("外觀設定格式無效");
   if (s.profile) profileSchema.parse(s.profile);
+  if (s.mealSlotSnapshots &&
+      (typeof s.mealSlotSnapshots !== "object" ||
+       Object.values(s.mealSlotSnapshots).some(v => !Array.isArray(v) || !v.length || v.some(s => typeof s !== "string"))))
+    throw Error("歷史餐次快照資料格式無效");
+  if (s.skippedMealSlots &&
+      (!Array.isArray(s.skippedMealSlots) ||
+       s.skippedMealSlots.some(r => !/^\\d{4}-\\d{2}-\\d{2}$/.test(r.date) || !r.slot)))
+    throw Error("餐次未吃標記格式無效");
   const numeric = (n: unknown) => typeof n === "number" && Number.isFinite(n);
   for (const meal of s.meals)
     if (

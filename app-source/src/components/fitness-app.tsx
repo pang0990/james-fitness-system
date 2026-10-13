@@ -1,5 +1,6 @@
 "use client";
 import { AppearanceSettings } from "./appearance";
+import { OnboardingWizard } from "./onboarding-wizard";
 import { WorkoutHistoryDetail, ExerciseGuideDetail, ExerciseProgressDetail } from "./detail-pages";
 import { SettingsHub } from "./settings-hub";
 import { MealSettings } from "./meal-settings";
@@ -319,8 +320,7 @@ export function FitnessApp({ path }: { path: string }) {
   return (
     <div
       className={
-        path === "training/session" &&
-        state.sessions.some((s) => s.status === "in_progress")
+        path === "training/session"
           ? `app page-${section} workout-active`
           : `app page-${section}`
       }
@@ -392,8 +392,10 @@ export function FitnessApp({ path }: { path: string }) {
                 ← {section === "settings" ? "Settings" : section}
               </Link>
             )}
-            {section === "onboarding" || section === "profile" ? (
-              <Onboarding editing={section === "profile"} notify={notify} />
+            {section === "onboarding" ? (
+              <OnboardingWizard path={path} notify={notify} />
+            ) : section === "profile" ? (
+              <Onboarding editing notify={notify} />
             ) : section === "login" || section === "signup" ? (
               <Login />
             ) : section === "today" ? (
@@ -464,6 +466,12 @@ export function FitnessApp({ path }: { path: string }) {
               )
             ) : section === "learn" || section === "knowledge" ? (
               <Knowledge path={path.replace(/^knowledge/, "learn")} />
+            ) : section === "auth" ? (
+              <div className="daily-page">
+                <Heading eyebrow="ACCOUNT" title={path==="auth/error"?"登入發生問題":"Google 登入尚未接通"} />
+                <p className="muted">目前這個 GitHub Pages 版本沒有連接 Google OAuth 與雲端 Session。請不要在這裡輸入帳號密碼。</p>
+                <Link className="button secondary" href="/settings/account">查看帳號系統狀態</Link>
+              </div>
             ) : section === "settings" ? (
               ["settings/data", "settings/privacy"].includes(path) ? (
                 <SettingsPage path={path} notify={notify} />
@@ -531,7 +539,15 @@ function Onboarding({
       setError("請完整填寫有效的成人基本資料。");
       return;
     }
-    setPreview(parsed.data);
+    setPreview({
+      ...parsed.data,
+      bodyFat: p?.bodyFat,
+      resistanceDays: p?.resistanceDays,
+      safety: p?.safety,
+      eligible: parsed.data.eligible && parsed.data.age >= 18 &&
+        !(parsed.data.goal === "CUT" && parsed.data.frequency < 0) &&
+        !Object.values(p?.safety ?? {}).some(Boolean),
+    });
     setError("");
   }
   function confirm() {
@@ -588,9 +604,9 @@ function Onboarding({
                   />
                 </Field>
                 <NumberField
-                  label="年齡（成人 18+）"
+                  label="年齡（未滿 18 歲僅提供 Tracking Only）"
                   name="age"
-                  min={18}
+                  min={1}
                   max={100}
                   step="1"
                   value={p?.age}
@@ -616,7 +632,8 @@ function Onboarding({
                   </select>
                 </Field>
                 <Field label="每週運動時長／頻率">
-                  <select name="frequency" defaultValue={p?.frequency ?? 1}>
+                  <select name="frequency" defaultValue={p?.frequency ?? -1}>
+                    <option value={-1}>無法配對／未確定（Tracking Only）</option>
                     {frequencies.map((f, i) => (
                       <option key={f} value={i}>
                         {f}
@@ -800,18 +817,17 @@ function Login() {
       <Heading
         eyebrow="WELCOME"
         title="從這裡開始。"
-        description="目前是本機測試版，不需要建立雲端帳號。"
+        description="正式版採 Google 帳號登入；目前公開的是尚未接通 OAuth 的本機過渡版本。"
       />
       <Card className="narrow">
         <LockKeyhole size={27} color="#a48e58" />
         <h2 style={{ margin: "15px 0" }}>你的資料只留在這個瀏覽器</h2>
         <p className="muted">
-          Google 與 Email 登入將在 Supabase
-          設定完成後啟用。現在不收集密碼，也不會假裝已登入。
+          Google 登入與雲端同步尚未完成正式設定。這個頁面不收集密碼，也不會假裝成功登入。
         </p>
         <div className="form-actions">
           <Link className="button" href="/onboarding">
-            開始本機使用
+            前往本機紀錄版
             <ArrowRight size={14} />
           </Link>
         </div>
