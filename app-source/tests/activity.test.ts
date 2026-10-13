@@ -29,12 +29,11 @@ test("Missing days are missing, not zero; 7D and 30D use only recorded days",()=
 
 test("Weekly activity comparison needs >=4 recorded days on both sides",()=>{
   const state=initialState();
-  for(let i=0;i<3;i++)addSteps(state,addDays("2026-10-07",i),10000);
-  for(let i=0;i<7;i++)addSteps(state,addDays("2026-10-13",-i),4500);
+  for(let i=0;i<3;i++)addSteps(state,addDays("2026-09-30",i),10000);
+  for(let i=0;i<7;i++)addSteps(state,addDays("2026-10-07",i),4500);
   assert.equal(activityContext(state,"2026-10-13").direction,"unknown");
-  addSteps(state,"2026-10-10",10000);
-  // No duplicate days: 10/10 belongs to the second week, so still unqualified.
-  assert.equal(activityContext(state,"2026-10-13").direction,"unknown");
+  addSteps(state,"2026-10-03",10000);
+  assert.equal(activityContext(state,"2026-10-13").direction,"down");
 });
 
 test("Steps are advisory only; explicit declines become context, not formula updates",()=>{
