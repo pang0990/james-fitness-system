@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import {
   Activity, AlertCircle, ArrowRight, ChevronRight, Cookie, Droplet,
@@ -33,6 +33,7 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
   const [quick, setQuick] = useState<{ date: string; kind: QuickKind } | null>(null);
   const [foodOpen, setFoodOpen] = useState(false);
   const [waterEdit, setWaterEdit] = useState(false);
+  const [waterFeedback, setWaterFeedback] = useState<{ml: number; token: number} | null>(null);
   const [hour, setHour] = useState<number | null>(null);
   useEffect(() => {
     setHour(new Date().getHours());
@@ -55,6 +56,16 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
   const hydration = waterTotal(state, date);
   const hydrationTarget = state.profile?.waterTarget ?? 0;
   const waterPct = percent(hydration, hydrationTarget);
+  const nutritionPct = percent(nutrition.kcal, target?.kcal);
+  const ringStyle = {
+    "--today-ring-fill": `${nutritionPct}%`,
+    "--today-ring-blue": `${nutritionPct * 0.78}%`,
+  } as CSSProperties;
+  useEffect(() => {
+    if (!waterFeedback) return;
+    const timer = window.setTimeout(() => setWaterFeedback(null), 1400);
+    return () => window.clearTimeout(timer);
+  }, [waterFeedback]);
   const dateObject = new Date(`${date}T12:00:00`);
   const monthDay = dateObject.toLocaleDateString("en-US", {month: "short", day: "numeric"}).toUpperCase();
   const weekday = dateObject.toLocaleDateString("en-US", {weekday: "long"}).toUpperCase();
@@ -73,7 +84,10 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
   function addWater(ml: number) {
     if (save("新增飲水", (s) => {
       s.waters.push({id: uid(), date, ml, createdAt: stamp()});
-    })) notify("飲水已儲存");
+    })) {
+      setWaterFeedback({ml, token: Date.now()});
+      notify("飲水已儲存");
+    }
   }
   return (
     <div className="today-reference-page">
@@ -149,7 +163,7 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
         <article className="today-ref-card today-ref-food">
           <Link className="today-ref-card-label" href="/nutrition"><Utensils size={16}/> 今日飲食 <ChevronRight size={14}/></Link>
           <div className="today-ref-food-body">
-            <div className="today-ref-energy-ring" style={{background: `conic-gradient(#54c9e3 0 ${percent(nutrition.kcal,target?.kcal)*.78}%,#ddb16b ${percent(nutrition.kcal,target?.kcal)*.78}% ${percent(nutrition.kcal,target?.kcal)}%,#252a2c ${percent(nutrition.kcal,target?.kcal)}% 100%)`}}>
+            <div className="today-ref-energy-ring" style={ringStyle}>
               <div><strong>{fmt(nutrition.kcal)}</strong><small>/ {target ? fmt(target.kcal) : "—"} kcal</small></div>
             </div>
             <div className="today-ref-macros">
@@ -173,6 +187,9 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
           </div>
           <strong className="today-ref-water-number">{hydration ? fmt(hydration) : "—"}<small> / {hydrationTarget ? fmt(hydrationTarget) : "—"} ml</small></strong>
           <div className="today-ref-water-meter"><span style={{width:`${waterPct}%`}}/></div>
+          <div className="today-ref-water-feedback" role="status" aria-live="polite">
+            {waterFeedback ? `✓ +${waterFeedback.ml} ml 已儲存` : ""}
+          </div>
           <div className="today-ref-water-actions">
             <button type="button" onClick={() => addWater(Number(state.preferences?.waterQuick1 ?? 250))}>+{state.preferences?.waterQuick1 ?? 250} ml</button>
             <button type="button" onClick={() => addWater(Number(state.preferences?.waterQuick2 ?? 500))}>+{state.preferences?.waterQuick2 ?? 500} ml</button>
