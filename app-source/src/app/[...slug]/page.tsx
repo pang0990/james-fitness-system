@@ -10,6 +10,7 @@ export function generateStaticParams() {
     "onboarding/activity",
     "onboarding/safety",
     "onboarding/result",
+    "settings/health",
     "settings/general",
     "settings/companion",
     "settings/data-privacy",
