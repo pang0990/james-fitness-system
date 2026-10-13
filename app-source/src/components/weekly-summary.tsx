@@ -4,6 +4,7 @@ import { useStore } from "@/lib/store";
 import { addDays, mealCompletion, mealTotals, resolveDay, round, visibleMeasurements } from "@/lib/domain";
 import { performance, scheduleKind } from "@/lib/training-model";
 import { RecoveryEntryPoints } from "./recovery-log";
+import { averageSteps } from "@/lib/activity";
 
 function dateWindow(end:string,days:number) {
   return Array.from({length:days},(_,i)=>addDays(end,i-days+1));
@@ -13,6 +14,7 @@ function avg(n:number[]) { return n.reduce((a,b)=>a+b,0)/n.length; }
 export function WeeklySummary({date}:{date:string}) {
   const {state} = useStore();
   const current = dateWindow(date,7), prior = dateWindow(addDays(date,-7),7);
+  const steps=averageSteps(state,date,7);
   const weightData=visibleMeasurements(state);
   const currentWeights=weightData.filter(w=>current.includes(w.date)).map(w=>w.weight);
   const priorWeights=weightData.filter(w=>prior.includes(w.date)).map(w=>w.weight);
@@ -72,6 +74,10 @@ export function WeeklySummary({date}:{date:string}) {
           <Link href="/progress/training/exercises"><span>TRAINING · Performance</span>
             <strong>{performanceText}</strong>
             <small>{comparable.length} 項可比較動作；{improved.length} 項進步</small>
+          </Link>
+          <Link href="/progress#activity-trend"><span>ACTIVITY · Steps</span>
+            <strong>{steps.average===null?"Not Enough Data":steps.average.toLocaleString("en-US")}</strong>
+            <small>{steps.count} / 7 天 · 已記錄日平均</small>
           </Link>
           <Link href="/progress/recovery"><span>RECOVERY · Logging</span>
             <strong>{recoveryDates.size}/7 天</strong>
