@@ -158,7 +158,7 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
                 {label:"C", value:nutrition.c, goal:target?.c, className:"carbs"},
                 {label:"F", value:nutrition.f, goal:target?.f, className:"fat"},
               ] as const).map((m) => <div key={m.label} className={m.className}>
-                <span>{m.label}</span><i style={{width:`${percent(m.value,m.goal)}%`}}/><small>{round(m.value)} / {m.goal ?? "—"} g</small>
+                <span>{m.label}</span><div className="today-ref-macro-track"><i style={{width:`${percent(m.value,m.goal)}%`}} /></div><small>{round(m.value)} / {m.goal ?? "—"} g</small>
               </div>)}
             </div>
           </div>
