@@ -10,6 +10,7 @@ import {
   type GainSettings,
 } from "@/lib/gain";
 import { Field, Sheet, PageTitle } from "./daily";
+import { GAIN_TEMP_RULE } from "@/lib/onboarding";
 export function GainReview({
   date,
   notify,
@@ -21,6 +22,7 @@ export function GainReview({
   const review = gainReview(state, date),
     currentPlan = activePlan(state, date),
     plan = currentPlan?.inputs.goal === "GAIN" ? currentPlan : null;
+  const temporary = plan?.ruleId === GAIN_TEMP_RULE;
   const [preview, setPreview] = useState<string | null>(null);
   function update(patch: Partial<GainSettings>) {
     save("確認 GAIN 本期條件", (s) => {
@@ -42,7 +44,7 @@ export function GainReview({
         {review.start} — {review.end}
       </p>
       <p className="eyebrow">
-        {plan ? "GAIN TREND" : "BASELINE TRACKING"} · {GAIN_RULE}
+        {temporary ? "TEMPORARY GAIN" : plan ? "GAIN TREND" : "BASELINE TRACKING"} · {plan?.ruleId ?? GAIN_RULE}
       </p>
       <div className="stat-pair">
         <div>
@@ -156,13 +158,22 @@ export function GainReview({
             {review.delta} g · 參考熱量 {review.delta > 0 ? "+" : ""}
             {review.delta * 4} kcal
           </p>
-          <p>Protein / Fat 不變 · {addDays(date, 1)} 生效</p>
-          {(["training", "light", "rest"] as const).map((d) => (
-            <p key={d}>
-              {d} · C {(plan?.targets[d] ?? review.baseline).c} →{" "}
-              {round((plan?.targets[d] ?? review.baseline).c + review.delta)} g
-            </p>
-          ))}
+          <p>
+          {temporary
+            ? "改用完整紀錄日的實際 P / C / F / kcal 平均值建立個人基準，不沿用臨時 42 kcal/kg 目標。"
+            : "Protein / Fat 不變。"}
+          {" "}使用者 Accept 後於 {addDays(date, 1)} 生效。
+        </p>
+        {(["training", "light", "rest"] as const).map(d => {
+          const current = plan?.targets[d] ?? review.baseline;
+          const base = temporary ? review.baseline : current;
+          return <p key={d}>
+            {d} · kcal {current.kcal} → {round(base.kcal + review.delta * 4)}
+            {" "}· P {current.p} → {base.p}
+            {" "}· C {current.c} → {round(base.c + review.delta)}
+            {" "}· F {current.f} → {base.f}
+          </p>;
+        })}
           <div className="two-actions">
             <button
               className="button"
