@@ -1,5 +1,6 @@
 import {
   activePlan,
+  activityEvidenceForReview,
   addDays,
   daysBetween,
   mealTotals,
@@ -7,6 +8,7 @@ import {
   visibleMeasurements,
   type AppState,
   type Macros,
+  type ActivityEvidence,
 } from "./domain";
 import { performance, scheduleKind } from "./training-model";
 import { GAIN_TEMP_RULE } from "./onboarding";
@@ -31,6 +33,8 @@ export type GainDecision = {
   baseline: Macros;
   status: "accepted" | "kept";
   versionId?: string;
+  activityEvidence?: ActivityEvidence;
+  activityAcknowledged?: boolean;
 };
 export const gainRanges = {
   beginner: [0.25, 0.5],
@@ -195,6 +199,7 @@ export function gainReview(state: AppState, date: string) {
     delta,
     reason,
     planId: plan?.id ?? null,
+    activityEvidence: activityEvidenceForReview(state,date),
     actionable: kind !== "observe",
   };
 }
@@ -203,11 +208,14 @@ export function applyGainDecision(
   date: string,
   accept: boolean,
   expected: string,
+  activityAcknowledged = false,
 ) {
   const review = gainReview(state, date);
   if (JSON.stringify(review) !== expected)
     throw Error("資料已更新，請重新查看建議。");
   if (!review.actionable) throw Error("目前沒有可套用的調整。");
+  if (accept && review.activityEvidence.significant && !activityAcknowledged)
+    throw Error("活動量明顯改變，請先確認此因素再接受營養調整。");
   const id = crypto.randomUUID(),
     createdAt = new Date().toISOString();
   let versionId: string | undefined;
@@ -252,6 +260,8 @@ export function applyGainDecision(
     baseline: review.baseline,
     status: accept ? "accepted" : "kept",
     versionId,
+    activityEvidence: review.activityEvidence,
+    activityAcknowledged: accept && review.activityEvidence.significant ? activityAcknowledged : undefined,
   });
   if (state.gainSettings) {
     state.gainSettings.adherenceConfirmed = false;
