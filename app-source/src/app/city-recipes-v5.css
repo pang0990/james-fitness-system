@@ -1,0 +1,196 @@
+/*
+ * JFS · Cinematic scene / Recipes destination v5
+ * Reuses the existing original photo-like key art stored in --jfs-hero.
+ * The former city-night-v4.svg remains available as a safe fallback asset,
+ * but it is no longer rendered over the Today scene.
+ */
+.page-today .cinematic-hero{
+  background-color:#05080e;
+  background-repeat:no-repeat;
+  background-size:cover,auto 100%;
+  background-position:center,32% 50%;
+}
+.page-today .cinematic-hero::after{
+  background:
+    radial-gradient(ellipse 42% 34% at 74% 38%,rgba(25,101,161,.08),transparent 78%),
+    radial-gradient(ellipse 44% 39% at 49% 51%,rgba(178,50,116,.08),transparent 85%),
+    linear-gradient(90deg,rgba(1,3,8,.31),transparent 26%,transparent 74%,rgba(0,1,4,.23)),
+    linear-gradient(180deg,rgba(2,4,8,.19),transparent 27%,transparent 62%,rgba(1,2,5,.55));
+  opacity:.82;
+}
+.page-today .cinematic-hero:before{
+  background:linear-gradient(180deg,rgba(0,2,6,.10),transparent 22%,transparent 71%,rgba(2,3,7,.68));
+}
+.page-today .cinematic-character-control{
+  bottom:clamp(200px,26vh,255px);
+}
+.page-today .cinematic-tap{
+  background:linear-gradient(140deg,rgba(15,18,22,.89),rgba(4,6,10,.86));
+  backdrop-filter:blur(14px) saturate(1.3);
+  -webkit-backdrop-filter:blur(14px) saturate(1.3);
+}
+.page-today .cinematic-marquee{
+  border-color:rgba(223,183,115,.54);
+  background:linear-gradient(135deg,rgba(7,10,15,.94),rgba(3,4,8,.95));
+}
+.page-today .jfs-city-atmosphere{
+  mix-blend-mode:screen;
+  opacity:.78;
+}
+/* Recipe discovery – one visually distinct entry, three direct destinations */
+.nutrition-cookbook-section{margin-top:20px}
+.nutrition-cookbook-card{
+  min-height:245px;
+  border-color:rgba(238,194,117,.64);
+  background:
+    radial-gradient(ellipse 55% 62% at 78% 69%,rgba(185,112,50,.22),transparent 78%),
+    radial-gradient(ellipse 66% 48% at 99% 0%,rgba(36,85,114,.18),transparent 80%),
+    linear-gradient(145deg,#16171a,#080a0c 75%);
+  box-shadow:inset 0 1px rgba(255,225,161,.15),0 20px 44px rgba(0,0,0,.56);
+}
+.nutrition-cookbook-card .cookbook-card-art{opacity:.86;transform:scale(1.05);transform-origin:bottom right}
+.nutrition-cookbook-card .cookbook-card-english{letter-spacing:.16em;font-size:22px}
+.nutrition-cookbook-card .cookbook-card-content{margin-top:28px;max-width:min(77%,335px)}
+.nutrition-cookbook-card .cookbook-card-description{line-height:1.6}
+.nutrition-cookbook-categories{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+.nutrition-cookbook-categories a{
+  min-height:51px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 11px;gap:3px;
+  border:1px solid rgba(206,170,107,.23);
+  border-radius:12px;
+  background:linear-gradient(150deg,#15171a,#090b0f);
+  color:#e5c88f;text-decoration:none;
+  font-size:12px;
+  transition:border-color .16s ease,background .16s ease;
+}
+.nutrition-cookbook-categories b{
+  font-weight:550;color:#a4a6a8;margin-left:auto;font-size:10px;
+}
+.nutrition-cookbook-categories a:is(:hover,:focus-visible){
+  border-color:rgba(255,218,144,.62);
+  background:linear-gradient(145deg,#22211f,#0d1012);
+}
+.nutrition-cookbook-categories a:focus-visible{outline:2px solid #e9c384;outline-offset:2px}
+/* Dedicated editorial landing for all 129 recipes, not another daily nutrition dashboard */
+.page-nutrition .cookbook-destination-hero,
+.cookbook-destination-hero{
+  isolation:isolate;
+  position:relative;
+  display:flex;flex-direction:column;align-items:flex-start;
+  min-height:255px;overflow:hidden;gap:10px;padding:22px 22px 20px;
+  background:
+    radial-gradient(ellipse 80% 72% at 93% 68%,rgba(178,104,51,.22),transparent 75%),
+    radial-gradient(ellipse 62% 74% at 88% 0%,rgba(19,91,130,.16),transparent 77%),
+    linear-gradient(144deg,#191b20 0%,#080b11 51%,#08090a 100%);
+  border:1px solid rgba(232,186,110,.52);border-radius:18px;
+  box-shadow:inset 0 1px 0 #ffe1a021,0 16px 45px #0008;
+}
+.cookbook-destination-hero:after{
+  position:absolute;content:"";inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(90deg,#090b0eda 0%,#090b0dab 49%,transparent 85%);
+}
+.cookbook-destination-kicker{
+  z-index:1;position:relative;font-size:10px;color:#e2bf81;
+  font-weight:600;letter-spacing:.18em;line-height:1.3;
+}
+.cookbook-destination-hero>h1{
+  z-index:1;position:relative;margin:15px 0 0;
+  color:#faf3e7;font:600 clamp(23px,6vw,29px)/1.17 var(--v3-font);
+  letter-spacing:.015em;
+}
+.cookbook-destination-hero>h1>span{
+  display:block;margin-top:8px;font:400 25px/1.2 var(--v3-brand);
+  letter-spacing:.19em;color:#e8c689;
+}
+.cookbook-destination-hero>p{
+  z-index:1;position:relative;margin:4px 0 0;max-width:235px;
+  color:#b4b5b6;font:12px/1.7 var(--v3-font);
+}
+.cookbook-destination-stat{
+  position:relative;z-index:1;margin-top:auto;
+  display:flex;align-items:center;gap:11px;
+  color:#b8b4ae;font:10px/1.5 var(--v3-font);
+}
+.cookbook-destination-stat strong{
+  color:#f2d49d;font:500 27px/1 var(--v3-brand);
+}
+.cookbook-destination-art{
+  position:absolute;z-index:0;pointer-events:none;
+  width:220px;height:180px;right:-10px;bottom:9px;
+  filter:drop-shadow(0 12px 24px #000c);
+}
+.cookbook-destination-plate{
+  position:absolute;right:8px;bottom:2px;
+  width:184px;height:125px;transform:rotate(-13deg);
+  border:10px solid #333438;border-radius:50%;
+  box-shadow:inset 0 0 1px 2px #7d76676b,inset 0 0 22px #000c,0 0 20px #d7ac6830;
+  background:
+    radial-gradient(ellipse at 43% 29%,#567d48 0 7px,transparent 9px),
+    radial-gradient(ellipse at 67% 44%,#ebc77a 0 12px,#be7b47 16px,transparent 18px),
+    radial-gradient(ellipse at 36% 54%,#d6894a 0 19px,#8c4f32 27px,transparent 29px),
+    radial-gradient(ellipse at 70% 66%,#4c7448 0 9px,transparent 11px),
+    radial-gradient(ellipse at 45% 48%,#b47a44,#3f2920 65%,#131518 70%);
+}
+.recipe-filter-tabs{
+  display:flex;gap:8px;overflow-x:auto;padding:0 0 3px;
+  scrollbar-width:none;
+}
+.recipe-filter-tabs::-webkit-scrollbar{display:none}
+.recipe-filter-tabs button{
+  border:1px solid rgba(204,172,118,.27);
+  border-radius:24px;background:#111419;
+  min-width:73px;min-height:38px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:5px 14px;color:#aaa9a7;white-space:nowrap;
+  font-size:12px;flex:none;
+}
+.recipe-filter-tabs button.selected{
+  background:linear-gradient(180deg,rgba(222,185,122,.23),rgba(173,125,60,.12));
+  color:#f3d69d;border-color:#e7ba7280;
+}
+.recipe-filter-tabs button small{color:#ba9970;font-size:10px}
+.recipe-filter-tabs button:focus-visible{outline:2px solid #eecb8c;outline-offset:2px}
+.recipe-results-head{
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:36px;gap:12px;margin:4px 0 0;
+  border-bottom:1px solid #d9ac6440;
+}
+.recipe-results-head span{color:#d7b879;font-size:10px;letter-spacing:.16em}
+.recipe-results-head strong{color:#a8a6a3;font-size:11px;font-weight:500}
+.recipe-list{gap:10px}
+.recipe-card.recipe-v5-card{
+  text-align:left;border:1px solid rgba(216,183,117,.18);
+  background:linear-gradient(140deg,#14171c,#0b0d10 67%);
+  border-radius:13px;
+  box-shadow:inset 0 1px rgba(255,228,176,.05);
+  min-height:135px;padding:15px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:5px;
+  transition:border-color .18s ease,transform .18s ease,background .18s ease;
+}
+.recipe-card.recipe-v5-card:is(:hover,:focus-visible){
+  border-color:rgba(255,215,143,.59);background:linear-gradient(145deg,#1b1e22,#0a0c10);
+}
+.recipe-card.recipe-v5-card:focus-visible{outline:2px solid #f5dba2;outline-offset:2px}
+.recipe-card.recipe-v5-card h2{font-size:15px;line-height:1.4;margin:4px 0 1px;color:#f0e8db;font-weight:580}
+.recipe-card.recipe-v5-card>small{color:#c7a46e;font-size:10px;letter-spacing:.05em}
+.recipe-card.recipe-v5-card .muted{font-size:12px;color:#999b9f;margin:0}
+.recipe-card.recipe-v5-card>p:not(.muted){font-size:11px;color:#b5ad9d;margin:0}
+.recipe-card.recipe-v5-card>span{margin-top:auto;color:#e2bf82;font-size:12px}
+@media(min-width:750px){
+  .page-today .cinematic-hero{background-size:cover,cover;background-position:center,center 46%}
+}
+@media(max-width:430px){
+  .page-today .cinematic-hero{background-position:center,28% center}
+  .cookbook-destination-hero{min-height:237px;padding:18px}
+  .cookbook-destination-art{right:-51px;opacity:.73}
+  .cookbook-destination-hero>p{max-width:65%}
+  .nutrition-cookbook-card .cookbook-card-art{opacity:.74}
+  .nutrition-cookbook-categories a{padding-inline:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .recipe-card.recipe-v5-card,.nutrition-cookbook-categories a{transition:none!important}
+}
