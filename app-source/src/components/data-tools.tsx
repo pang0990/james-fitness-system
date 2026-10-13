@@ -14,9 +14,24 @@ export function DataTools({ notify }: { notify: (s?: string) => void }) {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  function csv(kind: "nutrition" | "training" | "body" | "recovery") {
+  function csv(kind: "nutrition" | "training" | "body" | "recovery" | "activity") {
     const rows: unknown[][] =
-      kind === "nutrition"
+      kind === "activity"
+        ? [
+            ["record_type","date","steps","activity_type","duration_minutes",
+              "estimated_kcal_original","estimate_for_minutes","estimate_status",
+              "source","updated_at"],
+            ...(state.dailySteps??[]).map(row=>[
+              "steps",row.date,row.steps,"","","","","",row.source,row.updatedAt,
+            ]),
+            ...state.cardio.map(row=>[
+              "cardio",row.date,"",row.type,row.minutes,row.calories??"",
+              row.calorieEstimateAppliesToMinutes??(row.calories!=null?row.minutes:""),
+              row.calorieEstimateStale?"historical_stale":row.calories!=null?"historical_only":"",
+              row.source??"manual",row.createdAt,
+            ]),
+          ]
+        : kind === "nutrition"
         ? [
             ["date", "meal", "name", "protein_g", "carbs_g", "fat_g", "kcal"],
             ...visibleMeals(state).map((m) => [
@@ -96,7 +111,7 @@ export function DataTools({ notify }: { notify: (s?: string) => void }) {
     <section className="card stack">
       <h2>還原與分類匯出</h2>
       <div className="two-actions">
-        {(["nutrition", "training", "body", "recovery"] as const).map((k) => (
+        {(["nutrition", "training", "body", "recovery", "activity"] as const).map((k) => (
           <button className="button secondary" key={k} onClick={() => csv(k)}>
             {k} CSV
           </button>
