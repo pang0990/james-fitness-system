@@ -265,62 +265,76 @@ export function MuscleEditor({
     </details>
   );
 }
-export function WarmupPicker({ sessionId }: { sessionId?: string }) {
-  const { state, save } = useStore();
-  const current = state.sessions.find((s) => s.id === sessionId);
-  const selected = current?.warmupIds ?? state.warmupPreset ?? [];
-  const [edit, setEdit] = useState(!selected.length);
-  return (
-    <div>
-      <h2>Warm-up</h2>
-      <p>
-        {selected.length} selected · 約{" "}
-        {warmups
-          .filter((w) => selected.includes(w.id))
-          .reduce((a, w) => a + w.minutes, 0)}{" "}
-        min
-      </p>
-      <button className="text-link" onClick={() => setEdit(!edit)}>
-        {edit ? "收合" : "自訂"}
-      </button>
-      {edit && (
-        <div>
-          {warmups.map((w) => (
-            <label className="check" key={w.id}>
-              <input
-                type="checkbox"
-                checked={selected.includes(w.id)}
-                onChange={(e) =>
-                  save("選擇暖身", (s) => {
-                    const next = e.target.checked
-                      ? [...selected, w.id]
-                      : selected.filter((x) => x !== w.id);
-                    const sess = s.sessions.find((x) => x.id === sessionId);
-                    if (sess) sess.warmupIds = next;
-                    else s.warmupPreset = next;
-                  })
-                }
-              />
-              {w.name} · {w.minutes} min
-            </label>
-          ))}
-          <button
-            className="button secondary"
-            onClick={() => {
-              save("Save Warm-up Preset", (s) => {
-                s.warmupPreset = [...selected];
-              });
-              setEdit(false);
-            }}
-          >
-            Save Preset
-          </button>
-        </div>
-      )}
-      {!edit &&
-        warmups
-          .filter((w) => selected.includes(w.id))
-          .map((w) => <p key={w.id}>{w.name}</p>)}
-    </div>
-  );
+export function WarmupPicker({sessionId}:{sessionId?:string}){
+  const {state,save}=useStore();
+  const session=state.sessions.find(s=>s.id===sessionId);
+  const selected=session?.warmupIds??state.warmupPreset??[];
+  const [name,setName]=useState("");
+  const [minutes,setMinutes]=useState("");
+  const [editing,setEditing]=useState<string|null>(null);
+  const [error,setError]=useState("");
+  const custom=state.customWarmups??[];
+  // Legacy warm-up identifiers are retained only for existing saved sessions.
+  const historical=warmups.filter(w=>selected.includes(w.id)).map(w=>({id:w.id,name:w.name,minutes:w.minutes,archived:true}));
+  const available=[...custom.filter(w=>!w.archived), ...custom.filter(w=>w.archived&&selected.includes(w.id)),...historical];
+  const duration=available.filter(w=>selected.includes(w.id)).reduce((sum,w)=>sum+w.minutes,0);
+  const setSelected=(id:string,on:boolean)=>{
+    save("修改熱身安排",s=>{
+      const ses=s.sessions.find(item=>item.id===sessionId);
+      const base=ses?.warmupIds??s.warmupPreset??[];
+      const next=on?[...new Set([...base,id])]:base.filter(k=>k!==id);
+      if(ses)ses.warmupIds=next;else s.warmupPreset=next;
+    });
+  };
+  function submit(e:React.FormEvent<HTMLFormElement>){
+    e.preventDefault();const trim=name.trim(),mins=Number(minutes);
+    if(!trim||!Number.isFinite(mins)||mins<=0||mins>120){setError("請輸入熱身名稱與 1–120 分鐘。");return;}
+    if(save(editing?"編輯自訂熱身":"新增自訂熱身",s=>{
+      (s.customWarmups??=[]);
+      if(editing){
+        const item=s.customWarmups.find(w=>w.id===editing);
+        if(item){item.name=trim;item.minutes=mins;}
+      }else{
+        const id=uid();
+        s.customWarmups.push({id,name:trim,minutes:mins});
+        const ses=s.sessions.find(x=>x.id===sessionId);
+        if(ses)ses.warmupIds=[...(ses.warmupIds??[]),id];
+        else s.warmupPreset=[...(s.warmupPreset??[]),id];
+      }
+    })){setName("");setMinutes("");setEditing(null);setError("");}
+  }
+  return <div className="warmup-editor">
+    <h2>我的熱身</h2>
+    <p className="muted">自訂暖身內容，不預設固定五個動作。可新增、修改、取消選取或移除；當次訓練可跳過。</p>
+    <p className="muted">已選 {selected.length} 項 · 約 {duration} 分鐘</p>
+    <div className="stack">{available.map(w=><section key={w.id} className="card warmup-row">
+      <label className="check">
+        <input type="checkbox" checked={selected.includes(w.id)} onChange={e=>setSelected(w.id,e.target.checked)}/>
+        <span><strong>{w.name}</strong><br/><small>約 {w.minutes} 分鐘 {w.archived?"· 歷史項目":""}</small></span>
+      </label>
+      {!w.archived&&<div className="two-actions">
+        <button type="button" className="text-link" onClick={()=>{setEditing(w.id);setName(w.name);setMinutes(String(w.minutes));}}>修改</button>
+        <button type="button" className="text-link" onClick={()=>{
+          if(!confirm(`從熱身選單移除「${w.name}」？舊訓練的紀錄不會刪除。`))return;
+          save("移除自訂熱身",s=>{
+            const item=s.customWarmups?.find(item=>item.id===w.id);
+            if(item)item.archived=true;
+            s.warmupPreset=(s.warmupPreset??[]).filter(k=>k!==w.id);
+            if(sessionId){const ses=s.sessions.find(x=>x.id===sessionId);if(ses)ses.warmupIds=(ses.warmupIds??[]).filter(k=>k!==w.id);}
+          });
+        }}>移除</button>
+      </div>}
+    </section>)}</div>
+    <form onSubmit={submit} className="card stack">
+      <h3>{editing?"編輯熱身項目":"新增熱身項目"}</h3>
+      <Field label="熱身名稱"><input value={name} maxLength={80} required placeholder="例如 肩關節活動" onChange={e=>setName(e.target.value)}/></Field>
+      <Field label="預計時間（分鐘）"><input type="number" min="1" max="120" inputMode="numeric" value={minutes}
+        placeholder="例如 5" onChange={e=>setMinutes(e.target.value)} required/></Field>
+      {error&&<p className="form-error" role="alert">{error}</p>}
+      <div className="two-actions">
+        <button className="button" type="submit">{editing?"儲存修改":"＋ 加入熱身"}</button>
+        {editing&&<button className="button secondary" type="button" onClick={()=>{setEditing(null);setName("");setMinutes("");}}>取消</button>}
+      </div>
+    </form>
+  </div>;
 }
