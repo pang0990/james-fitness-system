@@ -320,8 +320,7 @@ export function FitnessApp({ path }: { path: string }) {
   return (
     <div
       className={
-        path === "training/session" &&
-        state.sessions.some((s) => s.status === "in_progress")
+        path === "training/session"
           ? `app page-${section} workout-active`
           : `app page-${section}`
       }
@@ -809,18 +808,17 @@ function Login() {
       <Heading
         eyebrow="WELCOME"
         title="從這裡開始。"
-        description="目前是本機測試版，不需要建立雲端帳號。"
+        description="正式版採 Google 帳號登入；目前公開的是尚未接通 OAuth 的本機過渡版本。"
       />
       <Card className="narrow">
         <LockKeyhole size={27} color="#a48e58" />
         <h2 style={{ margin: "15px 0" }}>你的資料只留在這個瀏覽器</h2>
         <p className="muted">
-          Google 與 Email 登入將在 Supabase
-          設定完成後啟用。現在不收集密碼，也不會假裝已登入。
+          Google 登入與雲端同步尚未完成正式設定。這個頁面不收集密碼，也不會假裝成功登入。
         </p>
         <div className="form-actions">
           <Link className="button" href="/onboarding">
-            開始本機使用
+            前往本機紀錄版
             <ArrowRight size={14} />
           </Link>
         </div>
