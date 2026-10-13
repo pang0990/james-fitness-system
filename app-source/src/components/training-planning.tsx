@@ -17,11 +17,8 @@ import { nextDayIndex, dayId } from "@/lib/training-queue";
 import { Field, Sheet, uid, stamp } from "./daily";
 export function TrainingCalendar({ date }: { date: string }) {
   const { state, save } = useStore();
-  const [month, setMonth] = useState(date.slice(0, 7)),
-    [selected, setSelected] = useState<string | null>(null),
-    [start, setStart] = useState(date),
-    [end, setEnd] = useState(addDays(date, 6)),
-    [week, setWeek] = useState<number[]>(state.weeklySchedule ?? [1, 2, 4, 5]);
+  const [month,setMonth]=useState(date.slice(0,7));
+  const [selected,setSelected]=useState<string|null>(null);
   const plan = activeCycle(state),
     next = plan ? plan.days[nextDayIndex(state, plan)]?.name : "尚未設定";
   const first = month + "-01",
@@ -92,7 +89,8 @@ export function TrainingCalendar({ date }: { date: string }) {
         ))}
         {Array.from({ length }, (_, i) => {
           const d = addDays(first, i),
-            entry = scheduleEntry(state, d),
+            explicit = state.schedule?.filter(item=>item.date===d && item.source==="single").at(-1),
+            entry = explicit && !explicit.cleared ? explicit : null,
             done = state.sessions.some(
               (s) =>
                 (s.workoutDate ?? s.date) === d && s.status === "completed",
@@ -100,122 +98,32 @@ export function TrainingCalendar({ date }: { date: string }) {
           return (
             <button
               key={d}
-              className={`${entry.kind !== "train" ? "rest-day" : ""} ${d === date ? "is-today" : ""}`}
+              className={`${entry?.kind === "rest" ? "rest-day" : ""} ${d === date ? "is-today" : ""}`}
               onClick={() => setSelected(d)}
             >
               <strong>{i + 1}</strong>
               <small>
                 {done
                   ? "✓"
-                  : entry.kind !== "train"
-                    ? "Rest"
-                    : entry.extra
-                      ? "Extra"
-                      : entry.trainingDayId
-                        ? (plan?.days.find(
-                            (x, j) => dayId(plan, j) === entry.trainingDayId,
-                          )?.name ?? "已移除")
-                        : d === date
-                          ? next
-                          : "接續順序"}
+                  : !entry ? "未安排"
+                  : entry.kind === "rest" ? "Rest"
+                  : entry.trainingDayId
+                    ? (plan?.days.find((x,j)=>dayId(plan,j)===entry.trainingDayId)?.name??"已移除")
+                    : next}
               </small>
             </button>
           );
         })}
       </div>
       <p className="muted">
-        未完成的訓練日仍排在下一次。單日調整可選擇是否同步 Nutrition Day Type；批次安排不會擅自改變營養日期。已保存的歷史日期保持原快照。
+        日曆只呈現手動安排與已完成的紀錄；修改訓練日不會刪除歷史資料。
       </p>
-      <details className="card">
-        <summary>批次安排／每週重複</summary>
-        <div className="two-actions">
-          {[0, 1].map((n) => (
-            <button
-              className="button secondary"
-              key={n}
-              onClick={() => {
-                const weekday =
-                  (new Date(date + "T12:00:00Z").getUTCDay() - weekStart + 7) %
-                  7;
-                const d = addDays(date, -weekday + n * 7);
-                setStart(d);
-                setEnd(addDays(d, 6));
-              }}
-            >
-              {n ? "下週" : "本週"}
-            </button>
-          ))}
-        </div>
-        <Field label="開始日期">
-          <input
-            type="date"
-            value={start}
-            onChange={(e) => setStart(e.target.value)}
-          />
-        </Field>
-        <Field label="結束日期">
-          <input
-            type="date"
-            value={end}
-            onChange={(e) => setEnd(e.target.value)}
-          />
-        </Field>
-        {Array.from({ length: 7 }, (_, i) => (
-          <label className="check" key={i}>
-            <input
-              type="checkbox"
-              checked={week.includes(i)}
-              onChange={(e) =>
-                setWeek(
-                  e.target.checked ? [...week, i] : week.filter((x) => x !== i),
-                )
-              }
-            />
-            星期{"日一二三四五六"[i]}訓練
-          </label>
-        ))}
-        <button
-          className="button"
-          onClick={() => {
-            if (
-              !start ||
-              !end ||
-              start > end ||
-              Date.parse(end) - Date.parse(start) > 366 * 86400000
-            )
-              return;
-            save("批次安排日期", (s) => {
-              for (let d = start; d <= end; d = addDays(d, 1))
-                (s.schedule ??= []).push({
-                  id: uid(),
-                  date: d,
-                  kind: week.includes(new Date(d + "T12:00:00Z").getUTCDay())
-                    ? "train"
-                    : "rest",
-                  source: "batch",
-                  createdAt: stamp(),
-                });
-            });
-          }}
-        >
-          套用日期範圍
-        </button>
-        <button
-          className="button secondary"
-          onClick={() =>
-            save("每週重複安排", (s) => {
-              s.weeklySchedule = week;
-            })
-          }
-        >
-          每週重複
-        </button>
-      </details>
+      <p className="muted">直接點選日曆中的日期，為那一天安排訓練、休息或清除安排。不提供批次套用，不會覆寫既有歷史訓練。</p>
       {selected && (
         <Sheet title={selected} onClose={() => setSelected(null)}>
           <div className="action-list">
-            <button onClick={() => put("train")}>照訓練順序</button>
-            <button onClick={() => put("rest")}>今天休息</button>
+            <p>請選擇 ${selected} 的安排</p>
+            <button type="button" onClick={() => put("rest")}>休息日</button>
             {plan?.days.map((d, i) => (
               <button
                 key={dayId(plan, i)}
@@ -224,22 +132,12 @@ export function TrainingCalendar({ date }: { date: string }) {
                 今天改練 {d.name}
               </button>
             ))}
-            {plan && (
-              <button
-                onClick={() =>
-                  put(
-                    "train",
-                    dayId(plan, Math.max(0, nextDayIndex(state, plan))),
-                    true,
-                  )
-                }
-              >
-                額外加一個 Workout
-              </button>
-            )}
-            <button onClick={() => put("train", undefined, false, true)}>
-              清除這天的更改
-            </button>
+            <button type="button" onClick={() => {
+              if(save("清除單日訓練安排",draft=>{
+                draft.schedule=(draft.schedule??[]).filter(r=>r.date!==selected || r.source==="batch");
+                (draft.schedule??=[]).push({id:uid(),date:selected!,kind:"rest",cleared:true,source:"single",createdAt:stamp()});
+              }))setSelected(null);
+            }}>清除這天的安排</button>
           </div>
         </Sheet>
       )}
