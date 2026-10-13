@@ -24,6 +24,9 @@ import {
   Ellipsis,
   Plus,
   Utensils,
+  Coffee,
+  Soup,
+  Cookie,
   X,
   Undo2,
   Activity,
@@ -761,7 +764,9 @@ export function NutritionV2({
           <div className="nutrition-v3-meal-icons" aria-label="快速選擇餐次">
             {state.mealSlots.slice(0,4).map((name,index)=><button type="button" key={name}
               onClick={()=>{setSlot(name);setSheet("add");}}>
-              <span aria-hidden="true">{["◌","◇","◎","◈"][index]}</span>
+              <span aria-hidden="true">{index===0?<Coffee size={20} strokeWidth={1.4}/>:
+                index===1?<Utensils size={20} strokeWidth={1.4}/>:
+                index===2?<Soup size={20} strokeWidth={1.4}/>:<Cookie size={20} strokeWidth={1.4}/>}</span>
               <strong>{name}</strong>
             </button>)}
           </div>
