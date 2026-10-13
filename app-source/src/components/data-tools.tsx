@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useStore } from "@/lib/store";
-import { validateState, type AppState } from "@/lib/domain";
+import { validateState, visibleMeals, visibleMeasurements, type AppState } from "@/lib/domain";
 export function DataTools({ notify }: { notify: (s?: string) => void }) {
   const { state, save } = useStore();
   const [backup, setBackup] = useState<AppState | null>(null),
@@ -14,12 +14,12 @@ export function DataTools({ notify }: { notify: (s?: string) => void }) {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  function csv(kind: "nutrition" | "training" | "body") {
+  function csv(kind: "nutrition" | "training" | "body" | "recovery") {
     const rows: unknown[][] =
       kind === "nutrition"
         ? [
             ["date", "meal", "name", "protein_g", "carbs_g", "fat_g", "kcal"],
-            ...state.meals.map((m) => [
+            ...visibleMeals(state).map((m) => [
               m.date,
               m.slot,
               m.name,
@@ -32,7 +32,19 @@ export function DataTools({ notify }: { notify: (s?: string) => void }) {
         : kind === "body"
           ? [
               ["date", "weight_kg"],
-              ...state.measurements.map((m) => [m.date, m.weight]),
+              ...visibleMeasurements(state).map((m) => [m.date, m.weight]),
+            ]
+          : kind === "recovery"
+          ? [
+              ["date", "record_type", "value", "unit", "area", "side", "safety_level"],
+              ...(state.recoveryEntries ?? []).map((entry) => [
+                entry.date, entry.type, entry.value, entry.unit ?? "", entry.area ?? "", entry.side ?? "", entry.safetyLevel ?? "",
+              ]),
+              ...state.recoveries.flatMap((entry) =>
+                (["sleep", "fatigue", "stress", "soreness"] as const).map((metric) => [
+                  entry.date, "legacy_" + metric, entry[metric], metric === "sleep" ? "minutes" : "rating", "", "", "",
+                ])
+              ),
             ]
           : [
               [
@@ -45,7 +57,7 @@ export function DataTools({ notify }: { notify: (s?: string) => void }) {
                 "reps",
                 "rir",
               ],
-              ...state.sessions.flatMap((s) =>
+              ...state.sessions.filter((s) => s.status === "completed").flatMap((s) =>
                 s.exercises.flatMap((e) =>
                   e.sets.map((t) => [
                     s.workoutDate ?? s.date,
@@ -84,7 +96,7 @@ export function DataTools({ notify }: { notify: (s?: string) => void }) {
     <section className="card stack">
       <h2>還原與分類匯出</h2>
       <div className="two-actions">
-        {(["nutrition", "training", "body"] as const).map((k) => (
+        {(["nutrition", "training", "body", "recovery"] as const).map((k) => (
           <button className="button secondary" key={k} onClick={() => csv(k)}>
             {k} CSV
           </button>
