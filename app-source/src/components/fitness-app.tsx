@@ -12,6 +12,7 @@ import { GainReview } from "./gain-review";
 import { Recipes } from "./recipes";
 import { ProgressDirection } from "./progress-direction";
 import { ActivityReviewContext } from "./activity-trend";
+import { WeeklyCheckin } from "./weekly-checkin";
 import Link from "next/link";
 import { TodayV2, NutritionV2 } from "./daily";
 import { TrainingFlow } from "./training-flow";
@@ -428,7 +429,9 @@ export function FitnessApp({ path }: { path: string }) {
                 <TrainingFlow path={path} date={date} notify={notify} />
               )
             ) : section === "progress" ? (
-              path === "progress/training/exercises" ? (
+              path === "progress/check-in" ? (
+                <WeeklyCheckin date={date} />
+              ) : path === "progress/training/exercises" ? (
                 <ExerciseProgressDetail />
               ) : [
                 "progress/review",
