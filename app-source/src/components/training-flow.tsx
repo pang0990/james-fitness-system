@@ -662,10 +662,30 @@ export function TrainingFlow({
           )}
         </>
       ) : (
-        <div className="training-home">
+        <div className="training-home training-v3">
+          <div className="training-v3-segments" role="navigation" aria-label="訓練頁面">
+            <span className="active">Plan</span>
+            <Link href="/training/history">History</Link>
+          </div>
           <section className="training-today card">
-            <span className="eyebrow">TODAY'S WORKOUT</span>
-            <h2>{current?.name ?? (day ? day.name : "尚未建立訓練計畫")}</h2>
+            <span className="eyebrow">CURRENT PLAN</span>
+            <div className="training-v3-heading">
+              <div><h2>{current?.name ?? (day ? day.name : "尚未建立訓練計畫")}</h2>
+                <span className="training-v3-caption">{day ? `${day.exercises?.length ?? 0} 個動作` : "先建立自己的訓練計畫"}</span>
+              </div>
+              <Link href="/training/plan" className="training-v3-edit" aria-label="編輯課表"><ChevronRight size={17}/></Link>
+            </div>
+            {day && (day.exercises?.length ?? 0)>0 && <div className="training-v3-exercises">
+              {day.exercises.map((item,index)=><Link href="/training/plan" className="training-v3-exercise" key={index}>
+                <span className="training-v3-exercise-art" aria-hidden="true"><Dumbbell size={20} strokeWidth={1.3}/></span>
+                <span className="training-v3-number">{index+1}</span>
+                <span className="training-v3-exercise-info">
+                  <strong>{item.name}</strong>
+                  <small>{item.sets} × {item.reps}</small>
+                </span>
+                <ChevronRight size={14} aria-hidden="true"/>
+              </Link>)}
+            </div>
             {current ? (
               <>
                 <Link className="button" href="/training/session">繼續訓練 <ArrowRight size={16}/></Link>
