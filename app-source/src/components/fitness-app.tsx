@@ -1,5 +1,6 @@
 "use client";
 import { AppearanceSettings } from "./appearance";
+import { WorkoutHistoryDetail, ExerciseGuideDetail, ExerciseProgressDetail } from "./detail-pages";
 import { SettingsHub } from "./settings-hub";
 import { MealSettings } from "./meal-settings";
 import { DataTools } from "./data-tools";
@@ -413,13 +414,19 @@ export function FitnessApp({ path }: { path: string }) {
                 <Nutrition path={path} date={date} notify={notify} />
               )
             ) : section === "training" ? (
-              path === "training/activity" ? (
+              path === "training/history/session" ? (
+                <WorkoutHistoryDetail />
+              ) : path === "training/exercises/detail" ? (
+                <ExerciseGuideDetail />
+              ) : path === "training/activity" ? (
                 <Training path={path} date={date} notify={notify} />
               ) : (
                 <TrainingFlow path={path} date={date} notify={notify} />
               )
             ) : section === "progress" ? (
-              [
+              path === "progress/training/exercises" ? (
+                <ExerciseProgressDetail />
+              ) : [
                 "progress/review",
                 "progress/weekly",
                 "progress/recommendations",

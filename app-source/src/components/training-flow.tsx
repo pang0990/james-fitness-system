@@ -213,6 +213,7 @@ export function TrainingFlow({
                 {s.workoutDate ?? s.date} · {s.name} ·{" "}
                 {s.status === "discarded" ? "已放棄" : "已完成"}
               </summary>
+              <Link className="text-link" href={`/training/history/session?id=${encodeURIComponent(s.id)}`}>查看單次訓練詳情 →</Link>
               {s.exercises.map((e) => (
                 <div key={e.id}>
                   <h3>{e.name}</h3>
@@ -944,6 +945,7 @@ function ExerciseCatalog() {
             </a>
           )}
           <p className="muted">示範影片待補充</p>
+          <Link className="text-link" href={`/training/exercises/detail?id=${encodeURIComponent(e.id)}`}>查看動作詳情 →</Link>
         </details>
       ))}
     </>

@@ -95,12 +95,12 @@ export default async function Page({
     data: "settings/data",
 
     "training/plan/edit": "training/plan",
-    "training/history/session": "training/history",
-    "training/exercises/detail": "training/exercises",
+
+
     "nutrition/recipes/detail": "nutrition/recipes",
     "progress/check-in": "progress/review",
     "progress/check-in/history": "progress/history",
-    "progress/training/exercises": "progress/training",
+
   };
   return <FitnessApp path={resolved[requested] ?? requested} />;
 }
