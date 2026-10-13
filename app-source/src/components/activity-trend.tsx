@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { averageSteps, activityContext, stepsInRange } from "@/lib/activity";
+import { addDays } from "@/lib/domain";
 import { LineChart } from "./trends";
 
 export function ActivityTrend({date}:{date:string}) {
@@ -9,14 +10,9 @@ export function ActivityTrend({date}:{date:string}) {
   const [days,setDays]=useState<7|30>(7);
   const points=stepsInRange(state,date,days);
   const summary=averageSteps(state,date,days);
-  const minutes=state.cardio.filter(item=>item.date>=
-    // Only dates in the selected range count; no date assumptions for unlogged days.
-    (points.length?points[0].date:"0000-01-01") && item.date<=date);
-  // Calculate activity window independently of step logging, because cardio-only dates also count.
-  const cardioStart=new Date(date+"T12:00:00Z");
-  cardioStart.setUTCDate(cardioStart.getUTCDate()-(days-1));
-  const start=cardioStart.toISOString().slice(0,10);
-  const cardio=minutes.filter(item=>item.date>=start);
+  // Cardio-only days count independently from steps, using the same local-date window.
+  const start=addDays(date,1-days);
+  const cardio=state.cardio.filter(item=>item.date>=start && item.date<=date);
   const cardioMinutes=cardio.reduce((total,item)=>total+item.minutes,0);
   return <section className="card activity-trend" id="activity-trend">
     <div className="activity-heading">
