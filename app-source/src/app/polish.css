@@ -556,3 +556,51 @@ body .training-home-tools[open]>.training-home-links{margin-top:8px}
   body .meal-slot-actions{justify-content:flex-start}
   body .training-home-links{grid-template-columns:1fr}
 }
+
+/* Training Plan — one day visible at a time; navigation stays compact. */
+body .plan-day-navigation{
+  display:grid;gap:12px;padding:16px;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  border-radius:var(--ui-radius-lg);
+}
+body .plan-day-navigation-heading{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;font-size:12px;font-weight:600;color:var(--ui-secondary);
+}
+body .plan-day-navigation-heading span:last-child{
+  font-size:11px;font-variant-numeric:tabular-nums;
+  letter-spacing:.06em;color:var(--ui-accent);
+}
+body .plan-day-navigation-controls{
+  display:grid;grid-template-columns:46px minmax(0,1fr) 46px;
+  align-items:stretch;gap:9px;
+}
+body .plan-day-navigation-controls select{
+  min-width:0;width:100%;height:48px;min-height:48px;
+  padding:10px 13px;font-size:15px;
+  border:1px solid var(--ui-border-strong);
+  border-radius:11px;background:var(--ui-surface-raised);color:var(--ui-primary);
+}
+body .plan-day-arrow{
+  display:grid;place-items:center;min-height:48px;
+  border:1px solid var(--ui-border-strong);border-radius:11px;
+  color:var(--ui-primary);background:var(--ui-surface-raised);
+  font-size:20px;line-height:1;cursor:pointer;
+}
+body .plan-day-arrow:disabled{opacity:.3;cursor:default}
+body .plan-day-add{
+  justify-self:start;padding:7px 3px;min-height:40px;
+  background:none;border:0;color:var(--ui-accent);
+  font:550 13px/1.4 var(--ui-font);
+}
+body .plan-day-editor{padding:20px}
+body .plan-day-editor .two-actions{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 8px}
+body .plan-day-editor .two-actions>.button{flex:0 0 auto;min-height:39px;padding:9px 13px;font-size:12px}
+body .plan-day-editor .plan-exercise{padding:18px 0}
+body .plan-day-editor .plan-exercise h3{font-size:15px;margin:0 0 14px}
+@media(max-width:520px){
+  body .plan-day-navigation{padding:14px;gap:11px}
+  body .plan-day-navigation-controls{grid-template-columns:44px minmax(0,1fr) 44px;gap:7px}
+  body .plan-day-editor{padding:16px}
+  body .plan-day-editor .two-actions>.button{font-size:11px;min-height:38px;padding:8px 11px}
+}

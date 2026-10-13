@@ -22,13 +22,27 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
   );
   const ongoing = state.sessions.find((s) => s.status === "in_progress");
   const [template, setTemplate] = useState("");
+  // Stable ID keeps the user's day in focus through edits and reordering.
+  const [activeDayId, setActiveDayId] = useState<string | null>(null);
+  const activeIndex = days.findIndex((day) => day.id === activeDayId);
+  const selectedIndex = activeIndex < 0 ? 0 : activeIndex;
+  const selectDay = (index: number) => {
+    if (index >= 0 && index < days.length) setActiveDayId(days[index].id ?? null);
+  };
+
   function preset(selected:string) {
     if (days.length && !window.confirm("依選擇的分化帶入課表？未儲存的修改會被新的分化取代，已完成的訓練紀錄不受影響。")) return;
     setTemplate(selected);
-    if (selected === "自訂空白") { setDays([]);return; }
-    setDays(templates[selected as keyof typeof templates].map(day => ({
+    if (selected === "自訂空白") {
+      setDays([]);
+      setActiveDayId(null);
+      return;
+    }
+    const imported = templates[selected as keyof typeof templates].map(day => ({
       ...structuredClone(day), id: uid(),
-    })));
+    }));
+    setDays(imported);
+    setActiveDayId(imported[0]?.id ?? null);
   }
   return (
     <div className="daily-page">
@@ -43,7 +57,6 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
           <option value="自訂空白">自訂空白課表</option>
         </select>
       </Field>
-      <button type="button" className="button secondary" onClick={()=>setDays([...days,{id:uid(),name:"自訂訓練日",exercises:[]}])}>＋ 新增訓練日</button>
       {template==="五分化"&&<p className="muted">請依自己的訓練量與恢復狀態調整，所有動作皆可刪除或修改。</p>}
       <Field label="計畫名稱">
         <input
@@ -52,8 +65,38 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
           maxLength={80}
         />
       </Field>
-      {days.map((day, i) => (
-        <section className="card stack" key={day.id}>
+      <section className="plan-day-navigation" aria-label="切換訓練日">
+        {days.length > 0 ? (
+          <>
+            <div className="plan-day-navigation-heading">
+              <span>訓練日</span>
+              <span>{selectedIndex + 1} / {days.length}</span>
+            </div>
+            <div className="plan-day-navigation-controls">
+              <button type="button" className="plan-day-arrow" aria-label="上一個訓練日"
+                disabled={selectedIndex === 0} onClick={() => selectDay(selectedIndex - 1)}>←</button>
+              <select aria-label="目前訓練日" value={days[selectedIndex]?.id ?? ""}
+                onChange={(e) => setActiveDayId(e.target.value)}>
+                {days.map((day, index) => (
+                  <option key={day.id ?? index} value={day.id}>
+                    Day {index + 1} · {day.name || "未命名訓練日"}
+                  </option>
+                ))}
+              </select>
+              <button type="button" className="plan-day-arrow" aria-label="下一個訓練日"
+                disabled={selectedIndex === days.length - 1} onClick={() => selectDay(selectedIndex + 1)}>→</button>
+            </div>
+          </>
+        ) : <p className="muted">目前沒有訓練日，請先選擇分化或新增一天。</p>}
+        <button type="button" className="plan-day-add"
+          onClick={() => {
+            const id = uid();
+            setDays([...days, {id, name: "自訂訓練日", exercises: []}]);
+            setActiveDayId(id);
+          }}>＋ 新增訓練日</button>
+      </section>
+      {days.map((day, i) => ({day, i})).filter(({i}) => i === selectedIndex).map(({day, i}) => (
+        <section className="card stack plan-day-editor" key={day.id}>
           <Field label={`訓練日 ${i + 1}`}>
             <input
               value={day.name}
@@ -73,16 +116,32 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
               onClick={() => {
                 const copy = [...days];
                 [copy[i - 1], copy[i]] = [copy[i], copy[i - 1]];
+                setActiveDayId(day.id ?? null);
                 setDays(copy);
               }}
             >
               上移
             </button>
             <button
+              className="button secondary"
+              disabled={i === days.length - 1}
+              onClick={() => {
+                const copy = [...days];
+                [copy[i], copy[i + 1]] = [copy[i + 1], copy[i]];
+                setActiveDayId(day.id ?? null);
+                setDays(copy);
+              }}
+            >
+              下移
+            </button>
+            <button
               className="button danger"
               onClick={() => {
-                if (confirm("從此計畫移除這個訓練日？歷史訓練保留。"))
-                  setDays(days.filter((_, j) => j !== i));
+                if (confirm("從此計畫移除這個訓練日？歷史訓練保留。")) {
+                  const remaining = days.filter((_, j) => j !== i);
+                  setDays(remaining);
+                  setActiveDayId(remaining[Math.min(i, remaining.length - 1)]?.id ?? null);
+                }
               }}
             >
               刪除訓練日
