@@ -50,3 +50,6 @@
 .weekly-data-grid small{font-size:11px;line-height:1.5;color:#aaa89f}
 .weekly-quick .recovery-entry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 @media(max-width:420px){.weekly-data-grid{grid-template-columns:1fr}.weekly-data-grid>a{gap:6px}}
+
+/* Authentication and onboarding screens never show the main four-tab dock. */
+.page-auth .bottom-nav,.page-auth .topbar .account-menu,.page-login .topbar .account-menu,.page-onboarding .topbar .account-menu{display:none!important}
