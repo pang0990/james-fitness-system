@@ -346,6 +346,8 @@ export type AppState = {
     minutes: number;
     calories: number | null;
     createdAt: string;
+    source?: "manual" | "apple_health";
+    externalId?: string;
   }[];
   /** One snapshot per local calendar day. Optional for compatibility with all existing backups. */
   dailySteps?: {
