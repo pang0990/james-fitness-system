@@ -18,64 +18,33 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
         id: current ? dayId(current, i) : uid(),
       })) ?? [],
   );
-  const [applyMode, setApplyMode] = useState("keep");
   const ongoing = state.sessions.find((s) => s.status === "in_progress");
-  const [template, setTemplate] = useState("Upper / Lower");
-  function preset(names: string[]) {
-    setDays(
-      templates[template as keyof typeof templates].map((day) => ({
-        ...structuredClone(day),
-        id: uid(),
-      })),
-    );
+  const [template, setTemplate] = useState("");
+  function preset(selected:string) {
+    if (days.length && !window.confirm("依選擇的分化帶入課表？未儲存的修改會被新的分化取代，已完成的訓練紀錄不受影響。")) return;
+    setTemplate(selected);
+    if (selected === "自訂空白") { setDays([]);return; }
+    setDays(templates[selected as keyof typeof templates].map(day => ({
+      ...structuredClone(day), id: uid(),
+    })));
   }
   return (
     <div className="daily-page">
       <PageTitle title="Training Plan" />
       <p className="muted">
-        自由建立訓練日。每次儲存建立新版本；已開始與完成的訓練保留原始紀錄。
+        選擇分化即帶入對應課表。每個訓練日、動作、組數及休息時間都可修改；已完成的訓練不受影響。
       </p>
-      <div className="two-actions">
-        <select
-          aria-label="選擇模板"
-          value={template}
-          onChange={(e) => setTemplate(e.target.value)}
-        >
-          <option>Upper / Lower</option>
-          <option>PPL</option>
-          <option>五分化</option>
+      <Field label="選擇訓練分化（選取後直接帶入，可自行修改或刪除動作）">
+        <select aria-label="選擇分化" value={template} onChange={e=>preset(e.target.value)}>
+          <option value="">請選擇分化（目前課表可直接編輯）</option>
+          <option value="Upper / Lower">Upper / Lower · 上下半身</option>
+          <option value="PPL">PPL · 推拉腿</option>
+          <option value="五分化">五分化</option>
+          <option value="自訂空白">自訂空白課表</option>
         </select>
-        <button
-          className="button secondary"
-          onClick={() => {
-            if (
-              days.length &&
-              !confirm("以模板取代編輯中的訓練日？尚未儲存前不影響目前計畫。")
-            )
-              return;
-            preset(
-              template === "PPL"
-                ? ["Push", "Pull", "Legs"]
-                : template === "五分化"
-                  ? ["Chest", "Back", "Legs", "Shoulders", "Arms"]
-                  : ["Upper A", "Lower A", "Upper B", "Lower B"],
-            );
-          }}
-        >
-          使用 Default Template v1.0
-        </button>
-        <button
-          className="button secondary"
-          onClick={() =>
-            setDays([...days, { id: uid(), name: "自訂訓練日", exercises: [] }])
-          }
-        >
-          新增空白訓練日
-        </button>
-      </div>
-      {template === "五分化" && (
-        <p className="muted">Intermediate+ / Bodybuilding-oriented</p>
-      )}
+      </Field>
+      <button type="button" className="button secondary" onClick={()=>setDays([...days,{id:uid(),name:"自訂訓練日",exercises:[]}])}>＋ 新增訓練日</button>
+      {template==="五分化"&&<p className="muted">請依自己的訓練量與恢復狀態調整，所有動作皆可刪除或修改。</p>}
       <Field label="計畫名稱">
         <input
           value={name}
@@ -218,33 +187,13 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
           </select>
         </section>
       ))}
-      {ongoing && (
-        <Field label="目前訓練如何處理">
-          <select
-            value={applyMode}
-            onChange={(e) => setApplyMode(e.target.value)}
-          >
-            <option value="keep">
-              保留今天的訓練，新版從下一個未開始日生效
-            </option>
-            <option value="reset">重置今天並套用新版</option>
-          </select>
-        </Field>
-      )}
+      {ongoing&&<p className="muted">目前進行中的訓練保留原始 Session，儲存課表不會重置或刪除當次訓練。</p>}
       <button
         className="button"
         disabled={
           !days.length || !name.trim() || days.some((d) => !d.name.trim())
         }
         onClick={() => {
-          if (
-            ongoing &&
-            applyMode === "reset" &&
-            (!confirm("重置今天並套用新版？原訓練保留為已放棄。") ||
-              (ongoing.exercises.some((e) => e.sets.length) &&
-                !confirm("已有組數，確定放棄本次紀錄並重新開始？")))
-          )
-            return;
           if (
             save("儲存 Training Plan 新版本", (s) => {
               const old = activeCycle(s);
@@ -265,39 +214,9 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                 stage: old?.stage ?? "Intensity",
                 createdAt: stamp(),
               });
-              if (ongoing && applyMode === "reset") {
-                const session = s.sessions.find((x) => x.id === ongoing.id)!;
-                session.status = "discarded";
-                session.discardedAt = stamp();
-                const plan = s.cycles.at(-1)!;
-                const d =
-                  plan.days.find((d) => d.id === session.trainingDayId) ??
-                  plan.days.find((d) => plan.pending!.includes(d.id!)) ??
-                  plan.days[0];
-                s.sessions.push({
-                  id: uid(),
-                  date: session.workoutDate ?? session.date,
-                  workoutDate: session.workoutDate ?? session.date,
-                  scheduledDate: session.scheduledDate,
-                  status: "in_progress",
-                  name: d.name,
-                  cycleId: plan.id,
-                  trainingDayId: d.id,
-                  round: plan.round,
-                  phase: "warmup",
-                  createdAt: stamp(),
-                  warmupIds: [...(s.warmupPreset ?? [])],
-                  exercises: (d.exercises ?? []).map((e) => ({
-                    ...e,
-                    id: uid(),
-                    plannedSets: e.sets,
-                    sets: [],
-                  })),
-                });
-              }
             })
           )
-            notify("新版本已儲存；從下一個尚未開始的訓練日套用");
+            notify("課表已儲存，可繼續自行編輯，歷史訓練保留");
         }}
       >
         儲存計畫版本

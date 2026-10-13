@@ -1,267 +1,139 @@
 "use client";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useStore } from "@/lib/store";
-import { type RecoveryEntry, visibleMeasurements, pinDay } from "@/lib/domain";
-import {
-  latestRecovery,
-  recoveryEntries,
-  painLevel,
-  safetyText,
-} from "@/lib/recovery";
-import { Sheet, Field, Num, uid, stamp } from "./daily";
+import { type RecoveryEntry, visibleMeasurements } from "@/lib/domain";
+import { latestRecovery, recoveryEntries, painLevel, safetyText } from "@/lib/recovery";
+import { Sheet, Field, uid, stamp } from "./daily";
+
 export const labels = {
-  sleep: "睡眠",
-  fatigue: "疲勞",
-  stress: "壓力",
-  soreness: "肌肉痠痛",
-  pain: "疼痛",
-};
-const areas = [
-  "Neck / Traps",
-  "Chest",
-  "Shoulders",
-  "Upper Back",
-  "Lats",
-  "Lower Back",
-  "Biceps",
-  "Triceps",
-  "Forearms",
-  "Abs / Core",
-  "Glutes",
-  "Quads",
-  "Hamstrings",
-  "Adductors",
-  "Calves",
-];
+  sleep: "睡眠品質", fatigue: "疲勞", stress: "壓力", soreness: "肌肉痠痛", pain: "疼痛",
+} as const;
+const soreAreas = ["肩頸","胸","肩膀","上背","背闊肌","下背","二頭肌","三頭肌","前臂","腹部","臀部","股四頭肌","腿後側","內收肌","小腿","其他"];
+const painAreas = ["頸部","肩膀","手肘","手腕／手","上背","下背","髖部","膝蓋","腳踝／腳","其他"];
+
 export function RecoveryQuickLog({
-  date,
-  close,
-  notify,
-  initialKind = "sleep",
-}: {
-  initialKind?: RecoveryEntry["type"];
-  date: string;
-  close: () => void;
-  notify: (s?: string) => void;
-}) {
-  const { state, save } = useStore();
-  const [kind, setKind] = useState<
-    RecoveryEntry["type"] | "weight" | "nutrition"
-  >(initialKind);
-  const [message, setMessage] = useState("");
-  const recent = latestRecovery(state, date)
-    .filter((r) => r.type === kind)
-    .at(-1);
-  return (
-    <Sheet title={`${date} · 快速紀錄`} onClose={close}>
-      <Field label="紀錄項目">
-        <select
-          value={kind}
-          onChange={(e) => {
-            setKind(e.target.value as typeof kind);
-            setMessage("");
-          }}
-        >
-          {Object.entries({
-            ...labels,
-            weight: "體重",
-            nutrition: "飲食紀錄完整度",
-          }).map(([k, v]) => (
-            <option value={k} key={k}>
-              {v}
-            </option>
-          ))}
-        </select>
-      </Field>
-      <form
-        key={kind}
-        onSubmit={(e) => {
-          e.preventDefault();
-          const d = new FormData(e.currentTarget);
-          const value = Number(d.get("value"));
-          const flags = ["red", "sharp", "worsening"].filter(
-            (k) => d.get(k) === "on",
-          );
-          const level = kind === "pain" ? painLevel(value, flags) : undefined;
-          if (
-            save("記錄 " + kind, (s) => {
-              if (kind === "weight") {
-                s.measurements.push({
-                  id: uid(),
-                  date,
-                  weight: value,
-                  createdAt: stamp(),
-                  supersedes: visibleMeasurements(s)
-                    .filter((x) => x.date === date)
-                    .at(-1)?.id,
-                });
-              } else if (kind === "nutrition") {
-                pinDay(s, date);
-                s.days.find((x) => x.date === date)!.complete =
-                  d.get("complete") === "on";
-              } else {
-                (s.recoveryEntries ??= []).push({
-                  id: uid(),
-                  date,
-                  type: kind,
-                  unit: kind === "sleep" ? "rating" : undefined,
-                  value,
-                  area: String(d.get("area") ?? "") || undefined,
-                  side: String(d.get("side") ?? "") || undefined,
-                  safetyLevel: level,
-                  flags,
-                  createdAt: stamp(),
-                });
-              }
-            })
-          ) {
-            setMessage(level ? safetyText[level] : "已儲存，歷史紀錄保留");
-            notify("已儲存");
-          }
-        }}
-      >
-        {kind === "nutrition" ? (
-          <label className="check">
-            <input
-              name="complete"
-              type="checkbox"
-              defaultChecked={state.days.find((d) => d.date === date)?.complete}
-            />
-            這天飲食已記錄完整
-          </label>
-        ) : ["sleep", "fatigue", "stress", "soreness"].includes(kind) ? (
-          <fieldset className="recovery-rating">
-            <legend>{labels[kind as keyof typeof labels]}{kind === "sleep" ? "評分（起床當天）" : "程度"}</legend>
-            <p>{kind === "sleep" ? "依感覺選擇，不需要知道睡了幾分鐘。1 很差 · 5 很好" : "分數越高，程度越明顯。"}</p>
-            <div className="rating-options">{(kind === "soreness" ? [0,1,2,3,4,5] : [1,2,3,4,5]).map(n => <label key={n}><input type="radio" name="value" value={n} required defaultChecked={recent?.value === n && (kind !== "sleep" || recent.unit === "rating")} /><span>{n}</span></label>)}</div>
-          </fieldset>
-        ) : (
-          <Num
-            label={
-              kind === "sleep"
-                ? "睡眠分鐘（歸起床當天）"
-                : kind === "weight"
-                  ? "體重 kg"
-                  : kind === "pain"
-                    ? "疼痛 0–10"
-                    : kind === "soreness"
-                      ? "痠痛 0–5"
-                      : "程度 1–5"
-            }
-            name="value"
-            min={
-              kind === "weight"
-                ? 30
-                : kind === "fatigue" || kind === "stress"
-                  ? 1
-                  : 0
-            }
-            max={
-              kind === "sleep"
-                ? 1440
-                : kind === "weight"
-                  ? 350
-                  : kind === "pain"
-                    ? 10
-                    : 5
-            }
-            step={kind === "weight" ? "0.1" : "1"}
-            value={recent?.value}
-          />
-        )}
-        {(kind === "soreness" || kind === "pain") && (
-          <>
-            <Field label="部位">
-              <select name="area">
-                {(kind === "pain"
-                  ? [
-                      "Neck",
-                      "Shoulder",
-                      "Elbow",
-                      "Wrist / Hand",
-                      "Upper Back",
-                      "Lower Back",
-                      "Hip",
-                      "Knee",
-                      "Ankle / Foot",
-                      "Other",
-                    ]
-                  : areas
-                ).map((a) => (
-                  <option key={a}>{a}</option>
-                ))}
-              </select>
-            </Field>
-            <Field label="左右側">
-              <select name="side">
-                <option>Both</option>
-                <option>Left</option>
-                <option>Right</option>
-              </select>
-            </Field>
-          </>
-        )}
-        {kind === "pain" && (
-          <>
-            <p>肌肉痠痛請用「肌肉痠痛」記錄。以下症狀優先於疼痛分數。</p>
-            {[
-              [
-                "red",
-                "突發嚴重疼痛、外傷變形、不能負重、胸痛、昏厥或明顯麻木／無力",
-              ],
-              ["sharp", "銳痛、刺痛、關節痛或動作代償"],
-              ["worsening", "疼痛持續或逐組惡化"],
-            ].map(([k, l]) => (
-              <label className="check" key={k}>
-                <input name={k} type="checkbox" />
-                {l}
-              </label>
-            ))}
-          </>
-        )}
-        <button className="button">儲存紀錄</button>
-        {message && <p role="status">{message}</p>}
-      </form>
-    </Sheet>
-  );
-}
-export function RecoveryHistory() {
-  const { state } = useStore();
-  return (
-    <section className="stack">
-      <h2>Recovery History</h2>
-      {recoveryEntries(state)
-        .slice()
-        .reverse()
-        .map((r) => (
-          <div className="simple-row" key={r.id}>
-            <span>
-              {r.date} · {labels[r.type]} {r.area} {r.side}
-            </span>
-            <strong>
-              {r.value}
-              {r.type === "sleep" && r.unit !== "rating" ? " min" : r.type === "pain" ? "/10" : "/5"}
-            </strong>
-          </div>
-        ))}
-      {!recoveryEntries(state).length && <p>尚未紀錄</p>}
-    </section>
-  );
+  date, close, notify, initialKind="sleep",
+}: {initialKind?:RecoveryEntry["type"];date:string;close:()=>void;notify:(s?:string)=>void;}) {
+  const {save}=useStore();
+  // Fresh form every time it opens: no old ratings or quantities preselected.
+  const [kind,setKind]=useState<RecoveryEntry["type"]|"weight">(initialKind);
+  const [score,setScore]=useState<number|null>(null);
+  const [weight,setWeight]=useState("");
+  const [area,setArea]=useState("");
+  const [side,setSide]=useState("Both");
+  const [flags,setFlags]=useState<string[]>([]);
+  const [error,setError]=useState("");
+  const pain=kind==="pain";
+  const saveLog=(e:FormEvent<HTMLFormElement>)=>{
+    e.preventDefault();
+    const number=kind==="weight"?Number(weight):score;
+    if(number===null || !Number.isFinite(number) ||
+      (kind==="weight"?(number<30||number>350):(number < (pain?0:kind==="soreness"?0:1)||number>(pain?10:5)))) {
+      setError("請先選擇評分或輸入有效數值。");return;
+    }
+    if((pain||kind==="soreness")&&!area){setError("請選擇部位。");return;}
+    const severity=pain?painLevel(number,flags):undefined;
+    if(save("記錄 "+kind,s=>{
+      if(kind==="weight") {
+        s.measurements.push({id:uid(),date,weight:number,createdAt:stamp(),
+          supersedes:visibleMeasurements(s).filter(r=>r.date===date).at(-1)?.id});
+      } else {
+        (s.recoveryEntries??=[]).push({
+          id:uid(),date,type:kind,unit:kind==="sleep"?"rating":undefined,
+          value:number,area:area||undefined,side:(pain||kind==="soreness")?side:undefined,
+          flags:pain?flags:[],safetyLevel:severity,createdAt:stamp(),
+        });
+      }
+    })){
+      notify("紀錄已儲存");
+      close(); // On successful save the bottom sheet must always dismiss.
+      if(severity&&severity>1)window.setTimeout(()=>window.alert(safetyText[severity]),50);
+    }
+  };
+  return <Sheet title={pain?"疼痛安全紀錄":`${date} · 快速紀錄`} onClose={close}>
+    {pain ? <div className="pain-guidance">
+      <strong>疼痛不同於運動後肌肉痠痛</strong>
+      <p>請先記錄疼痛位置和程度。胸痛、昏厥、突然無力、嚴重外傷或無法負重時，請停止活動並儘速尋求醫療協助。</p>
+    </div> : <Field label="紀錄項目"><select value={kind} onChange={e=>{
+      setKind(e.target.value as typeof kind);setScore(null);setWeight("");setArea("");setFlags([]);setError("");
+    }}>
+      <option value="sleep">睡眠品質</option><option value="fatigue">疲勞</option>
+      <option value="stress">壓力</option><option value="soreness">肌肉痠痛</option>
+      <option value="weight">體重</option>
+    </select></Field>}
+    <form onSubmit={saveLog} className="recovery-log-form">
+      {kind==="weight" ? <Field label="本次體重 kg"><input type="number" inputMode="decimal" min="30" max="350" step=".1"
+        placeholder="請輸入本次量測結果" value={weight} onChange={e=>setWeight(e.target.value)} required/></Field>
+      : <fieldset className="recovery-rating">
+        <legend>{pain?"疼痛程度（0–10）":kind==="sleep"?"睡眠品質（起床當天）":labels[kind]+"程度"}</legend>
+        <p>{pain?"0 沒有疼痛 · 10 極嚴重":kind==="sleep"?"1 很差 · 5 很好（不代表睡眠時長）":"數字越高，感受越明顯"}</p>
+        <div className={pain?"pain-rating-options":"rating-options"}>
+          {Array.from({length:pain?11:kind==="soreness"?6:5},(_,i)=>pain||kind==="soreness"?i:i+1).map(n=>
+            <label key={n} className={score===n?"selected":""}>
+              <input type="radio" name="score" value={n} checked={score===n} onChange={()=>{setScore(n);setError("");}} required/>
+              <span>{n}</span>
+            </label>)}
+        </div>
+      </fieldset>}
+      {(pain||kind==="soreness")&&<>
+        <div className="form-grid">
+          <Field label="身體部位"><select required value={area} onChange={e=>setArea(e.target.value)}>
+            <option value="">請選擇部位</option>
+            {(pain?painAreas:soreAreas).map(x=><option key={x}>{x}</option>)}
+          </select></Field>
+          <Field label="位置"><select value={side} onChange={e=>setSide(e.target.value)}>
+            <option value="Both">雙側／中間</option><option value="Left">左側</option><option value="Right">右側</option>
+          </select></Field>
+        </div>
+      </>}
+      {pain&&<fieldset className="pain-flags">
+        <legend>是否有以下情況？（可複選）</legend>
+        {([
+          ["red","突然劇痛、外傷、不能負重、胸痛、昏厥或明顯麻木／無力"],
+          ["sharp","銳痛／關節痛，或動作時會代償"],
+          ["worsening","疼痛持續或逐組加重"],
+        ] as const).map(([id,label])=><label className="check" key={id}>
+          <input type="checkbox" checked={flags.includes(id)} onChange={e=>setFlags(list=>e.target.checked?[...list,id]:list.filter(v=>v!==id))}/>{label}
+        </label>)}
+      </fieldset>}
+      {error&&<p className="form-error" role="alert">{error}</p>}
+      <div className="recovery-form-actions">
+        <button type="button" className="button secondary" onClick={close}>取消</button>
+        <button type="submit" className="button">儲存並關閉</button>
+      </div>
+    </form>
+  </Sheet>;
 }
 
-export function RecoveryEntryPoints({date, editableDate = false}: {date: string; editableDate?: boolean}) {
-  const {state} = useStore();
-  const [logDate, setLogDate] = useState(date);
-  const [kind, setKind] = useState<RecoveryEntry["type"] | null>(null);
-  const records = latestRecovery(state, editableDate ? logDate : date);
+export function RecoveryHistory(){
+  const {state}=useStore();const entries=recoveryEntries(state);
+  return <section className="stack"><h2>Recovery History</h2>
+    {entries.slice().reverse().map(r=><div className="simple-row" key={r.id}>
+      <span>{r.date} · {labels[r.type]} {r.area??""} {r.side??""}</span>
+      <strong>{r.value}{r.type==="sleep"&&r.unit!=="rating"?" min":r.type==="pain"?"/10":"/5"}</strong>
+    </div>)}{!entries.length&&<p>尚未紀錄</p>}
+  </section>;
+}
+
+export function RecoveryEntryPoints({date,editableDate=false}:{date:string;editableDate?:boolean}){
+  const {state}=useStore();
+  const [logDate,setLogDate]=useState(date);
+  const [kind,setKind]=useState<RecoveryEntry["type"]|null>(null);
+  const records=latestRecovery(state,editableDate?logDate:date);
   return <section className="recovery-entry-points" aria-label="恢復紀錄入口">
-    {editableDate && <Field label="補記日期"><input type="date" value={logDate} onChange={e => setLogDate(e.target.value || date)} /></Field>}
-    <div className="recovery-entry-grid">{(["sleep", "fatigue", "soreness", "stress"] as const).map(type => {
-      const entries = records.filter(r => r.type === type);
-      const value = entries.length ? (type === "soreness" ? [...entries].sort((a,b)=>b.value-a.value)[0] : entries.at(-1)) : undefined;
-      return <button key={type} onClick={()=>setKind(type)}><span>{labels[type]}</span><strong>{value ? `${value.value}${type === "sleep" && value.unit !== "rating" ? " 分鐘（舊紀錄）" : " / 5"}` : "尚未紀錄"}</strong><small>{value ? "更新紀錄 +" : "點此填寫 +"}</small></button>;
-    })}</div>
-    <button className="button secondary" onClick={()=>setKind("pain")}>記錄疼痛</button>
-    {kind && <RecoveryQuickLog key={`${logDate}-${kind}`} initialKind={kind} date={editableDate ? logDate : date} close={()=>setKind(null)} notify={()=>{}} />}
+    {editableDate&&<Field label="補記日期"><input type="date" value={logDate} onChange={e=>setLogDate(e.target.value||date)}/></Field>}
+    <div className="recovery-entry-grid">
+      {(["sleep","fatigue","soreness","stress"] as const).map(type=>{
+        const entries=records.filter(r=>r.type===type);
+        const value=entries.at(-1);
+        return <button key={type} type="button" onClick={()=>setKind(type)}>
+          <span>{labels[type]}</span><strong>{value?`${value.value}${type==="sleep"&&value.unit!=="rating"?" 分鐘（舊紀錄）":" / 5"}`:"尚未紀錄"}</strong>
+          <small>{value?"新增本次評分 +":"點此填寫 +"}</small>
+        </button>;
+      })}
+    </div>
+    <button className="button secondary" type="button" onClick={()=>setKind("pain")}>記錄疼痛 · 安全評估</button>
+    {kind&&<RecoveryQuickLog key={`${logDate}-${kind}`} initialKind={kind} date={editableDate?logDate:date}
+      close={()=>setKind(null)} notify={()=>{}}/>}
   </section>;
 }

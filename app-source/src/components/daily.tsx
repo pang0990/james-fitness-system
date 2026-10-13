@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
+import { DailyActivity } from "./daily-activity";
 import { latestRecovery } from "@/lib/recovery";
 import { nextDayIndex } from "@/lib/training-queue";
 import { Companion, type CompanionState as PetState } from "./companion";
@@ -404,6 +405,7 @@ export function TodayV2({
           <RecoveryEntryPoints date={date} />
         </div>
       </section>
+      <DailyActivity date={date} notify={notify}/>
       {adjust && (
         <Sheet title="修正飲水" onClose={() => setAdjust(false)}>
           <form
@@ -589,7 +591,7 @@ export function NutritionV2({
   const [food, setFood] = useState<LibraryFood | null>(null);
   const [edit, setEdit] = useState<Meal | null>(null);
   const [slot, setSlot] = useState(state.mealSlots[0]);
-  const [quantity, setQuantity] = useState(100);
+  const [quantity, setQuantity] = useState(0);
   const [slotText, setSlotText] = useState(state.mealSlots.join("\n"));
   const [renameSlot, setRenameSlot] = useState("");
   const day = resolveDay(state, selectedDate);
@@ -605,6 +607,10 @@ export function NutritionV2({
   function log(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const d = new FormData(e.currentTarget);
+    if (food && (!Number.isFinite(quantity) || quantity <= 0)) {
+      notify("請先填寫這次實際吃的份量");
+      return;
+    }
     const factor = food ? quantity / food.base : 1;
     const p = round(food ? food.p * factor : Number(d.get("p"))),
       c = round(food ? food.c * factor : Number(d.get("c"))),
@@ -652,7 +658,7 @@ export function NutritionV2({
           <FoodPicker
             onSelect={(f) => {
               setFood(f);
-              setQuantity(f.base);
+              setQuantity(0);
               setSheet("portion");
             }}
           />
@@ -796,9 +802,13 @@ export function NutritionV2({
             <Plus size={18} />
             新增飲食
           </button>
-          <Link className="text-link" href="/nutrition/meals">
-            編輯餐次
-          </Link>
+          <div className="nutrition-library-entrances">
+            <Link className="card nutrition-library-tile" href="/nutrition/recipes">
+              <strong>我的食譜菜單 · Recipes</strong>
+              <span>瀏覽點心、早餐、正餐食譜，調整份量並加入指定餐次 →</span>
+            </Link>
+            <Link className="text-link" href="/nutrition/meals">管理每日餐次 →</Link>
+          </div>
 
         </>
       )}
@@ -865,40 +875,10 @@ export function NutritionV2({
               <button className="button">儲存名稱</button>
             </form>
           ) : sheet === "slots" ? (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const names = slotText
-                  .split("\n")
-                  .map((n) => n.trim())
-                  .filter(Boolean);
-                if (!names.length || new Set(names).size !== names.length) {
-                  notify("請保留至少一個餐次，名稱不可重複");
-                  return;
-                }
-                if (
-                  save("更新往後每日餐次", (s) => {
-                    s.mealSlots = names;
-                  })
-                ) {
-                  setSlot(names[0]);
-                  setSheet("meal");
-                  notify();
-                }
-              }}
-            >
-              <p className="muted">
-                每行一餐。可改名、刪除或調整順序；之後每日沿用，過去紀錄保留原餐次。
-              </p>
-              <textarea
-                aria-label="每日餐次"
-                value={slotText}
-                onChange={(e) => setSlotText(e.target.value)}
-                required
-                maxLength={300}
-              />
-              <button className="button">保存餐次</button>
-            </form>
+            <div className="stack">
+              <p>每餐可以分別修改名稱、增刪與調整順序，過去的紀錄不變。</p>
+              <Link className="button" href="/nutrition/meals">開啟餐次管理 →</Link>
+            </div>
           ) : sheet === "add" ? (
             <div className="cinematic-quick-add">
               <Field label="加入哪一餐">
@@ -948,7 +928,7 @@ export function NutritionV2({
                 mine={sheet === "myfood"}
                 onSelect={(f) => {
                   setFood(f);
-                  setQuantity(f.base);
+                  setQuantity(0);
                   setSheet("portion");
                 }}
               />
@@ -1026,7 +1006,8 @@ export function NutritionV2({
                       max="10000"
                       step="0.1"
                       required
-                      value={quantity}
+                      value={quantity || ""}
+                      placeholder={`輸入實際食用量（例如 ${food.base}）`}
                       onChange={(e) => setQuantity(Number(e.target.value))}
                     />
                   </Field>
@@ -1044,7 +1025,7 @@ export function NutritionV2({
                           disabled={!food[key]}
                           value={
                             food[key]
-                              ? round((food[key] * quantity) / food.base)
+                              ? quantity > 0 ? round((food[key] * quantity) / food.base) : ""
                               : ""
                           }
                           placeholder="此食物不含此營養素"

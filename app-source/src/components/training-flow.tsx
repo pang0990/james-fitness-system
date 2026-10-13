@@ -213,7 +213,18 @@ export function TrainingFlow({
                 {s.workoutDate ?? s.date} · {s.name} ·{" "}
                 {s.status === "discarded" ? "已放棄" : "已完成"}
               </summary>
-              <Link className="text-link" href={`/training/history/session?id=${encodeURIComponent(s.id)}`}>查看單次訓練詳情 →</Link>
+              <div className="workout-history-actions">
+                <Link className="text-link" href={`/training/history/session?id=${encodeURIComponent(s.id)}`}>查看單次訓練詳情 →</Link>
+                <button type="button" className="button secondary" onClick={e=>{
+                  e.preventDefault();
+                  if(!window.confirm(`確定刪除 ${s.workoutDate??s.date}「${s.name}」的實際訓練紀錄？\n這會移除完成組數和該次進步資料，且無法復原。請先備份重要紀錄。`))return;
+                  if(save("刪除單次歷史訓練",draft=>{
+                    draft.sessions=draft.sessions.filter(item=>item.id!==s.id);
+                    draft.cycleEvents=(draft.cycleEvents??[]).filter(ev=>ev.sessionId!==s.id);
+                    // Do not change a current or future plan's pending-day sequence implicitly.
+                  }))notify("這筆歷史訓練已刪除");
+                }}>刪除這次訓練</button>
+              </div>
               {s.exercises.map((e) => (
                 <div key={e.id}>
                   <h3>{e.name}</h3>
@@ -290,7 +301,6 @@ export function TrainingFlow({
               ["/training/history", "Workout History"],
               ["/training/warmups", "Warm-ups"],
               ["/training/exercises", "動作紀錄"],
-              ["/training/activity", "Cardio"],
             ]}
           />
         )}
