@@ -32,6 +32,7 @@ import {
 import { useStore } from "@/lib/store";
 import {
   activePlan,
+  dateInZone,
   dayNames,
   mealTotals,
   resolveDay,
