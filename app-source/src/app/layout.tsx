@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { StoreProvider } from "@/lib/store";
 import "./globals.css";
 import "./cinematic.css";
+import "./blueprint.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
