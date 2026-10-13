@@ -20,6 +20,7 @@ export function Recipes({
     [servings, setServings] = useState(1);
   useEffect(() => {
     const p = new URLSearchParams(location.search);
+    if (p.get("recipe")) setSelected(p.get("recipe"));
     if (p.get("meal")) setSlot(p.get("meal")!);
     const d = p.get("date");
     if (d && /^\d{4}-\d{2}-\d{2}$/.test(d) && d <= date) setLogDate(d);
