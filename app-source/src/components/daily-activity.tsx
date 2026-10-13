@@ -39,8 +39,9 @@ export function DailyActivity({ date, notify }:{date:string;notify:(s?:string)=>
       if(existing){
         // Preserve the original kcal estimate for audit; after a duration edit
         // it must never be represented as an estimate for the new duration.
-        if(existing.minutes!==duration && existing.calories!==null) {
+        if((existing.minutes!==duration || existing.type!==kind) && existing.calories!==null) {
           existing.calorieEstimateAppliesToMinutes??=existing.minutes;
+          existing.calorieEstimateOriginalType??=existing.type;
           existing.calorieEstimateStale=true;
         }
         existing.type=kind;existing.minutes=duration;existing.source="manual";
