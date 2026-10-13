@@ -660,3 +660,32 @@ body .activity-review-metrics>div{padding:12px}
   body .activity-metric strong,body .activity-trend-stats strong{font-size:24px}
   body .activity-review-metrics strong{font-size:19px}
 }
+
+
+/* Activity v1.1/1.2: compact past-date edit + distinct review disclosure. */
+body .activity-inline-actions{display:flex;justify-content:flex-end;align-items:center}
+body .activity-review-hold{
+  padding:15px 17px;border:1px solid rgba(208,180,124,.35);
+  border-radius:13px;background:rgba(208,180,124,.055);
+  display:grid;gap:9px
+}
+body .activity-review-hold strong{font:600 14px/1.4 var(--ui-font);color:var(--ui-primary)}
+body .activity-review-hold h2{font:600 17px/1.4 var(--ui-font);margin:0}
+body .activity-review-hold p{font-size:12px;line-height:1.7;margin:0;color:var(--ui-secondary)}
+body .activity-review-hold .check{
+  margin-top:5px;padding:10px 0;display:flex;gap:11px;
+  align-items:flex-start;color:var(--ui-primary);font-size:13px
+}
+body .activity-review-hold .check input{margin-top:4px;flex:none;width:18px;height:18px}
+body .weekly-checkin-page{max-width:740px;display:grid;gap:17px}
+body .weekly-checkin-page>.card{gap:14px}
+body .weekly-checkin-page>.card>h2{font-size:18px}
+body .weekly-checkin-page .weekly-data-grid{margin:0;gap:10px}
+body .weekly-checkin-page .weekly-data-grid>a{display:grid;gap:7px}
+body .weekly-checkin-page .weekly-data-grid strong{font:600 19px/1.3 var(--ui-font)}
+body .weekly-checkin-page .form-actions{display:flex;gap:9px;flex-wrap:wrap}
+@media(max-width:420px){
+  body .weekly-checkin-page .weekly-data-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body .weekly-checkin-page .weekly-data-grid strong{font-size:16px}
+  body .weekly-checkin-page .form-actions>.button{flex:1;min-width:145px}
+}
