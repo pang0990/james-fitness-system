@@ -30,10 +30,18 @@ export type Profile = {
   eligible: boolean;
   timezone: string;
   waterTarget: number;
+  bodyFat?: number;
+  resistanceDays?: number;
+  safety?: {
+    pregnantOrBreastfeeding: boolean;
+    eatingDisorderHistory: boolean;
+    chronicConditionOrMedication: boolean;
+    otherMedicalConcern: boolean;
+  };
 };
 export const profileSchema = z.object({
   name: z.string().trim().min(1).max(40),
-  age: z.number().int().min(18).max(100),
+  age: z.number().int().min(1).max(100),
   height: z.number().min(100).max(250),
   weight: z.number().min(30).max(350),
   sex: z.enum(["male", "female"]),
@@ -43,11 +51,21 @@ export const profileSchema = z.object({
   eligible: z.boolean(),
   timezone: z.string().min(1),
   waterTarget: z.number().int().min(0).max(10000),
+  bodyFat: z.number().min(1).max(70).optional(),
+  resistanceDays: z.number().int().min(0).max(7).optional(),
+  safety: z.object({
+    pregnantOrBreastfeeding: z.boolean(),
+    eatingDisorderHistory: z.boolean(),
+    chronicConditionOrMedication: z.boolean(),
+    otherMedicalConcern: z.boolean(),
+  }).optional(),
 });
 export const round = (n: number, places = 1) =>
   Math.round((n + Number.EPSILON) * 10 ** places) / 10 ** places;
 export function cutTargets(profile: Profile): Record<DayType, Macros> {
   profileSchema.parse(profile);
+  if (profile.age < 18 || !profile.eligible || Object.values(profile.safety ?? {}).some(Boolean))
+    throw Error("此使用者不適用自動 CUT 處方");
   const i = profile.frequency;
   const c = round(
     profile.weight *
@@ -430,6 +448,8 @@ export function createInitialPlan(
   now: string,
 ) {
   if (!state.profile) throw Error("請先完成個人資料");
+  if (state.profile.age < 18 || Object.values(state.profile.safety ?? {}).some(Boolean))
+    throw Error("安全篩選狀態不允許自動營養處方");
   if (state.versions.length) throw Error("初始計畫已存在");
   if (state.profile.goal !== "CUT" || !state.profile.eligible)
     throw Error("目前僅能建立符合入口條件的 CUT 計畫");
