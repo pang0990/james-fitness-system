@@ -713,3 +713,26 @@ html[data-reduce-motion="true"] .today-ref-scene .jfs-city-atmosphere{display:no
   .today-ref-quick-grid button{font-size:12px}
   .today-ref-quick-grid button svg{width:17px;height:17px}
 }
+
+/*
+ * Today city art asset contract.
+ * The generated pure background is a 948x1659 portrait image optimized for WebP.
+ * Upload app-source/public/today-wanderer-cyberpunk.webp to activate.
+ * Earlier --jfs-hero remains a fallback until the asset exists.
+ * UI stays HTML (not baked into the image).
+ */
+.today-ref-scene{
+  background-image:
+    linear-gradient(180deg,rgba(1,2,5,.29) 0%,rgba(1,3,7,.11) 28%,rgba(1,3,7,.04) 70%,rgba(3,5,8,.63) 91%,#030508 100%),
+    url("/james-fitness-system/today-wanderer-cyberpunk.webp"),
+    var(--jfs-hero);
+  background-size:100% 100%,contain,cover;
+  background-position:center,center bottom,center;
+  background-repeat:no-repeat;
+}
+@media(min-width:770px){
+  .today-ref-scene{
+    background-size:100% 100%,contain,cover;
+    background-position:center,center bottom,center;
+  }
+}
