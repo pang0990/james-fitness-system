@@ -32,7 +32,7 @@ export const asProfile = (data: OnboardingData, existing?: Profile | null): Prof
   sex: data.sex, frequency: data.frequency,
   experiencedCut: data.experiencedCut,
   goal: data.goal,
-  eligible: data.age >= 18 && !Object.values(data.safety).some(Boolean),
+  eligible: data.age >= 18 && !Object.values(data.safety).some(Boolean) && !(data.goal === "CUT" && data.frequency < 0),
   timezone: existing?.timezone || "Asia/Taipei",
   waterTarget: existing?.waterTarget ?? 0,
   bodyFat: data.bodyFat,
