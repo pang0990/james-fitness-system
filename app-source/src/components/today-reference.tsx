@@ -92,6 +92,8 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
   return (
     <div className="today-reference-page">
       <section className="today-ref-scene" aria-label="雨夜未來都市與行者">
+        <div className="today-ref-portrait-art" aria-hidden="true" />
+        <div className="today-ref-neon-haze" aria-hidden="true" />
         <CityAtmosphere />
         <div className="today-ref-heading">
           <div className="today-ref-intro">
