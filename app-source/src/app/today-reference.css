@@ -713,3 +713,19 @@ html[data-reduce-motion="true"] .today-ref-scene .jfs-city-atmosphere{display:no
   .today-ref-quick-grid button{font-size:12px}
   .today-ref-quick-grid button svg{width:17px;height:17px}
 }
+
+
+/*
+ * Today: approved user-supplied 948x1659 portrait artwork.
+ * Preserve the full warrior and city image; no duplicate old-city layer.
+ * The brand, date and action controls remain separate interactive HTML.
+ */
+.today-ref-scene {
+  background-color: #030508;
+  background-image:
+    linear-gradient(180deg,rgba(1,2,5,.26) 0%,rgba(1,3,7,.06) 30%,rgba(1,3,7,.02) 70%,rgba(3,5,8,.65) 94%,#030508 100%),
+    url("/james-fitness-system/today-wanderer-cyberpunk.webp");
+  background-size: 100% 100%, contain;
+  background-position: center, center bottom;
+  background-repeat: no-repeat;
+}
