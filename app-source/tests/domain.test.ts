@@ -221,3 +221,29 @@ test("confirming a plan attaches an existing unplanned diary to its targets", ()
   assert.equal(resolveDay(s, "2026-10-09").target?.c, 220.5);
   assert.equal(s.days[0].versionId, "v1");
 });
+
+
+test("Significant two-week activity change requires CUT acknowledgement but never changes original prescription", () => {
+  const s=withRec();
+  for(let i=0;i<7;i++){
+    const old=addDays("2026-09-26",i),current=addDays("2026-10-03",i);
+    (s.dailySteps??=[]).push(
+      {id:old,date:old,steps:10000,source:"manual",updatedAt:old},
+      {id:current,date:current,steps:5000,source:"manual",updatedAt:current},
+    );
+  }
+  const original=JSON.stringify(s.versions);
+  assert.throws(()=>decide(s,"r","accepted",20,"2026-10-09","v2","now"),/活動量/);
+  assert.equal(JSON.stringify(s.versions),original);
+  decide(s,"r","accepted",20,"2026-10-09","v2","now",true);
+  assert.equal(s.versions.length,2);
+  assert.equal(s.recommendations[0].activityEvidence?.changePercent,-50);
+  assert.equal(s.recommendations[0].activityAcknowledged,true);
+  assert.equal(s.versions[0].targets.training.c,220.5);
+});
+test("Missing step data never prevents otherwise valid CUT acceptance",()=>{
+  const s=withRec();
+  decide(s,"r","accepted",20,"2026-10-09","v2","now");
+  assert.equal(s.recommendations[0].activityEvidence?.significant,false);
+  assert.equal(s.versions.length,2);
+});
