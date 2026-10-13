@@ -53,3 +53,57 @@
 
 /* Authentication and onboarding screens never show the main four-tab dock. */
 .page-auth .bottom-nav,.page-auth .topbar .account-menu,.page-login .topbar .account-menu,.page-onboarding .topbar .account-menu{display:none!important}
+
+
+/* 2026-10-13 mobile workflow usability refinements */
+.sheet{max-height:min(88dvh,940px);overscroll-behavior:contain}
+.sheet .sheet-body{max-height:calc(88dvh - 2px);overflow:auto;overscroll-behavior:contain;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+.recovery-log-form{display:grid;gap:18px}
+.recovery-form-actions,.meal-slot-actions,.workout-history-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.recovery-form-actions .button{flex:1;min-width:125px}
+.pain-guidance{border-left:3px solid #c5a461;padding:10px 14px;background:#c5a46110;border-radius:8px;line-height:1.5;margin:0 0 16px}
+.pain-guidance strong{color:#e0c783}
+.pain-guidance p{font-size:13px;margin:8px 0 0}
+.pain-rating-options{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:14px 0}
+.pain-rating-options label{position:relative;cursor:pointer}
+.pain-rating-options input{position:absolute;opacity:0;width:100%;height:100%;inset:0}
+.pain-rating-options span{display:grid;place-items:center;border:1px solid #7666478a;border-radius:10px;min-height:46px;color:#f4f2ec}
+.pain-rating-options input:checked+span{background:#c5a461;color:#070708;border-color:#c5a461}
+.pain-rating-options input:focus-visible+span{outline:2px solid #e0c783;outline-offset:3px}
+.pain-flags{border:0;padding:0;display:grid;gap:12px}
+.pain-flags legend{margin:0 0 12px;color:#e0c783;font-weight:600}
+.pain-flags label{line-height:1.5}
+.meal-settings-page{padding-bottom:calc(175px + env(safe-area-inset-bottom))}
+.meal-slot-list{display:grid;gap:12px}
+.meal-slot-item{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.meal-slot-item h2{font-size:21px;margin:4px 0}
+.meal-slot-item small{color:#c5a461;letter-spacing:1.5px}
+.meal-slot-item .button.secondary{font-size:13px;min-height:40px}
+.meal-slot-actions .icon-button{min-width:40px;min-height:40px;border:1px solid #6b5b3e80;border-radius:10px}
+.meal-slot-actions .icon-button:disabled{opacity:.25}
+.nutrition-library-entrances{display:grid;gap:14px;margin:18px 0 50px}
+.nutrition-library-tile{display:flex;flex-direction:column;gap:10px;text-decoration:none;padding:22px;border:1px solid #bea0636e;background:#151511;border-radius:17px}
+.nutrition-library-tile strong{font:22px Georgia,serif;color:#efd09a}
+.nutrition-library-tile span{font-size:13px;line-height:1.5;color:#d3ccbc}
+.page-nutrition .daily-page,.page-training .daily-page{padding-bottom:calc(160px + env(safe-area-inset-bottom))}
+.warmup-editor{display:grid;gap:15px}
+.warmup-editor .warmup-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px}
+.warmup-editor .check{display:flex;align-items:center;gap:10px}
+.warmup-editor .two-actions{display:flex;gap:12px}
+.daily-activity{margin:12px 18px 28px}
+.daily-activity .card-head{gap:16px;align-items:center}
+.daily-activity .card-head .button{font-size:13px;min-height:42px}
+.daily-activity .simple-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #66543766;padding:12px 0}
+.daily-activity .simple-row span{font-size:13px;line-height:1.5}
+.workout-history-actions{margin:12px 0}
+.workout-history-actions .button{font-size:12px}
+@media(max-width:500px){
+ .sheet{width:100vw;max-width:100vw;max-height:min(90dvh,900px);border-radius:22px 22px 0 0;margin:auto 0 0 0}
+ .sheet .sheet-body{max-height:calc(90dvh - 2px);padding:20px 18px calc(28px + env(safe-area-inset-bottom))}
+ .meal-slot-item{display:block}
+ .meal-slot-actions{margin-top:12px}
+ .meal-slot-actions .button.secondary{min-width:80px}
+ .pain-rating-options{grid-template-columns:repeat(6,minmax(0,1fr))}
+ .daily-activity .card-head{align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){.sheet{animation:none}}
