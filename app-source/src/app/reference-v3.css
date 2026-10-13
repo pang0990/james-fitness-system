@@ -1,0 +1,444 @@
+/*
+ * JFS · THE WANDERER / CINEMATIC LUXURY UI V3
+ * Reference: approved four-phone 2077-style concept boards.
+ * Genuine live data, local-first app logic, four dock destinations.
+ * No copyrighted game artwork or simulated body/exercise photos used.
+ */
+:root {
+  --v3-black:#040608;
+  --v3-night:#090d11;
+  --v3-surface:#0e1115;
+  --v3-graphite:#171a20;
+  --v3-line:rgba(212,178,112,.21);
+  --v3-gold:#d5ad68;
+  --v3-gold-light:#ffe1a1;
+  --v3-cream:#f3eee5;
+  --v3-muted:#9e9e9e;
+  --v3-gold-button:linear-gradient(180deg,#ffe5ae 0%,#edc681 38%,#c69a55 81%,#9d773b 100%);
+  --v3-font:-apple-system,BlinkMacSystemFont,Inter,"PingFang TC","Noto Sans TC",sans-serif;
+  --v3-brand:Georgia,"Times New Roman",serif;
+}
+body:has(.page-nutrition),
+body:has(.page-training),
+body:has(.page-progress){
+  background:radial-gradient(ellipse at 50% 8%,#171c25 0%,#060709 45%,#020305 92%);
+}
+body .page-nutrition .main,
+body .page-training .main,
+body .page-progress .main{
+  background:#050609;
+  border-inline:1px solid rgba(219,173,98,.09);
+  box-shadow:0 18px 110px rgba(0,0,0,.68),0 0 80px rgba(0,0,0,.5);
+}
+body .page-nutrition .daily-page,
+body .page-training .daily-page,
+body .page-progress .daily-page {
+  max-width:530px;
+  gap:14px;
+  padding:16px 15px calc(150px + env(safe-area-inset-bottom));
+}
+body .page-nutrition .topbar,
+body .page-training .topbar,
+body .page-progress .topbar{
+  height:67px;margin-bottom:0;
+  border-bottom:1px solid rgba(211,172,101,.12);
+}
+body .page-nutrition .breadcrumb,
+body .page-training .breadcrumb,
+body .page-progress .breadcrumb{letter-spacing:.065em}
+body .page-nutrition .wordmark,
+body .page-training .wordmark,
+body .page-progress .wordmark {
+  font-family:var(--v3-brand);
+  letter-spacing:.12em;color:var(--v3-gold-light);
+  font-size:14px;
+}
+body .page-nutrition .current-section,
+body .page-training .current-section,
+body .page-progress .current-section{
+  font-size:13px;letter-spacing:.04em;color:#f0e9df;
+}
+body .page-nutrition .simple-heading h1,
+body .page-training .simple-heading h1,
+body .page-progress .simple-heading h1{
+  font-size:20px;line-height:1.35;
+  font-weight:500;text-transform:uppercase;letter-spacing:.12em;
+  color:#ece1c9;
+}
+body .page-nutrition .daily-page>.simple-heading,
+body .page-training .daily-page>.simple-heading,
+body .page-progress .daily-page>.simple-heading{padding-block:3px 0}
+body .page-nutrition .date-type{
+  padding:7px 9px;gap:9px;
+  background:linear-gradient(145deg,#101217,#090b0e);
+  border:1px solid rgba(206,171,110,.19);
+  border-radius:11px;
+}
+body .page-nutrition .date-type :is(input,select){
+  min-height:39px;height:40px;border-color:rgba(184,156,107,.16);
+  background:transparent;color:#ebe1ce;font-size:12px;
+}
+body .page-nutrition .nutrition-v3-tabs,
+body .page-progress .progress-v3-segments,
+body .page-training .training-v3-segments{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:2px;min-height:40px;padding:3px;
+  background:#0a0d10;
+  border:1px solid rgba(213,173,104,.17);
+  border-radius:13px;
+}
+body .page-training .training-v3-segments{grid-template-columns:repeat(2,minmax(0,1fr))}
+body .nutrition-v3-tabs>a,
+body .progress-v3-segments>a,
+body .progress-v3-segments>span,
+body .training-v3-segments>a,
+body .training-v3-segments>span{
+  display:flex;justify-content:center;align-items:center;
+  color:#9b9da2;font-size:12px;text-decoration:none;
+  line-height:1.25;border-radius:10px;min-height:33px;
+}
+body :is(.nutrition-v3-tabs,.progress-v3-segments,.training-v3-segments) .active{
+  border:1px solid rgba(255,222,162,.38);
+  background:linear-gradient(180deg,rgba(207,172,112,.24),rgba(165,128,71,.08));
+  color:#f4dbab;
+  box-shadow:inset 0 1px 0 rgba(255,234,196,.11),0 3px 15px rgba(0,0,0,.18);
+}
+/* NUTRITION · picture-perfect ring hierarchy, calculated from live targets */
+body .page-nutrition .nutrition-v3-dashboard{
+  padding:17px 17px 14px;
+  border-radius:16px;
+  border:1px solid var(--v3-line);
+  background:linear-gradient(160deg,#111419 0%,#07090c 76%);
+  box-shadow:inset 0 1px 0 rgba(255,222,163,.10),0 18px 38px #0007;
+}
+body .nutrition-v3-panel{display:grid;gap:17px}
+body .nutrition-v3-section-label{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  color:#d7c4a2;font:500 11px/1.2 var(--v3-font);letter-spacing:.16em;
+}
+body .nutrition-v3-section-label>span{
+  color:#a3a5a9;letter-spacing:0;font-size:11px;
+}
+body .nutrition-v3-energy{
+  display:grid;grid-template-columns:minmax(0,1.22fr) minmax(0,.78fr);
+  min-height:195px;align-items:center;gap:15px;
+}
+body .nutrition-v3-calorie-ring{
+  height:min(52vw,192px);width:min(52vw,192px);
+  max-width:100%;aspect-ratio:1/1;border-radius:50%;
+  display:grid;place-items:center;
+  padding:10px;
+  box-shadow:0 0 0 1px rgba(217,177,115,.13),
+    0 0 25px rgba(52,164,200,.09),inset 0 0 18px rgba(255,224,177,.16);
+}
+body .nutrition-v3-ring-inner{
+  width:100%;aspect-ratio:1;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 35% 28%,#171b21 0%,#090b0d 60%);
+  box-shadow:inset 0 0 25px #0008,0 1px 4px #0009;
+}
+body .nutrition-v3-ring-inner>strong{
+  font:600 clamp(25px,7vw,37px)/1.07 var(--v3-font);
+  color:#f8f5f0;letter-spacing:-.04em;font-variant-numeric:tabular-nums;
+}
+body .nutrition-v3-ring-inner>small{
+  margin-top:6px;color:#b8b6ae;font-size:10px;
+  white-space:nowrap;letter-spacing:.01em;
+}
+body .nutrition-v3-remaining{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+body .nutrition-v3-remaining>span{color:#a7a09b;font-size:10px;letter-spacing:.15em}
+body .nutrition-v3-remaining>strong{font:500 clamp(23px,6vw,32px)/1.1 var(--v3-font);letter-spacing:-.05em;color:var(--v3-cream)}
+body .nutrition-v3-remaining>small{font-size:12px;color:#c9ad79}
+body .nutrition-v3-macros{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;border-top:1px solid rgba(218,182,119,.13);
+  padding-top:16px;
+}
+body .nutrition-v3-macro{display:grid;justify-items:center;gap:4px;min-width:0;text-align:center}
+body .nutrition-v3-mini-ring{
+  border-radius:50%;width:61px;height:61px;display:grid;place-items:center;
+  padding:5px;margin-bottom:3px;
+  box-shadow:inset 0 1px 5px #0004,0 0 15px rgba(137,178,209,.07);
+}
+body .nutrition-v3-mini-ring>span{
+  display:grid;place-items:center;width:100%;height:100%;
+  background:#0d1116;border-radius:50%;
+  font:500 12px var(--v3-font);color:#f5ead3;
+}
+body .nutrition-v3-macro strong{font-size:12px;color:#f2ebe2;font-weight:550}
+body .nutrition-v3-macro small{font-size:11px;color:#aaa9a4}
+body .nutrition-v3-meal-icons{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;align-items:start;
+}
+body .nutrition-v3-meal-icons>button{
+  background:transparent;border:0;min-width:0;min-height:78px;
+  display:grid;place-items:center;align-content:start;gap:7px;color:#e0d9c8;
+}
+body .nutrition-v3-meal-icons>button>span{
+  display:grid;place-items:center;width:52px;height:52px;
+  border-radius:14px;border:1px solid rgba(205,171,116,.27);
+  background:radial-gradient(circle at 38% 18%,#23282c 0%,#0b0c0e 80%);
+  color:#e6c58a;font:28px var(--v3-brand);
+  box-shadow:inset 0 1px 0 rgba(244,209,143,.15);
+}
+body .nutrition-v3-meal-icons strong{font-size:11px;white-space:nowrap;font-weight:500;color:#c8c3ba;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+body .page-nutrition .meal-list{gap:12px}
+body .page-nutrition .meal-section{
+  padding:14px 14px 8px;border-radius:14px;
+  background:linear-gradient(155deg,#121418,#090b0e);
+  border:1px solid rgba(210,178,116,.16);
+  box-shadow:inset 0 1px 0 rgba(255,226,168,.035);
+}
+body .page-nutrition .meal-head{min-height:40px;margin-bottom:0}
+body .page-nutrition .meal-name-edit{
+  font-size:14px;font-weight:570;color:#edd0a1;
+}
+body .page-nutrition .meal-head .icon-button{
+  border:1px solid rgba(235,196,126,.28);
+  background:radial-gradient(circle at 40% 20%,#2a261d,#101113);
+  color:#e6c887;
+}
+body .page-nutrition .meal-entry{
+  display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;
+  padding:11px 0;border-top:1px solid rgba(255,235,185,.085);
+}
+body .nutrition-v3-food-thumb{
+  display:grid;place-items:center;align-self:center;
+  width:48px;height:46px;border-radius:9px;
+  color:#bd9a5b;border:1px solid rgba(225,188,119,.19);
+  background:radial-gradient(circle at 39% 28%,#343021,#191a1a 49%,#080a0c);
+}
+body .page-nutrition .meal-entry h3{font-size:12px;color:#f2ecdf;font-weight:570;line-height:1.3}
+body .page-nutrition .meal-entry p,body .page-nutrition .meal-entry small{
+  color:#9c9da0;font-size:10px;line-height:1.6;
+}
+body .page-nutrition .meal-entry .text-link{font-size:11px;color:#d9bb80}
+body .page-nutrition .add-meal,
+body .page-nutrition .add-meal.button{
+  margin:4px 0 0;min-height:49px;border-radius:25px;
+  background:var(--v3-gold-button);border:1px solid #ffe4b0;
+  color:#241608;font-weight:650;box-shadow:
+    inset 0 2px 1px rgba(255,255,255,.48),
+    inset 0 -2px 4px rgba(53,32,10,.45),
+    0 0 22px rgba(210,157,71,.18);
+}
+body .page-nutrition .nutrition-library-entrances{margin:0 0 8px}
+/* TRAINING · condensed premium session list in a single continuous panel */
+body .training-v3{gap:15px}
+body .training-v3>.training-today.card{
+  padding:16px 14px 15px;
+  display:grid;gap:14px;
+  background:linear-gradient(165deg,#11141a,#090b0e 80%);
+  border:1px solid var(--v3-line);
+  border-radius:16px;box-shadow:inset 0 1px 0 #ffe2ad14,0 13px 32px #0007;
+}
+body .training-v3>.training-today.card>.eyebrow{
+  color:#d9b977;font-size:10px;letter-spacing:.12em;margin:0;
+}
+body .training-v3-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+body .training-v3-heading h2{
+  margin:0!important;font-size:23px!important;letter-spacing:-.035em!important;
+  line-height:1.15!important;font-weight:560!important;color:#f2e8d7;
+}
+body .training-v3-caption{display:block;margin-top:6px;font-size:11px;color:#acaaa5}
+body .training-v3-edit{
+  display:grid;place-items:center;width:36px;height:36px;flex:none;
+  border:1px solid rgba(215,177,108,.3);border-radius:10px;
+  color:#dbbe85;background:#201e19aa;
+}
+body .training-v3-exercises{display:grid;gap:0;border-top:1px solid #ffffff10}
+body .training-v3-exercise{
+  display:grid;grid-template-columns:51px 14px minmax(0,1fr) 14px;
+  align-items:center;gap:9px;text-decoration:none;
+  min-height:66px;padding:7px 1px;
+  border-bottom:1px solid rgba(222,187,128,.1);
+  color:#aaa6a0;
+}
+body .training-v3-exercise-art{
+  width:50px;height:50px;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 25%,#31363d 0%,#17191c 53%,#080a0c);
+  border:1px solid rgba(214,182,115,.17);border-radius:9px;
+  color:#bca475;
+}
+body .training-v3-number{color:#d8b36f;font-size:11px}
+body .training-v3-exercise-info{min-width:0;display:grid;gap:5px}
+body .training-v3-exercise-info>strong{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  color:#f3eee3;font-size:12px;font-weight:520;
+}
+body .training-v3-exercise-info>small{color:#aaa49c;font-size:11px}
+body .training-v3 .training-today>.button{
+  justify-self:stretch!important;width:100%;border-radius:25px;min-height:48px;
+  background:var(--v3-gold-button);color:#261707;font-weight:650;
+  border:1px solid #ffe3a7;
+  box-shadow:inset 0 2px 1px #fff6,inset 0 -2px 3px #66401880,0 0 20px #d8a15a22;
+}
+body .training-v3 .training-plan-summary{
+  border:1px solid rgba(211,172,104,.18);
+  background:#0d1015;border-radius:13px;
+  padding:12px 14px;
+}
+body .training-v3 .training-home-links>a,
+body .training-v3 .training-home-tools{background:#0b0d10;border-color:#ffffff18}
+/* PROGRESS · gold-lit native-data line chart, no faked body photos */
+body .page-progress .progress-direction>.simple-heading{margin-bottom:0}
+body .page-progress .direction-hero{
+  padding:17px 15px 11px;
+  border:1px solid var(--v3-line);border-radius:16px;
+  background:linear-gradient(160deg,#11151a 0%,#080a0e 80%);
+  box-shadow:0 12px 38px #0008,inset 0 1px 0 #ffffff0d;
+}
+body .page-progress .direction-hero .range-control{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  background:#090b0d;border:1px solid #d8b4752b;
+  border-radius:12px;gap:3px;padding:3px;margin-bottom:16px;
+}
+body .page-progress .direction-hero .range-control>button{
+  border:0;border-radius:9px;font-size:11px;min-height:32px;
+  color:#989ba1;background:transparent;
+}
+body .page-progress .direction-hero .range-control>button[aria-pressed="true"]{
+  border:1px solid #d7ad6373;
+  background:linear-gradient(180deg,#a8804229,#b8913c12);
+  color:#f8dfaa;box-shadow:inset 0 1px 0 #ffe8c022;
+}
+body .page-progress .direction-hero>.eyebrow{
+  font-size:10px;color:#c5a974;
+}
+body .page-progress .direction-hero>h2{
+  font-size:15px!important;font-weight:580;color:#eee7d9;letter-spacing:-.015em;
+}
+body .page-progress .direction-evidence{
+  border:0;background:transparent;padding:8px 0 10px;
+}
+body .page-progress .direction-evidence strong{
+  font-size:clamp(27px,6vw,35px);font-weight:570;color:#ffe0a0;font-variant-numeric:tabular-nums;
+}
+body .page-progress .direction-evidence span{color:#b4afa4;font-size:11px}
+body .page-progress .direction-hero .line-chart{
+  color:#e6bc75;max-width:100%;margin:0;
+  background:radial-gradient(ellipse at 58% 78%,#b0823124,transparent 68%);
+}
+body .page-progress .direction-hero .line-chart svg{
+  display:block;width:100%;height:auto;filter:drop-shadow(0 0 6px #d6a15a3c);
+}
+body .page-progress .direction-hero>p.muted{
+  font-size:11px;margin:6px 0 0;color:#999b9e;line-height:1.5;
+}
+body .progress-v3-photos,.progress-v3-stats{
+  border:1px solid var(--v3-line);background:linear-gradient(155deg,#101317,#07090c);
+  border-radius:15px;padding:15px;
+}
+body .progress-v3-section-header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+body .progress-v3-section-header h2,body .progress-v3-stats h2{
+  margin:0 0 12px;font-size:16px;font-weight:530;letter-spacing:.02em;color:#e9c787;
+}
+body .progress-v3-section-header>span{
+  align-self:flex-start;font-size:9px;letter-spacing:.18em;color:#85888b;
+}
+body .progress-v3-photo-empty{
+  display:grid;place-content:center;text-align:center;gap:7px;min-height:121px;
+  background:linear-gradient(115deg,#17181d,#090b0f 44%,#16191d 100%);
+  border:1px dashed rgba(206,170,110,.25);border-radius:10px;
+}
+body .progress-v3-photo-empty>span{font:28px var(--v3-brand);color:#8a7856}
+body .progress-v3-photo-empty>p{font-size:12px;margin:0;color:#d4c4a6}
+body .progress-v3-photo-empty>small{font-size:10px;max-width:300px;padding:0 10px;color:#8c8e90}
+body .progress-v3-stat-row{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  min-height:40px;border-bottom:1px solid rgba(206,169,104,.13);
+}
+body .progress-v3-stat-row:last-child{border-bottom:0}
+body .progress-v3-stat-row span{font-size:12px;color:#bdb4a6}
+body .progress-v3-stat-row strong{font-size:14px;font-weight:580;color:#e8c486}
+/* TODAY · preserve cinematic figure first viewport and functional action queue */
+body .page-today .cinematic-hero{
+  border-bottom:1px solid rgba(219,176,100,.26);
+}
+body .page-today .cinematic-hero-heading{top:24px;left:21px;right:21px}
+body .page-today .cinematic-kicker{
+  font-weight:500;font-size:10px;letter-spacing:.18em;color:#f4e6c9;
+}
+body .page-today .cinematic-name{
+  margin-top:7px;color:#ffe0a0;
+  font-family:var(--v3-brand);
+  font-size:clamp(24px,6vw,31px);
+  letter-spacing:.06em;text-shadow:0 2px 14px #000d;
+}
+body .page-today .cinematic-day-label{color:#ffe0a0}
+body .page-today .cinematic-tap{
+  border-radius:25px;border:1px solid rgba(237,193,112,.57);
+  background:linear-gradient(90deg,#161716d9,#090a0acb);
+  box-shadow:inset 0 1px 0 #fff3,0 5px 20px #000b;
+}
+body .page-today .cinematic-marquee{
+  border:1px solid rgba(233,194,123,.56);
+  border-radius:15px;
+  background:linear-gradient(110deg,rgba(16,18,23,.92),rgba(4,6,8,.90));
+  backdrop-filter:blur(20px) saturate(1.2);
+  box-shadow:0 15px 45px #000c,inset 0 1px 0 #ffe2a01f;
+}
+body .page-today .daily-page>.card{
+  background:linear-gradient(155deg,#11151a,#080a0c);
+  border:1px solid rgba(223,186,119,.18);
+}
+/* ALL FOUR TABS · luminous, tactile black-glass floating dock */
+body .bottom-nav{
+  height:70px;padding:6px;gap:4px;
+  border-radius:23px;
+  border:1px solid rgba(234,194,126,.37);
+  background:linear-gradient(165deg,rgba(27,30,34,.87),rgba(5,7,11,.94));
+  backdrop-filter:blur(25px) saturate(1.6);
+  -webkit-backdrop-filter:blur(25px) saturate(1.6);
+  box-shadow:0 12px 48px #000c,inset 0 1px 0 rgba(255,223,168,.16),0 0 15px #c79d3c0d;
+}
+body .bottom-nav>a{
+  position:relative;border-radius:16px;gap:5px;
+  color:#a3a3a5;font-size:10px;letter-spacing:.01em;
+}
+body .bottom-nav>a.active{
+  background:radial-gradient(ellipse at 50% 0%,#d0a45c38,#a6813320 49%,#22201836);
+  border:1px solid rgba(231,188,112,.34);
+  color:#ffe3a7;
+  box-shadow:inset 0 1px 0 #ffeac82b,0 0 18px #d6a25418;
+}
+body .bottom-nav>a.active svg{
+  filter:drop-shadow(0 0 7px #f2bc6470);
+}
+/* Inputs, primary CTA and interaction */
+body .page-nutrition .button:not(.secondary),
+body .page-training .button:not(.secondary),
+body .page-progress .button:not(.secondary){
+  border-radius:24px;
+}
+body .page-nutrition .daily-page a:focus-visible,
+body .page-training .daily-page a:focus-visible,
+body .page-progress .daily-page a:focus-visible{
+  outline:2px solid #ffe2a1;outline-offset:3px;
+}
+@media (min-width:770px){
+  body :is(.page-nutrition,.page-training,.page-progress) .main{
+    max-width:570px;margin-left:auto;margin-right:auto;padding-inline:20px;
+  }
+}
+@media (max-width:430px){
+  body .page-nutrition .daily-page,
+  body .page-training .daily-page,
+  body .page-progress .daily-page{padding-inline:13px}
+  body .page-nutrition .nutrition-v3-dashboard{padding:14px}
+  body .nutrition-v3-energy{min-height:159px;gap:10px}
+  body .nutrition-v3-calorie-ring{padding:8px}
+  body .nutrition-v3-ring-inner>strong{font-size:25px}
+  body .nutrition-v3-macros{gap:7px}
+  body .nutrition-v3-mini-ring{width:53px;height:53px}
+  body .training-v3>.training-today.card{padding-inline:12px}
+  body .training-v3-exercise{grid-template-columns:45px 12px minmax(0,1fr) 12px;gap:7px}
+  body .training-v3-exercise-art{width:44px;height:44px}
+  body .progress-v3-photos,body .progress-v3-stats{padding:13px}
+}
+@media (prefers-reduced-motion:reduce){
+  body .nutrition-v3-calorie-ring,
+  body .nutrition-v3-mini-ring,
+  body .training-v3-exercise-art{transition:none!important;animation:none!important}
+}

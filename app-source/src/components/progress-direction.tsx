@@ -53,17 +53,20 @@ export function ProgressDirection({ date }: { date: string }) {
   return (
     <div className="daily-page progress-direction">
       <PageTitle title="Progress" />
-      <WeeklySummary date={date} />
-      <ActivityTrend date={date} />
+      <nav className="progress-v3-segments" aria-label="進度分頁">
+        <span className="active">Overview</span>
+        <Link href="/progress/body">Body</Link>
+        <Link href="/progress/training">Strength</Link>
+      </nav>
       <section className="direction-hero">
         <div className="range-control" aria-label="趨勢圖期間">
-          {["7", "30", "all"].map((r) => (
+          {["7", "30", "90", "365"].map((r) => (
             <button
               key={r}
               aria-pressed={r === range}
               onClick={() => setRange(r)}
             >
-              {r === "all" ? "ALL" : r + "D"}
+              {r === "365" ? "1Y" : r + "D"}
             </button>
           ))}
         </div>
@@ -103,6 +106,28 @@ export function ProgressDirection({ date }: { date: string }) {
             : "圖表顯示所選期間的變化；是否調整，依下方獨立 Review 判斷。"}
         </p>
       </section>
+      <section className="progress-v3-photos">
+        <div className="progress-v3-section-header"><h2>Photos</h2><span>BODY JOURNAL</span></div>
+        <div className="progress-v3-photo-empty">
+          <span aria-hidden="true">◇</span>
+          <p>尚無身體照片紀錄</p>
+          <small>目前版本未提供照片上傳；不會顯示示意人物照片。</small>
+        </div>
+      </section>
+      <section className="progress-v3-stats">
+        <h2>Key Stats</h2>
+        <div className="progress-v3-stat-row"><span>Workout Sessions</span>
+          <strong>{state.sessions.filter(session=>session.status==="completed" && session.date>=start && session.date<=date).length}</strong></div>
+        <div className="progress-v3-stat-row"><span>Avg. Sleep</span>
+          <strong>{recoveries.length>=3 ? `${round(recoveries.reduce((a,r)=>a+r.sleep,0)/recoveries.length)} h` : "—"}</strong></div>
+        <div className="progress-v3-stat-row"><span>Avg. Steps</span>
+          <strong>{state.dailySteps?.filter(row=>row.date>=addDays(date,-6)&&row.date<=date).length
+            ? Math.round(state.dailySteps.filter(row=>row.date>=addDays(date,-6)&&row.date<=date)
+              .reduce((sum,row)=>sum+row.steps,0) / state.dailySteps.filter(row=>row.date>=addDays(date,-6)&&row.date<=date).length).toLocaleString("en-US")
+            : "—"}</strong></div>
+      </section>
+      <WeeklySummary date={date} />
+      <ActivityTrend date={date} />
       <section className="review-glass">
         <p className="eyebrow">PROGRESS REVIEW</p>
         <p>

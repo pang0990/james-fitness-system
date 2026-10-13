@@ -24,6 +24,9 @@ import {
   Ellipsis,
   Plus,
   Utensils,
+  Coffee,
+  Soup,
+  Cookie,
   X,
   Undo2,
   Activity,
@@ -170,12 +173,50 @@ export function Num({
     </Field>
   );
 }
-export function NutritionSummary({ date }: { date: string }) {
+export function NutritionSummary({ date, variant = "compact" }: { date: string; variant?: "compact" | "full" }) {
   const { state } = useStore();
   const d = resolveDay(state, date);
   const meals = visibleMeals(state, date);
   const total = mealTotals(state, date);
   const recorded = meals.length > 0 || d.complete;
+  if(variant==="full") {
+    const calorieTarget=d.target?.kcal??0;
+    const pct=calorieTarget>0?Math.min(100,Math.max(0,(total.kcal/calorieTarget)*100)):0;
+    const remaining=calorieTarget>0?Math.round(calorieTarget-total.kcal):null;
+    return <div className="nutrition-v3-panel" id="nutrition-calories">
+      <div className="nutrition-v3-section-label">CALORIES <span>{dayNames[d.dayType] ?? d.dayType}</span></div>
+      <div className="nutrition-v3-energy">
+        <div className="nutrition-v3-calorie-ring" role="img"
+          aria-label={`已攝取 ${recorded?total.kcal:"尚未記錄"}，目標 ${calorieTarget||"未設定"} kcal`}
+          style={{background:`conic-gradient(#46c4e8 0% ${pct*.62}%, #56c7ac ${pct*.62}% ${pct}%, #caad73 ${pct}% ${Math.min(100,pct+2)}%, #26272a ${Math.min(100,pct+2)}% 100%)`}}>
+          <div className="nutrition-v3-ring-inner">
+            <strong>{recorded?Math.round(total.kcal).toLocaleString("en-US"):"—"}</strong>
+            <small>/ {calorieTarget?calorieTarget.toLocaleString("en-US"):"—"} kcal</small>
+          </div>
+        </div>
+        <div className="nutrition-v3-remaining"><span>REMAINING</span>
+          <strong>{remaining===null?"—":remaining.toLocaleString("en-US")}</strong>
+          <small>kcal</small>
+        </div>
+      </div>
+      <div className="nutrition-v3-macros" aria-label="三大營養素">
+        {(["p","c","f"] as const).map((key,i)=>{
+          const target=d.target?.[key]??0;
+          const percent=target>0?Math.min(100,Math.max(0,total[key]/target*100)):0;
+          const color=["#679fe8","#48cfcb","#e2b969"][i];
+          const label=["Protein","Carbs","Fat"][i];
+          return <div className="nutrition-v3-macro" key={key}>
+            <div className="nutrition-v3-mini-ring" style={{background:`conic-gradient(${color} 0 ${percent}%,#292c31 ${percent}% 100%)`}}>
+              <span>{Math.round(percent)}%</span>
+            </div>
+            <strong>{label}</strong>
+            <small>{recorded?Math.round(total[key]):"—"} / {target?Math.round(target):"—"} g</small>
+          </div>;
+        })}
+      </div>
+      {!d.target&&<Link href="/onboarding" className="text-link">設定營養目標 <ArrowRight size={14}/></Link>}
+    </div>;
+  }
   return (
     <>
       <div className="macro-summary">
@@ -712,11 +753,25 @@ export function NutritionV2({
               ))}
             </select>
           </div>
-          <section className="card">
-            <NutritionSummary date={selectedDate} />
+          <nav className="nutrition-v3-tabs" aria-label="營養頁面區塊">
+            <a href="#nutrition-calories" className="active">Calories</a>
+            <a href="#nutrition-meals">Meals</a>
+            <Link href="/nutrition/recipes">Recipes</Link>
+          </nav>
+          <section className="nutrition-v3-dashboard">
+            <NutritionSummary date={selectedDate} variant="full" />
           </section>
+          <div className="nutrition-v3-meal-icons" aria-label="快速選擇餐次">
+            {state.mealSlots.slice(0,4).map((name,index)=><button type="button" key={name}
+              onClick={()=>{setSlot(name);setSheet("add");}}>
+              <span aria-hidden="true">{index===0?<Coffee size={20} strokeWidth={1.4}/>:
+                index===1?<Utensils size={20} strokeWidth={1.4}/>:
+                index===2?<Soup size={20} strokeWidth={1.4}/>:<Cookie size={20} strokeWidth={1.4}/>}</span>
+              <strong>{name}</strong>
+            </button>)}
+          </div>
 
-          <section className="meal-list">
+          <section className="meal-list" id="nutrition-meals">
             {Array.from(
               new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map((m) => m.slot)]),
             ).map((name) => (
@@ -742,6 +797,7 @@ export function NutritionV2({
                     .filter((m) => m.slot === name)
                     .map((m) => (
                       <div className="meal-entry" key={m.id}>
+                        <span className="nutrition-v3-food-thumb" aria-hidden="true"><Utensils size={20} strokeWidth={1.25}/></span>
                         <div>
                           <h3>{m.name}</h3>
                           <p>
