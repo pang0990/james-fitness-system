@@ -830,11 +830,10 @@ export function NutritionV2({
                   if (day >= today) draft.mealSlotSnapshots![day] = draft.mealSlotSnapshots![day].map(n => n === renameSlot ? next : n);
                 }
               })) {
-                setSlot(next); setRenameSlot(next); setSlotText(state.mealSlots.map(n => n === renameSlot ? next : n).join("\n"));
+                setSlot(next); setRenameSlot(next);
                 close(); notify("餐次名稱已更新，歷史紀錄保留");
               }
             }}>
-              <p className="muted">此名稱套用今天及未來；過去日期保留當時的餐次名稱。</p>
               <Field label="餐次名稱">
                 <input name="name" defaultValue={renameSlot} maxLength={30} required autoFocus />
               </Field>
