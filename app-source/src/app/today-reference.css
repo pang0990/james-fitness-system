@@ -342,7 +342,7 @@
   .today-ref-macros{gap:7px}
   .today-ref-macros>div{grid-template-columns:15px 1fr auto}
   .today-ref-macros small{grid-column:3;grid-row:1}
-  .today-ref-macros i{width:100%!important}
+  .today-ref-macro-track i{max-width:100%}
 }
 @media(max-width:390px){
   .today-ref-action-panel{padding:11px 7px 9px}
@@ -375,3 +375,341 @@
   .today-ref-scene .jfs-city-atmosphere{display:none}
 }
 html[data-reduce-motion="true"] .today-ref-scene .jfs-city-atmosphere{display:none}
+
+
+/* Today refinement · spacious mobile editorial layout (2026-10-13).
+   Keep the hero photo, notices and all interactive app state as separate layers.
+   The supplied left-hand reference has generous vertical rhythm: never squeeze
+   three metric cards or five quick actions into a phone-width row. */
+.page-today .main{max-width:568px}
+.page-today .topbar{
+  min-height:76px;
+  align-items:center;
+  padding:13px 22px;
+  background:linear-gradient(180deg,rgba(2,3,7,.79),rgba(2,4,8,.21));
+}
+.page-today .breadcrumb .wordmark{
+  font-size:clamp(16px,3.6vw,20px)!important;
+  letter-spacing:.15em;
+  line-height:1.05;
+  white-space:nowrap;
+}
+.page-today .today-header-subtitle{
+  font-size:9px;letter-spacing:.3em;
+  line-height:1.3;
+}
+.page-today .today-header-actions{gap:9px;flex-shrink:0}
+.page-today .today-header-bell,
+.page-today .account-menu>summary{width:42px;height:42px}
+.today-reference-page{
+  padding:0 23px 185px;
+  gap:24px;
+}
+.today-ref-scene{
+  margin-inline:-23px;
+  margin-bottom:-67px;
+  height:clamp(710px,92svh,925px);
+  min-height:0;
+  background-size:cover,auto 88%;
+  background-position:center,52% bottom;
+  background-color:#060b13;
+}
+.today-ref-scene::before{
+  background:
+    radial-gradient(ellipse 52% 37% at 83% 35%,rgba(25,82,149,.12),transparent 86%),
+    radial-gradient(ellipse 42% 34% at 70% 58%,rgba(174,30,120,.11),transparent 81%),
+    linear-gradient(90deg,rgba(1,2,7,.27),transparent 41%,transparent 78%,rgba(1,2,7,.16));
+}
+.today-ref-scene::after{
+  background:linear-gradient(180deg,rgba(1,2,5,.31),transparent 20%,transparent 73%,rgba(2,4,8,.28) 83%,#030508 100%);
+}
+.today-ref-heading{
+  top:115px;
+  left:30px;
+  right:30px;
+  gap:24px;
+}
+.today-ref-intro{max-width:58%}
+.today-ref-eyebrow{
+  font-size:clamp(10px,2.2vw,12px);
+  letter-spacing:.27em;
+}
+.today-ref-intro h1{
+  font-size:clamp(34px,7.4vw,46px);
+  letter-spacing:.055em;
+  margin-top:12px;
+}
+.today-ref-rule{width:34px;margin-top:21px;margin-bottom:17px}
+.today-ref-intro p{font-size:12px;line-height:1.75}
+.today-ref-motto{margin-top:29px;font-size:10px;line-height:1.7}
+.today-ref-cycle{gap:25px;min-width:80px}
+.today-ref-cycle time strong{font-size:14px}
+.today-ref-cycle time small{font-size:10px}
+.today-ref-cycle-count{gap:9px}
+.today-ref-cycle-count span{font-size:10px;letter-spacing:.19em}
+.today-ref-cycle-count strong{font-size:38px;min-width:65px}
+.today-ref-interaction{
+  bottom:clamp(108px,14%,160px);
+  gap:14px;
+}
+.today-ref-interact{
+  min-height:48px;min-width:227px;
+  padding:10px 22px;
+  font-size:11px;
+  letter-spacing:.16em;
+}
+.today-ref-interaction>span{font-size:10px;letter-spacing:.23em}
+.today-ref-action-panel{
+  border-radius:20px;
+  padding:20px 17px 17px;
+  gap:13px;
+  box-shadow:0 16px 44px #000d,inset 0 1px #ffe3b826;
+}
+.today-ref-section-heading{min-height:28px;gap:12px}
+.today-ref-section-heading h2{font-size:12px;letter-spacing:.19em}
+.today-ref-action-list{gap:9px}
+.today-ref-action-row{
+  min-height:77px;
+  padding:14px 17px;
+  gap:13px;
+  border-radius:12px;
+}
+.today-ref-action-row>svg{width:22px;height:22px}
+.today-ref-action-copy{gap:6px}
+.today-ref-action-copy>strong{font-size:14px;line-height:1.4;white-space:normal}
+.today-ref-action-copy>span{
+  font-size:12px;line-height:1.55;
+  white-space:normal;
+}
+.today-ref-action-pill{
+  flex:0 0 auto;
+  min-height:43px;
+  padding:8px 12px;
+  font-size:11px;
+  white-space:nowrap;
+}
+.today-ref-alert .notice-carousel{min-height:42px}
+.today-ref-alert .notice-carousel .grow .text-link:first-child,
+.today-ref-alert .notice-carousel>a{font-size:13px;line-height:1.6}
+.today-ref-alert .notice-carousel .grow .text-link:nth-child(2){font-size:11px}
+.today-ref-notice:empty::after{font-size:13px}
+.today-ref-metrics{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:17px;
+}
+.today-ref-card{
+  min-height:178px;
+  padding:22px 22px 19px;
+  border-radius:20px;
+  gap:16px;
+}
+.today-ref-card-label{
+  font-size:16px;
+  gap:11px;
+  font-weight:450;
+}
+.today-ref-card-label svg{width:20px;height:20px}
+.today-ref-card-label svg:last-child,
+.today-ref-card-label button{margin-left:auto}
+.today-ref-card-label button svg{width:19px;height:19px}
+.today-ref-training-name{font-size:30px;line-height:1.2}
+.today-ref-training p{font-size:13px;margin:-8px 0 0}
+.today-ref-small-action{
+  margin-top:auto;
+  min-height:45px;
+  padding:10px 15px;
+  font-size:14px;
+  border-radius:11px;
+}
+.today-ref-food{min-height:255px}
+.today-ref-food-body{gap:25px;flex:1;justify-content:flex-start;align-items:center}
+.today-ref-energy-ring{width:112px;height:112px;padding:9px}
+.today-ref-energy-ring strong{font-size:23px;line-height:1.1}
+.today-ref-energy-ring small{font-size:10px}
+.today-ref-macros{
+  gap:13px;
+  flex:1;
+}
+.today-ref-macros>div{
+  display:grid;
+  grid-template-columns:17px minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  min-height:24px;
+}
+.today-ref-macros span{font-size:12px}
+.today-ref-macros small{
+  grid-column:3;
+  grid-row:1;
+  font-size:11px;
+  color:#cdc8be;
+  white-space:nowrap;
+}
+.today-ref-macro-track{
+  grid-column:2;
+  grid-row:1;
+  display:block;
+  width:100%;
+  height:7px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#30383e;
+}
+.today-ref-macro-track i{
+  display:block!important;
+  min-width:0!important;
+  height:100%;
+  border-radius:999px;
+}
+.today-ref-inline-add{
+  min-height:42px;
+  margin-top:0;
+  font-size:13px;
+  border-radius:11px;
+}
+.today-ref-water{min-height:187px}
+.today-ref-water-number{font-size:30px;line-height:1.2}
+.today-ref-water-number small{
+  display:inline;
+  margin-left:6px;
+  font-size:14px;
+}
+.today-ref-water-meter{height:7px}
+.today-ref-water-actions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.today-ref-water-actions button{
+  min-height:44px;
+  padding:8px 13px;
+  border-radius:10px;
+  font-size:13px;
+}
+.today-ref-quick-panel{
+  padding:22px;
+  border-radius:20px;
+}
+.today-ref-quick-panel h2{font-size:15px;letter-spacing:.11em}
+.today-ref-section-heading>a{font-size:13px}
+.today-ref-quick-grid{
+  margin-top:19px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+}
+.today-ref-quick-grid button{
+  min-height:59px;
+  justify-content:flex-start;
+  padding:11px 16px;
+  gap:11px;
+  font-size:14px;
+  border-radius:12px;
+}
+.today-ref-quick-grid button svg{width:19px;height:19px}
+.today-ref-quick-grid button svg:last-child{margin-left:auto;width:17px;height:17px}
+.today-ref-quick-grid button:last-child{grid-column:1 / -1}
+.today-reference-page>.daily-activity{
+  width:100%;
+  margin-top:0;
+  padding:22px;
+  border-radius:20px;
+  box-sizing:border-box;
+}
+.page-today .bottom-nav{max-width:500px}
+@media(min-width:540px){
+  .today-ref-metrics{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+  }
+  .today-ref-food{
+    grid-column:1/-1;
+    grid-row:1;
+    min-height:258px;
+  }
+  .today-ref-training,.today-ref-water{
+    min-height:204px;
+  }
+  .today-ref-training-name{font-size:27px}
+  .today-ref-energy-ring{width:127px;height:127px}
+  .today-ref-energy-ring strong{font-size:24px}
+  .today-ref-macros{gap:15px}
+  .today-ref-macros>div{grid-template-columns:22px minmax(0,1fr) 76px}
+  .today-ref-macros .today-ref-macro-track{width:100%}
+  .today-ref-quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .today-ref-quick-grid button:last-child{grid-column:auto}
+  .today-ref-water-actions{gap:7px}
+  .today-ref-water-actions button{font-size:12px;padding:8px 5px}
+}
+@media(min-width:770px){
+  .page-today .main{max-width:568px}
+  .today-reference-page{padding-inline:24px}
+  .today-ref-scene{
+    margin-inline:-24px;
+    height:850px;
+    min-height:0;
+    background-size:cover,auto 90%;
+    background-position:center,48% bottom;
+  }
+  .today-ref-card{padding:22px}
+  .today-ref-food-body{gap:27px}
+}
+@media(max-width:539px){
+  .page-today .main{max-width:100vw}
+  .today-ref-macros .today-ref-macro-track i{max-width:100%}
+}
+@media(max-width:430px){
+  .page-today .topbar{padding:13px 17px}
+  .page-today .breadcrumb .wordmark{font-size:15px!important;letter-spacing:.12em}
+  .page-today .today-header-subtitle{font-size:8px}
+  .page-today .today-header-bell,
+  .page-today .account-menu>summary{width:36px;height:36px}
+  .today-reference-page{padding:0 15px 175px;gap:19px}
+  .today-ref-scene{
+    margin-inline:-15px;
+    height:clamp(660px,91svh,860px);
+    min-height:0;
+    margin-bottom:-62px;
+    background-size:cover,auto 93%;
+    background-position:center,50% bottom;
+  }
+  .today-ref-heading{top:112px;left:19px;right:19px;gap:8px}
+  .today-ref-intro{max-width:63%}
+  .today-ref-intro h1{font-size:clamp(31px,9vw,39px)}
+  .today-ref-intro p{font-size:11px}
+  .today-ref-motto{font-size:9px}
+  .today-ref-cycle{min-width:65px;gap:20px}
+  .today-ref-cycle time strong{font-size:12px}
+  .today-ref-cycle-count span{font-size:9px}
+  .today-ref-cycle-count strong{font-size:29px;min-width:52px}
+  .today-ref-interaction{bottom:105px}
+  .today-ref-interact{min-width:200px;min-height:44px}
+  .today-ref-action-panel{padding:16px 11px 12px;border-radius:17px;gap:9px}
+  .today-ref-action-row{padding:12px 10px;min-height:67px;gap:8px}
+  .today-ref-action-row>svg{width:18px;height:18px}
+  .today-ref-action-copy>strong{font-size:12px}
+  .today-ref-action-copy>span{font-size:11px}
+  .today-ref-action-pill{min-height:35px;font-size:10px;padding:8px 9px}
+  .today-ref-action-count{display:none}
+  .today-ref-card{padding:20px 19px}
+  .today-ref-food-body{gap:18px}
+  .today-ref-energy-ring{width:100px;height:100px}
+  .today-ref-macros>div{grid-template-columns:13px minmax(0,1fr) 66px;gap:5px}
+  .today-ref-macros small{font-size:10px}
+  .today-ref-water-actions button{font-size:13px}
+  .today-ref-quick-panel{padding:17px}
+  .today-ref-quick-grid{gap:8px}
+  .today-ref-quick-grid button{padding:9px 11px;gap:6px;font-size:13px}
+  .today-reference-page>.daily-activity{padding:18px}
+}
+@media(max-width:350px){
+  .today-ref-energy-ring{width:84px;height:84px}
+  .today-ref-energy-ring strong{font-size:18px}
+  .today-ref-food-body{gap:12px}
+  .today-ref-macros>div{grid-template-columns:11px minmax(0,1fr) 56px}
+  .today-ref-macros small{font-size:9px}
+  .today-ref-card-label{font-size:15px}
+  .today-ref-quick-grid button{font-size:12px}
+  .today-ref-quick-grid button svg{width:17px;height:17px}
+}
