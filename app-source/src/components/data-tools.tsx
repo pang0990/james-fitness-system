@@ -19,14 +19,15 @@ export function DataTools({ notify }: { notify: (s?: string) => void }) {
       kind === "activity"
         ? [
             ["record_type","date","steps","activity_type","duration_minutes",
-              "estimated_kcal_original","estimate_for_minutes","estimate_status",
+              "estimated_kcal_original","estimate_for_minutes","estimate_original_type","estimate_status",
               "source","updated_at"],
             ...(state.dailySteps??[]).map(row=>[
-              "steps",row.date,row.steps,"","","","","",row.source,row.updatedAt,
+              "steps",row.date,row.steps,"","","","","","",row.source,row.updatedAt,
             ]),
             ...state.cardio.map(row=>[
               "cardio",row.date,"",row.type,row.minutes,row.calories??"",
               row.calorieEstimateAppliesToMinutes??(row.calories!=null?row.minutes:""),
+              row.calorieEstimateOriginalType??(row.calories!=null?row.type:""),
               row.calorieEstimateStale?"historical_stale":row.calories!=null?"historical_only":"",
               row.source??"manual",row.createdAt,
             ]),
