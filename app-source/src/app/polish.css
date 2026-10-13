@@ -447,3 +447,112 @@ body .workout-success>h1{font:600 25px/1.3 var(--ui-font)}
  body .calendar-section .month-grid>button small{font-size:8px}
  body .direction-hero,body .review-glass{padding:17px}
 }
+
+/* Simplification 02 — prioritize actions and remove repeated affordances. */
+body .onboarding-safety{display:grid;gap:18px}
+body .onboarding-safety>h2{font-size:18px;margin:0}
+body .onboarding-safety>p{font-size:13px;color:var(--ui-secondary);line-height:1.8;max-width:68ch}
+body .onboarding-safety-options{display:grid;gap:10px;margin-top:4px}
+body .onboarding-safety-options>label{
+  display:flex;align-items:center;gap:13px;min-height:56px;
+  background:var(--ui-surface-raised);border:1px solid var(--ui-border);
+  padding:13px 15px;border-radius:12px;cursor:pointer;
+  font-size:14px;color:var(--ui-primary)
+}
+body .onboarding-safety-options>label.selected{
+  border-color:rgba(208,180,124,.7);
+  background:rgba(208,180,124,.08)
+}
+body .onboarding-safety-options input{flex:none;width:18px;height:18px}
+body .onboarding-activity{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}
+body .onboarding-activity .check{grid-column:1/-1;align-items:center}
+body .onboarding-wizard .onboarding-goal span{font-size:13px;color:var(--ui-secondary)}
+body .onboarding-wizard .onboarding-goal{min-height:100px}
+/* One-row meal header: tap title to rename, tap + to log */
+body .page-nutrition .meal-list{display:grid;gap:12px}
+body .page-nutrition .meal-section{
+  border:1px solid var(--ui-border);border-radius:16px;
+  padding:15px 17px 12px;margin:0;
+  background:var(--ui-surface)
+}
+body .page-nutrition .meal-head{
+  min-height:39px;margin:0 0 8px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px
+}
+body .page-nutrition .meal-head h2{flex:1;min-width:0;margin:0}
+body .page-nutrition .meal-name-edit,body .meal-name-edit{
+  display:inline-flex;align-items:center;min-height:38px;text-align:left;
+  border:0;border-radius:7px;background:none;box-shadow:none;padding:4px 0;
+  font:600 16px/1.35 var(--ui-font);color:var(--ui-primary);letter-spacing:-.015em
+}
+body .meal-name-edit:hover,body .meal-name-edit:focus-visible{color:var(--ui-accent)}
+body .page-nutrition .cinematic-meal-actions{display:flex;align-items:center;gap:7px}
+body .page-nutrition .meal-head .icon-button{
+  width:38px;min-width:38px;height:38px;min-height:38px;
+  border:1px solid var(--ui-border);border-radius:10px;
+  background:var(--ui-surface-raised);color:var(--ui-secondary)
+}
+body .page-nutrition .meal-entry{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;
+  align-items:center;border-top:1px solid var(--ui-border);
+  padding:13px 0
+}
+body .page-nutrition .meal-entry>div{min-width:0}
+body .page-nutrition .meal-entry h3{font-size:14px;margin-bottom:4px}
+body .page-nutrition .meal-entry :is(p,small){font-size:12px;line-height:1.5;margin:0}
+body .page-nutrition .meal-entry .text-link{min-width:45px;min-height:38px;justify-content:flex-end}
+body .meal-empty{min-height:52px;padding:10px 0 3px}
+body .page-nutrition .meal-empty .muted{font-size:12px;color:var(--ui-tertiary)}
+body .page-nutrition .add-meal{min-height:46px;max-width:100%;width:100%}
+body .meal-slot-item{min-height:76px;gap:16px}
+body .meal-slot-info{display:grid;gap:2px;min-width:0}
+body .meal-slot-info .meal-name-edit{font-size:17px;min-height:32px}
+body .meal-slot-actions{display:flex;align-items:center;gap:7px}
+body .meal-slot-actions .icon-button{min-width:36px;min-height:36px;border:1px solid var(--ui-border);border-radius:10px;color:var(--ui-secondary);background:transparent}
+body .meal-slot-actions .icon-button:last-child{color:var(--ui-danger)}
+/* Calm Training home: one clear start button, quiet supporting links. */
+body .training-home{display:grid;gap:14px}
+body .training-home .training-today{display:grid;gap:14px;padding:22px}
+body .training-home .training-today>h2{margin:0;font:600 21px/1.35 var(--ui-font)}
+body .training-home .training-today>.button{
+  justify-self:start;min-width:150px;margin:0
+}
+body .training-plan-summary{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:16px 18px;border:1px solid var(--ui-border);
+  border-radius:14px;background:var(--ui-surface);text-decoration:none
+}
+body .training-plan-summary>span{display:grid;gap:5px}
+body .training-plan-summary small{color:var(--ui-secondary);font-size:11px}
+body .training-plan-summary strong{font:600 16px/1.4 var(--ui-font)}
+body .training-plan-summary>svg{color:var(--ui-tertiary)}
+body .training-home-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+body .training-home-links>a{
+  display:flex;justify-content:space-between;align-items:center;gap:9px;
+  padding:16px;border-radius:12px;
+  background:var(--ui-surface);border:1px solid var(--ui-border);
+  color:var(--ui-primary);font-size:13px;font-weight:500
+}
+body .training-home-links>a svg{color:var(--ui-tertiary);width:17px}
+body .training-other-actions,body .training-home-tools{border:0;padding:0;margin:0}
+body .training-other-actions>summary,
+body .training-home-tools>summary{
+  cursor:pointer;font:500 12px/1.6 var(--ui-font);
+  color:var(--ui-secondary);padding:10px 0;list-style:none
+}
+body .training-other-actions>summary:after,
+body .training-home-tools>summary:after{content:" +";color:var(--ui-accent)}
+body .training-other-actions[open]>.stack{display:flex;align-items:flex-start;gap:8px;margin-top:6px}
+body .training-home-tools[open]>.training-home-links{margin-top:8px}
+@media(max-width:520px){
+  body .page-nutrition .meal-section{padding:13px 14px 10px}
+  body .training-home .training-today{padding:19px}
+  body .training-home-links{gap:9px}
+  body .training-home-links>a{padding:14px 12px}
+  body .meal-slot-item{display:flex;align-items:center}
+}
+@media(max-width:350px){
+  body .meal-slot-item{flex-direction:column;align-items:flex-start}
+  body .meal-slot-actions{justify-content:flex-start}
+  body .training-home-links{grid-template-columns:1fr}
+}
