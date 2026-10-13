@@ -2348,7 +2348,8 @@ function SettingsPage({
                     if (
                       window.confirm(
                         "已匯出備份嗎？確定刪除這個瀏覽器內所有 James Fitness 紀錄？",
-                      )
+                      ) &&
+                      window.confirm("第二次確認：所有本機 Profile、Nutrition、Training、Progress 與 History 都會刪除。確定繼續？")
                     ) {
                       reset();
                       router.push("/today");
