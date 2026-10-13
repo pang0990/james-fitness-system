@@ -311,6 +311,7 @@ export type AppState = {
   gainDecisions?: GainDecision[];
   schedule?: ScheduleEntry[];
   warmupPreset?: string[];
+  customWarmups?: { id: string; name: string; minutes: number; archived?: boolean }[];
   recipes?: {
     id: string;
     name: string;
@@ -620,6 +621,9 @@ export function validateState(value: unknown): AppState {
       typeof s.appearance.showCompanion !== "boolean")
   )
     throw Error("外觀設定格式無效");
+  if (s.customWarmups && (!Array.isArray(s.customWarmups) ||
+      s.customWarmups.some(w => !w.id || !w.name || !Number.isFinite(w.minutes) || w.minutes <= 0 || w.minutes > 120)))
+    throw Error("自訂熱身資料無效");
   if (s.profile) profileSchema.parse(s.profile);
   if (s.mealSlotSnapshots &&
       (typeof s.mealSlotSnapshots !== "object" ||
