@@ -50,6 +50,7 @@ import {
 } from "lucide-react";
 import { useStore, STORAGE_KEY } from "@/lib/store";
 import {
+  activityEvidenceForReview,
   activePlan,
   addDays,
   createInitialPlan,
@@ -2009,6 +2010,7 @@ function Recommendations({
     rec: Recommendation;
     delta: number;
   } | null>(null);
+  const [activityAcknowledged,setActivityAcknowledged] = useState(false);
   const plan = activePlan(state, date);
   const baseDate = plan?.effectiveDate ?? date;
   const periods = Math.max(0, Math.floor(daysBetween(baseDate, date) / 10));
@@ -2154,6 +2156,7 @@ function Recommendations({
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
+                  setActivityAcknowledged(false);
                   setPreview({
                     rec,
                     delta: Number(new FormData(e.currentTarget).get("delta")),
@@ -2193,6 +2196,18 @@ function Recommendations({
         ))}
       {preview && (
         <Card title="確認後，隔日生效" icon={History}>
+          {activityEvidenceForReview(state, preview.rec.periodEnd).significant && (
+            <div className="activity-review-hold">
+              <strong>活動量有明顯變化，建議先觀察</strong>
+              <p>前七天平均 {activityEvidenceForReview(state,preview.rec.periodEnd).previousAverage?.toLocaleString("en-US")} 步；
+                最近七天 {activityEvidenceForReview(state,preview.rec.periodEnd).recentAverage?.toLocaleString("en-US")} 步。
+                步數變化不能直接換算為熱量。</p>
+              <label className="check">
+                <input type="checkbox" checked={activityAcknowledged} onChange={e=>setActivityAcknowledged(e.target.checked)}/>
+                我已確認活動變化，仍希望依原始 CUT 規則調整
+              </label>
+            </div>
+          )}
           <p>
             各日型碳水均{preview.rec.direction === "increase" ? "增加" : "減少"}{" "}
             {preview.delta} g，P／F
@@ -2231,6 +2246,7 @@ function Recommendations({
           <div className="form-actions">
             <button
               className="button"
+              disabled={activityEvidenceForReview(state, preview.rec.periodEnd).significant && !activityAcknowledged}
               onClick={() => {
                 if (
                   save("Accept 建議並建立新版本", (s) =>
@@ -2242,6 +2258,7 @@ function Recommendations({
                       date,
                       id(),
                       now(),
+                      activityAcknowledged,
                     ),
                   )
                 ) {
