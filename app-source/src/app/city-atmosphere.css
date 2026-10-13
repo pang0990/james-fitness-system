@@ -1,0 +1,55 @@
+/*
+ * JFS · The Wanderer | City Atmosphere 01
+ * Motion-first visual enhancement. Background key art remains unchanged;
+ * independently animated foreground light, traffic, rain and haze use Canvas 2D.
+ * Pointer-free layer with strict priority beneath Today's UI.
+ */
+.page-today .cinematic-hero {
+  isolation:isolate;
+  background-color:#080b10;
+  background-position:center,center 50%;
+}
+.page-today .jfs-city-atmosphere {
+  position:absolute;
+  display:block;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+  pointer-events:none;
+  user-select:none;
+  touch-action:none;
+  opacity:.88;
+  mix-blend-mode:screen;
+  transform:translateZ(0);
+}
+.page-today .cinematic-hero::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(2,6,12,.3),transparent 27%,transparent 71%,rgba(4,8,14,.3)),
+    linear-gradient(180deg,rgba(3,5,10,.12) 0%,transparent 19%,transparent 59%,rgba(5,7,11,.23) 87%,rgba(5,7,11,.46) 100%);
+  opacity:.65;
+}
+.page-today .cinematic-hero-heading { z-index:4; }
+.page-today .cinematic-character-control { z-index:4; }
+.page-today .cinematic-marquee { z-index:5; }
+@media(max-width:550px) {
+  .page-today .jfs-city-atmosphere {opacity:.82;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .page-today .jfs-city-atmosphere {display:none;}
+}
+html[data-reduce-motion="true"] .page-today .jfs-city-atmosphere {
+  display:none;
+}
+@media(prefers-reduced-transparency:reduce) {
+  .page-today .jfs-city-atmosphere {mix-blend-mode:normal;opacity:.55;}
+}
+html[data-reduce-transparency="true"] .page-today .jfs-city-atmosphere {
+  mix-blend-mode:normal;
+  opacity:.55;
+}

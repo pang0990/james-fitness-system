@@ -132,11 +132,13 @@ export function SettingsHub({
           if (save("更新角色設定", draft => {
             draft.appearance = { theme: draft.appearance?.theme ?? "dark", showCompanion: data.get("character") === "on" };
             (draft.preferences ??= {}).companionAnimation = data.get("animation") === "on";
+            (draft.preferences ??= {}).cityAnimation = data.get("cityAnimation") === "on";
           })) notify("角色偏好已儲存");
         }}>
           <label className="check"><input name="character" type="checkbox" defaultChecked={state.appearance?.showCompanion !== false} />顯示角色</label>
           <label className="check"><input name="animation" type="checkbox" defaultChecked={state.preferences?.companionAnimation !== false} />持續動畫（減少動態設定優先）</label>
-          <p className="muted">Today 目前使用電影感靜態示意背景。角色顯示偏好會保留，待正式 3D 模型接入後完整套用；此選項不代表 3D 已實作。</p>
+          <label className="check"><input name="cityAnimation" type="checkbox" defaultChecked={state.preferences?.cityAnimation !== false} />Today 動態城市（霓虹、空中交通、雨霧）</label>
+          <p className="muted">Today 的原始主視覺仍是靜態概念圖，城市雨霧與交通使用即時動畫疊加；尚未完成可自由移動鏡頭的獨立 3D 城市。系統「減少動態」和裝置省流量設定會優先生效。</p>
           <button className="button">儲存偏好</button>
         </form>
         <Link className="text-link" href="/settings/accessibility">無障礙與減少動態 →</Link>

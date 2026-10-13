@@ -6,6 +6,7 @@ import { latestRecovery } from "@/lib/recovery";
 import { nextDayIndex } from "@/lib/training-queue";
 import { Companion, type CompanionState as PetState } from "./companion";
 import { NoticeCarousel } from "./notices";
+import { CityAtmosphere } from "./city-atmosphere";
 import {
   useEffect,
   useRef,
@@ -281,6 +282,7 @@ export function TodayV2({
   return (
     <div className="daily-page">
       <section className="cinematic-hero" aria-label="今日進度與角色視覺">
+        <CityAtmosphere />
         <div className="cinematic-hero-heading">
           <div>
             <span className="cinematic-kicker">GOOD MORNING</span>
