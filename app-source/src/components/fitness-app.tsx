@@ -545,6 +545,7 @@ function Onboarding({
       resistanceDays: p?.resistanceDays,
       safety: p?.safety,
       eligible: parsed.data.eligible && parsed.data.age >= 18 &&
+        !(parsed.data.goal === "CUT" && parsed.data.frequency < 0) &&
         !Object.values(p?.safety ?? {}).some(Boolean),
     });
     setError("");
@@ -631,7 +632,8 @@ function Onboarding({
                   </select>
                 </Field>
                 <Field label="每週運動時長／頻率">
-                  <select name="frequency" defaultValue={p?.frequency ?? 1}>
+                  <select name="frequency" defaultValue={p?.frequency ?? -1}>
+                    <option value={-1}>無法配對／未確定（Tracking Only）</option>
                     {frequencies.map((f, i) => (
                       <option key={f} value={i}>
                         {f}
