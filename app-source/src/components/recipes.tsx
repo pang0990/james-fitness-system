@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
 import { pinDay, round, syncMealCompletion } from "@/lib/domain";
-import { PageTitle, Field, Sheet, NutritionSummary, uid, stamp } from "./daily";
+import { PageTitle, Field, Sheet, uid, stamp } from "./daily";
 import builtInRecipes from "@/content/recipes-seed.json";
 
 type RecipeItem = {
@@ -102,7 +102,7 @@ export function Recipes({ date, notify, path = "nutrition/recipes" }: {
   ) : null;
   return (
     <div className="daily-page">
-      <PageTitle title={isDetail ? (recipe?.name ?? "食譜詳細內容") : "Recipes"} />
+      {isDetail && <PageTitle title={recipe?.name ?? "食譜詳細內容"} />}
       {isDetail ? (
         <>
           <Link className="text-link" href="/nutrition/recipes">← 回食譜資料庫</Link>
