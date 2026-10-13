@@ -713,3 +713,22 @@ html[data-reduce-motion="true"] .today-ref-scene .jfs-city-atmosphere{display:no
   .today-ref-quick-grid button{font-size:12px}
   .today-ref-quick-grid button svg{width:17px;height:17px}
 }
+
+
+/*
+ * Today approved background — 948 × 1659 portrait scene.
+ * The original image has independent character and environment details.
+ * Add the optimized user-supplied WebP file at:
+ *   app-source/public/today-wanderer-cyberpunk.webp
+ * to activate this background. The old scene stays as a fallback until then.
+ * Brand, date and controls remain functional HTML layers.
+ */
+.today-ref-scene {
+  background-image:
+    linear-gradient(180deg,rgba(1,2,5,.26) 0%,rgba(1,3,7,.06) 30%,rgba(1,3,7,.02) 70%,rgba(3,5,8,.65) 94%,#030508 100%),
+    url("/james-fitness-system/today-wanderer-cyberpunk.webp"),
+    var(--jfs-hero);
+  background-size:100% 100%,contain,cover;
+  background-position:center,center bottom,center;
+  background-repeat:no-repeat;
+}
