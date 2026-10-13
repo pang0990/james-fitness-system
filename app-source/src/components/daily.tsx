@@ -324,7 +324,7 @@ export function TodayV2({
   return (
     <div className="daily-page">
       <section className="cinematic-hero" aria-label="今日進度與角色視覺"
-        style={{backgroundImage: `linear-gradient(180deg,rgba(4,6,10,.31) 0%,rgba(3,5,10,.03) 25%,rgba(3,4,7,.24) 59%,rgba(4,5,8,.75) 100%),url("${process.env.NEXT_PUBLIC_BASE_PATH || ""}/city-night-v4.svg")`}}>
+        style={{backgroundImage: "linear-gradient(180deg,rgba(4,6,10,.33) 0%,rgba(3,5,10,.03) 24%,rgba(3,4,7,.13) 57%,rgba(2,3,6,.78) 100%),var(--jfs-hero)"}}>
         <CityAtmosphere />
         <div className="cinematic-hero-heading">
           <div>
@@ -855,6 +855,11 @@ export function NutritionV2({
                 <span className="cookbook-card-cta">探索食譜 <ArrowRight size={17} strokeWidth={1.6} /></span>
               </span>
             </Link>
+            <nav className="nutrition-cookbook-categories" aria-label="依食譜類型探索">
+              <Link href="/nutrition/recipes?category=Breakfast"><span>早餐</span><b>{builtInRecipes.filter(r=>r.category==="Breakfast").length}</b><ChevronRight size={13}/></Link>
+              <Link href="/nutrition/recipes?category=Main%20Meals"><span>正餐</span><b>{builtInRecipes.filter(r=>r.category==="Main Meals").length}</b><ChevronRight size={13}/></Link>
+              <Link href="/nutrition/recipes?category=Snacks"><span>點心</span><b>{builtInRecipes.filter(r=>r.category==="Snacks").length}</b><ChevronRight size={13}/></Link>
+            </nav>
             <Link className="nutrition-meal-manage-link" href="/nutrition/meals">管理每日餐次 <ChevronRight size={15}/></Link>
           </section>
 
