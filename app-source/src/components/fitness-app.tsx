@@ -604,9 +604,9 @@ function Onboarding({
                   />
                 </Field>
                 <NumberField
-                  label="年齡（成人 18+）"
+                  label="年齡（未滿 18 歲僅提供 Tracking Only）"
                   name="age"
-                  min={18}
+                  min={1}
                   max={100}
                   step="1"
                   value={p?.age}
