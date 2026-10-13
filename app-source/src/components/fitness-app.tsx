@@ -1,5 +1,6 @@
 "use client";
 import { AppearanceSettings } from "./appearance";
+import { OnboardingWizard } from "./onboarding-wizard";
 import { WorkoutHistoryDetail, ExerciseGuideDetail, ExerciseProgressDetail } from "./detail-pages";
 import { SettingsHub } from "./settings-hub";
 import { MealSettings } from "./meal-settings";
@@ -392,8 +393,10 @@ export function FitnessApp({ path }: { path: string }) {
                 ← {section === "settings" ? "Settings" : section}
               </Link>
             )}
-            {section === "onboarding" || section === "profile" ? (
-              <Onboarding editing={section === "profile"} notify={notify} />
+            {section === "onboarding" ? (
+              <OnboardingWizard path={path} notify={notify} />
+            ) : section === "profile" ? (
+              <Onboarding editing notify={notify} />
             ) : section === "login" || section === "signup" ? (
               <Login />
             ) : section === "today" ? (
@@ -464,6 +467,12 @@ export function FitnessApp({ path }: { path: string }) {
               )
             ) : section === "learn" || section === "knowledge" ? (
               <Knowledge path={path.replace(/^knowledge/, "learn")} />
+            ) : section === "auth" ? (
+              <div className="daily-page">
+                <Heading eyebrow="ACCOUNT" title={path==="auth/error"?"登入發生問題":"Google 登入尚未接通"} />
+                <p className="muted">目前這個 GitHub Pages 版本沒有連接 Google OAuth 與雲端 Session。請不要在這裡輸入帳號密碼。</p>
+                <Link className="button secondary" href="/settings/account">查看帳號系統狀態</Link>
+              </div>
             ) : section === "settings" ? (
               ["settings/data", "settings/privacy"].includes(path) ? (
                 <SettingsPage path={path} notify={notify} />
