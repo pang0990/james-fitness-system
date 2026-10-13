@@ -37,7 +37,6 @@ import {
   dayNames,
   mealTotals,
   mealCompletion,
-  setMealSkipped,
   syncMealCompletion,
   resolveDay,
   visibleMeals,
@@ -719,30 +718,18 @@ export function NutritionV2({
           <section className="card">
             <NutritionSummary date={selectedDate} />
           </section>
-          <section className="card">
-            <div className="simple-row"><strong>Logging Completion</strong>
-              <span>{completion.slots.filter(s => s.status !== "missing").length} / {completion.slots.length} 餐 {completion.completed ? "✓" : "· 尚未完整"}</span>
-            </div>
-            <p className="muted">每個餐次需有有效食物／食譜紀錄，或標記「未吃」。不必另外按整日完成。</p>
-          </section>
+
           <section className="meal-list">
             {Array.from(
               new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map((m) => m.slot)]),
             ).map((name) => (
               <div key={name} className="meal-section">
                 <div className="meal-head">
-                  <h2>{name}</h2>
+                  <h2>{state.mealSlots.includes(name) ? (
+                    <button type="button" className="meal-name-edit" title="點擊修改餐次名稱" aria-label={`修改餐次名稱：${name}`}
+                      onClick={() => {setRenameSlot(name);setSheet("rename");}}>{name}</button>
+                  ) : name}</h2>
                   <div className="cinematic-meal-actions">
-                    {state.mealSlots.includes(name) && (
-                      <button
-                        type="button"
-                        className="icon-button"
-                        aria-label={`重新命名${name}`}
-                        onClick={() => { setRenameSlot(name); setSheet("rename"); }}
-                      >
-                        <Ellipsis size={18} />
-                      </button>
-                    )}
                     <button
                       type="button"
                       className="icon-button"
@@ -780,32 +767,18 @@ export function NutritionV2({
                       </div>
                     ))
                 ) : (
-                  <div className="meal-empty">
-                    <p className="muted">{completion.slots.find(s => s.slot === name)?.status === "skipped" ? "已標記未吃 ✓" : "尚未紀錄"}</p>
-                    {(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots).includes(name) && (
-                      <button type="button" className="button secondary"
-                        onClick={() => {
-                          const skipped = completion.slots.find(s => s.slot === name)?.status === "skipped";
-                          if (save(skipped ? "取消餐次未吃標記" : "標記餐次未吃", draft => {
-                            setMealSkipped(draft, selectedDate, name, !skipped);
-                          })) notify(skipped ? "已取消未吃標記" : "已標記此餐未吃");
-                        }}>
-                        {completion.slots.find(s => s.slot === name)?.status === "skipped" ? "取消未吃" : "這餐未吃"}
-                      </button>
-                    )}
-                  </div>
+                  <div className="meal-empty"><span className="muted">尚無紀錄</span></div>
                 )}
               </div>
             ))}
           </section>
           <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
-            <Plus size={18} />
-            新增飲食
+            <Plus size={18} /> 新增飲食
           </button>
           <div className="nutrition-library-entrances">
             <Link className="card nutrition-library-tile" href="/nutrition/recipes">
               <strong>我的食譜菜單 · Recipes</strong>
-              <span>瀏覽點心、早餐、正餐食譜，調整份量並加入指定餐次 →</span>
+              <span>搜尋食譜並加入飲食紀錄 →</span>
             </Link>
             <Link className="text-link" href="/nutrition/meals">管理每日餐次 →</Link>
           </div>
@@ -1012,23 +985,18 @@ export function NutritionV2({
                     />
                   </Field>
                   <div className="form-grid">
-                    {(["p", "c", "f"] as const).map((key, i) => (
+                    {(["p", "c", "f"] as const).filter(key => food[key] > 0).map((key) => (
                       <Field
                         key={key}
-                        label={`想攝取${["蛋白質", "碳水", "脂肪"][i]} g`}
+                        label={`${{p:"蛋白質",c:"碳水",f:"脂肪"}[key]} g`}
                       >
                         <input
                           type="number"
                           min="0"
                           max="1000"
                           step="0.1"
-                          disabled={!food[key]}
-                          value={
-                            food[key]
-                              ? quantity > 0 ? round((food[key] * quantity) / food.base) : ""
-                              : ""
-                          }
-                          placeholder="此食物不含此營養素"
+                          value={quantity > 0 ? round((food[key] * quantity) / food.base) : ""}
+                          placeholder="可反推食物份量"
                           onChange={(e) =>
                             setQuantity(
                               round(
@@ -1041,27 +1009,13 @@ export function NutritionV2({
                       </Field>
                     ))}
                   </div>
-                  <div className="portion-preview">
+                  {quantity > 0 && <div className="portion-preview">
                     P {round((food.p * quantity) / food.base)} · C{" "}
                     {round((food.c * quantity) / food.base)} · F{" "}
                     {round((food.f * quantity) / food.base)}
-                    <br />
-                    {round((food.kcal * quantity) / food.base)} kcal
-                  </div>
-                  <details className="source-details">
-                    <summary>食物詳細資料</summary>
-                    <p>
-                      {food.source === "TFDA"
-                        ? "食藥署 · 每 100 g 可食部分"
-                        : "James 食物 · 依標示份量"}
-                    </p>
-                    <p>{food.sourceDescription}</p>
-                    {food.sourceUrl && (
-                      <a href={food.sourceUrl} target="_blank" rel="noreferrer">
-                        官方資料來源
-                      </a>
-                    )}
-                  </details>
+                    <br />{round((food.kcal * quantity) / food.base)} kcal
+                  </div>}
+
                 </>
               ) : (
                 <>
