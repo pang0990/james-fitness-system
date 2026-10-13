@@ -55,6 +55,7 @@ import { activeCycle, scheduleKind } from "@/lib/training-model";
 import master from "@/content/foods.json";
 import cooked from "@/content/cooked-foods.json";
 import official from "@/content/fda-foods.json";
+import builtInRecipes from "@/content/recipes-seed.json";
 export const uid = () => crypto.randomUUID();
 export const stamp = () => new Date().toISOString();
 export function Sheet({
@@ -828,13 +829,33 @@ export function NutritionV2({
           <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
             <Plus size={18} /> 新增飲食
           </button>
-          <div className="nutrition-library-entrances">
-            <Link className="card nutrition-library-tile" href="/nutrition/recipes">
-              <strong>我的食譜菜單 · Recipes</strong>
-              <span>搜尋食譜並加入飲食紀錄 →</span>
+          <section className="nutrition-cookbook-section" aria-labelledby="nutrition-cookbook-heading">
+            <div className="nutrition-cookbook-section-title">
+              <span>DISCOVER</span>
+              <small>EXPLORE YOUR RECIPES</small>
+            </div>
+            <Link className="nutrition-cookbook-card" href="/nutrition/recipes" aria-label={`開啟我的食譜菜單，共 ${builtInRecipes.length} 道內建食譜`}>
+              <span className="cookbook-card-illumination" aria-hidden="true" />
+              <span className="cookbook-card-art" aria-hidden="true">
+                <span className="cookbook-card-halo" />
+                <span className="cookbook-card-plate"><span className="cookbook-card-food" /></span>
+              </span>
+              <span className="cookbook-card-topline">
+                <span className="cookbook-card-overline">JFS · PERSONAL COOKBOOK</span>
+                <BookOpen size={19} strokeWidth={1.35} aria-hidden="true" />
+              </span>
+              <span className="cookbook-card-content">
+                <strong id="nutrition-cookbook-heading">我的食譜菜單</strong>
+                <span className="cookbook-card-english">MY RECIPES</span>
+                <span className="cookbook-card-description">從收藏靈感到每日餐桌，挑選適合今天的料理。</span>
+              </span>
+              <span className="cookbook-card-bottom">
+                <span className="cookbook-card-count"><b>{builtInRecipes.length}</b> 道內建食譜</span>
+                <span className="cookbook-card-cta">探索食譜 <ArrowRight size={17} strokeWidth={1.6} /></span>
+              </span>
             </Link>
-            <Link className="text-link" href="/nutrition/meals">管理每日餐次 →</Link>
-          </div>
+            <Link className="nutrition-meal-manage-link" href="/nutrition/meals">管理每日餐次 <ChevronRight size={15}/></Link>
+          </section>
 
         </>
       )}
