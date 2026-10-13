@@ -92,6 +92,7 @@ export default async function Page({
     "progress/recommendations": "progress/review",
     signup: "login",
     "nutrition/log": "nutrition",
+    "training/activity": "today",
   };
   const target = aliases[slug.join("/")];
   if (target) return <LegacyRoute target={"/" + target} />;
