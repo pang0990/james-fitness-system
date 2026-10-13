@@ -72,10 +72,6 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
         (data.bodyFat !== undefined && (data.bodyFat<1 || data.bodyFat>70)))) {
       setError("請確認年齡、身高、體重與體脂資料有效。");return;
     }
-    if (step === "activity" && data.goal === "CUT" && data.frequency === -1) {
-      setError("請選擇 Numbers 3.0 四個運動級別之一；無法配對時可進入 Tracking Only。");
-      return;
-    }
     if (step === "activity" && (data.resistanceDays<0 || data.resistanceDays>7)) {
       setError("每週阻力訓練天數應介於 0 到 7 天。");return;
     }
@@ -109,7 +105,6 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
       router.push("/today");
     }
   }
-  const isTrue = (v:number|undefined) => v !== undefined && Number.isFinite(v);
   return (
     <div className="daily-page onboarding-wizard">
       <div className="onboarding-title">
