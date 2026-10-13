@@ -792,6 +792,7 @@ export function NutritionV2({
                     .filter((m) => m.slot === name)
                     .map((m) => (
                       <div className="meal-entry" key={m.id}>
+                        <span className="nutrition-v3-food-thumb" aria-hidden="true"><Utensils size={20} strokeWidth={1.25}/></span>
                         <div>
                           <h3>{m.name}</h3>
                           <p>
