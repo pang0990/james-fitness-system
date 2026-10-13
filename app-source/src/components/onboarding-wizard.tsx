@@ -37,6 +37,7 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
   const [data, setData] = useState<OnboardingData>(() => fromProfile(state.profile));
   const [hydrated, setHydrated] = useState(false);
   const [error,setError] = useState("");
+  const [healthChoice,setHealthChoice] = useState<"clear"|"review"|null>(null);
   useEffect(() => {
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
@@ -48,6 +49,10 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
     } catch {
       localStorage.removeItem(DRAFT_KEY);
     }
+    try {
+      const choice=localStorage.getItem(DRAFT_KEY+"-safety");
+      if(choice==="clear"||choice==="review")setHealthChoice(choice);
+    } catch { /* local storage may be disabled */ }
     setHydrated(true);
     // Restore draft only on the initial mount. Changes after that are kept in component state.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,9 +65,16 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
   const change = <K extends keyof OnboardingData>(key:K, value:OnboardingData[K]) => {
     setData(old => ({...old,[key]:value}));setError("");
   };
-  const changeSafety = (key:keyof OnboardingData["safety"], checked:boolean) => {
-    setData(old => ({...old,safety:{...old.safety,[key]:checked}}));setError("");
-  };
+  function chooseHealth(choice: "clear"|"review") {
+    setHealthChoice(choice);
+    setData(old => ({
+      ...old,
+      // A positive disclosure triggers tracking-only, even without requiring disclosure of diagnoses.
+      safety: choice === "clear" ? blankSafety() : {...old.safety,otherMedicalConcern:true},
+    }));
+    try { localStorage.setItem(DRAFT_KEY+"-safety",choice); } catch { /* no local storage */ }
+    setError("");
+  }
   const target = startingTarget(data);
 
   function next() {
@@ -72,14 +84,22 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
         (data.bodyFat !== undefined && (data.bodyFat<1 || data.bodyFat>70)))) {
       setError("請確認年齡、身高、體重與體脂資料有效。");return;
     }
-    if (step === "activity" && (data.resistanceDays<0 || data.resistanceDays>7)) {
+    if (step === "activity" && data.goal === "GAIN" && (data.resistanceDays<0 || data.resistanceDays>7)) {
       setError("每週阻力訓練天數應介於 0 到 7 天。");return;
+    }
+    if (step === "safety" && !healthChoice) {
+      setError("請確認健康安全聲明，才能繼續。");return;
     }
     if (step === "result") { confirm();return; }
     const nextStep = STEPS[index+1];
     if(nextStep) router.push(stepHref(nextStep));
   }
   function confirm() {
+    if (!healthChoice) {
+      setError("請先完成健康安全確認。");
+      router.push("/onboarding/safety");
+      return;
+    }
     if (data.age < 1 || data.age > 100 || data.height < 100 || data.height > 250 ||
         data.weight < 30 || data.weight > 350) {
       setError("請先完成有效的 Basic Information，才能建立個人紀錄。");
@@ -106,7 +126,7 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
       }
       (draft.goalHistory ??= []).push({id:crypto.randomUUID(),goal:profile.goal,date:today});
     })) {
-      try { localStorage.removeItem(DRAFT_KEY); } catch { /* no storage */ }
+      try { localStorage.removeItem(DRAFT_KEY);localStorage.removeItem(DRAFT_KEY+"-safety"); } catch { /* no storage */ }
       notify(target.status === "tracking" ? "已啟用紀錄模式" : "已建立起始目標");
       router.push("/today");
     }
@@ -116,7 +136,7 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
       <div className="onboarding-title">
         <span className="eyebrow">JAMES FITNESS SYSTEM · INITIAL SETUP</span>
         <h1>{({basic:"Basic Information",goal:"Your Goal",activity:"Activity Profile",safety:"Safety Check",result:"Your Starting Point"} as Record<Step,string>)[step]}</h1>
-        <p className="muted">設定起點，其餘訓練與生活偏好可以稍後在 Profile 補充。</p>
+
       </div>
       <nav className="onboarding-progress" aria-label="設定進度">
         {STEPS.map((s,i)=><span key={s} className={index>=i?"active":""} aria-label={s}/>)}
@@ -137,44 +157,47 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
           <div className="onboarding-goals">
             {(["CUT","GAIN"] as const).map(g=>(
               <button key={g} type="button" aria-pressed={data.goal===g} className={"onboarding-goal "+(data.goal===g?"selected":"")} onClick={()=>change("goal",g)}>
-                <strong>{g}</strong><span>{g==="CUT"?"減脂｜依 Numbers 3.0 係數建立初始目標":"增肌｜符合條件時先提供 42 kcal/kg 暫時目標"}</span>
+                <strong>{g}</strong><span>{g==="CUT"?"減脂":"增肌"}</span>
               </button>
             ))}
           </div>
         )}
         {step === "activity" && (
-          <div className="onboarding-fields">
-            <p className="muted">活動量與訓練頻率用於確認起始條件，不會依未確認的混合數據猜測你的運動級別。</p>
-            <label>Numbers 3.0 運動級別（CUT 計算使用）
-              <select value={data.frequency} onChange={e=>change("frequency",Number(e.target.value))}>
-                <option value={-1}>無法符合／尚未確定（只紀錄）</option>
-                {frequencies.map((label,i)=><option key={label} value={i}>Level {i+1} · {label}</option>)}
-              </select>
-            </label>
-            <label>每週阻力訓練次數（GAIN 起始門檻）
-              <select value={data.resistanceDays} onChange={e=>change("resistanceDays",Number(e.target.value))}>
-                {Array.from({length:8},(_,i)=><option key={i} value={i}>{i} 次／週</option>)}
-              </select>
-            </label>
-            <label className="check"><input type="checkbox" checked={data.experiencedCut} onChange={e=>change("experiencedCut",e.target.checked)}/>有減脂經驗</label>
-            <p className="muted">Level 1：2–3 小時／2 次；Level 2：4–5 小時／3 次；Level 3：6–7 小時／4 次；Level 4：8–9 小時／5 次。</p>
+          <div className="onboarding-fields onboarding-activity">
+            {data.goal === "CUT" ? (
+              <>
+                <label>每週訓練量
+                  <select value={data.frequency} onChange={e=>change("frequency",Number(e.target.value))}>
+                    <option value={-1}>尚未確定（先紀錄）</option>
+                    {frequencies.map((label,i)=><option key={label} value={i}>{label}</option>)}
+                  </select>
+                </label>
+                <label className="check"><input type="checkbox" checked={data.experiencedCut} onChange={e=>change("experiencedCut",e.target.checked)}/>曾有減脂經驗</label>
+              </>
+            ) : (
+              <label>每週阻力訓練次數
+                <select value={data.resistanceDays} onChange={e=>change("resistanceDays",Number(e.target.value))}>
+                  {Array.from({length:8},(_,i)=><option key={i} value={i}>{i} 次／週</option>)}
+                </select>
+              </label>
+            )}
           </div>
         )}
         {step === "safety" && (
-          <div className="onboarding-fields">
-            <p className="muted">以下資料只用於安全篩選，不作廣告或社交推薦。勾選任一情況仍可使用 Tracking Only。</p>
-            {([
-              ["pregnantOrBreastfeeding","懷孕／哺乳"],
-              ["eatingDisorderHistory","有飲食失調史"],
-              ["chronicConditionOrMedication","有慢性疾病或正在使用藥物"],
-              ["otherMedicalConcern","其他需要專業人員評估的健康情況"],
-            ] as const).map(([key,label])=>(
-              <label className="check" key={key}>
-                <input type="checkbox" checked={data.safety[key]} onChange={e=>changeSafety(key,e.target.checked)} />
-                {label}
+          <div className="onboarding-safety">
+            <h2>健康安全聲明</h2>
+            <p>標準營養目標適用於一般健康成年人。若有懷孕或哺乳、飲食失調史、慢性疾病、正在使用藥物，或其他需要專業評估的健康情況，系統不會自動提供標準減脂或增肌處方。未滿 18 歲者也僅能使用紀錄功能。</p>
+            <p>本系統提供生活與訓練紀錄，不取代醫療建議。</p>
+            <div className="onboarding-safety-options" role="radiogroup" aria-label="健康安全確認">
+              <label className={healthChoice==="clear"?"selected":""}>
+                <input type="radio" name="health-clearance" checked={healthChoice==="clear"} onChange={()=>chooseHealth("clear")}/>
+                <span>我確認目前沒有上述健康情況</span>
               </label>
-            ))}
-            <p className="muted">未滿 18 歲目前不產生標準減脂／增肌目標。若有疼痛、昏厥、胸痛或其他警訊，請停止誘發症狀的活動並尋求適當醫療評估。</p>
+              <label className={healthChoice==="review"?"selected":""}>
+                <input type="radio" name="health-clearance" checked={healthChoice==="review"} onChange={()=>chooseHealth("review")}/>
+                <span>我有上述情況，先使用紀錄功能</span>
+              </label>
+            </div>
           </div>
         )}
         {step === "result" && (
@@ -195,8 +218,8 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
                 ))}
               </div>
             ) : <p className="notice">尚不提供自動營養目標；飲食、體重、訓練和恢復紀錄仍可正常使用。</p>}
-            {target.status==="gain-temporary" && <p className="muted">此為暫時起點，不是經個人資料驗證的維持熱量；14 天後收集足夠紀錄，再由使用者 Accept／Keep 決定是否調整。</p>}
-            {data.bodyFat === undefined && <p className="muted">目前沒有體脂資料；GAIN 適用性已使用 BMI 作安全篩選。</p>}
+            {target.status==="gain-temporary" && <p className="muted">暫時目標 · 累積 14 天有效紀錄後再評估</p>}
+
           </div>
         )}
         {!!error && <p className="form-error" role="alert">{error}</p>}
@@ -206,7 +229,7 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
         </div>
       </div>
       )}
-      <p className="muted">本裝置儲存設定草稿。正式 Google 登入及跨裝置雲端同步尚未接通；不會顯示假的「已同步」。</p>
+
     </div>
   );
 }

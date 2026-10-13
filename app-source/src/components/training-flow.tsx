@@ -19,7 +19,6 @@ import {
   activeCycle,
   type MuscleTarget,
   stages,
-  scheduleKind,
   scheduleEntry,
 } from "@/lib/training-model";
 import { Companion } from "./companion";
@@ -39,7 +38,7 @@ import {
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { addDays, type Segment } from "@/lib/domain";
-import { PageTitle, Menu, Sheet, Field, Num, uid, stamp } from "./daily";
+import { PageTitle, Sheet, Field, Num, uid, stamp } from "./daily";
 export function TrainingFlow({
   date,
   path,
@@ -293,17 +292,7 @@ export function TrainingFlow({
           <Link href="/training" className="text-link">
             暫離訓練
           </Link>
-        ) : (
-          <Menu
-            items={[
-              ["/training/plan", "Training Plan"],
-              ["/training/calendar", "Calendar"],
-              ["/training/history", "Workout History"],
-              ["/training/warmups", "Warm-ups"],
-              ["/training/exercises", "動作紀錄"],
-            ]}
-          />
-        )}
+        ) : null}
       </PageTitle>
       {workout ? (
         <>
@@ -673,130 +662,67 @@ export function TrainingFlow({
           )}
         </>
       ) : (
-        <>
-          <section className="card cycle-overview">
-            <span className="eyebrow">TRAINING PLAN</span>
-            <h2>{cycle?.name ?? "尚未設定"}</h2>
-            {cycle ? (
-              <>
-                <div className="cycle-track">
-                  {cycle.days.map((d, i) => (
-                    <div className={i === dayIndex ? "current" : ""} key={i}>
-                      <span>{i + 1}</span>
-                      <small>{d.name}</small>
-                    </div>
-                  ))}
-                </div>
-                <p className="muted">
-                  本輪待完成 {pendingIds(state, cycle).length} /{" "}
-                  {cycle.days.length} 個訓練日
-                </p>
-              </>
-            ) : (
-              <Link className="button" href="/training/plan">
-                建立 Training Plan <ArrowRight size={16} />
-              </Link>
-            )}
-          </section>
-          <section className="card">
-            <span className="eyebrow">TODAY</span>
-            <h2>
-              {current?.name ??
-                (day ? `Day ${dayIndex + 1} · ${day.name}` : "尚未安排訓練")}
-            </h2>
+        <div className="training-home">
+          <section className="training-today card">
+            <span className="eyebrow">TODAY'S WORKOUT</span>
+            <h2>{current?.name ?? (day ? day.name : "尚未建立訓練計畫")}</h2>
             {current ? (
-              <div className="stack">
-                <Link className="button" href="/training/session">
-                  繼續訓練
-                  <ArrowRight size={16} />
-                </Link>
-                <button
-                  className="button secondary"
-                  onClick={() => {
-                    if (
-                      save("移到今天", (s) => {
-                        const x = s.sessions.find((x) => x.id === current.id)!;
-                        x.workoutDate = date;
-                        x.scheduledDate = date;
-                        x.date = date;
-                      })
-                    )
-                      notify("已移到今天，原始時間與組數保留");
-                  }}
-                >
-                  Make this Today’s Workout
-                </button>
-                <button
-                  className="button danger"
-                  onClick={() => {
-                    if (!confirm("放棄這次訓練？該訓練日仍待完成。")) return;
-                    if (
-                      current.exercises.some((e) => e.sets.length) &&
-                      !confirm(
-                        "已有組數，確定放棄？紀錄將保留在歷史但不計入成果。",
-                      )
-                    )
-                      return;
-                    if (
-                      save("放棄 Session", (s) => {
-                        const x = s.sessions.find((x) => x.id === current.id)!;
-                        x.status = "discarded";
-                        x.discardedAt = stamp();
-                      })
-                    )
-                      notify("已放棄，訓練日仍待完成");
-                  }}
-                >
-                  Discard Workout
-                </button>
-              </div>
+              <>
+                <Link className="button" href="/training/session">繼續訓練 <ArrowRight size={16}/></Link>
+                <details className="training-other-actions">
+                  <summary>其他操作</summary>
+                  <div className="stack">
+                    <button className="text-link" onClick={() => {
+                      if (save("將訓練移到今天", s => {
+                        const x=s.sessions.find(x=>x.id===current.id)!;
+                        x.workoutDate=date;x.scheduledDate=date;x.date=date;
+                      }))notify("已移到今天");
+                    }}>移到今天</button>
+                    <button className="text-link" onClick={() => {
+                      if (!confirm("放棄這次訓練？完成的組數會留在歷史，但不計入成果。"))return;
+                      if(save("放棄 Session", s=>{
+                        const x=s.sessions.find(x=>x.id===current.id)!;
+                        x.status="discarded";x.discardedAt=stamp();
+                      }))notify("訓練已放棄");
+                    }}>放棄本次訓練</button>
+                  </div>
+                </details>
+              </>
             ) : day ? (
               <>
-                {scheduleKind(state, date) !== "train" && (
-                  <p className="muted">
-                    今天已安排休息；仍可自行決定開始下一個訓練日。
-                  </p>
-                )}
-                <button className="button" onClick={start}>
-                  開始訓練
-                  <ArrowRight size={16} />
-                </button>
-                <button
-                  className="text-link"
-                  onClick={() => {
-                    save("今天休息", (s) => {
-                      (s.schedule ??= []).push({
-                        id: uid(),
-                        date,
-                        kind: "rest",
-                        createdAt: stamp(),
-                      });
-                    });
-                    notify("今天改休息，待完成順序不變");
-                  }}
-                >
-                  今天不練／改休息
-                </button>
-                <button className="text-link" onClick={() => setSkip(true)}>
-                  本輪不做這一天
-                </button>
+                <button className="button" onClick={start}>開始訓練 <ArrowRight size={16}/></button>
+                <details className="training-other-actions">
+                  <summary>其他操作</summary>
+                  <div className="stack">
+                    <button className="text-link" onClick={()=>{
+                      if(save("今天休息",s=>(s.schedule??=[]).push({
+                        id:uid(),date,kind:"rest",createdAt:stamp(),
+                      })))notify("今日已安排休息");
+                    }}>今天休息</button>
+                    <button className="text-link" onClick={()=>setSkip(true)}>略過本輪訓練日</button>
+                  </div>
+                </details>
               </>
-            ) : null}
+            ) : (
+              <Link className="button" href="/training/plan">建立訓練課表 <ArrowRight size={16}/></Link>
+            )}
           </section>
-          <Link className="simple-row" href="/training/calendar">
-            安排訓練日曆 →
-          </Link>
-          <Link className="simple-row" href="/training/plan">
-            編輯 Training Plan →
-          </Link>
-          <Link className="simple-row" href="/training/history">
-            Workout History →
-          </Link>
-          <Link className="simple-row" href="/training/activity">
-            Cardio
-            <ChevronRight size={18} />
-          </Link>
-        </>
+          {cycle && <Link className="training-plan-summary" href="/training/plan">
+            <span><small>目前課表</small><strong>{cycle.name}</strong><small>{cycle.days.length} 個訓練日 · 本輪尚有 {pendingIds(state,cycle).length} 天</small></span>
+            <ChevronRight size={19}/>
+          </Link>}
+          <div className="training-home-links">
+            <Link href="/training/calendar">訓練日曆 <ChevronRight size={17}/></Link>
+            <Link href="/training/history">訓練歷史 <ChevronRight size={17}/></Link>
+          </div>
+          <details className="training-home-tools">
+            <summary>其他訓練工具</summary>
+            <div className="training-home-links">
+              <Link href="/training/warmups">熱身管理 <ChevronRight size={17}/></Link>
+              <Link href="/training/exercises">動作指南 <ChevronRight size={17}/></Link>
+            </div>
+          </details>
+        </div>
       )}
       {skip && (
         <Sheet title="本輪不做這一天" onClose={() => setSkip(false)}>

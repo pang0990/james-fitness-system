@@ -64,12 +64,14 @@ export function MealSettings({ notify }: { notify:(s?:string)=>void }) {
   }
   return <div className="daily-page meal-settings-page">
     <PageTitle title="每日餐次" />
-    <p className="muted">逐一修改名稱、增刪及調整順序。從今天起使用新的餐次模板；過去飲食歷史不會跟著改名或被刪除。</p>
+
     <div className="meal-slot-list">
       {slots.map((slot,index)=><section className="card meal-slot-item" key={slot}>
-        <div><small>MEAL {String(index+1).padStart(2,"0")}</small><h2>{slot}</h2></div>
+        <div className="meal-slot-info">
+          <small>MEAL {String(index+1).padStart(2,"0")}</small>
+          <button type="button" className="meal-name-edit" aria-label={`修改${slot}名稱`} title="點擊更名" onClick={()=>openEdit(slot)}>{slot}</button>
+        </div>
         <div className="meal-slot-actions">
-          <button type="button" className="button secondary" onClick={()=>openEdit(slot)}>更名</button>
           <button type="button" aria-label={slot+"上移"} className="icon-button" disabled={index===0} onClick={()=>move(index,-1)}>↑</button>
           <button type="button" aria-label={slot+"下移"} className="icon-button" disabled={index===slots.length-1} onClick={()=>move(index,1)}>↓</button>
           <button type="button" aria-label={"刪除"+slot} className="icon-button" disabled={slots.length<=1} onClick={()=>remove(slot)}>✕</button>

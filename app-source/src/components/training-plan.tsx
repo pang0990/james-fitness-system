@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { activeCycle } from "@/lib/training-model";
 import { dayId, pendingIds } from "@/lib/training-queue";
@@ -9,6 +10,7 @@ import templates from "@/content/training-templates.json";
 import catalog from "@/content/exercises.json";
 export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: string) => void; startBlank?: boolean }) {
   const { state, save } = useStore();
+  const router = useRouter();
   const current = activeCycle(state);
   const [name, setName] = useState(startBlank ? "My New Plan" : current?.name ?? "My Training Plan");
   const [days, setDays] = useState<Cycle["days"]>(
@@ -31,9 +33,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
   return (
     <div className="daily-page">
       <PageTitle title="Training Plan" />
-      <p className="muted">
-        選擇分化即帶入對應課表。每個訓練日、動作、組數及休息時間都可修改；已完成的訓練不受影響。
-      </p>
+
       <Field label="選擇訓練分化（選取後直接帶入，可自行修改或刪除動作）">
         <select aria-label="選擇分化" value={template} onChange={e=>preset(e.target.value)}>
           <option value="">請選擇分化（目前課表可直接編輯）</option>
@@ -187,7 +187,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
           </select>
         </section>
       ))}
-      {ongoing&&<p className="muted">目前進行中的訓練保留原始 Session，儲存課表不會重置或刪除當次訓練。</p>}
+
       <button
         className="button"
         disabled={
@@ -216,7 +216,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
               });
             })
           )
-            notify("課表已儲存，可繼續自行編輯，歷史訓練保留");
+            { notify("課表已儲存"); router.push("/training"); }
         }}
       >
         儲存計畫版本
