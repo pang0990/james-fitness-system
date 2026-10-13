@@ -11,6 +11,7 @@ import { TrainingReview } from "./training-review";
 import { GainReview } from "./gain-review";
 import { Recipes } from "./recipes";
 import { ProgressDirection } from "./progress-direction";
+import { ActivityReviewContext } from "./activity-trend";
 import Link from "next/link";
 import { TodayV2, NutritionV2 } from "./daily";
 import { TrainingFlow } from "./training-flow";
@@ -434,6 +435,7 @@ export function FitnessApp({ path }: { path: string }) {
                 "progress/recommendations",
               ].includes(path) ? (
                 <div className="daily-page">
+                  <ActivityReviewContext date={date} />
                   {state.profile?.goal === "GAIN" ? (
                     <GainReview date={date} notify={notify} />
                   ) : (

@@ -7,6 +7,7 @@ import { PageTitle, Field } from "./daily";
 import pkg from "../../package.json";
 const pages = {
   account: "Account & Sync",
+  health: "Apple Health · 健康資料",
   general: "General · 一般設定",
   appearance: "Appearance · 外觀",
   notifications: "Notifications · 提醒",
@@ -141,6 +142,17 @@ export function SettingsHub({
         <Link className="text-link" href="/settings/accessibility">無障礙與減少動態 →</Link>
       </div>
     );
+  if (key === "health")
+    return <div className="daily-page">
+      <PageTitle title="Apple Health" />
+      <section className="card stack">
+        <p className="eyebrow">FUTURE INTEGRATION</p>
+        <h2>尚未連接 Apple 健康</h2>
+        <p>目前 Web 版無法直接使用 iPhone 的 HealthKit 資料。步數與有氧活動請先在 Today 手動記錄。</p>
+        <p className="muted">日後 iOS App 可在取得授權後匯入步數與運動紀錄；授權前不會讀取資料，且不會把活動熱量自動加回飲食目標。</p>
+        <Link href="/today" className="button secondary">前往 Today 活動紀錄</Link>
+      </section>
+    </div>;
   if (key === "account")
     return (
       <div className="daily-page">

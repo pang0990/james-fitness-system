@@ -604,3 +604,59 @@ body .plan-day-editor .plan-exercise h3{font-size:15px;margin:0 0 14px}
   body .plan-day-editor{padding:16px}
   body .plan-day-editor .two-actions>.button{font-size:11px;min-height:38px;padding:8px 11px}
 }
+
+
+/* ACTIVITY | Apple Health-inspired clarity, local-first manual records. */
+body .daily-activity{margin:4px var(--ui-page-pad) 20px;padding:19px;display:grid;gap:17px}
+body .activity-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0}
+body .activity-heading h2{font:600 18px/1.3 var(--ui-font);margin:0;color:var(--ui-primary)}
+body .activity-heading .text-link{min-height:38px}
+body .activity-overview,body .activity-trend-stats,body .activity-review-metrics{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px
+}
+body .activity-metric,body .activity-trend-stats>div,body .activity-review-metrics>div{
+  min-width:0;text-align:left;display:grid;justify-content:start;align-content:center;
+  gap:7px;padding:17px 15px;background:var(--ui-surface-raised);
+  border:1px solid var(--ui-border);border-radius:13px;box-shadow:none
+}
+body button.activity-metric{cursor:pointer}
+body .activity-metric small,body .activity-trend-stats small,body .activity-review-metrics small{
+  font:500 12px/1.4 var(--ui-font);color:var(--ui-secondary)
+}
+body .activity-metric strong,body .activity-trend-stats strong,body .activity-review-metrics strong{
+  color:var(--ui-primary);font:600 clamp(23px,5vw,30px)/1.2 var(--ui-font);
+  letter-spacing:-.04em;font-variant-numeric:tabular-nums
+}
+body .activity-metric span,body .activity-trend-stats span,body .activity-review-metrics span{
+  color:var(--ui-tertiary);font:400 11px/1.5 var(--ui-font)
+}
+body .activity-log-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+body .activity-log-head>span{font:550 13px var(--ui-font);color:var(--ui-secondary)}
+body .activity-empty{margin:0!important;padding:2px 0 4px;font-size:12px}
+body .activity-log-list{display:grid;gap:4px}
+body .activity-log-row{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--ui-border);gap:9px;padding:8px 0}
+body .activity-log-row>button:first-child{
+  flex:1;min-height:42px;min-width:0;text-align:left;border:0;
+  background:none;color:var(--ui-primary);display:flex;align-items:center;justify-content:space-between;gap:8px
+}
+body .activity-log-row strong{font-weight:550;font-size:13px}
+body .activity-log-row span{font-size:12px;color:var(--ui-secondary);white-space:nowrap}
+body .activity-delete{background:none;border:0;color:var(--ui-tertiary);font-size:12px;min-height:42px;padding:0 8px}
+body .activity-log-list>small{font-size:11px;color:var(--ui-tertiary);padding-top:6px}
+body .activity-trend{display:grid;gap:16px}
+body .activity-trend .range-control{display:flex;gap:5px}
+body .activity-trend .range-control button{min-height:36px}
+body .activity-trend .line-chart{margin:0;max-width:100%}
+body .activity-trend .activity-data-note{font-size:11px;margin:0}
+body .activity-review{display:grid;gap:13px}
+body .activity-review h2{margin:0}
+body .activity-review>p:not(.eyebrow){font-size:13px;line-height:1.65;margin:0}
+body .activity-review .eyebrow{margin:0}
+body .activity-review-metrics strong{font-size:20px}
+body .activity-review-metrics>div{padding:12px}
+@media(max-width:520px){
+  body .daily-activity{margin:4px var(--ui-page-pad) 15px;padding:16px}
+  body .activity-metric,body .activity-trend-stats>div{padding:14px 12px}
+  body .activity-metric strong,body .activity-trend-stats strong{font-size:24px}
+  body .activity-review-metrics strong{font-size:19px}
+}
