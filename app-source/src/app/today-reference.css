@@ -342,7 +342,7 @@
   .today-ref-macros{gap:7px}
   .today-ref-macros>div{grid-template-columns:15px 1fr auto}
   .today-ref-macros small{grid-column:3;grid-row:1}
-  .today-ref-macros i{width:100%!important}
+  .today-ref-macro-track i{max-width:100%}
 }
 @media(max-width:390px){
   .today-ref-action-panel{padding:11px 7px 9px}
@@ -654,8 +654,6 @@ html[data-reduce-motion="true"] .today-ref-scene .jfs-city-atmosphere{display:no
   }
   .today-ref-card{padding:22px}
   .today-ref-food-body{gap:27px}
-  .today-ref-macros i{width:inherit!important}
-  .today-ref-macro-track i{width:inherit!important}
 }
 @media(max-width:539px){
   .page-today .main{max-width:100vw}
