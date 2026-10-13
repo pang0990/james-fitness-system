@@ -637,7 +637,7 @@ export function validateState(value: unknown): AppState {
       s.customWarmups.some(w => !w.id || !w.name || !Number.isFinite(w.minutes) || w.minutes <= 0 || w.minutes > 120)))
     throw Error("自訂熱身資料無效");
   if (s.dailySteps && (!Array.isArray(s.dailySteps) ||
-    s.dailySteps.some(r => !r.id || !/^\\d{4}-\\d{2}-\\d{2}$/.test(r.date) ||
+    s.dailySteps.some(r => !r.id || !/^\d{4}-\d{2}-\d{2}$/.test(r.date) ||
       !Number.isInteger(r.steps) || r.steps < 0 || r.steps > 100000 ||
       !["manual","apple_health"].includes(r.source) ||
       !r.updatedAt || (r.externalId != null && typeof r.externalId !== "string")) ||
