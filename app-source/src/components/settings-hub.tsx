@@ -6,18 +6,21 @@ import { AppearanceSettings } from "./appearance";
 import { PageTitle, Field } from "./daily";
 import pkg from "../../package.json";
 const pages = {
+  account: "Account & Sync",
+  general: "General · 一般設定",
+  appearance: "Appearance · 外觀",
+  notifications: "Notifications · 提醒",
+  training: "Training · 訓練",
+  nutrition: "Nutrition · 營養",
+  companion: "Companion · 角色",
+  accessibility: "Accessibility · 無障礙",
+  "data-privacy": "Data & Privacy · 資料與隱私",
+  about: "About · 關於",
   profile: "Profile",
   body: "Body & Goal",
-  nutrition: "Nutrition",
-  training: "Training",
   recovery: "Recovery",
-  appearance: "Appearance",
-  notifications: "Notifications",
-  accessibility: "Accessibility",
-  account: "Account & Sync",
   data: "Data",
   privacy: "Privacy",
-  about: "About",
 };
 type Definition = [string, string, string, string?];
 const fields: Record<string, Definition[]> = {
@@ -25,11 +28,15 @@ const fields: Record<string, Definition[]> = {
     ["name", "稱呼", "text"],
     ["age", "年齡", "number"],
     ["sex", "計算使用性別", "male:男性|female:女性"],
-    ["language", "介面語言（目前提供繁體中文）", "zh-Hant:繁體中文"],
+  ],
+  general: [
     ["region", "地區", "text", "Taiwan"],
     ["timezone", "時區", "text", "Asia/Taipei"],
     ["weekStart", "每週起始日", "1:星期一|0:星期日"],
     ["timeFormat", "時間格式", "24:24 小時|12:12 小時"],
+  ],
+  companion: [
+    ["companionAnimation", "角色持續動畫", "checkbox", "true"],
   ],
   body: [
     ["height", "身高 cm", "number"],
@@ -71,7 +78,12 @@ const fields: Record<string, Definition[]> = {
     ["trackStress", "壓力", "checkbox", "true"],
     ["trackSoreness", "痠痛", "checkbox", "true"],
   ],
-  notifications: [["reminders", "最近三天資料提醒", "checkbox", "true"]],
+  notifications: [
+    ["workoutReminder", "訓練提醒（目前只保存偏好，未啟用系統推播）", "checkbox", "false"],
+    ["workoutReminderTime", "訓練提醒時間（選擇後才有設定值）", "time", ""],
+    ["missingLogReminder", "缺漏紀錄提醒（Today Action Queue）", "checkbox", "true"],
+    ["weeklyCheckinReminder", "每週 Check-in 提醒（目前只保存偏好）", "checkbox", "true"],
+  ],
   accessibility: [
     ["reduceMotion", "減少動態（也尊重系統設定）", "checkbox", "false"],
     ["reduceTransparency", "減少透明效果", "checkbox", "false"],
@@ -90,7 +102,7 @@ export function SettingsHub({
     return (
       <div className="daily-page">
         <PageTitle title="Settings" />
-        {Object.entries(pages).map(([k, label]) => (
+        {(Object.entries(pages).filter(([k]) => !["profile", "body", "recovery", "data", "privacy"].includes(k))).map(([k, label]) => (
           <Link className="simple-row" href={"/settings/" + k} key={k}>
             {label}
             <span>→</span>
@@ -98,14 +110,45 @@ export function SettingsHub({
         ))}
       </div>
     );
-  if (key === "appearance") return <AppearanceSettings notify={notify} />;
+  if (key === "appearance") return <div className="daily-page"><PageTitle title="Appearance" /><AppearanceSettings notify={notify} /></div>;
+  if (key === "data-privacy")
+    return (
+      <div className="daily-page">
+        <PageTitle title="Data & Privacy" />
+        <p className="muted">健康與訓練紀錄目前儲存於這台裝置。雲端同步尚未接通，切勿假設已自動備份。</p>
+        <Link className="simple-row" href="/data">JSON Backup / Restore / CSV Export <span>→</span></Link>
+        <Link className="simple-row" href="/settings/privacy">資料使用與儲存說明 <span>→</span></Link>
+        <Link className="simple-row" href="/settings/data">清除目前裝置資料 <span>→</span></Link>
+      </div>
+    );
+  if (key === "companion")
+    return (
+      <div className="daily-page">
+        <PageTitle title="Companion" />
+        <form className="card stack" onSubmit={e => {
+          e.preventDefault();
+          const data = new FormData(e.currentTarget);
+          if (save("更新角色設定", draft => {
+            draft.appearance = { theme: draft.appearance?.theme ?? "dark", showCompanion: data.get("character") === "on" };
+            (draft.preferences ??= {}).companionAnimation = data.get("animation") === "on";
+          })) notify("角色偏好已儲存");
+        }}>
+          <label className="check"><input name="character" type="checkbox" defaultChecked={state.appearance?.showCompanion !== false} />顯示角色</label>
+          <label className="check"><input name="animation" type="checkbox" defaultChecked={state.preferences?.companionAnimation !== false} />持續動畫（減少動態設定優先）</label>
+          <p className="muted">Today 目前使用電影感靜態示意背景。角色顯示偏好會保留，待正式 3D 模型接入後完整套用；此選項不代表 3D 已實作。</p>
+          <button className="button">儲存偏好</button>
+        </form>
+        <Link className="text-link" href="/settings/accessibility">無障礙與減少動態 →</Link>
+      </div>
+    );
   if (key === "account")
     return (
       <div className="daily-page">
         <PageTitle title="Account & Sync" />
         <section className="card">
-          <h2>本機使用中</h2>
-          <p>不登入即可使用所有日常紀錄。雲端備份與跨裝置同步尚未啟用。</p>
+          <h2>帳號與同步尚未啟用</h2>
+          <p>正式規格採 Google 登入且不提供訪客模式；但目前公開的 GitHub Pages 仍是本機資料版本，尚未接通 Google OAuth、使用者帳號或雲端同步。</p>
+          <p className="muted">在驗證雲端資料隔離與遷移前，先保留既有本機操作，避免鎖住目前使用者或遺失資料。這裡不會顯示虛假的「已同步」。</p>
           <Link className="text-link" href="/settings/data">
             備份與資料管理 →
           </Link>
@@ -118,7 +161,7 @@ export function SettingsHub({
         <PageTitle title="About" />
         <p>James Fitness System</p>
         <p>Version {pkg.version}</p>
-        <p>本機資料 · Web App</p>
+        <p>本機紀錄版 · Web App（Google 登入／Cloud Sync 尚待整合）</p>
         <Link href="/settings/privacy" className="text-link">
           隱私說明 →
         </Link>
@@ -249,6 +292,12 @@ export function SettingsHub({
               </Field>
             );
           })
+        )}
+        {key === "general" && (
+          <p className="muted">第一版單位固定 kg／cm，日期格式 YYYY/MM/DD，介面目前僅完整支援繁體中文；英文版列為後續內容工作，不提供無效的語言切換。時間格式與每週起始日為偏好設定，尚未全面套用到所有歷史圖表。</p>
+        )}
+        {key === "notifications" && (
+          <p className="muted">設定僅代表提醒偏好。瀏覽器系統推播仍需正式通知服務及使用者授權；Today 站內缺漏提醒可立即使用。</p>
         )}
         {key === "body" && (
           <p className="muted">
