@@ -95,6 +95,11 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
     if(nextStep) router.push(stepHref(nextStep));
   }
   function confirm() {
+    if (!healthChoice) {
+      setError("請先完成健康安全確認。");
+      router.push("/onboarding/safety");
+      return;
+    }
     if (data.age < 1 || data.age > 100 || data.height < 100 || data.height > 250 ||
         data.weight < 30 || data.weight > 350) {
       setError("請先完成有效的 Basic Information，才能建立個人紀錄。");
@@ -152,7 +157,7 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
           <div className="onboarding-goals">
             {(["CUT","GAIN"] as const).map(g=>(
               <button key={g} type="button" aria-pressed={data.goal===g} className={"onboarding-goal "+(data.goal===g?"selected":"")} onClick={()=>change("goal",g)}>
-                <strong>{g}</strong><span>{g==="CUT"?"減脂｜依 Numbers 3.0 係數建立初始目標":"增肌｜符合條件時先提供 42 kcal/kg 暫時目標"}</span>
+                <strong>{g}</strong><span>{g==="CUT"?"減脂":"增肌"}</span>
               </button>
             ))}
           </div>
@@ -213,7 +218,7 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
                 ))}
               </div>
             ) : <p className="notice">尚不提供自動營養目標；飲食、體重、訓練和恢復紀錄仍可正常使用。</p>}
-            {target.status==="gain-temporary" && <p className="muted">此為暫時起點，不是經個人資料驗證的維持熱量；14 天後收集足夠紀錄，再由使用者 Accept／Keep 決定是否調整。</p>}
+            {target.status==="gain-temporary" && <p className="muted">暫時目標 · 累積 14 天有效紀錄後再評估</p>}
 
           </div>
         )}
