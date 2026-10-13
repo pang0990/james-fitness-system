@@ -1,0 +1,253 @@
+/*
+ * JFS 2077-inspired City v4 + Personal Cookbook destination tile
+ * Original graphic asset, no third-party game artwork/brands.
+ */
+.page-today .cinematic-hero{
+  background-color:#030711;
+  background-size:cover,cover;
+  background-repeat:no-repeat;
+  background-position:center,center center;
+}
+.page-today .jfs-city-atmosphere{
+  mix-blend-mode:screen;
+  opacity:.92;
+}
+.page-today .cinematic-hero::after{
+  background:
+    radial-gradient(ellipse 94% 72% at 50% 44%, transparent 40%, rgba(0,1,4,.42) 100%),
+    linear-gradient(180deg,rgba(4,7,13,.22) 0%,transparent 24%,rgba(2,3,6,.2) 65%,rgba(1,2,5,.75) 100%);
+}
+.page-today .cinematic-hero-heading,
+.page-today .cinematic-marquee{filter:drop-shadow(0 2px 9px rgba(0,0,0,.65))}
+.page-today .cinematic-marquee{background:linear-gradient(135deg,rgba(10,15,22,.90),rgba(3,6,10,.95));}
+.nutrition-cookbook-section{
+  display:grid;
+  gap:12px;
+  padding:0;
+  margin:10px 0 30px;
+}
+.nutrition-cookbook-section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:0 2px;
+}
+.nutrition-cookbook-section-title>span{
+  color:#e8c487;
+  font:540 11px/1.2 var(--v3-font);
+  letter-spacing:.16em;
+}
+.nutrition-cookbook-section-title>small{
+  font:500 9px/1.2 var(--v3-font);
+  color:#8c939a;
+  letter-spacing:.13em;
+}
+.nutrition-cookbook-card{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:267px;
+  padding:19px 19px 15px;
+  border:1px solid rgba(232,187,107,.54);
+  border-radius:18px;
+  color:#f7efe2;
+  text-decoration:none;
+  background:
+    radial-gradient(ellipse 80% 70% at 82% 30%,rgba(206,111,53,.2),transparent 70%),
+    radial-gradient(ellipse 70% 94% at 70% 112%,rgba(38,132,169,.2),transparent 70%),
+    linear-gradient(140deg,#1a1c22 0%,#0a0e16 47%,#04070b 100%);
+  box-shadow:inset 0 1px 0 rgba(255,223,162,.2),0 14px 34px rgba(0,0,0,.45),0 0 30px rgba(207,164,89,.06);
+  -webkit-tap-highlight-color:transparent;
+}
+.nutrition-cookbook-card::before{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  inset:0;
+  z-index:-1;
+  background:
+    linear-gradient(135deg, transparent 44%,rgba(223,182,113,.09) 50%, transparent 56%),
+    repeating-linear-gradient(0deg,transparent 0 14px,rgba(113,128,156,.07) 15px,transparent 16px),
+    radial-gradient(ellipse 70% 80% at 100% 0%,rgba(214,167,101,.07),transparent);
+  opacity:.83;
+}
+.nutrition-cookbook-card::after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(160deg,rgba(255,230,187,.08),transparent 29%,transparent 76%,rgba(208,155,81,.08));
+  box-shadow:inset 0 0 0 1px rgba(255,221,175,.04);
+}
+.cookbook-card-illumination{
+  position:absolute;
+  width:240px;height:200px;right:-42px;top:20px;
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(239,155,71,.13),rgba(91,137,176,.075) 55%,transparent 77%);
+  filter:blur(8px);
+  pointer-events:none;
+}
+.cookbook-card-art{
+  position:absolute;
+  right:-14px;
+  bottom:38px;
+  width:188px;
+  height:166px;
+  z-index:0;
+  pointer-events:none;
+}
+.cookbook-card-halo{
+  position:absolute;inset:0;
+  border-radius:50%;
+  transform:perspective(160px) rotateX(54deg);
+  background:radial-gradient(circle,#deaf69a3, #7e503724 52%,transparent 70%);
+  filter:blur(12px);
+}
+.cookbook-card-plate{
+  position:absolute;
+  width:146px;height:108px;
+  right:5px;bottom:14px;
+  transform:rotate(-16deg);
+  border-radius:50%;
+  border:7px solid #3c3e40;
+  background:
+    radial-gradient(ellipse at 45% 35%, #363534, #161719 48%,#090b0e 64%);
+  box-shadow:0 12px 18px rgba(0,0,0,.85),inset 0 0 0 2px #9285733b,0 0 19px #c8a66c18;
+}
+.cookbook-card-food{
+  position:absolute;inset:16px 15px 18px;
+  border-radius:47%;
+  background:
+    radial-gradient(ellipse at 19% 33%, #66824b 0 5px,transparent 7px),
+    radial-gradient(ellipse at 72% 32%, #caae52 0 5px,transparent 7px),
+    radial-gradient(ellipse at 32% 68%, #647f43 0 6px,transparent 8px),
+    radial-gradient(ellipse at 55% 58%, #e08b45 0 22px,#984b2f 27px,transparent 29px),
+    radial-gradient(ellipse at 64% 41%,#efbe7c 0 16px,#9e582e 20px,transparent 23px),
+    radial-gradient(ellipse at 50% 43%,#c39a59,#51331b 65%,transparent 70%);
+  box-shadow:0 4px 12px #000a;
+}
+.cookbook-card-topline,
+.cookbook-card-content,
+.cookbook-card-bottom{
+  position:relative;
+  z-index:1;
+}
+.cookbook-card-topline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  color:#e8c485;
+}
+.cookbook-card-overline{
+  color:#f0d7a5;
+  font:540 9px/1.3 var(--v3-font);
+  letter-spacing:.17em;
+}
+.cookbook-card-content{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:4px;
+  max-width:min(75%,330px);
+  margin-top:27px;
+}
+.cookbook-card-content strong{
+  color:#faf1df;
+  font:600 clamp(23px,6vw,29px)/1.2 var(--v3-font);
+  letter-spacing:.025em;
+}
+.cookbook-card-english{
+  font:400 22px/1.15 var(--v3-brand);
+  color:#e6bd7c;
+  letter-spacing:.21em;
+  text-shadow:0 0 13px rgba(224,171,87,.15);
+}
+.cookbook-card-description{
+  max-width:220px;
+  margin-top:7px;
+  color:#b3afb2;
+  font:400 11px/1.7 var(--v3-font);
+  letter-spacing:.015em;
+}
+.cookbook-card-bottom{
+  margin-top:auto;
+  padding-top:19px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.cookbook-card-count{
+  display:inline-flex;
+  align-items:baseline;
+  gap:7px;
+  font-size:11px;
+  color:#b5b0a7;
+}
+.cookbook-card-count b{
+  font:500 20px/1 var(--v3-brand);
+  color:#e9c98e;
+}
+.cookbook-card-cta{
+  display:inline-flex;
+  gap:9px;
+  align-items:center;
+  justify-content:center;
+  min-width:123px;
+  min-height:37px;
+  padding:5px 13px;
+  border:1px solid rgba(251,213,145,.83);
+  border-radius:30px;
+  background:linear-gradient(180deg,#f7d79c,#b28748 95%);
+  box-shadow:inset 0 1px 1px #fff7, 0 3px 15px #ab7a4140;
+  color:#281a0b;
+  font:600 11px/1.3 var(--v3-font);
+}
+.nutrition-cookbook-card:hover,
+.nutrition-cookbook-card:focus-visible{
+  border-color:#fce1a2;
+  box-shadow:inset 0 1px 0 rgba(255,223,162,.3), 0 18px 38px #000a,0 0 27px rgba(228,168,73,.15);
+}
+.nutrition-cookbook-card:active{transform:translateY(1px)}
+.nutrition-meal-manage-link{
+  justify-self:end;
+  display:flex;align-items:center;gap:3px;
+  min-height:38px;
+  color:#cdb685;
+  text-decoration:none;
+  font-size:12px;
+}
+@media(max-width:360px){
+  .nutrition-cookbook-card{padding:16px;min-height:258px}
+  .cookbook-card-art{right:-36px;opacity:.76}
+  .cookbook-card-content{max-width:79%}
+  .cookbook-card-content strong{font-size:22px}
+  .cookbook-card-english{font-size:19px}
+  .cookbook-card-cta{min-width:107px;padding:5px 9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .nutrition-cookbook-card{transition:none!important}
+}
+
+/* The cinematic megacity is also visible around the phone-width content on desktop.
+ * This is intentionally not behind the Nutrition/Training/Progress form fields:
+ * their actual mobile UI remains a legible deep-black surface, as in the reference.
+ */
+@media(min-width:770px){
+  body .app.page-nutrition,
+  body .app.page-training,
+  body .app.page-progress{
+    background-color:#05070d;
+    background-image:
+      linear-gradient(90deg,rgba(0,1,5,.58),rgba(1,3,7,.2) 36%,rgba(1,3,7,.15) 60%,rgba(0,1,5,.6)),
+      url("/james-fitness-system/city-night-v4.svg");
+    background-position:center,center;
+    background-attachment:fixed,fixed;
+    background-size:cover,cover;
+  }
+}
