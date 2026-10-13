@@ -324,7 +324,7 @@ export function TodayV2({
   return (
     <div className="daily-page">
       <section className="cinematic-hero" aria-label="今日進度與角色視覺"
-        style={{backgroundImage: `linear-gradient(180deg,rgba(4,6,10,.31) 0%,rgba(3,5,10,.03) 25%,rgba(3,4,7,.24) 59%,rgba(4,5,8,.75) 100%),url("${process.env.NEXT_PUBLIC_BASE_PATH || ""}/city-night-v4.svg")`}}>
+        style={{backgroundImage: "linear-gradient(180deg,rgba(4,6,10,.33) 0%,rgba(3,5,10,.03) 24%,rgba(3,4,7,.13) 57%,rgba(2,3,6,.78) 100%),var(--jfs-hero)"}}>
         <CityAtmosphere />
         <div className="cinematic-hero-heading">
           <div>
