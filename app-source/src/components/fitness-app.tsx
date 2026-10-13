@@ -351,10 +351,10 @@ export function FitnessApp({ path }: { path: string }) {
       </aside>
       <main className="main">
         <header className="topbar">
-          <div className="breadcrumb">
-            JAMES FITNESS{" "}
-            <span style={{ padding: "0 10px", color: "#b2b7a8" }}>/</span>{" "}
-            {labelMap[section] ?? "James"}
+          <div className="breadcrumb" aria-label="目前所在頁面">
+            <span className="wordmark">JAMES FITNESS</span>
+            <span className="breadcrumb-separator" aria-hidden="true">/</span>
+            <span className="current-section">{labelMap[section] ?? "James"}</span>
           </div>
           <details className="account-menu">
             <summary aria-label="帳戶選單">
