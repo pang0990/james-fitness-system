@@ -34,6 +34,8 @@ export function Recipes({ date, notify, path = "nutrition/recipes" }: {
   const isDetail = path === "nutrition/recipes/detail";
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    const selectedCategory=params.get("category");
+    if (selectedCategory && ["Breakfast","Main Meals","Snacks"].includes(selectedCategory)) setCategory(selectedCategory);
     setSelected(params.get("recipe"));
     const meal = params.get("meal");
     if (meal && state.mealSlots.includes(meal)) setSlot(meal);
@@ -108,24 +110,34 @@ export function Recipes({ date, notify, path = "nutrition/recipes" }: {
         </>
       ) : (
         <>
-          <NutritionSummary date={logDate} />
-          <p className="muted">{builtInRecipes.length} 道食譜 · 點心 {counts.Snacks} · 早餐 {counts.Breakfast} · 正餐 {counts["Main Meals"]}</p>
+          <section className="cookbook-destination-hero" aria-label="JFS 我的食譜菜單">
+            <div className="cookbook-destination-art" aria-hidden="true"><div className="cookbook-destination-plate" /></div>
+            <span className="cookbook-destination-kicker">JFS · PERSONAL COOKBOOK</span>
+            <h1>我的食譜菜單 <span>RECIPES</span></h1>
+            <p>找到今天想吃的料理，調整份數，直接加入每日飲食。</p>
+            <div className="cookbook-destination-stat"><strong>{builtInRecipes.length}</strong><span>道精選食譜<br/>Breakfast · Meals · Snacks</span></div>
+          </section>
           <Field label="搜尋食譜">
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="搜尋食譜名稱或食材" />
           </Field>
-          <Field label="食譜分類">
-            <select value={category} onChange={e => setCategory(e.target.value)}>
+          <div className="recipe-filter-tabs" role="group" aria-label="食譜分類">
+            {([["","全部"],["Breakfast","早餐"],["Main Meals","正餐"],["Snacks","點心"]] as const).map(([key,label]) => (
+              <button key={key} type="button" className={category===key?"selected":""}
+                aria-pressed={category===key} onClick={()=>setCategory(key)}>
+                {label}{key&&<small>{counts[key]}</small>}
+              </button>
+            ))}
+          </div>
+          {(state.recipes ?? []).some(r=>!["Snacks","Breakfast","Main Meals"].includes(r.category))&&(
+            <Field label="自訂分類"><select value={category} onChange={e=>setCategory(e.target.value)}>
               <option value="">全部分類</option>
-              <option value="Snacks">Snacks · 點心</option>
-              <option value="Breakfast">Breakfast · 早餐</option>
-              <option value="Main Meals">Main Meals · 正餐</option>
-              {[...new Set((state.recipes ?? []).map(r => r.category))].filter(c => !["Snacks","Breakfast","Main Meals"].includes(c)).map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </Field>
-          <p className="muted">符合條件：{filters.length} 道</p>
+              {[...new Set((state.recipes??[]).map(r=>r.category))].filter(c=>!["Snacks","Breakfast","Main Meals"].includes(c)).map(c=><option key={c} value={c}>{c}</option>)}
+            </select></Field>
+          )}
+          <div className="recipe-results-head"><span>RECIPE LIBRARY</span><strong>{filters.length} 道</strong></div>
           <div className="recipe-list">
             {filters.map(r => (
-              <button type="button" className="recipe-card" key={r.id} onClick={() => { setSelected(r.id); setServings(1); }}>
+              <button type="button" className="recipe-card recipe-v5-card" key={r.id} onClick={() => { setSelected(r.id); setServings(1); }}>
                 <small>{r.category} {r.id.startsWith("seed-") ? "· BUILT-IN" : "· MY RECIPE"}</small>
                 <h2>{r.name}</h2>
                 {r.nameEn && <p className="muted">{r.nameEn}</p>}
