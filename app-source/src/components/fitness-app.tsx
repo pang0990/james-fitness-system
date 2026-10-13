@@ -403,8 +403,8 @@ export function FitnessApp({ path }: { path: string }) {
               ) : path === "nutrition/plan" &&
                 state.profile?.goal === "GAIN" ? (
                 <GainReview date={date} notify={notify} />
-              ) : path === "nutrition/recipes" ? (
-                <Recipes date={date} notify={notify} />
+              ) : path === "nutrition/recipes" || path === "nutrition/recipes/detail" ? (
+                <Recipes path={path} date={date} notify={notify} />
               ) : ["nutrition", "nutrition/log", "nutrition/foods"].includes(
                   path,
                 ) ? (
