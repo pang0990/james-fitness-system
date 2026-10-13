@@ -36,7 +36,6 @@ import {
   dateInZone,
   dayNames,
   mealTotals,
-  mealCompletion,
   syncMealCompletion,
   resolveDay,
   visibleMeals,
@@ -577,7 +576,6 @@ export function NutritionV2({
   const [selectedDate, setDate] = useState(date);
   const [sheet, setSheet] = useState<
     | "meal"
-    | "slots"
     | "rename"
     | "myfood"
     | "add"
@@ -591,10 +589,8 @@ export function NutritionV2({
   const [edit, setEdit] = useState<Meal | null>(null);
   const [slot, setSlot] = useState(state.mealSlots[0]);
   const [quantity, setQuantity] = useState(0);
-  const [slotText, setSlotText] = useState(state.mealSlots.join("\n"));
   const [renameSlot, setRenameSlot] = useState("");
   const day = resolveDay(state, selectedDate);
-  const completion = mealCompletion(state, selectedDate);
   const meals = visibleMeals(state, selectedDate);
   const isLibrary = path === "nutrition/foods";
   function close() {
@@ -647,7 +643,6 @@ export function NutritionV2({
           items={[
             ["/nutrition/plan", "營養計畫"],
             ["/nutrition/foods", "食物庫"],
-            ["/nutrition/recipes", "食譜"],
             ["/progress/history", "計畫紀錄"],
           ]}
         />
@@ -790,7 +785,6 @@ export function NutritionV2({
           title={
             {
               meal: "加入哪一餐",
-              slots: "編輯每日餐次",
               rename: "重新命名餐次",
               myfood: "My Foods",
               add: `${slot} · 新增飲食`,
@@ -816,7 +810,6 @@ export function NutritionV2({
                   <ChevronRight />
                 </button>
               ))}
-              <button onClick={() => setSheet("slots")}>編輯餐次</button>
             </div>
           ) : sheet === "rename" ? (
             <form onSubmit={(e) => {
@@ -847,11 +840,6 @@ export function NutritionV2({
               </Field>
               <button className="button">儲存名稱</button>
             </form>
-          ) : sheet === "slots" ? (
-            <div className="stack">
-              <p>每餐可以分別修改名稱、增刪與調整順序，過去的紀錄不變。</p>
-              <Link className="button" href="/nutrition/meals">開啟餐次管理 →</Link>
-            </div>
           ) : sheet === "add" ? (
             <div className="cinematic-quick-add">
               <Field label="加入哪一餐">
