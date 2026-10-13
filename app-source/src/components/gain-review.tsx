@@ -24,6 +24,7 @@ export function GainReview({
     plan = currentPlan?.inputs.goal === "GAIN" ? currentPlan : null;
   const temporary = plan?.ruleId === GAIN_TEMP_RULE;
   const [preview, setPreview] = useState<string | null>(null);
+  const [activityAcknowledged,setActivityAcknowledged] = useState(false);
   function update(patch: Partial<GainSettings>) {
     save("確認 GAIN 本期條件", (s) => {
       s.gainSettings = {
@@ -119,7 +120,7 @@ export function GainReview({
         {review.actionable && (
           <button
             className="button"
-            onClick={() => setPreview(JSON.stringify(review))}
+            onClick={() => {setActivityAcknowledged(false);setPreview(JSON.stringify(review));}}
           >
             Preview change
           </button>
@@ -153,6 +154,16 @@ export function GainReview({
       {preview && (
         <Sheet title="Preview change" onClose={() => setPreview(null)}>
           <p>{review.reason}</p>
+          {review.activityEvidence.significant && <div className="activity-review-hold">
+            <strong>活動量明顯改變，建議先觀察</strong>
+            <p>上週平均 {review.activityEvidence.previousAverage?.toLocaleString("en-US")} 步，
+              本週 {review.activityEvidence.recentAverage?.toLocaleString("en-US")} 步。
+              這只是輔助證據，不改變 GAIN 的原始公式。</p>
+            <label className="check">
+              <input type="checkbox" checked={activityAcknowledged} onChange={e=>setActivityAcknowledged(e.target.checked)}/>
+              我已確認活動變化，仍希望採用原始 GAIN 建議
+            </label>
+          </div>}
           <p>
             每日碳水 {review.delta > 0 ? "+" : ""}
             {review.delta} g · 參考熱量 {review.delta > 0 ? "+" : ""}
@@ -177,10 +188,11 @@ export function GainReview({
           <div className="two-actions">
             <button
               className="button"
+              disabled={review.activityEvidence.significant && !activityAcknowledged}
               onClick={() => {
                 if (
                   save("Accept GAIN Recommendation", (s) =>
-                    applyGainDecision(s, date, true, preview),
+                    applyGainDecision(s, date, true, preview, activityAcknowledged),
                   )
                 ) {
                   setPreview(null);
