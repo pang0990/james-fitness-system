@@ -1,57 +1,111 @@
 "use client";
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { useStore } from "@/lib/store";
+import { averageSteps } from "@/lib/activity";
 import { Field, Sheet, uid, stamp } from "./daily";
 
 const activityTypes=["步行","跑步","騎車","游泳","球類運動","其他有氧","日常活動"];
-export function DailyActivity({ date, notify }:{date:string;notify:(s?:string)=>void}){
+
+export function DailyActivity({ date, notify }:{date:string;notify:(s?:string)=>void}) {
   const {state,save}=useStore();
-  const [open,setOpen]=useState(false);
+  const [sheet,setSheet]=useState<"steps"|"activity"|null>(null);
+  const [steps,setSteps]=useState("");
   const [kind,setKind]=useState("步行");
   const [minutes,setMinutes]=useState("");
-  const [kcal,setKcal]=useState("");
+  const [editId,setEditId]=useState<string|null>(null);
   const [error,setError]=useState("");
-  const items=state.cardio.filter(a=>a.date===date);
-  const total=items.reduce((a,x)=>a+x.minutes,0);
-  function submit(e:FormEvent<HTMLFormElement>){
-    e.preventDefault();const duration=Number(minutes);
-    const calories=kcal.trim()===""?null:Number(kcal);
-    if(!Number.isFinite(duration)||duration<=0||duration>1440||
-      (calories!==null&&(!Number.isFinite(calories)||calories<0||calories>5000))){
-      setError("請輸入有效的活動時間；熱量可不填。");return;
+  const item=state.dailySteps?.find(r=>r.date===date);
+  const average=averageSteps(state,date,7);
+  const activities=state.cardio.filter(r=>r.date===date);
+  const totalMinutes=activities.reduce((n,r)=>n+r.minutes,0);
+
+  const close=()=>{setSheet(null);setError("");setEditId(null);};
+  const openSteps=()=>{setSteps(item?String(item.steps):"");setError("");setSheet("steps");};
+  const openActivity=(id?:string)=>{
+    const existing=state.cardio.find(r=>r.id===id);
+    setEditId(existing?.id??null);setKind(existing?.type??"步行");
+    setMinutes(existing?String(existing.minutes):"");
+    setError("");setSheet("activity");
+  };
+  function saveSteps(e:FormEvent<HTMLFormElement>){
+    e.preventDefault();
+    const value=Number(steps);
+    if(!/^\d+$/.test(steps.trim())||!Number.isSafeInteger(value)||value<0||value>100000){
+      setError("請輸入 0 到 100,000 的有效整數步數。");return;
     }
-    if(save("記錄每日活動量",s=>{
-      s.cardio.push({id:uid(),date,type:kind,minutes:duration,calories,createdAt:stamp()});
-    })){
-      setMinutes("");setKcal("");setError("");setOpen(false);
-      notify("今日活動已記錄");
+    if(save("記錄每日步數",s=>{
+      const existing=(s.dailySteps??=[]).find(r=>r.date===date);
+      if(existing){existing.steps=value;existing.source="manual";existing.updatedAt=stamp();delete existing.externalId;}
+      else s.dailySteps!.push({id:uid(),date,steps:value,source:"manual",updatedAt:stamp()});
+    })){close();notify("步數已儲存");}
+  }
+  function saveActivity(e:FormEvent<HTMLFormElement>){
+    e.preventDefault();
+    const duration=Number(minutes);
+    if(!/^\d+$/.test(minutes.trim())||duration<1||duration>1440){
+      setError("請輸入 1–1440 分鐘的活動時間。");return;
     }
+    if(save(editId?"修改每日活動":"新增每日活動",s=>{
+      const existing=s.cardio.find(r=>r.id===editId);
+      if(existing){existing.type=kind;existing.minutes=duration;existing.source="manual";}
+      else s.cardio.push({id:uid(),date,type:kind,minutes:duration,calories:null,createdAt:stamp(),source:"manual"});
+    })){close();notify("活動已儲存");}
   }
   return <section className="card daily-activity">
-    <div className="card-head">
-      <div><small className="eyebrow">DAILY ACTIVITY</small><h2>今日活動量</h2></div>
-      <button type="button" className="button secondary" onClick={()=>setOpen(true)}>＋ 記錄活動</button>
+    <div className="activity-heading">
+      <h2>Activity</h2>
+      <Link className="text-link" href="/progress">查看趨勢 →</Link>
     </div>
-    <p className="muted">{items.length?`已記錄 ${items.length} 次活動，共 ${total} 分鐘`:"尚未記錄今天的活動"}</p>
-    <p className="muted">活動資料用於理解每日活動與營養變化，不會把估計消耗的熱量自動加回可吃熱量。</p>
-    {items.map(item=><div className="simple-row" key={item.id}>
-      <span>{item.type} · {item.minutes} 分鐘 {item.calories!==null?`· 估算 ${item.calories} kcal`:""}</span>
-      <button type="button" className="text-link" onClick={()=>{
-        if(!window.confirm("刪除這筆活動記錄？不影響當日飲食與訓練紀錄。"))return;
-        if(save("刪除每日活動",s=>{s.cardio=s.cardio.filter(a=>a.id!==item.id);}))notify("活動記錄已刪除");
-      }}>刪除</button>
-    </div>)}
-    {open&&<Sheet title={`${date} · 記錄活動量`} onClose={()=>setOpen(false)}>
-      <form className="stack" onSubmit={submit}>
-        <p className="muted">只記錄今天實際活動的類型與時間；沒有熱量數據也可以儲存。</p>
-        <Field label="活動類型"><select value={kind} onChange={e=>setKind(e.target.value)}>
-          {activityTypes.map(a=><option key={a}>{a}</option>)}</select></Field>
-        <Field label="活動時間（分鐘）"><input type="number" inputMode="decimal" min="1" max="1440" step="1" required
-          placeholder="本次活動幾分鐘？" value={minutes} onChange={e=>setMinutes(e.target.value)}/></Field>
-        <Field label="估計消耗 kcal（選填，不加回可吃熱量）"><input type="number" min="0" max="5000"
-          inputMode="decimal" placeholder="沒有資料可留空" value={kcal} onChange={e=>setKcal(e.target.value)}/></Field>
+    <div className="activity-overview">
+      <button type="button" className="activity-metric" onClick={openSteps}>
+        <small>今日步數</small><strong>{item ? item.steps.toLocaleString("en-US") : "—"}</strong>
+        <span>{item ? "編輯步數" : "＋ 記錄步數"}</span>
+      </button>
+      <div className="activity-metric">
+        <small>七日平均</small><strong>{average.average===null?"—":average.average.toLocaleString("en-US")}</strong>
+        <span>{average.count}/7 天有紀錄</span>
+      </div>
+    </div>
+    <div className="activity-log-head">
+      <span>有氧／其他活動</span>
+      <button type="button" className="text-link" onClick={()=>openActivity()}>＋ 記錄</button>
+    </div>
+    {activities.length ? <div className="activity-log-list">{activities.map(a=>(
+      <div className="activity-log-row" key={a.id}>
+        <button type="button" onClick={()=>openActivity(a.id)} aria-label={`編輯${a.type} ${a.minutes}分鐘`}>
+          <strong>{a.type}</strong><span>{a.minutes} 分鐘</span>
+        </button>
+        <button type="button" className="activity-delete" aria-label={`刪除${a.type}`}
+          onClick={()=>{if(!window.confirm("確定刪除這筆活動？"))return;
+            if(save("刪除每日活動",s=>{s.cardio=s.cardio.filter(r=>r.id!==a.id);}))notify("活動已刪除");}}>移除</button>
+      </div>))}<small>合計 {totalMinutes} 分鐘</small></div>
+    : <p className="muted activity-empty">尚無活動紀錄</p>}
+    {sheet==="steps"&&<Sheet title={`${date} · 步數`} onClose={close}>
+      <form onSubmit={saveSteps} className="stack">
+        <Field label="當天總步數"><input type="number" inputMode="numeric" min="0" max="100000"
+          placeholder="例如 8500" required value={steps} onChange={e=>{setSteps(e.target.value);setError("");}}/></Field>
+        {item&&<p className="muted">目前來源：{item.source==="apple_health"?"Apple Health":"手動紀錄"}</p>}
         {error&&<p className="form-error" role="alert">{error}</p>}
-        <div className="form-actions"><button className="button secondary" type="button" onClick={()=>setOpen(false)}>取消</button><button className="button" type="submit">儲存活動</button></div>
+        <div className="form-actions">
+          {item&&<button type="button" className="button secondary" onClick={()=>{
+            if(!window.confirm("確定刪除這一天的步數紀錄？"))return;
+            if(save("刪除每日步數",s=>{s.dailySteps=(s.dailySteps??[]).filter(r=>r.date!==date);})) {close();notify("步數已刪除");}
+          }}>刪除</button>}
+          <button className="button" type="submit">儲存步數</button>
+        </div>
+      </form>
+    </Sheet>}
+    {sheet==="activity"&&<Sheet title={`${date} · ${editId?"編輯":"新增"}活動`} onClose={close}>
+      <form onSubmit={saveActivity} className="stack">
+        <Field label="活動類型"><select value={kind} onChange={e=>setKind(e.target.value)}>
+          {activityTypes.map(a=><option key={a}>{a}</option>)}
+        </select></Field>
+        <Field label="時間（分鐘）"><input type="number" inputMode="numeric" min="1" max="1440"
+          placeholder="例如 30" required value={minutes} onChange={e=>{setMinutes(e.target.value);setError("");}}/></Field>
+        {error&&<p className="form-error" role="alert">{error}</p>}
+        <div className="form-actions"><button type="button" className="button secondary" onClick={close}>取消</button>
+          <button type="submit" className="button">儲存活動</button></div>
       </form>
     </Sheet>}
   </section>;
