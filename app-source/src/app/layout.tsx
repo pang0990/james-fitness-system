@@ -4,6 +4,7 @@ import "./globals.css";
 import "./cinematic.css";
 import "./blueprint.css";
 import "./polish.css";
+import "./city-atmosphere.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
