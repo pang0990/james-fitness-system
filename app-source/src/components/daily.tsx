@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
+import { DailyActivity } from "./daily-activity";
 import { latestRecovery } from "@/lib/recovery";
 import { nextDayIndex } from "@/lib/training-queue";
 import { Companion, type CompanionState as PetState } from "./companion";
@@ -404,6 +405,7 @@ export function TodayV2({
           <RecoveryEntryPoints date={date} />
         </div>
       </section>
+      <DailyActivity date={date} notify={notify}/>
       {adjust && (
         <Sheet title="修正飲水" onClose={() => setAdjust(false)}>
           <form
