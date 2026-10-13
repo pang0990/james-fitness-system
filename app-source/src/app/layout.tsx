@@ -10,6 +10,7 @@ import "./cookbook-city-v4.css";
 import "./city-recipes-v5.css";
 import "./today-reference.css";
 import "./today-motion.css";
+import "./today-fullbleed.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
