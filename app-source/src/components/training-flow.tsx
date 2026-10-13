@@ -301,7 +301,6 @@ export function TrainingFlow({
               ["/training/history", "Workout History"],
               ["/training/warmups", "Warm-ups"],
               ["/training/exercises", "動作紀錄"],
-              ["/training/activity", "Cardio"],
             ]}
           />
         )}
