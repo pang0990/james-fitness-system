@@ -285,6 +285,8 @@ export type RecoveryEntry = {
   createdAt: string;
 };
 export type AppState = {
+  mealSlotSnapshots?: Record<string, string[]>;
+  skippedMealSlots?: { date: string; slot: string; createdAt: string }[];
   favoriteFoods?: string[];
   weeklySchedule?: number[];
   recoveryEntries?: RecoveryEntry[];
@@ -440,6 +442,35 @@ export function setDayType(state: AppState, date: string, type: DayType) {
 export function pinDay(state: AppState, date: string) {
   if (!state.days.some((d) => d.date === date))
     state.days.push(resolveDay(state, date));
+  (state.mealSlotSnapshots ??= {})[date] ??= [...state.mealSlots];
+}
+
+export function mealCompletion(state: AppState, date: string) {
+  const slots = state.mealSlotSnapshots?.[date] ?? state.mealSlots;
+  const meals = visibleMeals(state, date);
+  const skipped = state.skippedMealSlots ?? [];
+  const perSlot = slots.map(slot => {
+    const entries = meals.filter(m => m.slot === slot);
+    const valid = entries.length > 0 && entries.every(m =>
+      [m.p, m.c, m.f, m.kcal].every(n => Number.isFinite(n) && n >= 0));
+    const markedNotEaten = !entries.length && skipped.some(r => r.date === date && r.slot === slot);
+    return { slot, status: valid ? "logged" as const : markedNotEaten ? "skipped" as const : "missing" as const };
+  });
+  const completed = perSlot.length > 0 && perSlot.every(s => s.status !== "missing");
+  // Preserve legacy explicit completion on old days that did not have a meal-template snapshot.
+  const legacy = !state.mealSlotSnapshots?.[date] && state.days.find(d => d.date === date)?.complete === true;
+  return { slots: perSlot, completed: completed || legacy };
+}
+export function syncMealCompletion(state: AppState, date: string) {
+  pinDay(state, date);
+  const day = state.days.find(d => d.date === date);
+  if (day) day.complete = mealCompletion(state, date).completed;
+}
+export function setMealSkipped(state: AppState, date: string, slot: string, skipped: boolean) {
+  pinDay(state, date);
+  state.skippedMealSlots = (state.skippedMealSlots ?? []).filter(r => !(r.date === date && r.slot === slot));
+  if (skipped) state.skippedMealSlots.push({ date, slot, createdAt: new Date().toISOString() });
+  syncMealCompletion(state, date);
 }
 export function createInitialPlan(
   state: AppState,
@@ -590,6 +621,14 @@ export function validateState(value: unknown): AppState {
   )
     throw Error("外觀設定格式無效");
   if (s.profile) profileSchema.parse(s.profile);
+  if (s.mealSlotSnapshots &&
+      (typeof s.mealSlotSnapshots !== "object" ||
+       Object.values(s.mealSlotSnapshots).some(v => !Array.isArray(v) || !v.length || v.some(s => typeof s !== "string"))))
+    throw Error("歷史餐次快照資料格式無效");
+  if (s.skippedMealSlots &&
+      (!Array.isArray(s.skippedMealSlots) ||
+       s.skippedMealSlots.some(r => !/^\\d{4}-\\d{2}-\\d{2}$/.test(r.date) || !r.slot)))
+    throw Error("餐次未吃標記格式無效");
   const numeric = (n: unknown) => typeof n === "number" && Number.isFinite(n);
   for (const meal of s.meals)
     if (
