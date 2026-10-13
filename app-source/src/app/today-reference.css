@@ -44,7 +44,6 @@
 }
 .page-today .account-menu>summary svg,.page-today .today-header-bell svg{width:17px;height:17px}
 .page-today .account-menu>div{z-index:60;top:47px;right:0}
-.page-today .daily-page{display:none}
 .today-reference-page{
   --today-gold:#edc784;
   --today-text:#f5ece0;
