@@ -13,7 +13,7 @@ export function Knowledge({ path }: { path: string }) {
     <div className="daily-page knowledge">
       {article ? (
         <>
-          <Link className="text-link" href="/learn">
+          <Link className="text-link" href="/knowledge">
             <ArrowLeft size={18} />
             Knowledge
           </Link>
@@ -50,7 +50,7 @@ export function Knowledge({ path }: { path: string }) {
                 (a.title + a.body).toLowerCase().includes(search.toLowerCase()),
               )
               .map((a) => (
-                <Link href={"/learn/" + a.slug} key={a.id}>
+                <Link href={"/knowledge/" + a.slug} key={a.id}>
                   <BookOpen size={24} />
                   <div>
                     <small>{a.category}</small>
