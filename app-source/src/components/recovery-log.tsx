@@ -13,7 +13,7 @@ const painAreas = ["頸部","肩膀","手肘","手腕／手","上背","下背","
 
 export function RecoveryQuickLog({
   date, close, notify, initialKind="sleep",
-}: {initialKind?:RecoveryEntry["type"];date:string;close:()=>void;notify:(s?:string)=>void;}) {
+}: {initialKind?:RecoveryEntry["type"] | "weight";date:string;close:()=>void;notify:(s?:string)=>void;}) {
   const {save}=useStore();
   // Fresh form every time it opens: no old ratings or quantities preselected.
   const [kind,setKind]=useState<RecoveryEntry["type"]|"weight">(initialKind);
