@@ -158,6 +158,7 @@ export function ProgressDirection({ date }: { date: string }) {
       </section>
       <section className="training-evidence">
         <p className="eyebrow">TRAINING PROGRESS</p>
+        <Link className="text-link" href="/progress/training/exercises">查看單一動作完整歷史 →</Link>
         <h2>
           {activeCycle(state)
             ?.muscleTargets?.filter((m) => m.priority)
