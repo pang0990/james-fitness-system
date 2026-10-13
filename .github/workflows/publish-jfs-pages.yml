@@ -1,0 +1,46 @@
+name: Build and publish JFS Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app-source/**"
+      - ".github/workflows/publish-jfs-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jfs-pages-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app-source
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app-source/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run pages:prepare
+      - name: Commit built GitHub Pages files
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Build JFS Pages from validated cinematic app source"
+            git push origin HEAD:main
+          fi

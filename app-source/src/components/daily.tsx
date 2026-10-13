@@ -277,30 +277,22 @@ export function TodayV2({
   }
   return (
     <div className="daily-page">
-      <PageTitle title="Today">
-        <span className="muted">
-          {new Intl.DateTimeFormat("zh-TW", {
-            weekday: "long",
-            month: "short",
-            day: "2-digit",
-            timeZone: "UTC",
-          })
-            .format(new Date(date + "T12:00:00Z"))
-            .toUpperCase()}
-        </span>
-      </PageTitle>
-      <section className="companion-stage">
-        <Companion
-          state={
-            pet === "idle" && current
-              ? "training"
-              : pet === "idle" && scheduleKind(state, date) !== "train"
-                ? "resting"
-                : pet
-          }
-          onTap={() => setPet(pet === "reading" ? "idle" : "reading")}
-        />
-        <NoticeCarousel date={date} onLog={setQuickDate} />
+      <section className="cinematic-hero" aria-label="今日進度與角色視覺">
+        <div className="cinematic-hero-heading">
+          <div>
+            <span className="cinematic-kicker">GOOD MORNING</span>
+            <strong className="cinematic-name">{state.profile?.name || "WANDERER"}</strong>
+          </div>
+          <div className="cinematic-day-label"><small>CYCLE DAY</small><b>{cycle ? completed + 1 : "—"}</b></div>
+        </div>
+        <div className="cinematic-character-control">
+          <button type="button" onClick={() => setPet(pet === "reading" ? "idle" : "reading")} className="cinematic-tap">◇ TAP TO INTERACT</button>
+          <span>{pet === "reading" ? "TURN AROUND · 轉身" : pet === "drinking" ? "DRINKING · 喝水" : pet === "celebrating" ? "CELEBRATE · 慶祝" : "WALKING · 行走"}</span>
+        </div>
+        <div className="cinematic-marquee">
+          <span className="cinematic-kicker">✦ TODAY ACTION QUEUE</span>
+          <NoticeCarousel date={date} onLog={setQuickDate} />
+        </div>
         {quickDate && (
           <RecoveryQuickLog
             date={quickDate}
@@ -308,6 +300,27 @@ export function TodayV2({
             notify={notify}
           />
         )}
+      </section>
+      <section className="card">
+        <div className="card-head">
+          <h2>
+            <Dumbbell size={19} />
+            TRAIN
+          </h2>
+          <Link href="/training" aria-label="開啟訓練">
+            <ChevronRight />
+          </Link>
+        </div>
+        <p className="today-training">
+          {current?.name ?? (day ? day.name : "尚未設定 Training Plan")}
+        </p>
+        <Link
+          className="button secondary"
+          href={current ? "/training/session" : "/training"}
+        >
+          {current ? "繼續訓練" : day ? "開始訓練" : "設定訓練"}
+          <ArrowRight size={16} />
+        </Link>
       </section>
       <section className="card">
         <div className="card-head">
@@ -332,27 +345,6 @@ export function TodayV2({
             inlineClose={() => setQuickFood(false)}
           />
         )}
-      </section>
-      <section className="card">
-        <div className="card-head">
-          <h2>
-            <Dumbbell size={19} />
-            TRAIN
-          </h2>
-          <Link href="/training" aria-label="開啟訓練">
-            <ChevronRight />
-          </Link>
-        </div>
-        <p className="today-training">
-          {current?.name ?? (day ? day.name : "尚未設定 Training Plan")}
-        </p>
-        <Link
-          className="button secondary"
-          href={current ? "/training/session" : "/training"}
-        >
-          {current ? "繼續訓練" : day ? "開始訓練" : "設定訓練"}
-          <ArrowRight size={16} />
-        </Link>
       </section>
       <section className="daily-status">
         <p className="eyebrow">DAILY STATUS</p>
@@ -581,6 +573,7 @@ export function NutritionV2({
   const [sheet, setSheet] = useState<
     | "meal"
     | "slots"
+    | "rename"
     | "myfood"
     | "add"
     | "manual"
@@ -594,6 +587,7 @@ export function NutritionV2({
   const [slot, setSlot] = useState(state.mealSlots[0]);
   const [quantity, setQuantity] = useState(100);
   const [slotText, setSlotText] = useState(state.mealSlots.join("\n"));
+  const [renameSlot, setRenameSlot] = useState("");
   const day = resolveDay(state, selectedDate);
   const meals = visibleMeals(state, selectedDate);
   const isLibrary = path === "nutrition/foods";
@@ -720,16 +714,26 @@ export function NutritionV2({
               <div key={name} className="meal-section">
                 <div className="meal-head">
                   <h2>{name}</h2>
-                  <button
-                    className="icon-button"
-                    aria-label={`新增${name}`}
-                    onClick={() => {
-                      setSlot(name);
-                      setSheet("add");
-                    }}
-                  >
-                    <Plus size={20} />
-                  </button>
+                  <div className="cinematic-meal-actions">
+                    {state.mealSlots.includes(name) && (
+                      <button
+                        type="button"
+                        className="icon-button"
+                        aria-label={`重新命名${name}`}
+                        onClick={() => { setRenameSlot(name); setSheet("rename"); }}
+                      >
+                        <Ellipsis size={18} />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="icon-button"
+                      aria-label={`新增食物至${name}`}
+                      onClick={() => { setSlot(name); setSheet("add"); }}
+                    >
+                      <Plus size={20} />
+                    </button>
+                  </div>
                 </div>
                 {meals.filter((m) => m.slot === name).length ? (
                   meals
@@ -763,7 +767,7 @@ export function NutritionV2({
               </div>
             ))}
           </section>
-          <button className="button add-meal" onClick={() => setSheet("meal")}>
+          <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
             <Plus size={18} />
             新增飲食
           </button>
@@ -793,6 +797,7 @@ export function NutritionV2({
             {
               meal: "加入哪一餐",
               slots: "編輯每日餐次",
+              rename: "重新命名餐次",
               myfood: "My Foods",
               add: `${slot} · 新增飲食`,
               manual: edit ? "修正飲食" : "Quick Macro",
@@ -819,6 +824,32 @@ export function NutritionV2({
               ))}
               <button onClick={() => setSheet("slots")}>編輯餐次</button>
             </div>
+          ) : sheet === "rename" ? (
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const next = String(new FormData(e.currentTarget).get("name") ?? "").trim();
+              if (!next || (state.mealSlots.some(n => n !== renameSlot && n.toLowerCase() === next.toLowerCase()))) {
+                notify("餐次不可空白或重複");
+                return;
+              }
+              if (next === renameSlot) { close(); return; }
+              if (save("重新命名餐次", (draft) => {
+                const today = dateInZone(draft.profile?.timezone);
+                draft.mealSlots = draft.mealSlots.map(n => n === renameSlot ? next : n);
+                // Keep old meal snapshots unchanged; only current / future entries get successor snapshots.
+                const visible = draft.meals.filter(m => !m.deleted && m.slot === renameSlot && m.date >= today && !draft.meals.some(n => n.supersedes === m.id));
+                for (const m of visible) draft.meals.push({ ...m, id: uid(), slot: next, createdAt: stamp(), supersedes: m.id });
+              })) {
+                setSlot(next); setRenameSlot(next); setSlotText(state.mealSlots.map(n => n === renameSlot ? next : n).join("\n"));
+                close(); notify("餐次名稱已更新，歷史紀錄保留");
+              }
+            }}>
+              <p className="muted">此名稱套用今天及未來；過去日期保留當時的餐次名稱。</p>
+              <Field label="餐次名稱">
+                <input name="name" defaultValue={renameSlot} maxLength={30} required autoFocus />
+              </Field>
+              <button className="button">儲存名稱</button>
+            </form>
           ) : sheet === "slots" ? (
             <form
               onSubmit={(e) => {
@@ -855,7 +886,13 @@ export function NutritionV2({
               <button className="button">保存餐次</button>
             </form>
           ) : sheet === "add" ? (
-            <div className="action-list">
+            <div className="cinematic-quick-add">
+              <Field label="加入哪一餐">
+                <select aria-label="加入哪一餐" value={slot} onChange={(e) => setSlot(e.target.value)}>
+                  {state.mealSlots.map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+              </Field>
+              <div className="action-list">
               <button onClick={() => setSheet("food")}>
                 <Utensils />
                 Food
@@ -878,6 +915,7 @@ export function NutritionV2({
                 食譜
                 <ChevronRight />
               </Link>
+              </div>
             </div>
           ) : sheet === "food" || sheet === "myfood" ? (
             <>
