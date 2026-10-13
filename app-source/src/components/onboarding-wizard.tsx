@@ -10,7 +10,7 @@ const STEPS = ["basic","goal","activity","safety","result"] as const;
 type Step = (typeof STEPS)[number];
 const DRAFT_KEY = "jfs-onboarding-draft-v1";
 const DEFAULT: OnboardingData = {
-  name:"", age:18, height:170, weight:70, sex:"male", goal:"CUT",
+  name:"", age:0, height:0, weight:0, sex:"male", goal:"CUT",
   frequency: -1, resistanceDays:0, experiencedCut:false, safety:blankSafety(),
 };
 const stepHref = (step: Step) => "/onboarding/" + step;
@@ -80,6 +80,12 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
     if(nextStep) router.push(stepHref(nextStep));
   }
   function confirm() {
+    if (data.age < 1 || data.age > 100 || data.height < 100 || data.height > 250 ||
+        data.weight < 30 || data.weight > 350) {
+      setError("請先完成有效的 Basic Information，才能建立個人紀錄。");
+      router.push("/onboarding/basic");
+      return;
+    }
     const profile = asProfile(data,state.profile);
     const today = dateInZone(profile.timezone);
     if (save("完成新版 Onboarding", draft => {
@@ -120,10 +126,10 @@ export function OnboardingWizard({ path, notify }: { path:string; notify: (s?:st
         {step === "basic" && (
           <div className="onboarding-fields">
             <label>稱呼（可選）<input value={data.name} maxLength={40} placeholder="Athlete" onChange={e=>change("name",e.target.value)}/></label>
-            <label>年齡<input type="number" inputMode="numeric" min={1} max={100} value={data.age} onChange={e=>change("age",Number(e.target.value))}/></label>
+            <label>年齡<input type="number" inputMode="numeric" min={1} max={100} value={data.age || ""} onChange={e=>change("age",Number(e.target.value))}/></label>
             <label>性別／Numbers 計算預設<select value={data.sex} onChange={e=>change("sex",e.target.value as "male"|"female")}><option value="male">男性</option><option value="female">女性</option></select></label>
-            <label>身高 cm<input type="number" inputMode="decimal" min={100} max={250} value={data.height} onChange={e=>change("height",Number(e.target.value))}/></label>
-            <label>體重 kg<input type="number" inputMode="decimal" min={30} max={350} step="0.1" value={data.weight} onChange={e=>change("weight",Number(e.target.value))}/></label>
+            <label>身高 cm<input type="number" inputMode="decimal" min={100} max={250} value={data.height || ""} onChange={e=>change("height",Number(e.target.value))}/></label>
+            <label>體重 kg<input type="number" inputMode="decimal" min={30} max={350} step="0.1" value={data.weight || ""} onChange={e=>change("weight",Number(e.target.value))}/></label>
             <label>體脂率 %（選填）<input type="number" inputMode="decimal" min={1} max={70} step="0.1" placeholder="不知道可留空" value={data.bodyFat ?? ""} onChange={e=>change("bodyFat",safeFloat(e.target.value))}/></label>
           </div>
         )}
