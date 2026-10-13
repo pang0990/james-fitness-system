@@ -109,7 +109,7 @@ export function Recipes({ date, notify, path = "nutrition/recipes" }: {
       ) : (
         <>
           <NutritionSummary date={logDate} />
-          <p className="muted">內建食譜索引 {builtInRecipes.length} 道（點心 {counts.Snacks}／早餐 {counts.Breakfast}／正餐 {counts["Main Meals"]}），另外保留你的自訂食譜。其中 119 道已載入原始食材／做法，另 10 道目前僅有名稱、無法作營養紀錄；來源缺少的營養值不會被當成 0。</p>
+          <p className="muted">{builtInRecipes.length} 道食譜 · 點心 {counts.Snacks} · 早餐 {counts.Breakfast} · 正餐 {counts["Main Meals"]}</p>
           <Field label="搜尋食譜">
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="搜尋食譜名稱或食材" />
           </Field>
