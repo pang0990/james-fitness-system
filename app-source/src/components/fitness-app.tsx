@@ -360,12 +360,10 @@ export function FitnessApp({ path }: { path: string }) {
               <User size={20} />
             </summary>
             <div>
-              <Link href="/settings/profile">個人資料</Link>
-              <Link href="/learn">Knowledge</Link>
-              <Link href="/settings">設定</Link>
-              <Link href="/settings/data">資料管理</Link>
-              <Link href="/settings/appearance">外觀</Link>
-              <Link href="/settings/privacy">隱私說明</Link>
+              <Link href="/settings/profile">Profile · 個人資料</Link>
+              <Link href="/learn">Knowledge · 知識庫</Link>
+              <Link href="/settings/data">Data & Backup · 資料管理</Link>
+              <Link href="/settings">Settings · 系統設定</Link>
             </div>
           </details>
         </header>
