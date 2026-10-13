@@ -360,9 +360,9 @@ export function FitnessApp({ path }: { path: string }) {
               <User size={20} />
             </summary>
             <div>
-              <Link href="/settings/profile">Profile · 個人資料</Link>
-              <Link href="/learn">Knowledge · 知識庫</Link>
-              <Link href="/settings/data">Data & Backup · 資料管理</Link>
+              <Link href="/profile">Profile · 個人資料</Link>
+              <Link href="/knowledge">Knowledge · 知識庫</Link>
+              <Link href="/data">Data & Backup · 資料管理</Link>
               <Link href="/settings">Settings · 系統設定</Link>
             </div>
           </details>
@@ -455,8 +455,8 @@ export function FitnessApp({ path }: { path: string }) {
                   ) && <MetricDetails date={date} group={path.split("/")[1]} />}
                 </>
               )
-            ) : section === "learn" ? (
-              <Knowledge path={path} />
+            ) : section === "learn" || section === "knowledge" ? (
+              <Knowledge path={path.replace(/^knowledge/, "learn")} />
             ) : section === "settings" ? (
               ["settings/data", "settings/privacy"].includes(path) ? (
                 <SettingsPage path={path} notify={notify} />
@@ -2287,11 +2287,9 @@ function SettingsPage({
         description="設定、資料與使用方式，集中在這裡。"
       />
       <div className="subnav">
-        <Link href="/settings">一般設定</Link>
-        <Link href="/settings/profile">個人資料</Link>
-        <Link href="/settings/appearance">外觀</Link>
+        <Link href="/settings">系統設定</Link>
+        <Link href="/data">資料管理</Link>
         <Link href="/settings/privacy">隱私說明</Link>
-        <Link href="/settings/data">資料管理</Link>
       </div>
       <div className="narrow stack">
         {path === "settings/appearance" ? (
@@ -2350,7 +2348,8 @@ function SettingsPage({
                     if (
                       window.confirm(
                         "已匯出備份嗎？確定刪除這個瀏覽器內所有 James Fitness 紀錄？",
-                      )
+                      ) &&
+                      window.confirm("第二次確認：所有本機 Profile、Nutrition、Training、Progress 與 History 都會刪除。確定繼續？")
                     ) {
                       reset();
                       router.push("/today");
@@ -2446,7 +2445,7 @@ function SettingsPage({
                 GitHub Pages 可提供網站，但目前不提供雲端資料同步。
               </p>
               <div className="form-actions">
-                <Link className="button secondary" href="/settings/data">
+                <Link className="button secondary" href="/data">
                   資料管理
                   <ArrowRight size={14} />
                 </Link>

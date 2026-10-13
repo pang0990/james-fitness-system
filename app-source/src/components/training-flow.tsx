@@ -191,7 +191,7 @@ export function TrainingFlow({
       notify();
     }
   }
-  if (path === "training/plan") return <TrainingPlan notify={notify} />;
+  if (path === "training/plan" || path === "training/plan/new") return <TrainingPlan notify={notify} startBlank={path === "training/plan/new"} />;
   if (path === "training/calendar")
     return (
       <div className="daily-page">

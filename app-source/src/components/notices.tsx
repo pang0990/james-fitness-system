@@ -78,7 +78,8 @@ export function NoticeCarousel({
           },
         ]
       : []),
-    ...(state.preferences?.reminders === false
+    ...(state.preferences?.missingLogReminder === false ||
+        (state.preferences?.missingLogReminder === undefined && state.preferences?.reminders === false)
       ? []
       : [0, 1, 2].flatMap((offset) => {
           const d = addDays(date, -offset),

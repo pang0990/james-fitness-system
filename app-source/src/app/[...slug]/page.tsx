@@ -3,6 +3,22 @@ import { LegacyRoute } from "@/components/legacy-route";
 export const dynamicParams = false;
 export function generateStaticParams() {
   return [
+    "settings/general",
+    "settings/companion",
+    "settings/data-privacy",
+    "knowledge",
+    "knowledge/recovery-adaptation",
+    "knowledge/exercise-recovery",
+    "knowledge/muscle-fiber-types",
+    "data",
+    "training/plan/new",
+    "training/plan/edit",
+    "training/history/session",
+    "progress/check-in",
+    "progress/check-in/history",
+    "progress/training/exercises",
+    "nutrition/recipes/detail",
+    "training/exercises/detail",
     "settings/profile",
     "settings/body",
     "settings/nutrition",
@@ -59,7 +75,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
   const aliases: Record<string, string> = {
-    profile: "settings/profile",
+    // Backward-compatible legacy entry points. New public paths render directly.
     "training/cycle": "training/plan",
     "training/templates": "training/plan",
     "progress/weekly": "progress/review",
@@ -70,5 +86,18 @@ export default async function Page({
   };
   const target = aliases[slug.join("/")];
   if (target) return <LegacyRoute target={"/" + target} />;
-  return <FitnessApp path={slug.join("/")} />;
+  const requested = slug.join("/");
+  const resolved: Record<string, string> = {
+    profile: "settings/profile",
+    data: "settings/data",
+
+    "training/plan/edit": "training/plan",
+    "training/history/session": "training/history",
+    "training/exercises/detail": "training/exercises",
+    "nutrition/recipes/detail": "nutrition/recipes",
+    "progress/check-in": "progress/review",
+    "progress/check-in/history": "progress/history",
+    "progress/training/exercises": "progress/training",
+  };
+  return <FitnessApp path={resolved[requested] ?? requested} />;
 }
