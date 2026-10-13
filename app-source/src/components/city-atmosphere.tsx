@@ -62,7 +62,7 @@ export function CityAtmosphere() {
 
     const systemMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
     const dataSaver=(navigator as Navigator & {connection?:{saveData?:boolean}}).connection?.saveData===true;
-    if(systemMotion.matches || dataSaver) return;
+    if(dataSaver) return; // Respect data saver without loading animated layers.
 
     const rand=seeded();
     const rain:RainParticle[]=Array.from({length:125},()=>({
@@ -82,7 +82,7 @@ export function CityAtmosphere() {
     }));
     const windows:BuildingLight[]=Array.from({length:85},()=>{
       const edge=rand()>.5;
-      return {x:edge?.77+rand()*.23:rand()*.23,y:.08+rand()*.61,
+      return {x:edge ? .77+rand()*.23 : rand()*.23,y:.08+rand()*.61,
         w:1+rand()*3.2,h:1.5+rand()*6,
         hue:rand()>.62?"#75b8c7":rand()>.5?"#bd74ae":"#f5a768",
         phase:rand()*6.28,edge,
