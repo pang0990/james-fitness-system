@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { WeeklySummary } from "./weekly-summary";
+import { ActivityTrend } from "./activity-trend";
 import { recoveryEntries } from "@/lib/recovery";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
@@ -53,6 +54,7 @@ export function ProgressDirection({ date }: { date: string }) {
     <div className="daily-page progress-direction">
       <PageTitle title="Progress" />
       <WeeklySummary date={date} />
+      <ActivityTrend date={date} />
       <section className="direction-hero">
         <div className="range-control" aria-label="趨勢圖期間">
           {["7", "30", "all"].map((r) => (
