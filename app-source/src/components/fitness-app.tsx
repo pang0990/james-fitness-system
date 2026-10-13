@@ -539,7 +539,14 @@ function Onboarding({
       setError("請完整填寫有效的成人基本資料。");
       return;
     }
-    setPreview(parsed.data);
+    setPreview({
+      ...parsed.data,
+      bodyFat: p?.bodyFat,
+      resistanceDays: p?.resistanceDays,
+      safety: p?.safety,
+      eligible: parsed.data.eligible && parsed.data.age >= 18 &&
+        !Object.values(p?.safety ?? {}).some(Boolean),
+    });
     setError("");
   }
   function confirm() {
