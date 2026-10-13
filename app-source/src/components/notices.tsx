@@ -155,7 +155,7 @@ export function NoticeCarousel({
       aria-roledescription="輪播提醒"
     >
       {notices[at].logDate && onLog ? (
-        <div className="grow">
+        <div key={`${at}:${notices[at].text}`} className="grow notice-current-content">
           <button
             className="text-link"
             onClick={() => onLog(notices[at].logDate!)}
@@ -176,7 +176,7 @@ export function NoticeCarousel({
           )}
         </div>
       ) : (
-        <Link key={notices[at].text} href={notices[at].href}>
+        <Link className="notice-current-content" key={`${at}:${notices[at].text}`} href={notices[at].href}>
           {notices[at].text}
           <ChevronRight size={16} />
         </Link>
