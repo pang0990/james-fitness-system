@@ -15,7 +15,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
     () =>
       (!startBlank ? current?.days : undefined)?.map((d, i) => ({
         ...structuredClone(d),
-        id: dayId(current, i),
+        id: current ? dayId(current, i) : uid(),
       })) ?? [],
   );
   const [applyMode, setApplyMode] = useState("keep");
