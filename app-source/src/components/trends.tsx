@@ -19,10 +19,12 @@ export function LineChart({
   points,
   unit,
   large = false,
+  onPointSelect,
 }: {
   points: Point[];
   unit: string;
   large?: boolean;
+  onPointSelect?: (point: Point) => void;
 }) {
   const [selected, setSelected] = useState<number | null>(null);
   if (!points.length) return <div className="chart-empty">尚未紀錄</div>;
@@ -71,9 +73,9 @@ export function LineChart({
                 tabIndex={0}
                 role="button"
                 aria-label={`${points[i].date}：${points[i].value} ${unit}`}
-                onClick={() => setSelected(i)}
+                onClick={() => {setSelected(i);onPointSelect?.(points[i]);}}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") setSelected(i);
+                  if (e.key === "Enter" || e.key === " ") {setSelected(i);onPointSelect?.(points[i]);}
                 }}
               />
             )}
