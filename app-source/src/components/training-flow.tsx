@@ -19,7 +19,6 @@ import {
   activeCycle,
   type MuscleTarget,
   stages,
-  scheduleKind,
   scheduleEntry,
 } from "@/lib/training-model";
 import { Companion } from "./companion";
@@ -39,7 +38,7 @@ import {
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { addDays, type Segment } from "@/lib/domain";
-import { PageTitle, Menu, Sheet, Field, Num, uid, stamp } from "./daily";
+import { PageTitle, Sheet, Field, Num, uid, stamp } from "./daily";
 export function TrainingFlow({
   date,
   path,
