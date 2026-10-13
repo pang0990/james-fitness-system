@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { recoveryEntries } from "@/lib/recovery";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { ChevronRight, Plus } from "lucide-react";
 import { useStore } from "@/lib/store";
 import {
@@ -27,6 +27,7 @@ export function LineChart({
   onPointSelect?: (point: Point) => void;
 }) {
   const [selected, setSelected] = useState<number | null>(null);
+  const gradientId=useId().replace(/:/g,"");
   if (!points.length) return <div className="chart-empty">尚未紀錄</div>;
   const width = 500,
     height = large ? 230 : 110;
@@ -38,6 +39,13 @@ export function LineChart({
     x: 30 + ((Date.parse(p.date) - first) / (last - first || 1)) * 440,
     y: height - 25 - ((p.value - min) / (max - min || 1)) * (height - 50),
   }));
+  const curve=coords.length?coords.reduce((path,pt,i)=>{
+    if(i===0)return `M ${pt.x} ${pt.y}`;
+    const previous=coords[i-1];
+    const mid=(previous.x+pt.x)/2;
+    return path+` C ${mid} ${previous.y}, ${mid} ${pt.y}, ${pt.x} ${pt.y}`;
+  },""):"";
+  const area=coords.length>1?`${curve} L ${coords.at(-1)!.x} ${height-25} L ${coords[0].x} ${height-25} Z`:"";
   return (
     <div className="line-chart">
       <svg
@@ -45,22 +53,18 @@ export function LineChart({
         role="img"
         aria-label={`${points.length} 筆紀錄趨勢，${min} 至 ${max} ${unit}`}
       >
-        <line
-          x1="30"
-          x2="470"
-          y1={height - 25}
-          y2={height - 25}
-          stroke="currentColor"
-          opacity=".12"
-        />
-        {points.length > 1 && (
-          <polyline
-            points={coords.map((c) => `${c.x},${c.y}`).join(" ")}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          />
-        )}
+        <defs><linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#e6be75" stopOpacity=".34"/>
+          <stop offset="100%" stopColor="#bc8e50" stopOpacity="0"/>
+        </linearGradient></defs>
+        {[.25,.5,.75,1].map(fraction=><line key={fraction} x1="30" x2="470"
+          y1={height-25-(height-50)*(1-fraction)} y2={height-25-(height-50)*(1-fraction)}
+          stroke="currentColor" strokeDasharray={fraction===1?"0":"2 5"} opacity=".10"/>)}
+        {points.length>1&&<>
+          <path d={area} fill={`url(#${gradientId})`}/>
+          <path d={curve} fill="none" stroke="#dec083" strokeWidth="2.3"
+            strokeLinejoin="round" strokeLinecap="round"/>
+        </>}
         {coords.map((c, i) => (
           <g key={i}>
             <circle cx={c.x} cy={c.y} r={large ? 5 : 3} fill="currentColor" />
