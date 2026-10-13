@@ -4,10 +4,12 @@ import { useStore } from "@/lib/store";
 import { averageSteps, activityContext, stepsInRange } from "@/lib/activity";
 import { addDays } from "@/lib/domain";
 import { LineChart } from "./trends";
+import { StepEntryDialog } from "./step-entry-dialog";
 
 export function ActivityTrend({date}:{date:string}) {
   const {state}=useStore();
   const [days,setDays]=useState<7|30>(7);
+  const [editDate,setEditDate]=useState<string|null>(null);
   const points=stepsInRange(state,date,days);
   const summary=averageSteps(state,date,days);
   // Cardio-only days count independently from steps, using the same local-date window.
@@ -28,8 +30,13 @@ export function ActivityTrend({date}:{date:string}) {
       <div><small>有氧／活動時間</small><strong>{cardio.length?cardioMinutes:"—"}</strong>
         <span>{cardio.length?"分鐘（已記錄）":"未記錄"}</span></div>
     </div>
-    {points.length>1?<LineChart points={points.map(p=>({date:p.date,value:p.steps}))} unit="steps" large/>:
+    {points.length>1?<LineChart points={points.map(p=>({date:p.date,value:p.steps}))} unit="steps" large onPointSelect={p=>setEditDate(p.date)}/> :
       <p className="muted">至少需要兩天步數紀錄，才能顯示趨勢。</p>}
+    <div className="activity-inline-actions">
+      <button type="button" className="text-link" onClick={()=>setEditDate(date)}>＋ 補登／修改步數</button>
+    </div>
+    {editDate&&<StepEntryDialog startDate={editDate} maxDate={date}
+      close={()=>setEditDate(null)} notify={()=>{}}/>}
     <p className="muted activity-data-note">只統計已記錄的日期，未記錄不代表 0 步。活動資料不會自動更改營養目標。</p>
   </section>;
 }

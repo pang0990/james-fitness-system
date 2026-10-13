@@ -89,7 +89,7 @@ export default async function Page({
     // Backward-compatible legacy entry points. New public paths render directly.
     "training/cycle": "training/plan",
     "training/templates": "training/plan",
-    "progress/weekly": "progress/review",
+    "progress/weekly": "progress/check-in",
     "progress/recommendations": "progress/review",
     signup: "login",
     "nutrition/log": "nutrition",
@@ -106,7 +106,6 @@ export default async function Page({
 
 
 
-    "progress/check-in": "progress/review",
     "progress/check-in/history": "progress/history",
 
   };

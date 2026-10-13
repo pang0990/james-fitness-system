@@ -50,3 +50,22 @@ test("GAIN temporary stays as-is with inadequate training, absent schedule or pa
   const pain=fixture();pain.recoveryEntries=[{id:"pain",date:"2026-09-14",type:"pain",value:7,unit:"rating",createdAt:"x"}];
   assert.equal(gainReview(pain,"2026-09-14").actionable,false);
 });
+
+
+test("GAIN baseline review records major step shifts and requires acknowledgement only with enough data",()=>{
+  const s=fixture();
+  for(let i=0;i<14;i++){
+    const date=addDays("2026-09-01",i);
+    s.dailySteps!.push({id:"step"+i,date,steps:i<7?10000:4500,source:"manual",updatedAt:date});
+  }
+  const review=gainReview(s,"2026-09-14");
+  assert.equal(review.actionable,true);
+  assert.equal(review.activityEvidence.significant,true);
+  const expected=JSON.stringify(review);
+  assert.throws(()=>applyGainDecision(s,"2026-09-14",true,expected),/活動量/);
+  assert.equal(s.versions.length,1);
+  applyGainDecision(s,"2026-09-14",true,expected,true);
+  assert.equal(s.versions.length,2);
+  assert.equal(s.gainDecisions?.[0].activityEvidence?.changePercent,-55);
+  assert.equal(s.gainDecisions?.[0].activityAcknowledged,true);
+});

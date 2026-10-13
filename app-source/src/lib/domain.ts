@@ -216,6 +216,16 @@ export type Session = {
   completedAt?: string;
   feedback?: string;
 };
+export type ActivityEvidence = {
+  comparedAt: string;
+  recentAverage: number | null;
+  previousAverage: number | null;
+  recentDays: number;
+  previousDays: number;
+  changePercent: number | null;
+  significant: boolean;
+};
+
 export type Recommendation = {
   id: string;
   baseVersionId: string;
@@ -231,6 +241,8 @@ export type Recommendation = {
   status: "pending" | "accepted" | "kept" | "expired";
   decisionAt?: string;
   newVersionId?: string;
+  activityEvidence?: ActivityEvidence;
+  activityAcknowledged?: boolean;
 };
 export type NutritionDay = {
   date: string;
@@ -345,6 +357,11 @@ export type AppState = {
     type: string;
     minutes: number;
     calories: number | null;
+    /** Original activity duration when a historical kcal estimate was recorded. */
+    calorieEstimateAppliesToMinutes?: number;
+    calorieEstimateOriginalType?: string;
+    /** The old estimate is retained for export/audit but no longer describes edited duration. */
+    calorieEstimateStale?: boolean;
     createdAt: string;
     source?: "manual" | "apple_health";
     externalId?: string;
@@ -546,6 +563,25 @@ export function cutReview(
     };
   return { loss, direction: null, range: null };
 }
+/**
+ * Review-only activity evidence; 4+ logged days on each consecutive 7D window.
+ * Steps missing on a date are not zero. ±25% is a versioned product advisory,
+ * not a validated metabolic threshold.
+ */
+export function activityEvidenceForReview(state: AppState, comparedAt: string): ActivityEvidence {
+  function windowSummary(end:string){
+    const start=addDays(end,-6);
+    const logged=(state.dailySteps??[]).filter(x=>x.date>=start&&x.date<=end);
+    return {count:logged.length,average:logged.length?Math.round(logged.reduce((n,r)=>n+r.steps,0)/logged.length):null};
+  }
+  const recent=windowSummary(comparedAt);
+  const previous=windowSummary(addDays(comparedAt,-7));
+  const comparable=recent.count>=4&&previous.count>=4&&(previous.average??0)>0;
+  const pct=comparable?Math.round(((recent.average!-previous.average!)/previous.average!)*1000)/10:null;
+  return {comparedAt,recentAverage:recent.average,previousAverage:previous.average,
+    recentDays:recent.count,previousDays:previous.count,changePercent:pct,
+    significant:pct!==null&&Math.abs(pct)>=25};
+}
 export function decide(
   state: AppState,
   id: string,
@@ -554,6 +590,7 @@ export function decide(
   date: string,
   newId: string,
   now: string,
+  activityAcknowledged = false,
 ) {
   const rec = state.recommendations.find((r) => r.id === id);
   if (!rec) throw Error("找不到建議");
@@ -563,6 +600,10 @@ export function decide(
     rec.decisionAt = now;
     return;
   }
+  // Activity is a decision guard, never a new calorie or macro formula.
+  const evidence = activityEvidenceForReview(state, rec.periodEnd);
+  if (evidence.significant && !activityAcknowledged)
+    throw Error("活動量有明顯變化，請先確認此因素再採用碳水調整。");
   if (!state.profile?.eligible || state.profile.goal !== "CUT")
     throw Error("目前為紀錄模式，不採用自動營養調整");
   const current = activePlan(state, date);
@@ -606,6 +647,8 @@ export function decide(
   rec.status = "accepted";
   rec.decisionAt = now;
   rec.newVersionId = newId;
+  rec.activityEvidence = evidence;
+  rec.activityAcknowledged = evidence.significant ? activityAcknowledged : undefined;
 }
 export function validateState(value: unknown): AppState {
   if (!value || typeof value !== "object") throw Error("資料格式無效");
