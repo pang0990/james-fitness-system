@@ -90,7 +90,7 @@ export default async function Page({
   const resolved: Record<string, string> = {
     profile: "settings/profile",
     data: "settings/data",
-    "training/plan/new": "training/plan",
+
     "training/plan/edit": "training/plan",
     "training/history/session": "training/history",
     "training/exercises/detail": "training/exercises",
