@@ -685,7 +685,7 @@ export function TrainingFlow({
                 </span>
                 <ChevronRight size={14} aria-hidden="true"/>
               </Link>)}
-            </div>
+            </div>}
             {current ? (
               <>
                 <Link className="button" href="/training/session">繼續訓練 <ArrowRight size={16}/></Link>
