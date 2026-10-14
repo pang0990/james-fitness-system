@@ -14,7 +14,7 @@ export const SUPABASE_PUBLISHABLE_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
   "sb_publishable_Pw3JFcyM1H-pkIyyCHgMtw_At1mVCZq";
 
-export const appBasePath = process.env.NEXT_PUBLIC_BASE_PATH || "/james-fitness-system";
+export const appBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
