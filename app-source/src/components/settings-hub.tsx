@@ -132,7 +132,7 @@ export function SettingsHub({
           e.preventDefault();
           const data = new FormData(e.currentTarget);
           if (save("更新角色設定", draft => {
-            draft.appearance = { theme: draft.appearance?.theme ?? "dark", showCompanion: data.get("character") === "on" };
+            draft.appearance = { theme: draft.appearance?.theme ?? "light", visualStyle: draft.appearance?.visualStyle ?? "minimal", showCompanion: data.get("character") === "on" };
             (draft.preferences ??= {}).companionAnimation = data.get("animation") === "on";
             (draft.preferences ??= {}).cityAnimation = data.get("cityAnimation") === "on";
           })) notify("角色偏好已儲存");

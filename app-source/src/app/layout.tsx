@@ -13,6 +13,7 @@ import "./today-reference.css";
 import "./today-motion.css";
 import "./today-fullbleed.css";
 import "./auth.css";
+import "./minimal-theme.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
