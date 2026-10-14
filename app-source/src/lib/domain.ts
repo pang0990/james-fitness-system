@@ -310,7 +310,7 @@ export type AppState = {
     date: string;
     previousGoal?: "CUT" | "GAIN";
   }[];
-  appearance?: { theme: "dark" | "system"; showCompanion: boolean };
+  appearance?: { theme: "light" | "dark" | "system"; showCompanion: boolean; visualStyle?: "minimal" | "cinematic" };
   trainingDecisions?: {
     id: string;
     date: string;
@@ -672,8 +672,10 @@ export function validateState(value: unknown): AppState {
     if (!Array.isArray(s[key])) throw Error("資料不完整");
   if (
     s.appearance &&
-    (!["dark", "system"].includes(s.appearance.theme) ||
-      typeof s.appearance.showCompanion !== "boolean")
+    (!["light", "dark", "system"].includes(s.appearance.theme) ||
+      typeof s.appearance.showCompanion !== "boolean" ||
+      (s.appearance.visualStyle !== undefined &&
+        !["minimal", "cinematic"].includes(s.appearance.visualStyle)))
   )
     throw Error("外觀設定格式無效");
   if (s.customWarmups && (!Array.isArray(s.customWarmups) ||
