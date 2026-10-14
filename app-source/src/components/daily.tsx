@@ -606,6 +606,47 @@ export function FoodPicker({
     </div>
   );
 }
+/** A compact native modal for editing a meal name, not the full-height food Sheet. */
+function MealNameQuickEdit({
+  name,
+  onClose,
+  onSave,
+}: {
+  name: string;
+  onClose: () => void;
+  onSave: (next: string) => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    el?.showModal();
+    return () => el?.close();
+  }, []);
+  return (
+    <dialog
+      ref={ref}
+      className="meal-name-quick-dialog"
+      aria-label="修改餐次名稱"
+      onCancel={onClose}
+      onClick={(e) => { if (e.target === ref.current) onClose(); }}
+    >
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSave(String(new FormData(e.currentTarget).get("name") ?? ""));
+        }}
+      >
+        <label htmlFor="meal-quick-name">餐次名稱</label>
+        <input id="meal-quick-name" name="name" defaultValue={name} maxLength={30} required autoFocus />
+        <div className="meal-name-quick-actions">
+          <button type="button" onClick={onClose}>取消</button>
+          <button type="submit">儲存</button>
+        </div>
+      </form>
+    </dialog>
+  );
+}
+
 export function NutritionV2({
   path,
   date,
@@ -860,17 +901,52 @@ export function NutritionV2({
               <Link href="/nutrition/recipes?category=Main%20Meals"><span>正餐</span><b>{builtInRecipes.filter(r=>r.category==="Main Meals").length}</b><ChevronRight size={13}/></Link>
               <Link href="/nutrition/recipes?category=Snacks"><span>點心</span><b>{builtInRecipes.filter(r=>r.category==="Snacks").length}</b><ChevronRight size={13}/></Link>
             </nav>
-            <Link className="nutrition-meal-manage-link" href="/nutrition/meals">管理每日餐次 <ChevronRight size={15}/></Link>
           </section>
 
         </>
       )}
-      {sheet && (
+      {sheet === "rename" && (
+        <MealNameQuickEdit
+          name={renameSlot}
+          onClose={close}
+          onSave={(raw) => {
+            const next = raw.trim();
+            if (!next || state.mealSlots.some(n =>
+              n !== renameSlot && n.toLocaleLowerCase() === next.toLocaleLowerCase())) {
+              notify("餐次不可空白或重複");
+              return;
+            }
+            if (next === renameSlot) { close(); return; }
+            if (save("更新餐次名稱", draft => {
+              const today = dateInZone(draft.profile?.timezone);
+              draft.mealSlots = draft.mealSlots.map(n => n === renameSlot ? next : n);
+              // Keep historic meals intact; use successor entries for today/future.
+              const visible = draft.meals.filter(m =>
+                !m.deleted && m.slot === renameSlot && m.date >= today &&
+                !draft.meals.some(n => n.supersedes === m.id));
+              for (const m of visible) draft.meals.push({
+                ...m, id: uid(), slot: next, createdAt: stamp(), supersedes: m.id,
+              });
+              for (const day of Object.keys(draft.mealSlotSnapshots ?? {})) {
+                if (day >= today) draft.mealSlotSnapshots![day] =
+                  draft.mealSlotSnapshots![day].map(n => n === renameSlot ? next : n);
+              }
+              for (const item of draft.skippedMealSlots ?? []) {
+                if (item.date >= today && item.slot === renameSlot) item.slot = next;
+              }
+            })) {
+              setSlot(next);
+              close();
+              notify("餐次名稱已更新");
+            }
+          }}
+        />
+      )}
+      {sheet && sheet !== "rename" && (
         <Sheet
           title={
             {
               meal: "加入哪一餐",
-              rename: "重新命名餐次",
               myfood: "My Foods",
               add: `${slot} · 新增飲食`,
               manual: edit ? "修正飲食" : "Quick Macro",
@@ -896,34 +972,6 @@ export function NutritionV2({
                 </button>
               ))}
             </div>
-          ) : sheet === "rename" ? (
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const next = String(new FormData(e.currentTarget).get("name") ?? "").trim();
-              if (!next || (state.mealSlots.some(n => n !== renameSlot && n.toLowerCase() === next.toLowerCase()))) {
-                notify("餐次不可空白或重複");
-                return;
-              }
-              if (next === renameSlot) { close(); return; }
-              if (save("重新命名餐次", (draft) => {
-                const today = dateInZone(draft.profile?.timezone);
-                draft.mealSlots = draft.mealSlots.map(n => n === renameSlot ? next : n);
-                // Keep old meal snapshots unchanged; only current / future entries get successor snapshots.
-                const visible = draft.meals.filter(m => !m.deleted && m.slot === renameSlot && m.date >= today && !draft.meals.some(n => n.supersedes === m.id));
-                for (const m of visible) draft.meals.push({ ...m, id: uid(), slot: next, createdAt: stamp(), supersedes: m.id });
-                for (const day of Object.keys(draft.mealSlotSnapshots ?? {})) {
-                  if (day >= today) draft.mealSlotSnapshots![day] = draft.mealSlotSnapshots![day].map(n => n === renameSlot ? next : n);
-                }
-              })) {
-                setSlot(next); setRenameSlot(next);
-                close(); notify("餐次名稱已更新，歷史紀錄保留");
-              }
-            }}>
-              <Field label="餐次名稱">
-                <input name="name" defaultValue={renameSlot} maxLength={30} required autoFocus />
-              </Field>
-              <button className="button">儲存名稱</button>
-            </form>
           ) : sheet === "add" ? (
             <div className="cinematic-quick-add">
               <Field label="加入哪一餐">
