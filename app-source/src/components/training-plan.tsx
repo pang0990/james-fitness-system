@@ -22,6 +22,9 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
   );
   const ongoing = state.sessions.find((s) => s.status === "in_progress");
   const [template, setTemplate] = useState("");
+  const [planSource, setPlanSource] = useState<"custom" | "template">(
+    startBlank || current?.source === "custom" ? "custom" : "template",
+  );
   // Stable ID keeps the user's day in focus through edits and reordering.
   const [activeDayId, setActiveDayId] = useState<string | null>(null);
   const activeIndex = days.findIndex((day) => day.id === activeDayId);
@@ -34,10 +37,12 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
     if (days.length && !window.confirm("依選擇的分化帶入課表？未儲存的修改會被新的分化取代，已完成的訓練紀錄不受影響。")) return;
     setTemplate(selected);
     if (selected === "自訂空白") {
+      setPlanSource("custom");
       setDays([]);
       setActiveDayId(null);
       return;
     }
+    setPlanSource("template");
     const imported = templates[selected as keyof typeof templates].map(day => ({
       ...structuredClone(day), id: uid(),
     }));
@@ -109,6 +114,80 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
               }
             />
           </Field>
+          {planSource === "custom" && (
+            <div className="plan-second-session stack">
+              <label className="check">
+                <input type="checkbox" checked={!!day.secondSession}
+                  onChange={e => setDays(days.map((d,j) => i !== j ? d : {
+                    ...d,
+                    secondSession:e.target.checked
+                      ? { name:"第二場訓練", exercises:[] } : undefined,
+                  }))} />
+                同一天安排第二場訓練（此自訂課表的 Cycle Day）
+              </label>
+              {day.secondSession && (
+                <div className="stack">
+                  <p className="muted">兩場各自儲存；第二場不會重複推進 Cycle。完成第一場後可從 Training 開始第二場。</p>
+                  <Field label="第二場名稱">
+                    <input maxLength={80} value={day.secondSession.name}
+                      onChange={e => setDays(days.map((d,j) => i !== j ? d : ({
+                        ...d, secondSession:{...d.secondSession!,name:e.target.value},
+                      })))} />
+                  </Field>
+                  {(day.secondSession.exercises ?? []).map((ex,j) => (
+                    <div className="plan-exercise" key={j}>
+                      <strong>{ex.name}</strong>
+                      <div className="form-grid">
+                        {(["sets","reps","rir","restSeconds"] as const).map((key,k) => (
+                          <Field key={key} label={["組數","次數範圍","RIR","休息秒數"][k]}>
+                            <input type={key==="reps" ? "text" : "number"}
+                              min={key==="rir" ? 0 : 1}
+                              max={key==="restSeconds" ? 3600 : 100}
+                              value={ex[key]}
+                              onChange={e => setDays(days.map((d,n) => n !== i ? d : ({
+                                ...d, secondSession:{
+                                  ...d.secondSession!,
+                                  exercises:d.secondSession!.exercises!.map((x,m) => m!==j ? x : ({
+                                    ...x,[key]:key==="reps" ? e.target.value : Number(e.target.value),
+                                  })),
+                                },
+                              })))} />
+                          </Field>
+                        ))}
+                      </div>
+                      <button type="button" className="text-link"
+                        onClick={() => setDays(days.map((d,n) => n!==i ? d : ({
+                          ...d,secondSession:{...d.secondSession!,
+                            exercises:d.secondSession!.exercises!.filter((_,m)=>m!==j)},
+                        })))}>移除動作</button>
+                    </div>
+                  ))}
+                  <select aria-label="第二場加入動作" value=""
+                    onChange={e => {
+                      const item=catalog.find(x=>x.id===e.target.value);
+                      if(!item)return;
+                      setDays(days.map((d,j)=>j!==i ? d : ({
+                        ...d,
+                        secondSession:{
+                          ...d.secondSession!,
+                          exercises:[...(d.secondSession!.exercises??[]),{
+                            name:item.name,muscle:item.muscle,sets:3,reps:"8–12",rir:2,
+                            restSeconds:120,allowRestPause:item.allowRestPause,
+                            allowDropSet:item.allowDropSet,
+                          }],
+                        },
+                      })));
+                    }}>
+                    <option value="">＋ 第二場加入動作</option>
+                    {catalog.map(ex=><option key={ex.id} value={ex.id}>{ex.nameZh} · {ex.name}</option>)}
+                  </select>
+                  {!day.secondSession.exercises?.length && (
+                    <p className="muted" role="status">請先為第二場加入至少一個動作才能儲存。</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <div className="two-actions">
             <button
               className="button secondary"
@@ -250,7 +329,9 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
       <button
         className="button"
         disabled={
-          !days.length || !name.trim() || days.some((d) => !d.name.trim())
+          !days.length || !name.trim() || days.some((d) =>
+            !d.name.trim() || (d.secondSession &&
+              (!d.secondSession.name.trim() || !d.secondSession.exercises?.length)))
         }
         onClick={() => {
           if (
@@ -266,6 +347,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
               (s.cycles ??= []).push({
                 id: uid(),
                 name: name.trim(),
+                source: planSource,
                 days: structuredClone(days),
                 pending: pending.length ? pending : days.map((d) => d.id!),
                 round: (old?.round ?? 1) + (pending.length ? 0 : 1),

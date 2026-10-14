@@ -20,11 +20,12 @@ import {
   type MuscleTarget,
   stages,
   scheduleEntry,
+  cycleProgressEvents,
 } from "@/lib/training-model";
 import { Companion } from "./companion";
 import catalog from "@/content/exercises.json";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -61,6 +62,7 @@ export function TrainingFlow({
       : 0,
   );
   const [add, setAdd] = useState(false);
+  const [extraOpen, setExtraOpen] = useState(false);
   const [review, setReview] = useState(false);
   const [completedId, setCompletedId] = useState<string | null>(null);
   const [type, setType] = useState<Segment["type"]>("working");
@@ -73,9 +75,7 @@ export function TrainingFlow({
     return () => clearInterval(t);
   }, []);
   const cycle = activeCycle(state);
-  const count = cycle
-    ? (state.cycleEvents?.filter((e) => e.cycleId === cycle.id).length ?? 0)
-    : 0;
+  const count = cycle ? cycleProgressEvents(state,cycle.id).length : 0;
   const planned = scheduleEntry(state, date);
   const selectedIndex =
     cycle?.days.findIndex(
@@ -88,6 +88,21 @@ export function TrainingFlow({
     : 0;
   const day = cycle?.days[dayIndex];
   const current = state.sessions.find((s) => s.status === "in_progress");
+  const completedToday = state.sessions
+    .filter(s => s.status === "completed" && (s.workoutDate ?? s.date) === date)
+    .slice().sort((a,b) => (a.completedAt ?? a.createdAt).localeCompare(b.completedAt ?? b.createdAt));
+  // A custom Cycle day can have an optional second session, without consuming another day.
+  const plannedSecondFor = completedToday.find(session => {
+    if (!session.cycleId || !session.trainingDayId || session.isExtra) return false;
+    const plan = state.cycles?.find(c => c.id === session.cycleId);
+    const sourceDay = plan?.days.find((_,i) => dayId(plan,i) === session.trainingDayId);
+    return !!sourceDay?.secondSession &&
+      !state.sessions.some(s => s.parentSessionId === session.id && s.status !== "discarded");
+  });
+  const plannedSource = plannedSecondFor?.cycleId
+    ? state.cycles?.find(c => c.id === plannedSecondFor.cycleId) : undefined;
+  const plannedSecond = plannedSource?.days.find((_,i) =>
+    dayId(plannedSource,i) === plannedSecondFor?.trainingDayId)?.secondSession;
   useEffect(() => {
     if (current)
       sessionStorage.setItem("james-exercise-" + current.id, String(exercise));
@@ -154,8 +169,61 @@ export function TrainingFlow({
     sessionStorage.setItem("james-rest-end", String(end));
     setTimerEnd(end);
   }
+  function startPlannedSecond() {
+    if (current || !plannedSecondFor || !plannedSecond) return;
+    const origin = plannedSecondFor;
+    if (save("開始自訂課表第二場", draft => {
+      if (draft.sessions.some(s => s.status === "in_progress" ||
+        (s.parentSessionId === origin.id && s.status !== "discarded"))) return;
+      draft.sessions.push({
+        id:uid(),date,name:plannedSecond.name,
+        status:"in_progress",isExtra:true,sessionPart:"second",
+        parentSessionId:origin.id,
+        phase:state.preferences?.warmupDefault === "skip" ? "workout" : "warmup",
+        cycleId:origin.cycleId,trainingDayId:origin.trainingDayId,
+        workoutDate:date,scheduledDate:date,round:origin.round,
+        exercises:(plannedSecond.exercises??[]).map(ex=>({
+          ...ex,id:uid(),plannedSets:ex.sets,sets:[],
+        })),
+        warmupIds:[...(draft.warmupPreset??[])],createdAt:stamp(),
+      });
+    })) {
+      setExercise(0);
+      navigateWithMotion(router.push,"/training/session");
+      notify("第二場訓練已建立");
+    }
+  }
+  function startExtra(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (current) return;
+    const data = new FormData(e.currentTarget);
+    const name = String(data.get("name") ?? "").trim();
+    if (!name) return;
+    const selectedDay = Number(data.get("templateDay"));
+    const fromDay = cycle && Number.isInteger(selectedDay) && selectedDay >= 0
+      ? cycle.days[selectedDay] : undefined;
+    if (save("新增單次額外訓練", draft => {
+      if (draft.sessions.some(s => s.status === "in_progress")) return;
+      draft.sessions.push({
+        id:uid(),date,name,status:"in_progress",
+        isExtra:true,sessionPart:"extra",
+        phase:state.preferences?.warmupDefault === "skip" ? "workout" : "warmup",
+        workoutDate:date,scheduledDate:date,
+        // Ad-hoc exercises are not associated with, or counted by, Cycle progression.
+        exercises:(fromDay?.exercises??[]).map(ex=>({
+          ...ex,id:uid(),plannedSets:ex.sets,sets:[],
+        })),
+        warmupIds:[...(draft.warmupPreset??[])],createdAt:stamp(),
+      });
+    })) {
+      setExtraOpen(false);
+      setExercise(0);
+      navigateWithMotion(router.push,"/training/session");
+      notify("額外訓練已建立");
+    }
+  }
   function start() {
-    if (!cycle || !day) return;
+    if (current || !cycle || !day) return;
     if (
       save("開始 Cycle 訓練", (s) => {
         if (s.sessions.some((x) => x.status === "in_progress")) return;
@@ -164,6 +232,7 @@ export function TrainingFlow({
           date,
           name: `Day ${dayIndex + 1} · ${day.name}`,
           status: "in_progress",
+          sessionPart:planned.extra ? "extra" : "main",
           phase:
             state.preferences?.warmupDefault === "skip" ? "workout" : "warmup",
           cycleId: cycle.id,
@@ -727,6 +796,33 @@ export function TrainingFlow({
               <Link className="button" href="/training/plan">建立訓練課表 <ArrowRight size={16}/></Link>
             )}
           </section>
+          {(completedToday.length > 0 || !!plannedSecond) && (
+            <section className="card stack training-daily-sessions" aria-label="今天完成的訓練">
+              <div className="training-daily-sessions-heading">
+                <h2>今日訓練 · {completedToday.length} 場已完成</h2>
+                <small>共 {Math.round(completedToday.reduce((sum,s) => sum +
+                  (s.activeDuration ?? Math.max(0,Date.parse(s.completedAt??s.createdAt)-Date.parse(s.createdAt))) / 60000,0))} 分鐘</small>
+              </div>
+              {completedToday.map((s,index)=> (
+                <Link className="training-daily-session" href="/training/history" key={s.id}>
+                  <span><strong>{String(index+1).padStart(2,"0")} · {s.name}</strong>
+                    <small>{s.isExtra ? "額外訓練" : "課表訓練"} ·
+                      {Math.round((s.activeDuration ??
+                        Math.max(0,Date.parse(s.completedAt??s.createdAt)-Date.parse(s.createdAt))) / 60000)} 分鐘</small>
+                  </span>
+                  <ChevronRight size={16} aria-hidden="true" />
+                </Link>
+              ))}
+              {!current && plannedSecond && <button type="button"
+                className="button" onClick={startPlannedSecond}>
+                開始自訂課表第二場 · {plannedSecond.name} <ArrowRight size={16}/>
+              </button>}
+            </section>
+          )}
+          {!current && (
+            <button type="button" className="button secondary training-add-session"
+              onClick={() => setExtraOpen(true)}>＋ 新增一場訓練</button>
+          )}
           {cycle && <Link className="training-plan-summary" href="/training/plan">
             <span><small>目前課表</small><strong>{cycle.name}</strong><small>{cycle.days.length} 個訓練日 · 本輪尚有 {pendingIds(state,cycle).length} 天</small></span>
             <ChevronRight size={19}/>
@@ -743,6 +839,27 @@ export function TrainingFlow({
             </div>
           </details>
         </div>
+      )}
+      {extraOpen && !current && (
+        <Sheet title="新增一場訓練" onClose={() => setExtraOpen(false)}>
+          <p className="muted">僅新增這一次，不會變成常態課表，也不會推進 Cycle。</p>
+          <form onSubmit={startExtra} className="stack">
+            <Field label="訓練名稱">
+              <input name="name" defaultValue="額外訓練" maxLength={80} required />
+            </Field>
+            <Field label="動作來源">
+              <select name="templateDay" defaultValue="-1">
+                <option value="-1">空白開始，自行加入動作</option>
+                {cycle?.days.map((d,i)=>(
+                  <option value={i} key={dayId(cycle,i)}>
+                    套用 {d.name} 的動作（不計入 Cycle）
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <button type="submit" className="button">開始額外訓練 <ArrowRight size={16}/></button>
+          </form>
+        </Sheet>
       )}
       {skip && (
         <Sheet title="本輪不做這一天" onClose={() => setSkip(false)}>

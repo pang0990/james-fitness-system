@@ -1,11 +1,11 @@
 import { type AppState, type Cycle, type Session } from "./domain";
-import { activeCycle } from "./training-model";
+import { activeCycle, cycleProgressEvents } from "./training-model";
 export const dayId = (plan: Cycle, index: number) =>
   plan.days[index]?.id ?? `${plan.id}:day:${index}`;
 export function pendingIds(state: AppState, plan: Cycle): string[] {
   if (plan.pending) return plan.pending;
   const count =
-    state.cycleEvents?.filter((e) => e.cycleId === plan.id).length ?? 0;
+    cycleProgressEvents(state, plan.id).length;
   return plan.days
     .slice(count % plan.days.length)
     .map((_, i) => dayId(plan, i + (count % plan.days.length)));
@@ -44,7 +44,7 @@ export function completeSession(
     session.trainingDayId ??
     (original ? dayId(original, session.cycleDayIndex ?? 0) : undefined);
   if (id && active && !session.isExtra) consumeDay(state, active, id);
-  if (session.cycleId)
+  if (session.cycleId && !session.isExtra)
     (state.cycleEvents ??= []).push({
       id: crypto.randomUUID(),
       cycleId: session.cycleId,

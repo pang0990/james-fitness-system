@@ -91,7 +91,7 @@ export function TrainingCalendar({ date }: { date: string }) {
           const d = addDays(first, i),
             explicit = state.schedule?.filter(item=>item.date===d && item.source==="single").at(-1),
             entry = explicit && !explicit.cleared ? explicit : null,
-            done = state.sessions.some(
+            done = state.sessions.filter(
               (s) =>
                 (s.workoutDate ?? s.date) === d && s.status === "completed",
             );
@@ -103,8 +103,8 @@ export function TrainingCalendar({ date }: { date: string }) {
             >
               <strong>{i + 1}</strong>
               <small>
-                {done
-                  ? "✓"
+                {done.length
+                  ? `✓ ${done.length} 場`
                   : !entry ? "未安排"
                   : entry.kind === "rest" ? "Rest"
                   : entry.trainingDayId
@@ -122,7 +122,17 @@ export function TrainingCalendar({ date }: { date: string }) {
       {selected && (
         <Sheet title={selected} onClose={() => setSelected(null)}>
           <div className="action-list">
-            <p>請選擇 ${selected} 的安排</p>
+            {state.sessions.filter(s =>
+              (s.workoutDate ?? s.date) === selected && s.status === "completed"
+            ).map(s => (
+              <div className="training-calendar-session" key={s.id}>
+                <strong>{s.name}</strong>
+                <small>{s.isExtra ? "額外訓練" : "課表訓練"} ·
+                  {Math.round((s.activeDuration ?? Math.max(0,
+                    Date.parse(s.completedAt??s.createdAt) - Date.parse(s.createdAt))) / 60000)} 分鐘</small>
+              </div>
+            ))}
+            <p>調整這天的後續安排（不會刪除已完成紀錄）</p>
             <button type="button" onClick={() => put("rest")}>休息日</button>
             {plan?.days.map((d, i) => (
               <button

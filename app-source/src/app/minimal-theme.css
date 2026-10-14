@@ -1038,3 +1038,64 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"] :is(
   background:var(--color-surface-primary)!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
 }
+
+/* Multiple workout sessions: optional custom-plan second workout and daily history */
+html[data-visual-style="minimal"] .plan-second-session{
+  padding:17px;gap:13px;
+  background:var(--minimal-glass-soft)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  border-radius:18px!important;
+}
+html[data-visual-style="minimal"] .plan-second-session>.check{
+  font-weight:650;color:var(--color-text-primary);
+}
+html[data-visual-style="minimal"] .training-daily-sessions{
+  display:grid;gap:12px;
+  background:var(--minimal-glass)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  border-radius:22px!important;
+}
+html[data-visual-style="minimal"] .training-daily-sessions-heading{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;flex-wrap:wrap;
+}
+html[data-visual-style="minimal"] .training-daily-sessions-heading h2{
+  color:var(--color-text-primary)!important;font-size:16px!important;
+  font-family:var(--font-body)!important;
+}
+html[data-visual-style="minimal"] .training-daily-sessions-heading small,
+html[data-visual-style="minimal"] .training-daily-session small{
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] .training-daily-session{
+  display:flex;justify-content:space-between;align-items:center;min-height:55px;
+  gap:12px;padding:11px 14px;text-decoration:none;
+  background:var(--minimal-glass-soft);border:1px solid var(--minimal-glass-stroke);
+  border-radius:14px;color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] .training-daily-session>span{
+  display:grid;gap:4px;min-width:0;
+}
+html[data-visual-style="minimal"] .training-add-session{
+  width:100%;min-height:49px;background:var(--minimal-glass-soft)!important;
+  color:var(--minimal-accent)!important;border:1px solid var(--minimal-glass-stroke)!important;
+  border-radius:15px!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .training-calendar-session{
+  display:grid;gap:4px;padding:11px 13px;border-radius:13px;
+  background:var(--minimal-glass-soft);border:1px solid var(--minimal-glass-stroke);
+  color:var(--color-text-primary);
+}
+html[data-visual-style="minimal"] .training-calendar-session small{
+  color:var(--color-text-secondary);
+}
+html[data-visual-style="minimal"] .today-completed-sessions{
+  display:grid;gap:5px;font:500 12px/1.5 var(--font-body);
+  color:var(--color-text-secondary);
+}
+html[data-visual-style="minimal"] .today-completed-sessions p{
+  margin:0;color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] .today-completed-sessions span{
+  display:block;white-space:normal;overflow-wrap:anywhere;
+}

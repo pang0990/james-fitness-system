@@ -190,6 +190,8 @@ export type Session = {
   name: string;
   status: "in_progress" | "completed" | "discarded";
   isExtra?: boolean;
+  sessionPart?: "main" | "second" | "extra";
+  parentSessionId?: string;
   workoutDate?: string;
   scheduledDate?: string;
   pausedAt?: string;
@@ -251,27 +253,32 @@ export type NutritionDay = {
   target: Macros | null;
   complete: boolean;
 };
+export type CycleExercise = {
+  name: string;
+  muscle: string;
+  sets: number;
+  reps: string;
+  rir: number;
+  restSeconds: number;
+  allowRestPause: boolean;
+  allowDropSet: boolean;
+};
+export type CycleDay = {
+  name: string;
+  id?: string;
+  exercises?: CycleExercise[];
+  /** Custom plans may optionally repeat a second workout within a Cycle day. */
+  secondSession?: { name: string; exercises?: CycleExercise[] };
+};
 export type Cycle = {
   activateAfter?: { cycleId: string; eventCount: number };
   previousId?: string;
   muscleTargets?: MuscleTarget[];
   stage?: "Intensity" | "Frequency" | "Volume" | "Deload" | "Next Cycle";
+  source?: "custom" | "template";
   id: string;
   name: string;
-  days: {
-    name: string;
-    id?: string;
-    exercises?: {
-      name: string;
-      muscle: string;
-      sets: number;
-      reps: string;
-      rir: number;
-      restSeconds: number;
-      allowRestPause: boolean;
-      allowDropSet: boolean;
-    }[];
-  }[];
+  days: CycleDay[];
   pending?: string[];
   round?: number;
   createdAt: string;
@@ -734,7 +741,12 @@ export function validateState(value: unknown): AppState {
         c.days.some(
           (d) =>
             !d.name ||
-            d.exercises?.some(
+            (d.secondSession !== undefined && (
+              !d.secondSession.name?.trim() ||
+              !Array.isArray(d.secondSession.exercises) ||
+              !d.secondSession.exercises.length
+            )) ||
+            [ ...(d.exercises ?? []), ...(d.secondSession?.exercises ?? []) ].some(
               (e) =>
                 !e.name ||
                 !numeric(e.sets) ||
