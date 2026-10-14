@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { appHref, supabase } from "@/lib/supabase-browser";
-import { scopedStorageKey, STORAGE_KEY } from "@/lib/store";
+import { scopedStorageKey, STORAGE_KEY, useLegacyData } from "@/lib/store";
 
 export function GoogleLogin() {
   const { user, ready, error, signInGoogle } = useAuth();
@@ -112,5 +112,3 @@ export function LegacyDataOffer() {
   );
 }
 
-// Kept below the component so the account import UI cannot read unowned data.
-import { useLegacyData } from "@/lib/store";
