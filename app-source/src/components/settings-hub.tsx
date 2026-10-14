@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/lib/auth-context";
 import { frequencies, profileSchema } from "@/lib/domain";
 import { AppearanceSettings } from "./appearance";
 import { PageTitle, Field } from "./daily";
@@ -98,6 +99,7 @@ export function SettingsHub({
   notify: (s?: string) => void;
 }) {
   const { state, save } = useStore();
+  const { user, signOut } = useAuth();
   const key = path.split("/")[1];
   if (!key)
     return (
@@ -160,9 +162,10 @@ export function SettingsHub({
       <div className="daily-page">
         <PageTitle title="Account & Sync" />
         <section className="card">
-          <h2>帳號與同步尚未啟用</h2>
-          <p>正式規格採 Google 登入且不提供訪客模式；但目前公開的 GitHub Pages 仍是本機資料版本，尚未接通 Google OAuth、使用者帳號或雲端同步。</p>
-          <p className="muted">在驗證雲端資料隔離與遷移前，先保留既有本機操作，避免鎖住目前使用者或遺失資料。這裡不會顯示虛假的「已同步」。</p>
+          <h2>Google 帳號</h2>
+          <p>{user?.email ?? "尚未登入"}</p>
+          <p className="muted">Google 登入已啟用。健身紀錄目前只儲存在此瀏覽器、並依帳號分開，不代表雲端備份或跨裝置同步。</p>
+          <button className="button secondary" type="button" onClick={() => void signOut()}>登出 Google 帳號</button>
           <Link className="text-link" href="/settings/data">
             備份與資料管理 →
           </Link>
@@ -175,7 +178,7 @@ export function SettingsHub({
         <PageTitle title="About" />
         <p>James Fitness System</p>
         <p>Version {pkg.version}</p>
-        <p>本機紀錄版 · Web App（Google 登入／Cloud Sync 尚待整合）</p>
+        <p>Google 登入版 · Web App（健康紀錄僅存本機，Cloud Sync 尚未完成）</p>
         <Link href="/settings/privacy" className="text-link">
           隱私說明 →
         </Link>

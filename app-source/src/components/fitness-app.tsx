@@ -16,6 +16,8 @@ import { WeeklyCheckin } from "./weekly-checkin";
 import Link from "next/link";
 import { NutritionV2 } from "./daily";
 import { TodayReference } from "./today-reference";
+import { GoogleLogin, GoogleCallback, LegacyDataOffer } from "./auth-pages";
+import { useAuth } from "@/lib/auth-context";
 import { TrainingFlow } from "./training-flow";
 import { Trends } from "./trends";
 import { Knowledge } from "./knowledge";
@@ -52,7 +54,7 @@ import {
   Download,
   Info,
 } from "lucide-react";
-import { useStore, STORAGE_KEY } from "@/lib/store";
+import { useStore } from "@/lib/store";
 import {
   activityEvidenceForReview,
   activePlan,
@@ -314,6 +316,7 @@ function ProgressLinks({ path }: { path: string }) {
 
 export function FitnessApp({ path }: { path: string }) {
   const { state, ready, error, saving } = useStore();
+  const { user, ready: authReady, signOut } = useAuth();
   const section = path.split("/")[0];
   const [toast, setToast] = useState("");
   useEffect(() => {
@@ -323,6 +326,10 @@ export function FitnessApp({ path }: { path: string }) {
   }, [toast]);
   const notify = (message = "已儲存") => setToast(message);
   const date = dateInZone(state.profile?.timezone);
+  if (path === "auth/callback") return <GoogleCallback />;
+  if (!authReady) return <main className="jfs-auth-screen" role="status">正在確認帳號…</main>;
+  if (!user || section === "login" || section === "signup" || path === "auth/error")
+    return <GoogleLogin />;
   return (
     <div
       className={
@@ -386,10 +393,12 @@ export function FitnessApp({ path }: { path: string }) {
               <Link href="/knowledge">Knowledge · 知識庫</Link>
               <Link href="/data">Data & Backup · 資料管理</Link>
               <Link href="/settings">Settings · 系統設定</Link>
+              <button className="jfs-account-logout" type="button" onClick={() => void signOut()}>Sign out · 登出</button>
             </div>
           </details>
           </div>
         </header>
+        <LegacyDataOffer />
         {saving && (
           <div className="save-indicator" role="status">
             儲存中…
@@ -2320,12 +2329,12 @@ function SettingsPage({
   path: string;
   notify: (m?: string) => void;
 }) {
-  const { state, save, reset } = useStore();
+  const { state, save, reset, storageKey } = useStore();
   const [slot, setSlot] = useState("");
   const router = useRouter();
   function download(raw = false) {
     const content = raw
-      ? (localStorage.getItem(STORAGE_KEY) ?? "{}")
+      ? (storageKey ? localStorage.getItem(storageKey) ?? "{}" : "{}")
       : JSON.stringify(state, null, 2);
     const url = URL.createObjectURL(
       new Blob([content], { type: "application/json" }),
@@ -2362,10 +2371,10 @@ function SettingsPage({
           <Card title="本機版隱私說明" icon={ShieldCheck}>
             <div className="stack">
               <p>
-                本版本不建立雲端帳號、不收集密碼，也不把健身紀錄傳送至伺服器。資料保存在目前網域、目前瀏覽器的本機儲存。
+                本版本使用 Supabase Google 帳號登入，但健身紀錄尚未上傳雲端。資料仍保存在目前瀏覽器，並按登入帳號分開儲存。
               </p>
               <p>
-                同一瀏覽器的使用者可能讀取這些資料。請避免在共用裝置輸入私人資訊。換裝置、換網址或清除網站資料後，不會自動帶入原紀錄。
+                本機紀錄沒有加密。共用裝置的其他使用者可能透過瀏覽器資料取得紀錄，請避免在共用裝置輸入敏感資訊；跨裝置尚未同步。
               </p>
               <p>
                 網站託管平台仍可能處理一般連線紀錄，例如 IP
@@ -2375,8 +2384,7 @@ function SettingsPage({
                 原始紀錄與修訂保存在本機，直到你主動刪除。匯出的備份檔也包含這些資訊，請自行妥善保管。
               </p>
               <p>
-                Supabase 的登入、RLS
-                與跨裝置同步尚未啟用；本機模式不宣稱具備雲端使用者隔離。
+                Supabase Google 登入已接通；雲端個人資料表、RLS 與跨裝置同步仍未完成。登入不等於已備份。
               </p>
             </div>
           </Card>

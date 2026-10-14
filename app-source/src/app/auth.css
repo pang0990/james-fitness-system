@@ -1,0 +1,55 @@
+/* Google OAuth account entry: no workout dashboard or data beneath the gate. */
+.jfs-auth-screen {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100svh;
+  padding: 28px 20px calc(28px + env(safe-area-inset-bottom));
+  background: #030508;
+  color: #f4f0e9;
+}
+.jfs-auth-backdrop {
+  position: absolute; z-index: -1; inset: 0;
+  background:
+    linear-gradient(180deg,#030508bb,#030508df),
+    url("/james-fitness-system/today-wanderer-cyberpunk.webp") 50% 50% / cover no-repeat;
+}
+.jfs-auth-panel {
+  width: min(100%,440px); border: 1px solid #d3b67846;
+  border-radius: 22px; padding: clamp(28px,7vw,48px) clamp(23px,5vw,40px);
+  background: linear-gradient(145deg,#11171beb,#050709fa);
+  box-shadow: 0 26px 90px #000a, inset 0 1px #eac47f1f;
+  text-align: center;
+}
+.jfs-auth-kicker {font-size:11px;letter-spacing:.27em;color:#cfbb91}
+.jfs-auth-mark {display:block;margin:26px 0 10px;font:400 68px/1 Georgia,serif;color:#ecc77f}
+.jfs-auth-panel h1 {font:400 clamp(22px,5vw,27px)/1.35 Georgia,serif;letter-spacing:.075em;color:#f6e5c5}
+.jfs-auth-support {margin:22px 0;color:#c8cbd0;font-size:14px}
+.jfs-auth-button {
+  display:flex;align-items:center;justify-content:center;gap:13px;
+  min-height:54px;margin-top:25px;padding:12px 20px;
+  width:100%;border:1px solid #d4b477;border-radius:12px;
+  background:linear-gradient(135deg,#e8d09d,#bb9456);
+  color:#121113;font-weight:650;font-size:13px;letter-spacing:.07em;
+}
+.jfs-auth-button:disabled {opacity:.55}
+.jfs-google-g {font:bold 19px Arial,sans-serif;color:#2457a5}
+.jfs-auth-error {margin:17px 0;color:#ff9f93;font-size:13px}
+.jfs-auth-footnote {margin-top:28px;color:#a9adb6;font-size:11px;line-height:1.7}
+.jfs-legacy-notice {
+  position:fixed;top:96px;left:16px;right:16px;z-index:85;max-width:900px;margin:0 auto;
+  background:#1a1b1f;border:1px solid #ccac6a;border-radius:12px;
+  padding:15px 20px;color:#f6ebd9;font-size:13px;
+}
+.jfs-legacy-notice small {display:block;margin-top:6px;color:#b3b7bd}
+.jfs-legacy-notice > div {display:flex;flex-wrap:wrap;gap:10px;margin-top:13px}
+.jfs-legacy-notice button {padding:9px 13px;border:1px solid #bfa163;border-radius:9px}
+.jfs-legacy-notice button:last-child {border-color:#4b5058;color:#d0d3d7}
+
+.jfs-account-logout {
+  display:block;width:100%;padding:12px;color:#efc987;text-align:left;
+  border-top:1px solid rgba(224,187,121,.18);
+}
+.jfs-account-logout:hover {background:rgba(226,186,113,.07)}

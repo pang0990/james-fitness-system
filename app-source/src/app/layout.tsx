@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { StoreProvider } from "@/lib/store";
+import { AuthProvider } from "@/lib/auth-context";
 import "./globals.css";
 import "./cinematic.css";
 import "./blueprint.css";
@@ -11,6 +12,7 @@ import "./city-recipes-v5.css";
 import "./today-reference.css";
 import "./today-motion.css";
 import "./today-fullbleed.css";
+import "./auth.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
@@ -36,12 +38,14 @@ export default function RootLayout({
   return (
     <html lang="zh-Hant">
       <body>
-        <StoreProvider>
+        <AuthProvider>
+          <StoreProvider>
           <AppearanceController />
           {children}
           <AppInstall />
           <NavigationMotion />
-        </StoreProvider>
+          </StoreProvider>
+        </AuthProvider>
       </body>
     </html>
   );

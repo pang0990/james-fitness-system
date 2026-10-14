@@ -1,4 +1,5 @@
 "use client";
+
 import {
   createContext,
   useContext,
@@ -8,7 +9,14 @@ import {
   type ReactNode,
 } from "react";
 import { initialState, validateState, type AppState } from "./domain";
+import { useAuth } from "./auth-context";
+
+/** Original version is preserved until user confirms a manual import. */
 export const STORAGE_KEY = "james-fitness-v1";
+export const scopedStorageKey = (userId: string) =>
+  `james-fitness-user-v1:${userId}`;
+const skippedKey = (userId: string) => `james-fitness-import-skipped:${userId}`;
+
 type Store = {
   state: AppState;
   ready: boolean;
@@ -16,36 +24,61 @@ type Store = {
   saving: boolean;
   save: (action: string, change: (s: AppState) => void) => boolean;
   reset: () => void;
+  legacyAvailable: boolean;
+  importLegacy: () => boolean;
+  dismissLegacy: () => void;
+  storageKey: string | null;
 };
+
 const Context = createContext<Store | null>(null);
+
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const { user, ready: authReady } = useAuth();
+  const userId = user?.id ?? null;
+  const key = userId ? scopedStorageKey(userId) : null;
   const [state, setState] = useState(initialState);
   const ref = useRef(state);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [legacyAvailable, setLegacyAvailable] = useState(false);
   const blocked = useRef(false);
+  const loadedFor = useRef<string | null>(null);
+
   useEffect(() => {
+    ref.current = initialState();
+    setState(ref.current);
+    loadedFor.current = null;
+    setReady(false);
+    setError("");
+    setLegacyAvailable(false);
+    blocked.current = false;
+    if (!authReady || !userId || !key) return;
+
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const s = validateState(JSON.parse(raw));
-        ref.current = s;
-        setState(s);
-      }
+      const raw = localStorage.getItem(key);
+      const restored = raw ? validateState(JSON.parse(raw)) : initialState();
+      ref.current = restored;
+      setState(restored);
+      const legacy = localStorage.getItem(STORAGE_KEY);
+      setLegacyAvailable(
+        !raw && legacy !== null && localStorage.getItem(skippedKey(userId)) !== "true",
+      );
     } catch {
       blocked.current = true;
       setError("本機資料無法讀取，已停止寫入以保留原資料。請先匯出原始資料。");
     }
+    loadedFor.current = userId;
     setReady(true);
-    const sync = (e: StorageEvent) => {
-      if (e.key !== STORAGE_KEY) return;
+
+    const sync = (event: StorageEvent) => {
+      if (event.key !== key) return;
       try {
-        const s = e.newValue
-          ? validateState(JSON.parse(e.newValue))
+        const next = event.newValue
+          ? validateState(JSON.parse(event.newValue))
           : initialState();
-        ref.current = s;
-        setState(s);
+        ref.current = next;
+        setState(next);
       } catch {
         blocked.current = true;
         setError("另一個分頁的資料無效，已停止寫入。");
@@ -53,12 +86,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     };
     window.addEventListener("storage", sync);
     return () => window.removeEventListener("storage", sync);
-  }, []);
+  }, [authReady, userId, key]);
+
   function save(action: string, change: (s: AppState) => void) {
-    if (!ready || blocked.current) return false;
+    if (!ready || !key || !userId ||
+      loadedFor.current !== userId || blocked.current) return false;
     setSaving(true);
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(key);
       const disk = raw ? validateState(JSON.parse(raw)) : initialState();
       if (disk.revision !== ref.current.revision) {
         ref.current = disk;
@@ -76,7 +111,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         at: new Date().toISOString(),
         action,
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      localStorage.setItem(key, JSON.stringify(next));
       ref.current = next;
       setState(next);
       setError("");
@@ -88,26 +123,67 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       requestAnimationFrame(() => setSaving(false));
     }
   }
+
   function reset() {
+    if (!key || !userId || loadedFor.current !== userId) return;
     try {
-      localStorage.removeItem(STORAGE_KEY);
+      // Deleting an account's local data never deletes the unowned legacy
+      // snapshot or another Google account's records on this device.
+      localStorage.removeItem(key);
       const next = initialState();
       ref.current = next;
       setState(next);
       blocked.current = false;
       setError("");
+      setLegacyAvailable(false);
     } catch {
       setError("無法刪除本機資料");
     }
   }
+
+  function importLegacy(): boolean {
+    if (!key || !userId || loadedFor.current !== userId ||
+      localStorage.getItem(key)) return false;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const previous = validateState(JSON.parse(raw));
+      localStorage.setItem(key, JSON.stringify(previous));
+      ref.current = previous;
+      setState(previous);
+      setLegacyAvailable(false);
+      setError("");
+      // Keep old backup untouched until cloud migration is verified.
+      return true;
+    } catch {
+      setError("舊版紀錄無法匯入。原始紀錄保持不變，請先匯出備份。");
+      return false;
+    }
+  }
+
+  function dismissLegacy() {
+    if (!userId) return;
+    try { localStorage.setItem(skippedKey(userId), "true"); } catch {}
+    setLegacyAvailable(false);
+  }
+
   return (
-    <Context.Provider value={{ state, ready, error, saving, save, reset }}>
+    <Context.Provider value={{
+      state, ready, error, saving, save, reset,
+      legacyAvailable, importLegacy, dismissLegacy, storageKey: key,
+    }}>
       {children}
     </Context.Provider>
   );
 }
+
 export function useStore() {
   const value = useContext(Context);
   if (!value) throw Error("Missing StoreProvider");
   return value;
+}
+
+export function useLegacyData() {
+  const { legacyAvailable, importLegacy, dismissLegacy } = useStore();
+  return { legacyAvailable, importLegacy, dismissLegacy };
 }
