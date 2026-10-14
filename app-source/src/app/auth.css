@@ -39,7 +39,7 @@
 .jfs-auth-error {margin:17px 0;color:#ff9f93;font-size:13px}
 .jfs-auth-footnote {margin-top:28px;color:#a9adb6;font-size:11px;line-height:1.7}
 .jfs-legacy-notice {
-  position:relative;z-index:9;max-width:900px;margin:12px auto;
+  position:fixed;top:96px;left:16px;right:16px;z-index:85;max-width:900px;margin:0 auto;
   background:#1a1b1f;border:1px solid #ccac6a;border-radius:12px;
   padding:15px 20px;color:#f6ebd9;font-size:13px;
 }
@@ -47,3 +47,9 @@
 .jfs-legacy-notice > div {display:flex;flex-wrap:wrap;gap:10px;margin-top:13px}
 .jfs-legacy-notice button {padding:9px 13px;border:1px solid #bfa163;border-radius:9px}
 .jfs-legacy-notice button:last-child {border-color:#4b5058;color:#d0d3d7}
+
+.jfs-account-logout {
+  display:block;width:100%;padding:12px;color:#efc987;text-align:left;
+  border-top:1px solid rgba(224,187,121,.18);
+}
+.jfs-account-logout:hover {background:rgba(226,186,113,.07)}
