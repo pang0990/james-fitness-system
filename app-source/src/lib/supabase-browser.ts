@@ -26,5 +26,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   },
 });
 
-export const appHref = (path: string) =>
-  `${appBasePath}/${path.replace(/^\\/+|\\/+$/g, "")}/`;
+export const appHref = (path: string) => {
+  const clean = path.split("/").filter(Boolean).join("/");
+  return `${appBasePath}/${clean}/`;
+};
