@@ -1,39 +1,41 @@
 1:"$Sreact.fragment"
-2:"static/chunks/24-3fcc562da2ee5c1a.js"
-3:"static/chunks/42-9815e3a26f1ed772.js"
-4:"static/chunks/app/layout-912fed96f7a39cb8.js"
-5:I[1822,["24","$2","42","$3","177","$4"],"StoreProvider"]
-6:"AppearanceController"
-7:I[2524,["24","$2","42","$3","177","$4"],"$6"]
-8:I[7121,[],""]
-9:I[4581,[],""]
-a:"static/chunks/500-fc3b64d9ff4a32a7.js"
-b:"static/chunks/app/not-found-795f77bee99f829a.js"
-c:I[8500,["500","$a","345","$b"],""]
-d:I[6245,["24","$2","42","$3","177","$4"],"AppInstall"]
-e:"NavigationMotion"
-f:I[4879,["24","$2","42","$3","177","$4"],"$e"]
-11:"static/chunks/bd904a5c-b9f5781b322e5178.js"
-12:"static/chunks/f5ef5e1c-dbfcac2fb701f1d5.js"
-13:"static/chunks/b536a0f1-8b5c649a3f5349db.js"
-14:"static/chunks/852-632d66792b976877.js"
-15:"static/chunks/221-de7e26248c414839.js"
-16:"static/chunks/app/%5B...slug%5D/page-d1003cfc856ec788.js"
-17:I[9221,["831","$11","603","$12","367","$13","24","$2","500","$a","852","$14","42","$3","221","$15","48","$16"],"FitnessApp"]
-18:I[484,[],"OutletBoundary"]
-19:"$Sreact.suspense"
-1b:"ViewportBoundary"
-1c:I[484,[],"$1b"]
-1e:"MetadataBoundary"
-1f:I[484,[],"$1e"]
-21:I[7123,[],"default",1]
+2:"static/chunks/44530001-0e712c7221fec80e.js"
+3:"static/chunks/952-99819ae79c5866dd.js"
+4:"static/chunks/42-5b9591039a043a6b.js"
+5:"static/chunks/app/layout-d5cfe12a676a4be1.js"
+6:I[1159,["730","$2","952","$3","42","$4","177","$5"],"AuthProvider"]
+7:I[1822,["730","$2","952","$3","42","$4","177","$5"],"StoreProvider"]
+8:"AppearanceController"
+9:I[2524,["730","$2","952","$3","42","$4","177","$5"],"$8"]
+a:I[7121,[],""]
+b:I[4581,[],""]
+c:"static/chunks/500-fc3b64d9ff4a32a7.js"
+d:"static/chunks/app/not-found-795f77bee99f829a.js"
+e:I[8500,["500","$c","345","$d"],""]
+f:I[6245,["730","$2","952","$3","42","$4","177","$5"],"AppInstall"]
+10:"NavigationMotion"
+11:I[4879,["730","$2","952","$3","42","$4","177","$5"],"$10"]
+13:"static/chunks/bd904a5c-b9f5781b322e5178.js"
+14:"static/chunks/f5ef5e1c-dbfcac2fb701f1d5.js"
+15:"static/chunks/b536a0f1-8b5c649a3f5349db.js"
+16:"static/chunks/852-632d66792b976877.js"
+17:"static/chunks/6-0ad136f2092028ac.js"
+18:"static/chunks/app/%5B...slug%5D/page-df2802d83e94d8a6.js"
+19:I[6,["730","$2","831","$13","603","$14","367","$15","952","$3","500","$c","852","$16","42","$4","6","$17","48","$18"],"FitnessApp"]
+1a:I[484,[],"OutletBoundary"]
+1b:"$Sreact.suspense"
+1d:"ViewportBoundary"
+1e:I[484,[],"$1d"]
+20:"MetadataBoundary"
+21:I[484,[],"$20"]
+23:I[7123,[],"default",1]
 :HL["/james-fitness-system/_next/static/css/53caac953c64ca4c.css","style"]
 :HL["/james-fitness-system/_next/static/css/fa18f023088fb8a3.css","style"]
 :HL["/james-fitness-system/_next/static/css/9cdc9c31387c0109.css","style"]
-:HL["/james-fitness-system/_next/static/css/54a746b842e69739.css","style"]
-10:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":[["$","$L17",null,{"path":"today"}],null,["$","$L18",null,{"children":["$","$19",null,{"name":"Next.MetadataOutlet","children":"$@1a"}]}]]}],"p":false,"v":null}}]]
-0:{"P":null,"c":["",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/james-fitness-system/_next/static/css/53caac953c64ca4c.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/james-fitness-system/_next/static/css/fa18f023088fb8a3.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","2",{"rel":"stylesheet","href":"/james-fitness-system/_next/static/css/9cdc9c31387c0109.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","3",{"rel":"stylesheet","href":"/james-fitness-system/_next/static/css/54a746b842e69739.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"zh-Hant","children":["$","body",null,{"children":["$","$L5",null,{"children":[["$","$L7",null,{}],["$","$L8",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L9",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","main",null,{"className":"standalone","children":[["$","span",null,{"className":"eyebrow","children":"JAMES FITNESS SYSTEM"}],["$","h1",null,{"children":"找不到這個頁面"}],["$","p",null,{"children":"這個連結可能已經變更。"}],["$","$Lc",null,{"className":"button","href":"/today","children":"回到 Today"}]]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$Ld",null,{}],["$","$Lf",null,{}]]}]}]}]]}],"p":false,"v":null},"c":"$Q10"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1c",null,{"children":"$L1d"}],["$","$L1f",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$19",null,{"name":"Next.Metadata","children":"$L20"}]}],null]}],null]}],"p":false,"v":null}},"m":"$undefined","G":["$21",[]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"by5WG4UCm0rp3E4M8AhTA"}
-1d:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#070708"}]]
-22:I[6869,[],"IconMark"]
-1a:null
-20:[["$","title","0",{"children":"James · Fitness System"}],["$","meta","1",{"name":"description","content":"Nutrition · Training · Progress"}],["$","link","2",{"rel":"manifest","href":"/james-fitness-system/manifest.webmanifest","crossOrigin":"$undefined"}],["$","meta","3",{"name":"robots","content":"noindex, nofollow"}],["$","meta","4",{"name":"mobile-web-app-capable","content":"yes"}],["$","meta","5",{"name":"apple-mobile-web-app-title","content":"James"}],["$","meta","6",{"name":"apple-mobile-web-app-status-bar-style","content":"default"}],["$","link","7",{"rel":"apple-touch-icon","href":"/james-fitness-system/icon-192.png"}],["$","$L22","8",{}]]
+:HL["/james-fitness-system/_next/static/css/f08fda3c347b6488.css","style"]
+12:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":[["$","$L19",null,{"path":"today"}],null,["$","$L1a",null,{"children":["$","$1b",null,{"name":"Next.MetadataOutlet","children":"$@1c"}]}]]}],"p":false,"v":null}}]]
+0:{"P":null,"c":["",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/james-fitness-system/_next/static/css/53caac953c64ca4c.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/james-fitness-system/_next/static/css/fa18f023088fb8a3.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","2",{"rel":"stylesheet","href":"/james-fitness-system/_next/static/css/9cdc9c31387c0109.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","3",{"rel":"stylesheet","href":"/james-fitness-system/_next/static/css/f08fda3c347b6488.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"zh-Hant","children":["$","body",null,{"children":["$","$L6",null,{"children":["$","$L7",null,{"children":[["$","$L9",null,{}],["$","$La",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$Lb",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","main",null,{"className":"standalone","children":[["$","span",null,{"className":"eyebrow","children":"JAMES FITNESS SYSTEM"}],["$","h1",null,{"children":"找不到這個頁面"}],["$","p",null,{"children":"這個連結可能已經變更。"}],["$","$Le",null,{"className":"button","href":"/today","children":"回到 Today"}]]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$Lf",null,{}],["$","$L11",null,{}]]}]}]}]}]]}],"p":false,"v":null},"c":"$Q12"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1e",null,{"children":"$L1f"}],["$","$L21",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$1b",null,{"name":"Next.Metadata","children":"$L22"}]}],null]}],null]}],"p":false,"v":null}},"m":"$undefined","G":["$23",[]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"gIGVqaVaEi3mVtiVL2su-"}
+1f:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#070708"}]]
+24:I[6869,[],"IconMark"]
+1c:null
+22:[["$","title","0",{"children":"James · Fitness System"}],["$","meta","1",{"name":"description","content":"Nutrition · Training · Progress"}],["$","link","2",{"rel":"manifest","href":"/james-fitness-system/manifest.webmanifest","crossOrigin":"$undefined"}],["$","meta","3",{"name":"robots","content":"noindex, nofollow"}],["$","meta","4",{"name":"mobile-web-app-capable","content":"yes"}],["$","meta","5",{"name":"apple-mobile-web-app-title","content":"James"}],["$","meta","6",{"name":"apple-mobile-web-app-status-bar-style","content":"default"}],["$","link","7",{"rel":"apple-touch-icon","href":"/james-fitness-system/icon-192.png"}],["$","$L24","8",{}]]
