@@ -25,7 +25,7 @@ import {
 import { Companion } from "./companion";
 import catalog from "@/content/exercises.json";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -193,7 +193,7 @@ export function TrainingFlow({
       notify("第二場訓練已建立");
     }
   }
-  function startExtra(e: React.FormEvent<HTMLFormElement>) {
+  function startExtra(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (current) return;
     const data = new FormData(e.currentTarget);
