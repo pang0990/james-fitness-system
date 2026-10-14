@@ -711,3 +711,330 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"]
     background:var(--color-surface-primary)!important;
   }
 }
+
+
+/* ===================================================================
+   Minimal refinement 03 — one clear visual system across all tabs.
+   Scope to Minimal; preserve every 2077 CSS asset and interaction.
+   =================================================================== */
+
+/* Today: no empty white billboard or unnecessary "今天" heading. */
+html[data-visual-style="minimal"] .minimal-today-date-row{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  min-height:28px;margin:0;padding:0 2px;
+  color:var(--color-text-secondary);font:600 12px/1.45 var(--font-body);
+  letter-spacing:.045em;
+}
+html[data-visual-style="minimal"] .minimal-today-date-row>span{
+  color:var(--minimal-accent);font-size:12px;letter-spacing:0;
+}
+html[data-visual-style="minimal"] .page-today .today-reference-page{
+  padding-top:20px!important;gap:16px!important;
+}
+html[data-visual-style="minimal"] .page-today .today-ref-action-panel{
+  margin-top:0!important;
+}
+
+/* Shared platform surfaces, readable labels, lightweight outlines. */
+html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress,.page-settings) .daily-page{
+  width:100%;margin-inline:auto;
+  padding-left:clamp(16px,3vw,28px)!important;
+  padding-right:clamp(16px,3vw,28px)!important;
+  padding-bottom:calc(145px + env(safe-area-inset-bottom))!important;
+}
+html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress,.page-settings) .simple-heading{
+  color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress,.page-settings)
+ :is(.text-link,.page-heading a,.simple-heading a){
+  color:var(--minimal-accent)!important;
+}
+html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress,.page-settings)
+ :is(.card,.meal-section,.sheet,.date-type){
+  border-radius:20px!important;
+}
+html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress,.page-settings)
+ :is(.card, .meal-section, .daily-page) :is(p,small,span){
+  text-shadow:none!important;
+}
+html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress,.page-settings)
+ :is(input,textarea,select){
+  color:var(--color-text-primary)!important;
+  caret-color:var(--minimal-accent);
+  border:1px solid var(--minimal-glass-stroke)!important;
+  background:var(--minimal-glass-soft)!important;
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] select>option{
+  background:var(--color-surface-primary)!important;
+  color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] :is(input,select,textarea)::placeholder{
+  color:var(--color-text-tertiary)!important;opacity:1;
+}
+html[data-visual-style="minimal"] .page-nutrition .date-type{
+  background:var(--minimal-glass)!important;
+  border-color:var(--minimal-glass-stroke)!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .page-nutrition .date-type :is(input,select){
+  color:var(--color-text-primary)!important;
+  -webkit-text-fill-color:var(--color-text-primary);
+  font-size:14px!important;background:transparent!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+}
+html[data-visual-style="minimal"] .page-nutrition .date-type :is(input,select):focus-visible{
+  outline:2px solid var(--minimal-accent)!important;
+}
+html[data-visual-style="minimal"][data-theme="light"] .page-nutrition .date-type :is(input,select){
+  color-scheme:light;
+}
+html[data-visual-style="minimal"][data-theme="dark"] .page-nutrition .date-type :is(input,select){
+  color-scheme:dark;
+}
+
+/* Remove cinematic embellishment on the Nutrition recipe discovery tile. */
+html[data-visual-style="minimal"] .nutrition-cookbook-section{
+  display:grid;gap:10px;margin:10px 0 12px!important;
+}
+html[data-visual-style="minimal"] .nutrition-cookbook-section-title,
+html[data-visual-style="minimal"] .nutrition-cookbook-categories,
+html[data-visual-style="minimal"] .nutrition-meal-manage-link{display:none!important}
+html[data-visual-style="minimal"] .nutrition-cookbook-card{
+  min-height:122px!important;padding:20px 22px!important;
+  display:flex!important;flex-direction:column!important;gap:8px!important;
+  border-radius:22px!important;color:var(--color-text-primary)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  background:var(--minimal-glass)!important;
+  box-shadow:var(--minimal-glass-shadow)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);
+  backdrop-filter:blur(22px) saturate(1.25);
+}
+html[data-visual-style="minimal"] .nutrition-cookbook-card::before,
+html[data-visual-style="minimal"] .nutrition-cookbook-card::after,
+html[data-visual-style="minimal"] .nutrition-cookbook-card :is(.cookbook-card-illumination,
+ .cookbook-card-art,.cookbook-card-overline,.cookbook-card-english,.cookbook-card-description){
+  display:none!important;
+}
+html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-topline{
+  color:var(--minimal-accent)!important;justify-content:flex-end!important;
+}
+html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-content{
+  margin:0!important;max-width:none!important;
+}
+html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-content strong{
+  font:700 21px/1.25 var(--font-body)!important;
+  letter-spacing:-.035em!important;color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-bottom{
+  margin:0!important;padding:3px 0 0!important;align-items:center!important;
+}
+html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-count{
+  color:var(--color-text-secondary)!important;font:500 12px var(--font-body)!important;
+}
+html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-count b{
+  color:var(--color-text-primary)!important;font:650 15px var(--font-body)!important;
+}
+html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-cta{
+  background:rgba(0,122,255,.09)!important;border:0!important;
+  color:var(--minimal-accent)!important;box-shadow:none!important;
+  border-radius:12px!important;min-height:34px!important;
+  font:650 12px var(--font-body)!important;
+}
+
+/* Recipes destination — remove giant dark gold poster, fake illustration,
+   and repeated English headlines; use quiet editorial-like summary. */
+html[data-visual-style="minimal"] .page-nutrition .cookbook-destination-hero,
+html[data-visual-style="minimal"] .cookbook-destination-hero{
+  isolation:auto!important;min-height:140px!important;
+  padding:22px!important;gap:8px!important;border-radius:22px!important;
+  background:var(--minimal-glass)!important;color:var(--color-text-primary)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  box-shadow:var(--minimal-glass-shadow)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);
+  backdrop-filter:blur(22px) saturate(1.25);
+}
+html[data-visual-style="minimal"] .cookbook-destination-hero::after,
+html[data-visual-style="minimal"] .cookbook-destination-art,
+html[data-visual-style="minimal"] .cookbook-destination-kicker,
+html[data-visual-style="minimal"] .cookbook-destination-hero>h1>span{
+  display:none!important;
+}
+html[data-visual-style="minimal"] .cookbook-destination-hero>h1{
+  margin:0!important;padding:0!important;color:var(--color-text-primary)!important;
+  font:710 clamp(24px,4.5vw,32px)/1.2 var(--font-body)!important;
+  letter-spacing:-.04em!important;text-shadow:none!important;
+}
+html[data-visual-style="minimal"] .cookbook-destination-hero>p{
+  margin:0!important;max-width:100%!important;
+  color:var(--color-text-secondary)!important;
+  font:400 13px/1.55 var(--font-body)!important;
+}
+html[data-visual-style="minimal"] .cookbook-destination-stat{
+  margin-top:2px!important;font:500 12px/1.45 var(--font-body)!important;
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] .cookbook-destination-stat strong{
+  color:var(--minimal-accent)!important;
+  font:690 20px var(--font-body)!important;
+}
+html[data-visual-style="minimal"] .recipe-filter-tabs{
+  gap:7px!important;padding-block:4px 9px!important;
+}
+html[data-visual-style="minimal"] .recipe-filter-tabs button{
+  min-height:38px!important;border-radius:999px!important;
+  background:var(--minimal-glass-soft)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  box-shadow:none!important;
+  color:var(--color-text-secondary)!important;
+  font:550 12px var(--font-body)!important;
+}
+html[data-visual-style="minimal"] .recipe-filter-tabs button.selected{
+  color:var(--minimal-accent)!important;
+  background:rgba(0,122,255,.09)!important;
+  border-color:rgba(0,122,255,.25)!important;
+  font-weight:680!important;
+}
+html[data-visual-style="minimal"] .recipe-filter-tabs button small{
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] .recipe-results-head{
+  border-color:var(--minimal-glass-stroke)!important;
+}
+html[data-visual-style="minimal"] .recipe-results-head :is(span,strong){
+  letter-spacing:0!important;color:var(--color-text-secondary)!important;
+  font-size:12px!important;font-weight:580!important;
+}
+html[data-visual-style="minimal"] .recipe-card.recipe-v5-card{
+  border:1px solid var(--minimal-glass-stroke)!important;border-radius:18px!important;
+  background:var(--minimal-glass)!important;
+  box-shadow:var(--minimal-glass-shadow)!important;
+  color:var(--color-text-primary)!important;
+  padding:17px!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.2);
+  backdrop-filter:blur(18px) saturate(1.2);
+}
+html[data-visual-style="minimal"] .recipe-card.recipe-v5-card h2{
+  color:var(--color-text-primary)!important;
+  font:650 16px/1.35 var(--font-body)!important;
+  letter-spacing:-.018em!important;
+}
+html[data-visual-style="minimal"] .recipe-card.recipe-v5-card :is(small,p){
+  color:var(--color-text-secondary)!important;letter-spacing:0!important;
+}
+html[data-visual-style="minimal"] .recipe-card.recipe-v5-card>span{
+  color:var(--minimal-accent)!important;
+}
+
+/* Nutrition Meals links and empty states. */
+html[data-visual-style="minimal"] .page-nutrition :is(.meal-section,.meal-head,
+  .meal-entry,.meal-empty){
+  color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] .page-nutrition .meal-head .meal-name-edit{
+  font:650 16px/1.45 var(--font-body)!important;
+  letter-spacing:-.01em!important;color:var(--color-text-primary)!important;
+  cursor:pointer;
+}
+html[data-visual-style="minimal"] .page-nutrition .meal-head .meal-name-edit:focus-visible{
+  outline:2px solid var(--minimal-accent)!important;
+}
+html[data-visual-style="minimal"] .page-nutrition .meal-empty .muted{
+  color:var(--color-text-secondary)!important;
+}
+
+/* Settings grouped index — one entry per task, no filler screens. */
+html[data-visual-style="minimal"] .settings-index{
+  display:grid!important;gap:18px!important;
+}
+html[data-visual-style="minimal"] .settings-index-group{
+  display:grid;gap:0;border:1px solid var(--minimal-glass-stroke);
+  background:var(--minimal-glass)!important;border-radius:21px;
+  box-shadow:var(--minimal-glass-shadow)!important;overflow:hidden;
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);
+  backdrop-filter:blur(22px) saturate(1.25);
+}
+html[data-visual-style="minimal"] .settings-index-group h2{
+  margin:0;padding:17px 18px 7px!important;
+  font:700 14px/1.5 var(--font-body)!important;
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] .settings-index-group .simple-row{
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:transparent!important;min-height:51px!important;
+  padding:12px 18px!important;margin:0!important;
+  display:flex;align-items:center;justify-content:space-between;
+  font:500 15px var(--font-body)!important;
+}
+html[data-visual-style="minimal"] .settings-index-group .simple-row + .simple-row{
+  border-top:1px solid var(--minimal-glass-stroke)!important;
+}
+html[data-visual-style="minimal"] .settings-index-group .simple-row span{
+  color:var(--color-text-tertiary)!important;
+  font-size:21px!important;font-weight:350!important;
+}
+html[data-visual-style="minimal"] .settings-index-footer{
+  text-align:center;padding:2px 0 16px;
+  color:var(--color-text-secondary)!important;font-size:12px;
+}
+
+/* Native, compact edit modal: visible center dialog, not tall bottom Sheet. */
+.meal-name-quick-dialog{
+  position:fixed!important;inset:0!important;
+  width:min(360px,calc(100vw - 36px))!important;height:auto!important;
+  max-width:none!important;max-height:min(420px,calc(100dvh - 50px))!important;
+  margin:auto!important;padding:22px!important;
+  overflow:visible!important;box-sizing:border-box!important;
+  border-radius:22px!important;border:1px solid rgba(218,183,126,.42)!important;
+  background:#17191f!important;color:#f3f0eb!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.36)!important;
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif!important;
+}
+.meal-name-quick-dialog::backdrop{background:rgba(10,12,17,.38)!important;backdrop-filter:blur(4px)}
+.meal-name-quick-dialog form{display:grid;gap:13px;margin:0}
+.meal-name-quick-dialog label{font-weight:670;font-size:14px}
+.meal-name-quick-dialog input{
+  display:block;width:100%;box-sizing:border-box;min-height:44px;
+  padding:10px 13px;border-radius:12px;
+  background:#22242b;color:#f3f0eb;border:1px solid #454650;
+  font:500 16px -apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;
+}
+.meal-name-quick-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:5px}
+.meal-name-quick-actions button{
+  min-height:39px;min-width:65px;padding:8px 14px;border-radius:11px;
+  font:600 14px -apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;
+  background:#2b2e36;color:#f1ede4;border:0;cursor:pointer;
+}
+.meal-name-quick-actions button[type="submit"]{background:#ccac71;color:#1f1a12}
+html[data-visual-style="minimal"] .meal-name-quick-dialog{
+  background:var(--color-surface-primary)!important;
+  color:var(--color-text-primary)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  box-shadow:0 22px 66px rgba(20,26,39,.20)!important;
+}
+html[data-visual-style="minimal"] .meal-name-quick-dialog input{
+  background:var(--color-bg-primary)!important;
+  border-color:var(--minimal-glass-stroke)!important;
+  color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] .meal-name-quick-actions button{
+  background:var(--color-bg-primary)!important;
+  color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] .meal-name-quick-actions button[type="submit"]{
+  background:var(--minimal-accent)!important;color:#fff!important;
+}
+@media(max-width:430px){
+  html[data-visual-style="minimal"] .nutrition-cookbook-card{padding:17px!important}
+  html[data-visual-style="minimal"] .page-nutrition .cookbook-destination-hero{
+    padding:18px!important;min-height:132px!important;
+  }
+  html[data-visual-style="minimal"] .page-today .today-reference-page{
+    padding-top:16px!important;
+  }
+}
+html[data-visual-style="minimal"][data-reduce-transparency="true"] :is(
+  .settings-index-group,.nutrition-cookbook-card,.cookbook-destination-hero,
+  .recipe-card.recipe-v5-card){
+  background:var(--color-surface-primary)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
