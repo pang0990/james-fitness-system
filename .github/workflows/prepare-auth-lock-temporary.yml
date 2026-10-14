@@ -1,0 +1,35 @@
+# Temporary one-shot lockfile generation on the auth feature branch.
+# Remove this workflow once package-lock.json is committed.
+name: Generate Supabase Auth lockfile
+on:
+  push:
+    branches: [auth/google-supabase-first-login-20261014]
+    paths:
+      - app-source/package.json
+      - .github/workflows/prepare-auth-lock-temporary.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  lock:
+    if: github.ref == 'refs/heads/auth/google-supabase-first-login-20261014'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regenerate npm lockfile without executing package scripts
+        working-directory: app-source
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit feature branch lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app-source/package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Lock Supabase JS and transitive packages"
+            git push origin HEAD:auth/google-supabase-first-login-20261014
+          fi
