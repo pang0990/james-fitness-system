@@ -92,6 +92,12 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
   }
   return (
     <div className="today-reference-page">
+      {isMinimal ? (
+        <div className="minimal-today-date-row">
+          <time dateTime={date}>{monthDay} · {weekday}</time>
+          {cycle && <span>Cycle {completed + 1}</span>}
+        </div>
+      ) : (
       <section className="today-ref-scene" aria-label={isMinimal ? "今日概覽" : "雨夜未來都市與行者"}>
         <div className="today-ref-portrait-art" aria-hidden="true" />
         {!isMinimal && state.preferences?.cityAnimation !== false && (
@@ -129,6 +135,7 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
           <span>{interaction ? "OBSERVING · 觀察城市" : "WALKING · 行走"}</span>
         </div>
       </section>
+      )}
 
       <section className="today-ref-action-panel" id="today-action-queue" aria-labelledby="today-ref-action-label">
         <div className="today-ref-section-heading">

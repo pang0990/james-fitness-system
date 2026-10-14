@@ -2357,13 +2357,7 @@ function SettingsPage({
               ? "資料管理"
               : "Settings"
         }
-        description="設定、資料與使用方式，集中在這裡。"
       />
-      <div className="subnav">
-        <Link href="/settings">系統設定</Link>
-        <Link href="/data">資料管理</Link>
-        <Link href="/settings/privacy">隱私說明</Link>
-      </div>
       <div className="narrow stack">
         {path === "settings/appearance" ? (
           <AppearanceSettings notify={notify} />
