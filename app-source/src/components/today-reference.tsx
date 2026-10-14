@@ -40,6 +40,13 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
   }, []);
 
   const current = state.sessions.find((session) => session.status === "in_progress");
+  const completedToday = state.sessions.filter(session =>
+    session.status === "completed" && (session.workoutDate ?? session.date) === date
+  ).slice().sort((a,b) => (a.completedAt ?? a.createdAt).localeCompare(b.completedAt ?? b.createdAt));
+  const workoutMinutes = Math.round(completedToday.reduce((sum,session) =>
+    sum + (session.activeDuration ?? Math.max(0,
+      Date.parse(session.completedAt ?? session.createdAt)-Date.parse(session.createdAt))) / 60000,0));
+
   const cycle = activeCycle(state);
   const completed = cycle
     ? (state.cycleEvents?.filter((event) =>
@@ -169,9 +176,19 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
       <section className="today-ref-metrics" aria-label="今日摘要">
         <article className="today-ref-card today-ref-training">
           <Link className="today-ref-card-label" href="/training"><Dumbbell size={16}/> 今日訓練 <ChevronRight size={14}/></Link>
-          <strong className="today-ref-training-name">{trainingName}</strong>
-          <p>{trainingExercises ? `${trainingExercises} 個動作` : "Training Plan"}</p>
-          <Link className="today-ref-small-action" href={trainingUrl}>{trainingButton} <ArrowRight size={13}/></Link>
+          <strong className="today-ref-training-name">{completedToday.length
+            ? `已完成 ${completedToday.length} 場訓練` : trainingName}</strong>
+          {completedToday.length ? (
+            <div className="today-completed-sessions">
+              <p>今日總時長 {workoutMinutes} 分鐘</p>
+              {completedToday.map((session,index)=>
+                <span key={session.id}>{index+1}. {session.name}</span>)}
+            </div>
+          ) : <p>{trainingExercises ? `${trainingExercises} 個動作` : "Training Plan"}</p>}
+          <Link className="today-ref-small-action" href={trainingUrl}>
+            {current ? "繼續訓練" : completedToday.length ? "查看／新增一場" : trainingButton}
+            <ArrowRight size={13}/>
+          </Link>
         </article>
 
         <article className="today-ref-card today-ref-food">
