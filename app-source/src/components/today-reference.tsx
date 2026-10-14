@@ -70,6 +70,7 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
   const monthDay = dateObject.toLocaleDateString("en-US", {month: "short", day: "numeric"}).toUpperCase();
   const weekday = dateObject.toLocaleDateString("en-US", {weekday: "long"}).toUpperCase();
   const greeting = hour === null || hour < 12 ? "GOOD MORNING" : hour < 18 ? "GOOD AFTERNOON" : "GOOD EVENING";
+  const isMinimal = state.appearance?.visualStyle !== "cinematic";
   const displayName = state.profile?.name?.trim() || "WANDERER";
   const recovery = latestRecovery(state, date);
   const quicks: Array<{ label: string; kind: QuickKind; icon: typeof Scale }> = [
@@ -91,19 +92,21 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
   }
   return (
     <div className="today-reference-page">
-      <section className="today-ref-scene" aria-label="雨夜未來都市與行者">
+      <section className="today-ref-scene" aria-label={isMinimal ? "今日概覽" : "雨夜未來都市與行者"}>
         <div className="today-ref-portrait-art" aria-hidden="true" />
-        {state.preferences?.cityAnimation !== false && (
+        {!isMinimal && state.preferences?.cityAnimation !== false && (
           <div className="today-ref-neon-haze" aria-hidden="true" />
         )}
-        <CityAtmosphere />
+        {!isMinimal && <CityAtmosphere />}
         <div className="today-ref-heading">
           <div className="today-ref-intro">
             <span className="today-ref-eyebrow">{greeting}</span>
-            <h1>{displayName}</h1>
+            <h1>{isMinimal ? "今天" : displayName}</h1>
             <span className="today-ref-rule" />
-            <p>持續前進，<br />即使孤獨，<br />也會更強的自己。</p>
-            <span className="today-ref-motto">PROGRESS<br />IS<br />MOVEMENT.</span>
+            {!isMinimal && <>
+              <p>持續前進，<br />即使孤獨，<br />也會更強的自己。</p>
+              <span className="today-ref-motto">PROGRESS<br />IS<br />MOVEMENT.</span>
+            </>}
           </div>
           <div className="today-ref-cycle">
             <time dateTime={date}><strong>{monthDay}</strong><small>{weekday}</small></time>

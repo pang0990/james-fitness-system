@@ -13,3 +13,11 @@ Settings → Appearance → Visual Style: Minimal / 2077 · Cinematic. Light / D
 - Toggle light/dark/follow-system in Minimal; confirm readable text and actions.
 - Test Today, Nutrition, Training, Progress, Settings on narrow iPhone and desktop.
 - Clear neither localStorage nor users' records; cloud sync remains deferred.
+
+## Minimal visual pass 02 — 2026-10-14
+- Today header is intentionally brief: "今天" + greeting/date, not the original default WANDERER character or motivational copy. 2077 still keeps those original elements.
+- Don't mount the animated city Canvas for Minimal; the original 2077 media and DOM remain available when switching back.
+- Fixed Activity being narrower than the other cards by neutralizing the legacy margin applied to the nested section.
+- Restyled Nutrition macro rings (their live percentages remain intact), segmented navigation and meal shortcuts; Training plan controls; Progress trends and statistics.
+- Frosted glass uses RGBA surfaces, borders, blur and subtle ambient backgrounds; supports reduced transparency and a fallback for platforms without backdrop filters.
+- Pending: manual visual review on small screens and with real saved profile data; users' original records remain local only.
