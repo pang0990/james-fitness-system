@@ -1,7 +1,7 @@
 :HL["/james-fitness-system/_next/static/css/53caac953c64ca4c.css","style"]
 :HL["/james-fitness-system/_next/static/css/fa18f023088fb8a3.css","style"]
 :HL["/james-fitness-system/_next/static/css/9cdc9c31387c0109.css","style"]
-:HL["/james-fitness-system/_next/static/css/f08fda3c347b6488.css","style"]
+:HL["/james-fitness-system/_next/static/css/6bb760abee69ef63.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"training/templates","s":["_not-found","_global-error"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"gIGVqaVaEi3mVtiVL2su-","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"88zxVvQ_cl8SGHpjOGMV6","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
