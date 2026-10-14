@@ -403,3 +403,311 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"] .bottom-nav{
 @media(prefers-reduced-motion:reduce){
   html[data-visual-style="minimal"] *{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+
+/* =======================================================================
+ * JFS Minimal · Visual pass 02
+ * Fix Activity alignment and complete the four-tab visual language.
+ * Every rule remains scoped to Minimal; 2077 assets/styles are unchanged.
+ * ======================================================================= */
+html[data-visual-style="minimal"]{
+  --minimal-glass:rgba(255,255,255,.76);
+  --minimal-glass-raised:rgba(255,255,255,.86);
+  --minimal-glass-soft:rgba(249,250,253,.75);
+  --minimal-glass-stroke:rgba(213,219,229,.78);
+  --minimal-glass-shadow:0 12px 34px rgba(40,49,66,.065),inset 0 1px 0 rgba(255,255,255,.88);
+  --jfs-ring-track:#e6eaf0;
+  --jfs-ring-track-calorie:#e6eaf0;
+  --minimal-accent:#007aff;
+}
+html[data-visual-style="minimal"][data-theme="dark"]{
+  --minimal-glass:rgba(35,37,44,.76);
+  --minimal-glass-raised:rgba(39,41,49,.86);
+  --minimal-glass-soft:rgba(30,32,40,.79);
+  --minimal-glass-stroke:rgba(111,116,130,.29);
+  --minimal-glass-shadow:0 12px 36px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.07);
+  --jfs-ring-track:#383d48;--jfs-ring-track-calorie:#383d48;
+}
+/* Backdrop gradients provide depth to make glass transparency perceptible. */
+html[data-visual-style="minimal"] body,
+html[data-visual-style="minimal"] body:has(.page-nutrition),
+html[data-visual-style="minimal"] body:has(.page-training),
+html[data-visual-style="minimal"] body:has(.page-progress){
+  background:radial-gradient(ellipse at 85% 0%,rgba(130,180,252,.10),transparent 43%),
+             radial-gradient(ellipse at 0% 70%,rgba(167,183,220,.07),transparent 40%),
+             var(--color-bg-primary)!important;
+}
+html[data-visual-style="minimal"] .app,
+html[data-visual-style="minimal"] .main,
+html[data-visual-style="minimal"] body :is(.page-nutrition,.page-training,.page-progress) .main,
+html[data-visual-style="minimal"] .page-today .main{
+  background:transparent!important;
+}
+html[data-visual-style="minimal"] .topbar,
+html[data-visual-style="minimal"] .page-today .topbar,
+html[data-visual-style="minimal"] .account-menu>div,
+html[data-visual-style="minimal"] :is(.card,.sheet,.simple-row,.date-type,.meal-section,
+  .nutrition-v3-dashboard,.direction-hero,.progress-v3-photos,.progress-v3-stats,
+  .training-today,.today-ref-action-panel,.today-ref-card,.today-ref-quick-panel),
+html[data-visual-style="minimal"] .page-today :is(.today-ref-action-panel,.today-ref-card,
+  .today-ref-quick-panel,.today-reference-page>.daily-activity){
+  background:var(--minimal-glass)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  box-shadow:var(--minimal-glass-shadow)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);
+  backdrop-filter:blur(22px) saturate(1.25);
+}
+html[data-visual-style="minimal"] .page-today .today-ref-scene{
+  border-color:var(--minimal-glass-stroke)!important;
+  background:linear-gradient(115deg,rgba(255,255,255,.88),rgba(241,246,255,.78))!important;
+  box-shadow:var(--minimal-glass-shadow)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(1.2);
+  backdrop-filter:blur(22px) saturate(1.2);
+}
+html[data-visual-style="minimal"][data-theme="dark"] .page-today .today-ref-scene{
+  background:linear-gradient(115deg,rgba(37,41,49,.86),rgba(29,39,56,.8))!important;
+}
+html[data-visual-style="minimal"] :is(.card,.sheet,.simple-row,.date-type,.meal-section,
+  .nutrition-v3-dashboard,.direction-hero,.progress-v3-photos,.progress-v3-stats,
+  .training-today){color:var(--color-text-primary)!important}
+html[data-visual-style="minimal"] .bottom-nav,
+html[data-visual-style="minimal"] .page-today .bottom-nav{
+  background:var(--minimal-glass-raised)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  box-shadow:var(--minimal-glass-shadow)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(1.5)!important;
+  backdrop-filter:blur(28px) saturate(1.5)!important;
+}
+html[data-visual-style="minimal"] .bottom-nav>a.active svg{
+  color:var(--minimal-accent)!important;filter:none!important;
+}
+html[data-visual-style="minimal"] .page-today .today-ref-scene{
+  min-height:170px!important;
+}
+html[data-visual-style="minimal"] .page-today .today-ref-intro{gap:0!important}
+html[data-visual-style="minimal"] .page-today .today-ref-intro h1{
+  font-size:clamp(30px,5vw,43px)!important;
+  margin:9px 0 0!important;
+}
+html[data-visual-style="minimal"] .page-today .today-ref-cycle{gap:10px!important}
+html[data-visual-style="minimal"] .page-today .today-ref-interaction{display:none!important}
+
+/* A nested Activity component inherited a second horizontal margin from
+ * body .daily-activity in polish.css; flex + width 100% + margin overflowed. */
+html[data-visual-style="minimal"] .page-today .today-reference-page>.daily-activity {
+  box-sizing:border-box!important;min-width:0!important;width:100%!important;
+  max-width:100%!important;margin:0!important;
+  padding:22px!important;justify-self:stretch;
+}
+html[data-visual-style="minimal"] .page-today .daily-activity :is(.activity-heading h2,
+  .activity-metric strong){color:var(--color-text-primary)!important}
+html[data-visual-style="minimal"] .page-today .daily-activity :is(.activity-metric,
+  .activity-trend-stats>div,.activity-review-metrics>div){
+  background:var(--minimal-glass-soft)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  border-radius:16px!important;color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] .page-today .daily-activity :is(.activity-metric small,
+  .activity-metric span,.activity-log-head>span){
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] .page-today .daily-activity .text-link{
+  color:var(--minimal-accent)!important;
+}
+@media(max-width:520px){
+  html[data-visual-style="minimal"] .page-today .today-reference-page>.daily-activity{
+    margin:0!important;padding:17px!important;
+  }
+}
+
+/* Nutrition — remove the old 2077 black tabs, dark circles and gold text.
+ * Percentages still come from the real live-data inline conic gradients. */
+html[data-visual-style="minimal"] body .page-nutrition .nutrition-v3-tabs,
+html[data-visual-style="minimal"] body .page-training .training-v3-segments,
+html[data-visual-style="minimal"] body .page-progress .progress-v3-segments,
+html[data-visual-style="minimal"] body .page-progress .direction-hero .range-control{
+  background:rgba(125,130,146,.10)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  border-radius:16px!important;box-shadow:none!important;
+  padding:4px!important;gap:4px!important;
+}
+html[data-visual-style="minimal"] body :is(.nutrition-v3-tabs,.training-v3-segments,
+  .progress-v3-segments)>:is(a,span){
+  border:0!important;background:transparent!important;
+  color:var(--color-text-secondary)!important;border-radius:12px!important;
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] body :is(.nutrition-v3-tabs,.training-v3-segments,
+  .progress-v3-segments)>.active,
+html[data-visual-style="minimal"] body .page-progress .direction-hero .range-control>button[aria-pressed="true"]{
+  color:var(--minimal-accent)!important;background:var(--minimal-glass-raised)!important;
+  box-shadow:0 2px 9px rgba(38,50,68,.075)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  font-weight:650!important;
+}
+html[data-visual-style="minimal"] body .page-progress .direction-hero .range-control>button{
+  color:var(--color-text-secondary)!important;
+  background:transparent!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] body .page-nutrition .nutrition-v3-dashboard{
+  padding:22px!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-section-label{
+  color:var(--color-text-secondary)!important;
+  letter-spacing:.10em!important;font-weight:650!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-section-label>span{
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-ring-inner,
+html[data-visual-style="minimal"] body .nutrition-v3-mini-ring>span{
+  background:var(--color-surface-primary)!important;
+  box-shadow:none!important;color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-calorie-ring,
+html[data-visual-style="minimal"] body .nutrition-v3-mini-ring{
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-ring-inner>strong,
+html[data-visual-style="minimal"] body .nutrition-v3-remaining>strong{
+  color:var(--color-text-primary)!important;font-family:var(--font-body)!important;
+}
+html[data-visual-style="minimal"] body :is(.nutrition-v3-ring-inner>small,
+  .nutrition-v3-remaining>span,.nutrition-v3-macro small,
+  .nutrition-v3-section-label,.nutrition-v3-remaining>small){
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-macro strong{
+  color:var(--color-text-primary)!important;font-weight:600!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-macros{
+  border-color:var(--minimal-glass-stroke)!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-meal-icons>button{
+  color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-meal-icons>button>span{
+  background:var(--minimal-glass-soft)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  border-radius:16px!important;
+  box-shadow:none!important;color:var(--minimal-accent)!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-meal-icons strong{
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] body .page-nutrition :is(.meal-head h2,
+  .meal-head .meal-name-edit,.meal-entry h3){
+  color:var(--color-text-primary)!important;
+}
+html[data-visual-style="minimal"] body .page-nutrition :is(.meal-entry p,.meal-entry small){
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] body .page-nutrition :is(.meal-entry,
+  .training-v3-exercise){border-color:var(--minimal-glass-stroke)!important}
+html[data-visual-style="minimal"] body .page-nutrition :is(.nutrition-v3-food-thumb,
+  .meal-head .icon-button){
+  background:var(--minimal-glass-soft)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  color:var(--minimal-accent)!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] body .page-nutrition .nutrition-v3-dashboard .text-link,
+html[data-visual-style="minimal"] body .page-nutrition .meal-entry .text-link{
+  color:var(--minimal-accent)!important;
+}
+
+/* Training — use the same soft surfaces and typography as Today. */
+html[data-visual-style="minimal"] body .page-training .training-v3>.training-today.card{
+  background:var(--minimal-glass)!important;border:1px solid var(--minimal-glass-stroke)!important;
+  box-shadow:var(--minimal-glass-shadow)!important;
+}
+html[data-visual-style="minimal"] body .training-v3-heading h2,
+html[data-visual-style="minimal"] body .training-v3-exercise-info>strong{
+  color:var(--color-text-primary)!important;
+  font-family:var(--font-body)!important;font-weight:690!important;
+}
+html[data-visual-style="minimal"] body :is(.training-v3-caption,
+  .training-v3-exercise-info>small,.training-v3-exercise){
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] body .training-v3-exercise-art,
+html[data-visual-style="minimal"] body .training-v3-edit{
+  background:var(--minimal-glass-soft)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  color:var(--minimal-accent)!important;border-radius:13px!important;
+}
+html[data-visual-style="minimal"] body .training-v3-number{
+  color:var(--minimal-accent)!important;
+}
+html[data-visual-style="minimal"] body .training-v3 .training-plan-summary,
+html[data-visual-style="minimal"] body .training-v3 .training-home-links>a,
+html[data-visual-style="minimal"] body .training-v3 .training-home-tools{
+  background:var(--minimal-glass)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  color:var(--color-text-primary)!important;
+  box-shadow:none!important;border-radius:16px!important;
+}
+html[data-visual-style="minimal"] body .training-v3 .training-today>.button{
+  background:var(--minimal-accent)!important;color:#fff!important;
+  border:1px solid var(--minimal-accent)!important;box-shadow:none!important;
+  border-radius:14px!important;
+}
+
+/* Progress — real stats, neutral tiles and blue chart accent. */
+html[data-visual-style="minimal"] body .page-progress .direction-hero{
+  background:var(--minimal-glass)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;
+  box-shadow:var(--minimal-glass-shadow)!important;
+}
+html[data-visual-style="minimal"] body .page-progress .direction-hero :is(h2,
+  .direction-evidence strong,.progress-v3-section-header h2){
+  color:var(--color-text-primary)!important;
+  font-family:var(--font-body)!important;
+}
+html[data-visual-style="minimal"] body .page-progress .direction-hero :is(.direction-evidence span,
+  .eyebrow){
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] body .page-progress .direction-hero .line-chart{
+  background:transparent!important;box-shadow:none!important;
+  color:var(--minimal-accent)!important;
+}
+html[data-visual-style="minimal"] body .page-progress .direction-hero .line-chart svg{
+  filter:none!important;
+}
+html[data-visual-style="minimal"] body :is(.progress-v3-section-header h2,
+  .progress-v3-stats h2,.progress-v3-stat-row strong){
+  color:var(--color-text-primary)!important;
+  font-family:var(--font-body)!important;font-weight:650!important;
+}
+html[data-visual-style="minimal"] body :is(.progress-v3-stat-row span,
+  .progress-v3-section-header>span,.progress-v3-photo-empty>small){
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] body .progress-v3-photo-empty{
+  background:var(--minimal-glass-soft)!important;border:1px dashed var(--minimal-glass-stroke)!important;
+  border-radius:15px!important;
+}
+html[data-visual-style="minimal"] body .progress-v3-photo-empty :is(span,p){
+  color:var(--color-text-secondary)!important;
+}
+html[data-visual-style="minimal"] body .progress-v3-stat-row{
+  border-bottom:1px solid var(--minimal-glass-stroke)!important;
+}
+
+/* Every surface is readable without backdrop-filter; avoid forced blur in
+ * accessibility mode and when the platform does not support backdrop-filter. */
+html[data-visual-style="minimal"][data-reduce-transparency="true"]
+  :is(.topbar,.card,.sheet,.simple-row,.date-type,.meal-section,.bottom-nav,
+      .nutrition-v3-dashboard,.direction-hero,.progress-v3-photos,.progress-v3-stats,
+      .training-today,.today-ref-action-panel,.today-ref-card,.today-ref-quick-panel,
+      .daily-activity){
+  background:var(--color-surface-primary)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+@supports not (backdrop-filter:blur(1px)){
+  html[data-visual-style="minimal"] :is(.topbar,.bottom-nav,.card,.sheet,
+    .nutrition-v3-dashboard,.today-ref-action-panel,.today-ref-card,
+    .today-ref-quick-panel,.daily-activity){
+    background:var(--color-surface-primary)!important;
+  }
+}
