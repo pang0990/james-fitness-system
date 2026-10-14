@@ -32,10 +32,7 @@ const fields: Record<string, Definition[]> = {
     ["sex", "計算使用性別", "male:男性|female:女性"],
   ],
   general: [
-    ["region", "地區", "text", "Taiwan"],
     ["timezone", "時區", "text", "Asia/Taipei"],
-    ["weekStart", "每週起始日", "1:星期一|0:星期日"],
-    ["timeFormat", "時間格式", "24:24 小時|12:12 小時"],
   ],
   companion: [
     ["companionAnimation", "角色持續動畫", "checkbox", "true"],
@@ -81,10 +78,7 @@ const fields: Record<string, Definition[]> = {
     ["trackSoreness", "痠痛", "checkbox", "true"],
   ],
   notifications: [
-    ["workoutReminder", "訓練提醒（目前只保存偏好，未啟用系統推播）", "checkbox", "false"],
-    ["workoutReminderTime", "訓練提醒時間（選擇後才有設定值）", "time", ""],
-    ["missingLogReminder", "缺漏紀錄提醒（Today Action Queue）", "checkbox", "true"],
-    ["weeklyCheckinReminder", "每週 Check-in 提醒（目前只保存偏好）", "checkbox", "true"],
+    ["missingLogReminder", "站內缺漏紀錄提醒", "checkbox", "true"],
   ],
   accessibility: [
     ["reduceMotion", "減少動態（也尊重系統設定）", "checkbox", "false"],
@@ -103,25 +97,38 @@ export function SettingsHub({
   const key = path.split("/")[1];
   if (!key)
     return (
-      <div className="daily-page">
-        <PageTitle title="Settings" />
-        {(Object.entries(pages).filter(([k]) => !["profile", "body", "recovery", "data", "privacy"].includes(k))).map(([k, label]) => (
-          <Link className="simple-row" href={"/settings/" + k} key={k}>
-            {label}
-            <span>→</span>
-          </Link>
-        ))}
+      <div className="daily-page settings-index">
+        <PageTitle title="設定" />
+        <section className="settings-index-group" aria-label="帳號與資料">
+          <h2>帳號與資料</h2>
+          <Link className="simple-row" href="/settings/account">Google 帳號 <span>›</span></Link>
+          <Link className="simple-row" href="/settings/data-privacy">資料與隱私 <span>›</span></Link>
+        </section>
+        <section className="settings-index-group" aria-label="個人化">
+          <h2>個人化</h2>
+          <Link className="simple-row" href="/settings/appearance">外觀風格 <span>›</span></Link>
+          <Link className="simple-row" href="/settings/general">一般設定 <span>›</span></Link>
+          <Link className="simple-row" href="/settings/accessibility">輔助使用 <span>›</span></Link>
+        </section>
+        <section className="settings-index-group" aria-label="健身偏好">
+          <h2>健身偏好</h2>
+          <Link className="simple-row" href="/settings/nutrition">營養與飲水 <span>›</span></Link>
+          <Link className="simple-row" href="/settings/training">訓練 <span>›</span></Link>
+          <Link className="simple-row" href="/settings/notifications">站內提醒 <span>›</span></Link>
+        </section>
+        <div className="settings-index-footer">
+          <Link href="/settings/about">關於 JFS · v{pkg.version} ›</Link>
+        </div>
       </div>
     );
-  if (key === "appearance") return <div className="daily-page"><PageTitle title="Appearance" /><AppearanceSettings notify={notify} /></div>;
+  if (key === "appearance") return <div className="daily-page"><PageTitle title="外觀" /><AppearanceSettings notify={notify} /><Link className="text-link" href="/settings/companion">2077 角色與城市進階設定 →</Link></div>;
   if (key === "data-privacy")
     return (
       <div className="daily-page">
         <PageTitle title="Data & Privacy" />
-        <p className="muted">健康與訓練紀錄目前儲存於這台裝置。雲端同步尚未接通，切勿假設已自動備份。</p>
-        <Link className="simple-row" href="/data">JSON Backup / Restore / CSV Export <span>→</span></Link>
-        <Link className="simple-row" href="/settings/privacy">資料使用與儲存說明 <span>→</span></Link>
-        <Link className="simple-row" href="/settings/data">清除目前裝置資料 <span>→</span></Link>
+        <p className="muted">目前紀錄只儲存在這個瀏覽器，尚未啟用雲端同步。</p>
+        <Link className="simple-row" href="/settings/data">備份、匯出與資料管理 <span>›</span></Link>
+        <Link className="simple-row" href="/settings/privacy">隱私說明 <span>›</span></Link>
       </div>
     );
   if (key === "companion")
@@ -140,10 +147,9 @@ export function SettingsHub({
           <label className="check"><input name="character" type="checkbox" defaultChecked={state.appearance?.showCompanion !== false} />顯示角色</label>
           <label className="check"><input name="animation" type="checkbox" defaultChecked={state.preferences?.companionAnimation !== false} />持續動畫（減少動態設定優先）</label>
           <label className="check"><input name="cityAnimation" type="checkbox" defaultChecked={state.preferences?.cityAnimation !== false} />Today 動態城市（霓虹、空中交通、雨霧）</label>
-          <p className="muted">Today 的原始主視覺仍是靜態概念圖，城市雨霧與交通使用即時動畫疊加；尚未完成可自由移動鏡頭的獨立 3D 城市。系統「減少動態」和裝置省流量設定會優先生效。</p>
+          <p className="muted">城市動畫僅用於 2077 風格，減少動態設定會優先生效。</p>
           <button className="button">儲存偏好</button>
         </form>
-        <Link className="text-link" href="/settings/accessibility">無障礙與減少動態 →</Link>
       </div>
     );
   if (key === "health")
@@ -164,11 +170,8 @@ export function SettingsHub({
         <section className="card">
           <h2>Google 帳號</h2>
           <p>{user?.email ?? "尚未登入"}</p>
-          <p className="muted">Google 登入已啟用。健身紀錄目前只儲存在此瀏覽器、並依帳號分開，不代表雲端備份或跨裝置同步。</p>
+          <p className="muted">已登入。健身紀錄仍儲存在本機，尚未跨裝置同步。</p>
           <button className="button secondary" type="button" onClick={() => void signOut()}>登出 Google 帳號</button>
-          <Link className="text-link" href="/settings/data">
-            備份與資料管理 →
-          </Link>
         </section>
       </div>
     );
@@ -178,7 +181,6 @@ export function SettingsHub({
         <PageTitle title="About" />
         <p>James Fitness System</p>
         <p>Version {pkg.version}</p>
-        <p>Google 登入版 · Web App（健康紀錄僅存本機，Cloud Sync 尚未完成）</p>
         <Link href="/settings/privacy" className="text-link">
           隱私說明 →
         </Link>
@@ -245,8 +247,6 @@ export function SettingsHub({
               }
               if (key === "notifications") {
                 prefs.reminders = prefs.missingLogReminder !== false;
-                if (prefs.workoutReminder === true && !prefs.workoutReminderTime)
-                  throw Error("開啟訓練提醒前請設定提醒時間");
               }
               for (const name of ["restSeconds", "waterQuick1", "waterQuick2"])
                 if (
@@ -316,11 +316,8 @@ export function SettingsHub({
             );
           })
         )}
-        {key === "general" && (
-          <p className="muted">第一版單位固定 kg／cm，日期格式 YYYY/MM/DD，介面目前僅完整支援繁體中文；英文版列為後續內容工作，不提供無效的語言切換。時間格式與每週起始日為偏好設定，尚未全面套用到所有歷史圖表。</p>
-        )}
         {key === "notifications" && (
-          <p className="muted">設定僅代表提醒偏好。瀏覽器系統推播仍需正式通知服務及使用者授權；Today 站內缺漏提醒可立即使用。</p>
+          <p className="muted">目前僅支援 App 內提醒，尚未提供系統推播。</p>
         )}
         {key === "body" && (
           <p className="muted">
