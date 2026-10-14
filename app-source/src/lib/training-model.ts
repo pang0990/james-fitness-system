@@ -106,8 +106,18 @@ export function performance(state: AppState) {
     return [{ name, before, after, comparable, improved }];
   });
 }
+/** Exclude ad-hoc sessions mistakenly written as Cycle events by older clients. */
+export function cycleProgressEvents(state: AppState, cycleId: string) {
+  return (state.cycleEvents ?? []).filter(event => {
+    if (event.cycleId !== cycleId) return false;
+    const session = event.sessionId
+      ? state.sessions.find(s => s.id === event.sessionId)
+      : undefined;
+    return !session?.isExtra;
+  });
+}
 export function muscleCompleted(state: AppState, cycle: Cycle, muscle: string) {
-  const events = state.cycleEvents?.filter((e) => e.cycleId === cycle.id) ?? [];
+  const events = cycleProgressEvents(state, cycle.id);
   const finished = Math.floor(events.length / cycle.days.length);
   const currentIds = new Set(
     events.slice(finished * cycle.days.length).map((e) => e.sessionId),
@@ -127,9 +137,7 @@ export function activeCycle(state: AppState) {
     ?.filter(
       (c) =>
         !c.activateAfter ||
-        ((state.cycleEvents?.filter(
-          (e) => e.cycleId === c.activateAfter!.cycleId,
-        ).length ?? 0) >= c.activateAfter.eventCount &&
+        (cycleProgressEvents(state, c.activateAfter!.cycleId).length >= c.activateAfter.eventCount &&
           !state.sessions.some(
             (s) =>
               s.status === "in_progress" &&
