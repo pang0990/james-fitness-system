@@ -1,8 +1,8 @@
 [
   {
     "id": "usda-171477",
-    "name": "雞胸肉（去皮，烤熟）",
-    "nameEn": "Chicken, broilers or fryers, breast, meat only, cooked, roasted",
+    "name": "熟雞胸肉（去皮，熟重）",
+    "nameEn": "Cooked chicken breast, skinless (roasted reference)",
     "category": "蛋白質",
     "base": 100,
     "unit": "g",
