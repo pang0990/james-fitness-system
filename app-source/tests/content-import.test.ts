@@ -9,6 +9,9 @@ type Recipe = {
   sourceVersion: string;
 };
 const recipes = JSON.parse(fs.readFileSync("src/content/recipes-seed.json", "utf8")) as Recipe[];
+const cookedFoods = JSON.parse(fs.readFileSync("src/content/cooked-foods.json", "utf8")) as {
+  id:string; name:string; base:number; unit:string; p:number; c:number; f:number; kcal:number;
+}[];
 const articles = JSON.parse(fs.readFileSync("src/content/articles.json", "utf8")) as { id: string; slug: string; body: string }[];
 
 test("129 recipe titles are indexed with requested category distribution", () => {
@@ -44,4 +47,14 @@ test("five supplied research manuscripts are published without losing existing u
   }
   assert.equal(new Set(articles.map(x => x.slug)).size, articles.length);
   assert.ok(articles.some(x => x.id === "muscle-fiber-types"));
+});
+
+test("cooked chicken breast can be logged by cooked weight", () => {
+  const chicken = cookedFoods.find(x => x.id === "usda-171477");
+  assert.ok(chicken);
+  assert.equal(chicken!.name, "熟雞胸肉（去皮，熟重）");
+  assert.deepEqual(
+    {base:chicken!.base,unit:chicken!.unit,p:chicken!.p,c:chicken!.c,f:chicken!.f,kcal:chicken!.kcal},
+    {base:100,unit:"g",p:31.02,c:0,f:3.57,kcal:165}
+  );
 });
