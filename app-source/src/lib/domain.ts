@@ -258,7 +258,8 @@ export type CycleExercise = {
   muscle: string;
   sets: number;
   reps: string;
-  rir: number;
+  /** Legacy RIR retained only for reading historical plans. */
+  rir?: number;
   restSeconds: number;
   allowRestPause: boolean;
   allowDropSet: boolean;
@@ -755,9 +756,8 @@ export function validateState(value: unknown): AppState {
                 !numeric(e.restSeconds) ||
                 e.restSeconds < 1 ||
                 e.restSeconds > 3600 ||
-                !numeric(e.rir) ||
-                e.rir < 0 ||
-                e.rir > 10,
+                (e.rir !== undefined &&
+                  (!numeric(e.rir) || e.rir < 0 || e.rir > 10)),
             ),
         ),
     )
