@@ -138,10 +138,10 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                     <div className="plan-exercise" key={j}>
                       <strong>{ex.name}</strong>
                       <div className="form-grid">
-                        {(["sets","reps","rir","restSeconds"] as const).map((key,k) => (
-                          <Field key={key} label={["組數","次數範圍","RIR","休息秒數"][k]}>
+                        {(["sets","reps","restSeconds"] as const).map((key,k) => (
+                          <Field key={key} label={["組數","次數範圍","休息秒數"][k]}>
                             <input type={key==="reps" ? "text" : "number"}
-                              min={key==="rir" ? 0 : 1}
+                              min={1}
                               max={key==="restSeconds" ? 3600 : 100}
                               value={ex[key]}
                               onChange={e => setDays(days.map((d,n) => n !== i ? d : ({
@@ -171,7 +171,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                         secondSession:{
                           ...d.secondSession!,
                           exercises:[...(d.secondSession!.exercises??[]),{
-                            name:item.name,muscle:item.muscle,sets:3,reps:"8–12",rir:2,
+                            name:item.name,muscle:item.muscle,sets:3,reps:"8–12",
                             restSeconds:120,allowRestPause:item.allowRestPause,
                             allowDropSet:item.allowDropSet,
                           }],
@@ -230,15 +230,15 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
             <div className="plan-exercise" key={j}>
               <h3>{ex.name}</h3>
               <div className="form-grid">
-                {(["sets", "reps", "rir", "restSeconds"] as const).map(
+                {(["sets", "reps", "restSeconds"] as const).map(
                   (key, k) => (
                     <Field
                       key={key}
-                      label={["組數", "次數範圍", "RIR", "休息秒數"][k]}
+                      label={["組數", "次數範圍", "休息秒數"][k]}
                     >
                       <input
                         type={key === "reps" ? "text" : "number"}
-                        min={key === "rir" ? 0 : 1}
+                        min={1}
                         max={key === "restSeconds" ? 3600 : 100}
                         value={ex[key]}
                         onChange={(e) =>
@@ -305,7 +305,6 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                             muscle: item.muscle,
                             sets: 3,
                             reps: "8–12",
-                            rir: 2,
                             restSeconds: 120,
                             allowRestPause: item.allowRestPause,
                             allowDropSet: item.allowDropSet,
