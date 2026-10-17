@@ -208,6 +208,8 @@ export type Session = {
   exercises: {
     id: string;
     name: string;
+    /** Stable ID when exercise originates in JFS or personal library. */
+    exerciseLibraryId?: string;
     sets: Segment[];
     restSeconds?: number;
     plannedSets?: number;
@@ -258,6 +260,7 @@ export type NutritionDay = {
   complete: boolean;
 };
 export type CycleExercise = {
+  exerciseLibraryId?: string;
   name: string;
   muscle: string;
   sets: number;
@@ -335,7 +338,15 @@ export type AppState = {
   gainDecisions?: GainDecision[];
   schedule?: ScheduleEntry[];
   warmupPreset?: string[];
-  customWarmups?: { id: string; name: string; minutes: number; archived?: boolean }[];
+  customWarmups?: { id: string; name: string; minutes: number; archived?: boolean; exerciseLibraryId?: string }[];
+  /** Per-account, persistent personal exercise library; original templates stay untouched. */
+  customExercises?: {
+    id:string; name:string; brand:string; equipment:string; muscle:string;
+    usage:"warmup"|"training"|"both";
+    allowRestPause:boolean; allowDropSet:boolean;
+    videoAngles?: Partial<Record<"front"|"side"|"angle45"|"rear",string>>;
+    createdAt:string;
+  }[];
   recipes?: {
     id: string;
     name: string;
