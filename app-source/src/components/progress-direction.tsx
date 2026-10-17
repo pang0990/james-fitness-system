@@ -102,7 +102,7 @@ export function ProgressDirection({ date }: { date: string }) {
           {gain
             ? improved.length
               ? "先保留目前飲食，結合體重與恢復再決定是否增加碳水。"
-              : "不只看體重；持續記錄相同動作的重量、次數及 RIR。"
+              : "不只看體重；持續記錄相同動作的重量與次數。"
             : "圖表顯示所選期間的變化；是否調整，依下方獨立 Review 判斷。"}
         </p>
       </section>
