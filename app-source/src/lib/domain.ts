@@ -202,6 +202,18 @@ export type Session = {
   restStartedAt?: string;
   restTargetSeconds?: number;
   restHistory?: { startedAt:string; endedAt:string; elapsedSeconds:number; targetSeconds:number }[];
+  /** RP pause is independent from normal between-set rest. */
+  rpRestStartedAt?: string;
+  rpRestTargetSeconds?: number;
+  rpRestHistory?: { startedAt:string; endedAt:string; elapsedSeconds:number; targetSeconds:number }[];
+  /** Explicit answer when a planned session is completed before target sets. */
+  cycleCounted?: boolean;
+  /** Detailed correction history; does not rewrite the original audit log. */
+  setCorrections?: {
+    id:string; editedAt:string; exerciseId:string; setId:string;
+    before:{weight:number;reps:number;type:Segment["type"]};
+    after:{weight:number;reps:number;type:Segment["type"]};
+  }[];
   discardedAt?: string;
   trainingDayId?: string;
   round?: number;
