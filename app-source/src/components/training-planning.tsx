@@ -287,7 +287,7 @@ export function WarmupPicker({sessionId}:{sessionId?:string}){
   const [adding,setAdding]=useState(false);
   const [error,setError]=useState("");
   const custom=state.customWarmups??[];
-  const availableExercises=exerciseLibrary(state).filter(x=>x.usage==="warmup"||x.usage==="both");
+  const availableExercises=exerciseLibrary(state).filter(x=>x.source==="jfs"||x.usage==="warmup"||x.usage==="both");
   // Legacy warm-up identifiers are retained only for existing saved sessions.
   const historical=warmups.filter(w=>selected.includes(w.id)).map(w=>({id:w.id,name:w.name,minutes:w.minutes,reps:undefined as number|undefined,archived:true}));
   const available=[...custom.filter(w=>!w.archived), ...custom.filter(w=>w.archived&&selected.includes(w.id)),...historical];
