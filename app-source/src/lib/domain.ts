@@ -338,7 +338,7 @@ export type AppState = {
   gainDecisions?: GainDecision[];
   schedule?: ScheduleEntry[];
   warmupPreset?: string[];
-  customWarmups?: { id: string; name: string; minutes: number; archived?: boolean; exerciseLibraryId?: string }[];
+  customWarmups?: { id: string; name: string; minutes: number; reps?: number; archived?: boolean; exerciseLibraryId?: string }[];
   /** Per-account, persistent personal exercise library; original templates stay untouched. */
   customExercises?: {
     id:string; name:string; brand:string; equipment:string; muscle:string;
