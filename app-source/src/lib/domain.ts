@@ -198,6 +198,10 @@ export type Session = {
   pausedDuration?: number;
   activeDuration?: number;
   elapsedDuration?: number;
+  /** Timestamp-based per-session rest timing. Old session records may omit these. */
+  restStartedAt?: string;
+  restTargetSeconds?: number;
+  restHistory?: { startedAt:string; endedAt:string; elapsedSeconds:number; targetSeconds:number }[];
   discardedAt?: string;
   trainingDayId?: string;
   round?: number;
