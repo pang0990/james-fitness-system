@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import catalog from "@/content/exercises.json";
+import {exerciseLibrary} from "@/lib/exercise-library";
 import { PageTitle } from "./daily";
 
 export function WorkoutHistoryDetail() {
@@ -32,7 +33,7 @@ export function WorkoutHistoryDetail() {
               {ex.sets.length ? ex.sets.map((set, i) => (
                 <div className="simple-row" key={set.id}>
                   <span>{i+1}. {set.type}</span>
-                  <span>{set.weight} kg × {set.reps}　RIR {set.rir ?? "—"}</span>
+                  <span>{set.weight} kg × {set.reps}</span>
                 </div>
               )) : <p className="muted">沒有完成的組數。</p>}
               <Link className="text-link" href={`/progress/training/exercises?name=${encodeURIComponent(ex.name)}`}>查看此動作長期紀錄 →</Link>
@@ -55,30 +56,39 @@ export function WorkoutHistoryDetail() {
 }
 
 export function ExerciseGuideDetail() {
+  const {state}=useStore();
   const [id, setId] = useState<string | null>(null);
   useEffect(() => setId(new URLSearchParams(window.location.search).get("id")), []);
-  const exercise = catalog.find(e => e.id === id);
+  const exercise = exerciseLibrary(state).find(e => e.id === id);
+  const original=catalog.find(e=>e.id===id);
   return (
     <div className="daily-page">
-      <PageTitle title={exercise?.nameZh ?? "Exercise Guide"} />
+      <PageTitle title={exercise?.nameZh ?? "動作詳情"} />
       <Link className="text-link" href="/training/exercises">← 返回動作資料庫</Link>
       {exercise ? (
         <section className="card stack">
-          <small>EXERCISE LIBRARY</small>
+          <small>{exercise.source==="personal"?"我的動作":"JFS 動作庫"}</small>
           <h2>{exercise.name}</h2>
           <p>主要肌群：{exercise.muscle}</p>
-          <p>器材：{exercise.brand}</p>
-          <p className="muted">目前這筆動作資料尚未附可查證的教學步驟及影片；不會使用不相符的示範影片。</p>
-          {exercise.sourceUrl && <a href={exercise.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-link">參考來源 ↗</a>}
+          <p>品牌：{exercise.brand||"未設定"} · 器材：{exercise.equipment}</p>
+          <div className="exercise-video-placeholder">
+            <strong>示範影片待補上</strong>
+            <div className="exercise-video-angles">
+              {(["正面","側面","45°","背面"] as const).map(angle=>
+                <span key={angle}>{angle} · 待補上</span>)}
+            </div>
+          </div>
+          <p className="muted">未附正式影片與審核說明前不顯示未經確認的動作教學。</p>
+          {original?.sourceUrl && <a href={original.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-link">器材來源 ↗</a>}
           <Link href="/training/plan" className="button secondary">開啟課表，加入／編輯動作</Link>
           <Link href={`/progress/training/exercises?name=${encodeURIComponent(exercise.name)}`} className="text-link">查看訓練紀錄 →</Link>
         </section>
       ) : (
         <section className="card stack">
           <p className="muted">選擇一個動作查看詳情：</p>
-          {catalog.map(e => (
+          {exerciseLibrary(state).map(e => (
             <Link className="simple-row" key={e.id} href={`/training/exercises/detail?id=${encodeURIComponent(e.id)}`}>
-              {e.nameZh} <small>{e.name}</small> <span>→</span>
+              {e.nameZh} <small>{e.brand}</small> <span>→</span>
             </Link>
           ))}
         </section>

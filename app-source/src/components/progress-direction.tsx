@@ -102,7 +102,7 @@ export function ProgressDirection({ date }: { date: string }) {
           {gain
             ? improved.length
               ? "先保留目前飲食，結合體重與恢復再決定是否增加碳水。"
-              : "不只看體重；持續記錄相同動作的重量、次數及 RIR。"
+              : "不只看體重；持續記錄相同動作的重量與次數。"
             : "圖表顯示所選期間的變化；是否調整，依下方獨立 Review 判斷。"}
         </p>
       </section>
@@ -195,7 +195,7 @@ export function ProgressDirection({ date }: { date: string }) {
             .join(" · ") || "Performance"}
         </h2>
         <p className="muted">
-          最近兩次相同動作 · 相同或更高 RIR、重量與次數均未下降，才標示進步。
+          最近兩次相同動作，重量不變且次數提升，或次數不減且重量增加，才標示進步。
         </p>
         {results.length ? (
           results.slice(0, 3).map((r) => (
@@ -210,7 +210,7 @@ export function ProgressDirection({ date }: { date: string }) {
                   ? "↑ Improving"
                   : r.comparable
                     ? "持續觀察"
-                    : "RIR 不足以比較"}
+                    : "資料不足"}
               </small>
             </div>
           ))

@@ -13,7 +13,7 @@ export function TrainingReview({ date }: { date: string }) {
     improving = rows.some((r) => r.improved);
   if (!plan) return null;
   const reason = !rows.length
-    ? "資料不足，繼續紀錄可比較的重量、次數與 RIR。"
+    ? "資料不足，繼續記錄相同動作的重量與次數，才能比較表現。"
     : improving
       ? "Intensity still progressing · 目前保留訓練頻率與組數。"
       : !recovery
