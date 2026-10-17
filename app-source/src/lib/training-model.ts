@@ -60,12 +60,12 @@ export function scheduleKind(state:AppState,date:string){return scheduleEntry(st
 export function performance(state: AppState) {
   const map = new Map<
     string,
-    {
+    {label:string; records: {
       date: string;
       weight: number;
       reps: number;
       cycle?: string;
-    }[]
+    }[]}
   >();
   state.sessions
     .filter((s) => s.status === "completed")
@@ -77,18 +77,21 @@ export function performance(state: AppState) {
           .filter((t) => t.type === "working")
           .sort((a, b) => b.weight - a.weight || b.reps - a.reps)[0];
         if (set)
-          map.set(e.name, [
-            ...(map.get(e.name) ?? []),
-            {
-              date: s.date,
-              weight: set.weight,
-              reps: set.reps,
-              cycle: s.cycleId,
-            },
-          ]);
+          map.set(e.exerciseLibraryId ?? e.name, {
+            label:e.name,
+            records:[
+              ...(map.get(e.exerciseLibraryId ?? e.name)?.records ?? []),
+              {
+                date: s.date,
+                weight: set.weight,
+                reps: set.reps,
+                cycle: s.cycleId,
+              },
+            ],
+          });
       }),
     );
-  return [...map].flatMap(([name, sets]) => {
+  return [...map.values()].flatMap(({label:name,records:sets}) => {
     if (sets.length < 2) return [];
     const before = sets.at(-2)!,
       after = sets.at(-1)!;
