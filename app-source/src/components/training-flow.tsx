@@ -74,8 +74,6 @@ export function TrainingFlow({
   const [entryVersion, setEntryVersion] = useState(0);
   const submitLock = useRef(false);
   const [skip, setSkip] = useState(false);
-  const [timerEnd, setTimerEnd] = useState<number | null>(null);
-  const [remaining, setRemaining] = useState(0);
   const [clock, setClock] = useState(Date.now());
   useEffect(() => {
     const t = setInterval(() => setClock(Date.now()), 1000);
@@ -144,24 +142,6 @@ export function TrainingFlow({
   const previous = previousSets?.at(-1);
   const workout = path === "training/session" && !!current;
   useEffect(() => {
-    const raw = sessionStorage.getItem("james-rest-end");
-    if (raw && Number(raw) > Date.now()) setTimerEnd(Number(raw));
-  }, []);
-  useEffect(() => {
-    if (!timerEnd) return;
-    const update = () => {
-      const left = Math.max(0, Math.ceil((timerEnd - Date.now()) / 1000));
-      setRemaining(left);
-      if (!left) {
-        setTimerEnd(null);
-        sessionStorage.removeItem("james-rest-end");
-      }
-    };
-    update();
-    const t = setInterval(update, 500);
-    return () => clearInterval(t);
-  }, [timerEnd]);
-  useEffect(() => {
     if (!workout || state.preferences?.keepAwake === false) return;
     let lock: WakeLockSentinel | undefined;
     let cancelled = false;
@@ -185,12 +165,33 @@ export function TrainingFlow({
       document.removeEventListener("visibilitychange", acquire);
     };
   }, [workout, state.preferences?.keepAwake]);
-  function startTimer() {
-    const end =
-      Date.now() +
-      Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120) * 1000;
-    sessionStorage.setItem("james-rest-end", String(end));
-    setTimerEnd(end);
+  const restStart=current?.restStartedAt ? Date.parse(current.restStartedAt) : null;
+  const restElapsed=restStart !== null ? Math.max(0,Math.floor((clock-restStart)/1000)) : 0;
+  const restTarget=current?.restTargetSeconds ??
+    Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120);
+  const remaining=Math.max(0,restTarget-restElapsed);
+  function startTimer(){
+    if(!current || current.restStartedAt || current.pausedAt)return;
+    save("開始組間休息",state=>{
+      const session=state.sessions.find(s=>s.id===current.id)!;
+      session.restStartedAt=stamp();
+      session.restTargetSeconds=Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120);
+    });
+  }
+  function stopTimer(){
+    if(!current?.restStartedAt)return;
+    save("結束組間休息",state=>{
+      const session=state.sessions.find(s=>s.id===current.id)!;
+      if(!session.restStartedAt)return;
+      const end=stamp();
+      (session.restHistory??=[]).push({
+        startedAt:session.restStartedAt,endedAt:end,
+        elapsedSeconds:Math.max(0,Math.round((Date.parse(end)-Date.parse(session.restStartedAt))/1000)),
+        targetSeconds:session.restTargetSeconds??120,
+      });
+      delete session.restStartedAt;
+      delete session.restTargetSeconds;
+    });
   }
   function startPlannedSecond() {
     if (current || !plannedSecondFor || !plannedSecond) return;
@@ -752,25 +753,21 @@ export function TrainingFlow({
                   <ArrowRight size={16} />
                 </button>
               </div>
-              <div className="rest-dock">
-                <Timer size={19} />
-                <span>休息</span>
-                <strong>
-                  {timerEnd
-                    ? `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`
-                    : `${Math.floor(Number(state.preferences?.restSeconds ?? 120) / 60)}:${String(Number(state.preferences?.restSeconds ?? 120) % 60).padStart(2, "0")}`}
-                </strong>
-                <button
-                  className="icon-button"
-                  aria-label={timerEnd ? "停止計時" : "開始計時"}
-                  onClick={() => {
-                    if (timerEnd) {
-                      setTimerEnd(null);
-                      sessionStorage.removeItem("james-rest-end");
-                    } else startTimer();
-                  }}
-                >
-                  {timerEnd ? <Pause /> : <Play />}
+              <div className="rest-dock rest-dock-dual">
+                <Timer size={19}/>
+                <span>組間休息 {state.preferences?.autoRest===true ? "· 自動" : "· 手動"}</span>
+                <div className="rest-times">
+                  <span>已休息 <strong>{Math.floor(restElapsed/60)}:{String(restElapsed%60).padStart(2,"0")}</strong></span>
+                  <span>{restStart===null ? "預設目標" : restElapsed>restTarget ? "超時" : "剩餘"}
+                    <strong>{restStart===null ? `${Math.floor(restTarget/60)}:${String(restTarget%60).padStart(2,"0")}` :
+                      `${Math.floor((restElapsed>restTarget?restElapsed-restTarget:remaining)/60)}:${String((restElapsed>restTarget?restElapsed-restTarget:remaining)%60).padStart(2,"0")}`}
+                    </strong>
+                  </span>
+                </div>
+                <button type="button" className="button secondary"
+                  disabled={!!current.pausedAt && restStart===null}
+                  onClick={()=>restStart===null?startTimer():stopTimer()}>
+                  {restStart!==null?"結束休息":"開始休息"}
                 </button>
               </div>
             </>
