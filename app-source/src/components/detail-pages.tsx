@@ -4,14 +4,19 @@ import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import catalog from "@/content/exercises.json";
 import {exerciseLibrary} from "@/lib/exercise-library";
-import { PageTitle } from "./daily";
+import { PageTitle, Sheet, Field, Num, stamp, uid } from "./daily";
+import {replaceWorkoutSet} from "@/lib/workout-sets";
+import type {Segment} from "@/lib/domain";
 
 export function WorkoutHistoryDetail() {
-  const { state } = useStore();
+  const { state, save } = useStore();
+  const [editing,setEditing]=useState<{exerciseId:string;setId:string}|null>(null);
   const [id, setId] = useState<string | null>(null);
   useEffect(() => setId(new URLSearchParams(window.location.search).get("id")), []);
   const sessions = state.sessions.filter(s => s.status !== "in_progress").slice().reverse();
   const session = sessions.find(s => s.id === id);
+  const editExercise=session?.exercises.find(e=>e.id===editing?.exerciseId);
+  const editSet=editExercise?.sets.find(s=>s.id===editing?.setId);
   return (
     <div className="daily-page">
       <PageTitle title={session ? session.name : "Workout History"} />
@@ -34,11 +39,61 @@ export function WorkoutHistoryDetail() {
                 <div className="simple-row" key={set.id}>
                   <span>{i+1}. {set.type}</span>
                   <span>{set.weight} kg × {set.reps}</span>
+                  {session.status==="completed" && <button type="button" className="text-link"
+                    onClick={()=>setEditing({exerciseId:ex.id,setId:set.id})}>更正</button>}
                 </div>
               )) : <p className="muted">沒有完成的組數。</p>}
               <Link className="text-link" href={`/progress/training/exercises?name=${encodeURIComponent(ex.name)}`}>查看此動作長期紀錄 →</Link>
             </section>
           ))}
+          {session.setCorrections?.length ? <section className="card stack">
+            <details className="history-corrections">
+              <summary>歷史組次更正紀錄 · {session.setCorrections.length} 筆</summary>
+              {session.setCorrections.map(change=><div className="simple-row" key={change.id}>
+                <span>{new Date(change.editedAt).toLocaleString("zh-TW")} · {session.exercises.find(e=>e.id===change.exerciseId)?.name ?? "動作"}<br/>
+                {change.before.weight} kg × {change.before.reps} ({change.before.type})
+                {" → "}
+                {change.after.weight} kg × {change.after.reps} ({change.after.type})</span>
+              </div>)}
+            </details>
+          </section> : null}
+          {session.status==="completed" && editing && editSet && editExercise && (
+            <Sheet title="更正歷史組次" onClose={()=>setEditing(null)}>
+              <p className="muted">更正只修改本場紀錄；原數值與更正時間會保留在修改紀錄中。</p>
+              <form className="stack" key={editSet.id} onSubmit={event=>{
+                event.preventDefault();
+                const data=new FormData(event.currentTarget);
+                const weight=Number(data.get("weight")),reps=Number(data.get("reps"));
+                const type=String(data.get("type")) as Segment["type"];
+                if(save("更正歷史訓練組次",draft=>{
+                  const target=draft.sessions.find(s=>s.id===session.id);
+                  if(!target || target.status!=="completed")throw Error("只能更正已完成的訓練紀錄");
+                  const exercise=target.exercises.find(e=>e.id===editExercise.id)!;
+                  const previous=exercise.sets.find(s=>s.id===editSet.id)!;
+                  const before={weight:previous.weight,reps:previous.reps,type:previous.type};
+                  if(before.weight===weight && before.reps===reps && before.type===type)return;
+                  exercise.sets=replaceWorkoutSet(exercise.sets,editSet.id,{weight,reps,type});
+                  (target.setCorrections??=[]).push({
+                    id:uid(),editedAt:stamp(),exerciseId:exercise.id,setId:editSet.id,
+                    before,after:{weight,reps,type},
+                  });
+                }))setEditing(null);
+              }}>
+                <Field label="組型"><select name="type" defaultValue={editSet.type}>
+                  {editSet.parentId?<>
+                    <option value="rp">Rest-Pause</option><option value="drop">Drop Set</option>
+                  </>:<>
+                    <option value="working">Working Set</option>
+                    <option value="warmup">Warm-up</option>
+                    <option value="rampup">Ramp-up</option>
+                  </>}
+                </select></Field>
+                <Num label="重量 kg" name="weight" max={1000} value={editSet.weight}/>
+                <Num label="次數" name="reps" min={1} max={500} step="1" value={editSet.reps}/>
+                <button type="submit" className="button">儲存更正</button>
+              </form>
+            </Sheet>
+          )}
         </>
       ) : (
         <section className="card stack">
