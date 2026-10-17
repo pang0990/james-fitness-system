@@ -1282,9 +1282,7 @@ function Training({
                           </span>
                           <span>
                             {set.weight} kg × {set.reps}{" "}
-                            <span className="muted">
-                              · RIR {set.rir ?? "—"}
-                            </span>
+
                           </span>
                         </div>
                       ))}
