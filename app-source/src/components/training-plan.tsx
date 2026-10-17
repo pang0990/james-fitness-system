@@ -7,9 +7,10 @@ import { dayId, pendingIds } from "@/lib/training-queue";
 import { type Cycle } from "@/lib/domain";
 import { PageTitle, Field, Num, uid, stamp } from "./daily";
 import templates from "@/content/training-templates.json";
-import catalog from "@/content/exercises.json";
+import {exerciseLibrary} from "@/lib/exercise-library";
 export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: string) => void; startBlank?: boolean }) {
   const { state, save } = useStore();
+  const library=exerciseLibrary(state);
   const router = useRouter();
   const current = activeCycle(state);
   const [name, setName] = useState(startBlank ? "My New Plan" : current?.name ?? "My Training Plan");
@@ -164,14 +165,14 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                   ))}
                   <select aria-label="第二場加入動作" value=""
                     onChange={e => {
-                      const item=catalog.find(x=>x.id===e.target.value);
+                      const item=library.find(x=>x.id===e.target.value);
                       if(!item)return;
                       setDays(days.map((d,j)=>j!==i ? d : ({
                         ...d,
                         secondSession:{
                           ...d.secondSession!,
                           exercises:[...(d.secondSession!.exercises??[]),{
-                            name:item.name,muscle:item.muscle,sets:3,reps:"8–12",
+                            exerciseLibraryId:item.id,name:item.name,muscle:item.muscle,sets:3,reps:"8–12",
                             restSeconds:120,allowRestPause:item.allowRestPause,
                             allowDropSet:item.allowDropSet,
                           }],
@@ -179,7 +180,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                       })));
                     }}>
                     <option value="">＋ 第二場加入動作</option>
-                    {catalog.map(ex=><option key={ex.id} value={ex.id}>{ex.nameZh} · {ex.name}</option>)}
+                    {library.map(ex=><option key={ex.id} value={ex.id}>{ex.nameZh} · {ex.name}</option>)}
                   </select>
                   {!day.secondSession.exercises?.length && (
                     <p className="muted" role="status">請先為第二場加入至少一個動作才能儲存。</p>
@@ -291,7 +292,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
             aria-label={`加入動作 ${i + 1}`}
             value=""
             onChange={(e) => {
-              const item = catalog.find((x) => x.id === e.target.value)!;
+              const item = library.find((x) => x.id === e.target.value)!;
               setDays(
                 days.map((d, j) =>
                   j !== i
@@ -301,6 +302,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                         exercises: [
                           ...(d.exercises ?? []),
                           {
+                            exerciseLibraryId: item.id,
                             name: item.name,
                             muscle: item.muscle,
                             sets: 3,
@@ -316,7 +318,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
             }}
           >
             <option value="">＋加入動作</option>
-            {catalog.map((e) => (
+            {library.map((e) => (
               <option key={e.id} value={e.id}>
                 {e.nameZh} · {e.name}
               </option>
