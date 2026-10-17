@@ -391,7 +391,7 @@ export function TrainingFlow({
       <PageTitle title={workout ? "Workout" : "Training"}>
         {workout ? (
           <Link href="/training" className="text-link">
-            暫離訓練
+            離開畫面（繼續計時）
           </Link>
         ) : null}
       </PageTitle>
@@ -431,6 +431,20 @@ export function TrainingFlow({
                   ? "3 / 3 回顧"
                   : "2 / 3 訓練"}
             </span>
+            <details className="training-other-actions workout-danger-menu">
+              <summary aria-label="更多訓練操作">⋯ 更多</summary>
+              <button type="button" className="button danger"
+                onClick={()=>{
+                  if(!window.confirm("確定放棄這場訓練？組次保留為作廢歷史，不計入課表進度。"))return;
+                  if(save("放棄本次訓練",draft=>{
+                    const ses=draft.sessions.find(s=>s.id===current.id)!;
+                    ses.status="discarded";ses.discardedAt=stamp();
+                    delete ses.restStartedAt;delete ses.restTargetSeconds;
+                  })){
+                    router.push("/training");notify("已放棄，歷史紀錄仍保留");
+                  }
+                }}>放棄本次訓練</button>
+            </details>
           </div>
           {current.phase === "warmup" ? (
             <section className="card">
