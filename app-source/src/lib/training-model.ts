@@ -111,7 +111,7 @@ export function cycleProgressEvents(state: AppState, cycleId: string) {
     const session = event.sessionId
       ? state.sessions.find(s => s.id === event.sessionId)
       : undefined;
-    return !session?.isExtra;
+    return !session?.isExtra && session?.cycleCounted !== false;
   });
 }
 export function muscleCompleted(state: AppState, cycle: Cycle, muscle: string) {

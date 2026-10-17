@@ -1,5 +1,6 @@
 import { type AppState, type Cycle, type Session } from "./domain";
 import { activeCycle, cycleProgressEvents } from "./training-model";
+import { endRestInterval } from "./rest-intervals";
 export const dayId = (plan: Cycle, index: number) =>
   plan.days[index]?.id ?? `${plan.id}:day:${index}`;
 export function pendingIds(state: AppState, plan: Cycle): string[] {
@@ -27,17 +28,12 @@ export function completeSession(
   state: AppState,
   session: Session,
   now: string,
+  options: { countTowardCycle?: boolean } = {},
 ) {
   if (session.status !== "in_progress") throw Error("這次訓練已結束");
-  if(session.restStartedAt){
-    (session.restHistory??=[]).push({
-      startedAt:session.restStartedAt,endedAt:now,
-      elapsedSeconds:Math.max(0,Math.round((Date.parse(now)-Date.parse(session.restStartedAt))/1000)),
-      targetSeconds:session.restTargetSeconds??120,
-    });
-    delete session.restStartedAt;
-    delete session.restTargetSeconds;
-  }
+  endRestInterval(session,"standard",now);
+  endRestInterval(session,"rp",now);
+  if(session.cycleId)session.cycleCounted=!session.isExtra && options.countTowardCycle !== false;
   session.status = "completed";
   session.completedAt = now;
   const elapsed = Math.max(0, Date.parse(now) - Date.parse(session.createdAt));
@@ -52,8 +48,8 @@ export function completeSession(
   const id =
     session.trainingDayId ??
     (original ? dayId(original, session.cycleDayIndex ?? 0) : undefined);
-  if (id && active && !session.isExtra) consumeDay(state, active, id);
-  if (session.cycleId && !session.isExtra)
+  if (id && active && !session.isExtra && options.countTowardCycle !== false) consumeDay(state, active, id);
+  if (session.cycleId && !session.isExtra && options.countTowardCycle !== false)
     (state.cycleEvents ??= []).push({
       id: crypto.randomUUID(),
       cycleId: session.cycleId,

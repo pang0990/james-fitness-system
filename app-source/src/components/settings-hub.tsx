@@ -63,6 +63,7 @@ const fields: Record<string, Definition[]> = {
     ],
     ["sessionMinutes", "通常訓練分鐘", "number", "60"],
     ["restSeconds", "預設休息秒數", "number", "120"],
+    ["rpRestSeconds", "RP 短休息秒數（預設 20）", "number", "20"],
     ["autoRest", "完成工作組後自動開始休息（可關閉）", "checkbox", "false"],
     ["keepAwake", "訓練時保持螢幕開啟", "checkbox", "true"],
     ["showPrevious", "顯示前次表現", "checkbox", "true"],

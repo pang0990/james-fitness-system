@@ -6,18 +6,27 @@ export type ExerciseLibraryEntry = {
   muscle:string; usage:"training"|"warmup"|"both";
   allowRestPause:boolean; allowDropSet:boolean;
   source:"jfs"|"personal";
+  visibility:"public"|"private";
   videoAngles?: Partial<Record<"front"|"side"|"angle45"|"rear",string>>;
 };
 
 export function exerciseLibrary(state:AppState):ExerciseLibraryEntry[]{
-  const builtIn:ExerciseLibraryEntry[]=catalog.map(x=>({
-    id:x.id,name:x.name,nameZh:x.nameZh,brand:x.brand,
-    equipment:x.brand, muscle:x.muscle,usage:"training",
-    allowRestPause:x.allowRestPause,allowDropSet:x.allowDropSet,
-    source:"jfs",
-  }));
+  const builtIn:ExerciseLibraryEntry[]=catalog.map(item=>{
+    const x=item as typeof item & {
+      videoAngles?:Partial<Record<"front"|"side"|"angle45"|"rear",string>>;
+    };
+    return {
+      id:x.id,name:x.name,nameZh:x.nameZh,brand:x.brand,
+      equipment:x.brand,muscle:x.muscle,usage:"training",
+      allowRestPause:x.allowRestPause,allowDropSet:x.allowDropSet,
+      source:"jfs",visibility:"public",
+      videoAngles:{
+        ...(x.video_url?{front:x.video_url}:{}),...(x.videoAngles??{}),
+      },
+    };
+  });
   const personal:ExerciseLibraryEntry[]=(state.customExercises??[]).map(x=>({
-    ...x,nameZh:x.name,source:"personal",
+    ...x,nameZh:x.name,source:"personal",visibility:"private",
   }));
   return [...personal,...builtIn];
 }

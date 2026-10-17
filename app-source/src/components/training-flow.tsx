@@ -25,6 +25,7 @@ import {
 import { Companion } from "./companion";
 import { exerciseLibrary, searchExercises } from "@/lib/exercise-library";
 import {removeWorkoutSet,restoreWorkoutSets,replaceWorkoutSet} from "@/lib/workout-sets";
+import { startRestInterval, endRestInterval } from "@/lib/rest-intervals";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
@@ -71,13 +72,13 @@ export function TrainingFlow({
   const [exerciseQuery,setExerciseQuery]=useState("");
   const [extraOpen, setExtraOpen] = useState(false);
   const [review, setReview] = useState(false);
+  const [cycleDecision, setCycleDecision] = useState<"count"|"keep"|null>(null);
   const [completedId, setCompletedId] = useState<string | null>(null);
   const [type, setType] = useState<Segment["type"]>("working");
   const [editingSetId, setEditingSetId] = useState<string | null>(null);
   const [undoDeletion, setUndoDeletion] = useState<{
     sessionId:string; exerciseId:string; removed:Segment[]; indices:number[];
   } | null>(null);
-  const [setRecorded, setSetRecorded] = useState(false);
   const [lastSavedId,setLastSavedId]=useState<string|null>(null);
   const [entryVersion, setEntryVersion] = useState(0);
   const submitLock = useRef(false);
@@ -108,7 +109,7 @@ export function TrainingFlow({
     .slice().sort((a,b) => (a.completedAt ?? a.createdAt).localeCompare(b.completedAt ?? b.createdAt));
   // A custom Cycle day can have an optional second session, without consuming another day.
   const plannedSecondFor = completedToday.find(session => {
-    if (!session.cycleId || !session.trainingDayId || session.isExtra) return false;
+    if (!session.cycleId || !session.trainingDayId || session.isExtra || session.cycleCounted===false) return false;
     const plan = state.cycles?.find(c => c.id === session.cycleId);
     const sourceDay = plan?.days.find((_,i) => dayId(plan,i) === session.trainingDayId);
     return !!sourceDay?.secondSession &&
@@ -126,7 +127,7 @@ export function TrainingFlow({
     if (current && exercise >= current.exercises.length) setExercise(0);
   }, [current?.id, current?.exercises.length, exercise]);
   const ex = current?.exercises[exercise];
-  useEffect(() => { setSetRecorded(false);setLastSavedId(null);setEntryVersion(v=>v+1); }, [ex?.id,current?.id]);
+  useEffect(() => {setLastSavedId(null);setEntryVersion(v=>v+1);},[ex?.id,current?.id]);
   const editingSet = ex?.sets.find(s=>s.id===editingSetId);
   function deleteRecordedSet(id:string){
     if(!current || !ex) return;
@@ -173,32 +174,48 @@ export function TrainingFlow({
       document.removeEventListener("visibilitychange", acquire);
     };
   }, [workout, state.preferences?.keepAwake]);
-  const restStart=current?.restStartedAt ? Date.parse(current.restStartedAt) : null;
+  const rpStart=current?.rpRestStartedAt ? Date.parse(current.rpRestStartedAt) : null;
+  const rpTarget=current?.rpRestTargetSeconds ?? Number(state.preferences?.rpRestSeconds ?? 20);
+  const rpElapsed=rpStart === null ? 0 : Math.max(0,Math.floor(((
+    current?.pausedAt ? Date.parse(current.pausedAt) : clock
+  ) - rpStart)/1000));
+  const rpRemaining=Math.max(0,rpTarget-rpElapsed);
+  const plannedWorking=current?.exercises.reduce((n,e)=>n+(e.plannedSets??0),0)??0;
+  const completedWorking=current?.exercises.reduce((n,e)=>n+e.sets.filter(s=>s.type==="working").length,0)??0;
+  const partialCycle=!!current?.cycleId && !current.isExtra &&
+    plannedWorking>0 && completedWorking<plannedWorking;
+    const restStart=current?.restStartedAt ? Date.parse(current.restStartedAt) : null;
   const restElapsed=restStart !== null ? Math.max(0,Math.floor(((current?.pausedAt?Date.parse(current.pausedAt):clock)-restStart)/1000)) : 0;
   const restTarget=current?.restTargetSeconds ??
     Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120);
   const remaining=Math.max(0,restTarget-restElapsed);
   function startTimer(){
-    if(!current || current.restStartedAt || current.pausedAt)return;
-    save("開始組間休息",state=>{
+    if(!current || current.pausedAt)return;
+    save("開始一般組間休息",state=>{
       const session=state.sessions.find(s=>s.id===current.id)!;
-      session.restStartedAt=stamp();
-      session.restTargetSeconds=Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120);
+      startRestInterval(session,"standard",stamp(),
+        Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120));
     });
   }
   function stopTimer(){
     if(!current?.restStartedAt)return;
-    save("結束組間休息",state=>{
+    save("結束一般組間休息",state=>{
       const session=state.sessions.find(s=>s.id===current.id)!;
-      if(!session.restStartedAt)return;
-      const end=stamp();
-      (session.restHistory??=[]).push({
-        startedAt:session.restStartedAt,endedAt:end,
-        elapsedSeconds:Math.max(0,Math.round((Date.parse(end)-Date.parse(session.restStartedAt))/1000)),
-        targetSeconds:session.restTargetSeconds??120,
-      });
-      delete session.restStartedAt;
-      delete session.restTargetSeconds;
+      endRestInterval(session,"standard",stamp());
+    });
+  }
+  function startRpTimer(){
+    if(!current || current.pausedAt)return;
+    save("開始 RP 短休息",state=>{
+      const session=state.sessions.find(s=>s.id===current.id)!;
+      startRestInterval(session,"rp",stamp(),Number(state.preferences?.rpRestSeconds??20));
+    });
+  }
+  function stopRpTimer(){
+    if(!current?.rpRestStartedAt)return;
+    save("結束 RP 短休息",state=>{
+      const session=state.sessions.find(s=>s.id===current.id)!;
+      endRestInterval(session,"rp",stamp());
     });
   }
   function startPlannedSecond() {
@@ -406,6 +423,7 @@ export function TrainingFlow({
                   if (x.pausedAt) {
                     const pausedMs=Date.now()-Date.parse(x.pausedAt);
                     if(x.restStartedAt) x.restStartedAt=new Date(Date.parse(x.restStartedAt)+pausedMs).toISOString();
+                    if(x.rpRestStartedAt) x.rpRestStartedAt=new Date(Date.parse(x.rpRestStartedAt)+pausedMs).toISOString();
                     x.pausedDuration =
                       (x.pausedDuration ?? 0) +
                       Date.now() -
@@ -480,7 +498,7 @@ export function TrainingFlow({
             </section>
           ) : review ? (
             <section className="card">
-              <h2>訓練回顧</h2>
+              <h2>完成本次訓練</h2>
               <p>
                 {current.exercises.length} 個動作 ·{" "}
                 {
@@ -490,25 +508,44 @@ export function TrainingFlow({
                 }{" "}
                 工作組
               </p>
+              {plannedWorking>0 && <p className="muted">
+                課表目標 {plannedWorking} 工作組 · 實際完成 {completedWorking} 組
+              </p>}
+              {partialCycle && <fieldset className="cycle-completion-choice">
+                <legend>尚有 {plannedWorking-completedWorking} 組未完成。這個 Cycle Day 怎麼處理？</legend>
+                <label className="check"><input type="radio" name="cycleDecision"
+                  checked={cycleDecision==="count"} onChange={()=>setCycleDecision("count")}/>
+                  視為完成，推進到下一個 Cycle Day
+                </label>
+                <label className="check"><input type="radio" name="cycleDecision"
+                  checked={cycleDecision==="keep"} onChange={()=>setCycleDecision("keep")}/>
+                  只保存本次訓練，保留此 Cycle Day 待完成
+                </label>
+              </fieldset>}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   const feedback = String(
                     new FormData(e.currentTarget).get("feedback"),
                   );
+                  if (partialCycle && cycleDecision===null) {
+                    notify("請先選擇是否將未完成的課表計入 Cycle");
+                    return;
+                  }
                   if (
                     save("完成訓練與 Cycle Day", (s) => {
                       const session = s.sessions.find(
                         (x) => x.id === current.id,
                       )!;
                       if (session.status === "completed") return;
-                      completeSession(s, session, stamp());
+                      completeSession(s, session, stamp(), {countTowardCycle:!partialCycle || cycleDecision==="count"});
                       session.feedback = feedback;
                     })
                   ) {
                     setReview(false);
+                    setCycleDecision(null);
                     setCompletedId(current.id);
-                    notify("訓練已保存");
+                    notify(partialCycle && cycleDecision==="keep"?"已保存訓練，Cycle Day 保留待完成":"訓練已保存");
                   }
                 }}
               >
@@ -642,7 +679,7 @@ export function TrainingFlow({
                     key={ex.id + "-" + entryVersion}
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (submitLock.current || setRecorded) return;
+                      if (submitLock.current) return;
                       submitLock.current = true;
                       window.setTimeout(()=>{submitLock.current=false;},650);
                       const d = new FormData(e.currentTarget);
@@ -674,8 +711,9 @@ export function TrainingFlow({
                         })
                       ) {
                         setLastSavedId(newSetId);
-                        setSetRecorded(true);
-                        notify("這組已保存");
+                        // Each completed set becomes a row immediately. The next draft is blank.
+                        setEntryVersion(v=>v+1);
+                        notify("已記錄，下一組請重新輸入重量與次數");
                         if (
                           type === "working" &&
                           state.preferences?.autoRest === true
@@ -709,7 +747,6 @@ export function TrainingFlow({
                         label="重量 kg"
                         name="weight"
                         max={1000}
-                        value={previous?.weight}
                       />
                       <Num
                         label="次數"
@@ -717,7 +754,6 @@ export function TrainingFlow({
                         min={1}
                         max={500}
                         step="1"
-                        value={previous?.reps}
                       />
 
                     </div>
@@ -735,23 +771,22 @@ export function TrainingFlow({
                         </select>
                       </Field>
                     )}
-                    <button className="button" disabled={!!current.pausedAt || setRecorded}>
-                      {setRecorded ? "已保存" : "完成這一組"}
+                    <button className="button" disabled={!!current.pausedAt}>
+                      完成這一組
                       <Check size={16} />
                     </button>
                   </form>
-                  {setRecorded && <div className="two-actions">
-                    <button type="button" className="button secondary"
-                      onClick={()=>{setEntryVersion(v=>v+1);setSetRecorded(false);setLastSavedId(null);}}>
-                      ＋ 記錄下一組
-                    </button>
-                    {lastSavedId && <button type="button" className="text-link"
-                      onClick={()=>{
-                        if(save("復原誤存組次",draft=>{
-                          const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
-                          target.sets=target.sets.filter(s=>s.id!==lastSavedId);
-                        })){setLastSavedId(null);setSetRecorded(false);notify("已撤銷保存");}
-                      }}>撤銷本次保存</button>}
+                  {lastSavedId && <div className="set-undo-banner" role="status">
+                    <span>已新增組次，下方是空白的下一組</span>
+                    <button type="button" className="text-link" onClick={()=>{
+                      if(save("撤銷誤存組次",draft=>{
+                        const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
+                        // Never erase a group that has acquired child RP/Drop sets.
+                        if(target.sets.some(s=>s.parentId===lastSavedId))
+                          throw Error("此組已有延伸組，請從組次列表編輯或刪除");
+                        target.sets=target.sets.filter(s=>s.id!==lastSavedId);
+                      })){setLastSavedId(null);notify("已撤銷上一筆保存");}
+                    }}>復原上一組</button>
                   </div>}
                 </section>
               ) : (
@@ -779,7 +814,22 @@ export function TrainingFlow({
                   <ArrowRight size={16} />
                 </button>
               </div>
-              <div className="rest-dock rest-dock-dual">
+              {(ex?.allowRestPause || rpStart!==null) && <div className="rest-dock rest-dock-dual rp-short-rest">
+                <Timer size={19}/>
+                <span>RP 短休息 · 獨立計時</span>
+                <div className="rest-times">
+                  <span>已休息 <strong>{Math.floor(rpElapsed/60)}:{String(rpElapsed%60).padStart(2,"0")}</strong></span>
+                  <span>{rpStart===null?"預設目標":rpElapsed>rpTarget?"超時":"剩餘"}
+                    <strong>{formatWorkoutSeconds(rpStart===null?rpTarget:Math.abs(rpTarget-rpElapsed)).slice(3)}</strong>
+                  </span>
+                </div>
+                <button type="button" className="button secondary"
+                  disabled={!!current.pausedAt}
+                  onClick={()=>rpStart===null?startRpTimer():stopRpTimer()}>
+                  {rpStart===null?"開始 RP 短休息":"結束 RP 短休息"}
+                </button>
+              </div>}
+                            <div className="rest-dock rest-dock-dual">
                 <Timer size={19}/>
                 <span>組間休息 {state.preferences?.autoRest===true ? "· 自動" : "· 手動"}</span>
                 <div className="rest-times">
@@ -1109,8 +1159,10 @@ function ExerciseCatalog() {
           {(["正面","側面","45°","背面"] as const).map(label=><span key={label}>{label}</span>)}
         </div>
       </div>
-      {item.source==="jfs" && <Link className="text-link"
-        href={`/training/exercises/detail?id=${encodeURIComponent(item.id)}`}>查看詳情 →</Link>}
+      <Link className="text-link"
+        href={`/training/exercises/detail?id=${encodeURIComponent(item.id)}`}>
+        查看示範與動作詳情 →
+      </Link>
     </details>)}
     {create && <Sheet title="建立我的動作" onClose={()=>setCreate(false)}>
       <form className="stack" onSubmit={e=>{
