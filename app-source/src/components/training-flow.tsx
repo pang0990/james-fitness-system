@@ -73,6 +73,7 @@ export function TrainingFlow({
     sessionId:string; exerciseId:string; removed:Segment[]; indices:number[];
   } | null>(null);
   const [setRecorded, setSetRecorded] = useState(false);
+  const [lastSavedId,setLastSavedId]=useState<string|null>(null);
   const [entryVersion, setEntryVersion] = useState(0);
   const submitLock = useRef(false);
   const [skip, setSkip] = useState(false);
@@ -120,7 +121,7 @@ export function TrainingFlow({
     if (current && exercise >= current.exercises.length) setExercise(0);
   }, [current?.id, current?.exercises.length, exercise]);
   const ex = current?.exercises[exercise];
-  useEffect(() => { setSetRecorded(false); setEntryVersion(v=>v+1); }, [ex?.id,current?.id]);
+  useEffect(() => { setSetRecorded(false);setLastSavedId(null);setEntryVersion(v=>v+1); }, [ex?.id,current?.id]);
   const editingSet = ex?.sets.find(s=>s.id===editingSetId);
   function deleteRecordedSet(id:string){
     if(!current || !ex) return;
@@ -170,7 +171,7 @@ export function TrainingFlow({
     };
   }, [workout, state.preferences?.keepAwake]);
   const restStart=current?.restStartedAt ? Date.parse(current.restStartedAt) : null;
-  const restElapsed=restStart !== null ? Math.max(0,Math.floor((clock-restStart)/1000)) : 0;
+  const restElapsed=restStart !== null ? Math.max(0,Math.floor(((current?.pausedAt?Date.parse(current.pausedAt):clock)-restStart)/1000)) : 0;
   const restTarget=current?.restTargetSeconds ??
     Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120);
   const remaining=Math.max(0,restTarget-restElapsed);
@@ -400,6 +401,8 @@ export function TrainingFlow({
                 save(current.pausedAt ? "恢復訓練" : "暫停訓練", (s) => {
                   const x = s.sessions.find((x) => x.id === current.id)!;
                   if (x.pausedAt) {
+                    const pausedMs=Date.now()-Date.parse(x.pausedAt);
+                    if(x.restStartedAt) x.restStartedAt=new Date(Date.parse(x.restStartedAt)+pausedMs).toISOString();
                     x.pausedDuration =
                       (x.pausedDuration ?? 0) +
                       Date.now() -
@@ -635,6 +638,7 @@ export function TrainingFlow({
                       submitLock.current = true;
                       window.setTimeout(()=>{submitLock.current=false;},650);
                       const d = new FormData(e.currentTarget);
+                      const newSetId=uid();
                       if (
                         save("保存訓練段落", (s) => {
                           const target = s.sessions
@@ -649,7 +653,7 @@ export function TrainingFlow({
                           )
                             throw Error("請選擇所屬工作組");
                           target.sets.push({
-                            id: uid(),
+                            id: newSetId,
                             type,
                             weight: Number(d.get("weight")),
                             reps: Number(d.get("reps")),
@@ -661,6 +665,7 @@ export function TrainingFlow({
                           });
                         })
                       ) {
+                        setLastSavedId(newSetId);
                         setSetRecorded(true);
                         notify("這組已保存");
                         if (
@@ -727,10 +732,19 @@ export function TrainingFlow({
                       <Check size={16} />
                     </button>
                   </form>
-                  {setRecorded && <button type="button" className="button secondary"
-                    onClick={()=>{setEntryVersion(v=>v+1);setSetRecorded(false);}}>
-                    ＋ 記錄下一組
-                  </button>}
+                  {setRecorded && <div className="two-actions">
+                    <button type="button" className="button secondary"
+                      onClick={()=>{setEntryVersion(v=>v+1);setSetRecorded(false);setLastSavedId(null);}}>
+                      ＋ 記錄下一組
+                    </button>
+                    {lastSavedId && <button type="button" className="text-link"
+                      onClick={()=>{
+                        if(save("復原誤存組次",draft=>{
+                          const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
+                          target.sets=target.sets.filter(s=>s.id!==lastSavedId);
+                        })){setLastSavedId(null);setSetRecorded(false);notify("已撤銷保存");}
+                      }}>撤銷本次保存</button>}
+                  </div>}
                 </section>
               ) : (
                 <section className="card">
