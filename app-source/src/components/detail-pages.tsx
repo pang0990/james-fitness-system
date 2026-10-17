@@ -5,7 +5,7 @@ import { useStore } from "@/lib/store";
 import catalog from "@/content/exercises.json";
 import {exerciseLibrary} from "@/lib/exercise-library";
 import { PageTitle, Sheet, Field, Num, stamp, uid } from "./daily";
-import {replaceWorkoutSet} from "@/lib/workout-sets";
+import {correctCompletedSet} from "@/lib/workout-sets";
 import type {Segment} from "@/lib/domain";
 
 export function WorkoutHistoryDetail() {
@@ -67,16 +67,9 @@ export function WorkoutHistoryDetail() {
                 const type=String(data.get("type")) as Segment["type"];
                 if(save("更正歷史訓練組次",draft=>{
                   const target=draft.sessions.find(s=>s.id===session.id);
-                  if(!target || target.status!=="completed")throw Error("只能更正已完成的訓練紀錄");
-                  const exercise=target.exercises.find(e=>e.id===editExercise.id)!;
-                  const previous=exercise.sets.find(s=>s.id===editSet.id)!;
-                  const before={weight:previous.weight,reps:previous.reps,type:previous.type};
-                  if(before.weight===weight && before.reps===reps && before.type===type)return;
-                  exercise.sets=replaceWorkoutSet(exercise.sets,editSet.id,{weight,reps,type});
-                  (target.setCorrections??=[]).push({
-                    id:uid(),editedAt:stamp(),exerciseId:exercise.id,setId:editSet.id,
-                    before,after:{weight,reps,type},
-                  });
+                  if(!target)throw Error("找不到訓練紀錄");
+                  correctCompletedSet(target,editExercise.id,editSet.id,
+                    {weight,reps,type},stamp(),uid());
                 }))setEditing(null);
               }}>
                 <Field label="組型"><select name="type" defaultValue={editSet.type}>
