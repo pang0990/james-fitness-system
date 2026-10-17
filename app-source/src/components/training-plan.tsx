@@ -349,7 +349,14 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                 id: uid(),
                 name: name.trim(),
                 source: planSource,
-                days: structuredClone(days),
+                days:structuredClone(days).map(day=>({
+                  ...day,
+                  exercises:day.exercises?.map(({rir, ...exercise})=>exercise),
+                  secondSession:day.secondSession?{
+                    ...day.secondSession,
+                    exercises:day.secondSession.exercises?.map(({rir,...exercise})=>exercise),
+                  }:undefined,
+                })),
                 pending: pending.length ? pending : days.map((d) => d.id!),
                 round: (old?.round ?? 1) + (pending.length ? 0 : 1),
                 previousId: old?.id,
