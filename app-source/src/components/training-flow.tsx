@@ -24,6 +24,7 @@ import {
 } from "@/lib/training-model";
 import { Companion } from "./companion";
 import { exerciseLibrary, searchExercises } from "@/lib/exercise-library";
+import {removeWorkoutSet,restoreWorkoutSets,replaceWorkoutSet} from "@/lib/workout-sets";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
@@ -131,13 +132,11 @@ export function TrainingFlow({
     if(!current || !ex) return;
     const root=ex.sets.find(s=>s.id===id);
     if(!root)return;
-    const removed=ex.sets.filter(s=>s.id===id || s.parentId===id);
+    const {removed,indices}=removeWorkoutSet(ex.sets,id);
     if(removed.length>1 && !window.confirm("刪除這一組會一併移除其 RP／Drop 延伸組，確定？"))return;
-    const indices=removed.map(s=>ex.sets.findIndex(t=>t.id===s.id));
     if(save("刪除訓練組",draft=>{
       const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
-      const ids=new Set(removed.map(s=>s.id));
-      target.sets=target.sets.filter(s=>!ids.has(s.id));
+      target.sets=removeWorkoutSet(target.sets,id).remaining;
     }))setUndoDeletion({sessionId:current.id,exerciseId:ex.id,
       removed:structuredClone(removed),indices});
   }
@@ -619,12 +618,8 @@ export function TrainingFlow({
                       <button type="button" className="text-link" onClick={()=>{
                         if(save("復原刪除組次",draft=>{
                           const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
-                          const entries=undoDeletion.removed.map((s,i)=>({s,index:undoDeletion.indices[i]}))
-                            .sort((a,b)=>a.index-b.index);
-                          entries.forEach(({s,index})=>{
-                            if(!target.sets.some(t=>t.id===s.id))
-                              target.sets.splice(Math.min(index,target.sets.length),0,s);
-                          });
+                          target.sets=restoreWorkoutSets(target.sets,
+                            undoDeletion.removed,undoDeletion.indices);
                         }))setUndoDeletion(null);
                       }}>復原</button>
                     </div>
@@ -968,8 +963,7 @@ export function TrainingFlow({
             }
             if(save("編輯訓練組",draft=>{
               const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(x=>x.id===ex.id)!;
-              const set=target.sets.find(s=>s.id===editingSet.id)!;
-              set.weight=weight;set.reps=reps;set.type=kind;
+              target.sets=replaceWorkoutSet(target.sets,editingSet.id,{weight,reps,type:kind});
             })){setEditingSetId(null);notify("已儲存修改");}
           }}>
             <Field label="組型">
