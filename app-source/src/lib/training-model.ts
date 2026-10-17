@@ -64,7 +64,6 @@ export function performance(state: AppState) {
       date: string;
       weight: number;
       reps: number;
-      rir: number | null;
       cycle?: string;
     }[]
   >();
@@ -84,7 +83,6 @@ export function performance(state: AppState) {
               date: s.date,
               weight: set.weight,
               reps: set.reps,
-              rir: set.rir,
               cycle: s.cycleId,
             },
           ]);
@@ -94,15 +92,12 @@ export function performance(state: AppState) {
     if (sets.length < 2) return [];
     const before = sets.at(-2)!,
       after = sets.at(-1)!;
-    const comparable =
-      before.rir !== null && after.rir !== null && after.rir >= before.rir;
+    // Weight/repetitions-based comparison. Never infer an RPE from old RIR.
+    // Equal weight and reps are stable, rather than a claim of improvement.
+    const comparable = true;
     const improved =
-      comparable &&
-      ((after.weight > before.weight && after.reps >= before.reps) ||
-        (after.weight === before.weight && after.reps > before.reps) ||
-        (after.weight === before.weight &&
-          after.reps === before.reps &&
-          after.rir! > before.rir!));
+      (after.weight > before.weight && after.reps >= before.reps) ||
+      (after.weight === before.weight && after.reps > before.reps);
     return [{ name, before, after, comparable, improved }];
   });
 }
