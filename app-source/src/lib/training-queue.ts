@@ -27,6 +27,7 @@ export function completeSession(
   state: AppState,
   session: Session,
   now: string,
+  options: { countTowardCycle?: boolean } = {},
 ) {
   if (session.status !== "in_progress") throw Error("這次訓練已結束");
   if(session.restStartedAt){
@@ -38,6 +39,16 @@ export function completeSession(
     delete session.restStartedAt;
     delete session.restTargetSeconds;
   }
+  if(session.rpRestStartedAt){
+    (session.rpRestHistory??=[]).push({
+      startedAt:session.rpRestStartedAt,endedAt:now,
+      elapsedSeconds:Math.max(0,Math.round((Date.parse(now)-Date.parse(session.rpRestStartedAt))/1000)),
+      targetSeconds:session.rpRestTargetSeconds??20,
+    });
+    delete session.rpRestStartedAt;
+    delete session.rpRestTargetSeconds;
+  }
+  if(session.cycleId)session.cycleCounted=!session.isExtra && options.countTowardCycle !== false;
   session.status = "completed";
   session.completedAt = now;
   const elapsed = Math.max(0, Date.parse(now) - Date.parse(session.createdAt));
@@ -52,8 +63,8 @@ export function completeSession(
   const id =
     session.trainingDayId ??
     (original ? dayId(original, session.cycleDayIndex ?? 0) : undefined);
-  if (id && active && !session.isExtra) consumeDay(state, active, id);
-  if (session.cycleId && !session.isExtra)
+  if (id && active && !session.isExtra && options.countTowardCycle !== false) consumeDay(state, active, id);
+  if (session.cycleId && !session.isExtra && options.countTowardCycle !== false)
     (state.cycleEvents ??= []).push({
       id: crypto.randomUUID(),
       cycleId: session.cycleId,
