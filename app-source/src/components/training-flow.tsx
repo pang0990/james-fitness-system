@@ -368,7 +368,7 @@ export function TrainingFlow({
   if (path === "training/warmups")
     return (
       <div className="daily-page">
-        <PageTitle title="Warm-up Library" />
+        <PageTitle title="暖身" />
         <WarmupPicker />
       </div>
     );
