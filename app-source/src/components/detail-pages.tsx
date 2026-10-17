@@ -112,25 +112,42 @@ export function WorkoutHistoryDetail() {
 
 export function ExerciseGuideDetail() {
   const {state}=useStore();
+  const [angle,setAngle]=useState<"front"|"side"|"angle45"|"rear">("front");
   const [id, setId] = useState<string | null>(null);
   useEffect(() => setId(new URLSearchParams(window.location.search).get("id")), []);
   const exercise = exerciseLibrary(state).find(e => e.id === id);
   const original=catalog.find(e=>e.id===id);
+  const angles=[{key:"front",label:"正面"},{key:"side",label:"側面"},
+    {key:"angle45",label:"45°"},{key:"rear",label:"背面"}] as const;
+  const safeVideo=(raw?:string)=>{
+    if(!raw)return undefined;
+    // Only video URLs controlled by a content editor should be published.
+    if(raw.startsWith("https://")||raw.startsWith("/james-fitness-system/"))return raw;
+    return undefined;
+  };
+  const video=safeVideo(exercise?.videoAngles?.[angle]);
   return (
     <div className="daily-page">
       <PageTitle title={exercise?.nameZh ?? "動作詳情"} />
       <Link className="text-link" href="/training/exercises">← 返回動作資料庫</Link>
       {exercise ? (
         <section className="card stack">
-          <small>{exercise.source==="personal"?"我的動作":"JFS 動作庫"}</small>
+          <small>{exercise.visibility==="public"?"JFS 公開動作 · 所有使用者可觀看":"我的私人動作"}</small>
           <h2>{exercise.name}</h2>
           <p>主要肌群：{exercise.muscle}</p>
           <p>品牌：{exercise.brand||"未設定"} · 器材：{exercise.equipment}</p>
           <div className="exercise-video-placeholder">
-            <strong>示範影片待補上</strong>
-            <div className="exercise-video-angles">
-              {(["正面","側面","45°","背面"] as const).map(angle=>
-                <span key={angle}>{angle} · 待補上</span>)}
+            {video ? <video key={video} controls playsInline preload="metadata"
+              src={video} aria-label={exercise.nameZh+" · "+angles.find(a=>a.key===angle)?.label+"示範影片"}/>
+              : <strong>{angles.find(a=>a.key===angle)?.label}示範影片待補上</strong>}
+            <div className="exercise-video-angles" role="group" aria-label="選擇示範角度">
+              {angles.map(item=>(
+                <button key={item.key} type="button"
+                  className={"button secondary"+(item.key===angle?" active":"")}
+                  aria-pressed={angle===item.key} onClick={()=>setAngle(item.key)}>
+                  {item.label}{safeVideo(exercise.videoAngles?.[item.key])?" ▶":" · 待補上"}
+                </button>
+              ))}
             </div>
           </div>
           <p className="muted">未附正式影片與審核說明前不顯示未經確認的動作教學。</p>
