@@ -23,7 +23,7 @@ import {
   cycleProgressEvents,
 } from "@/lib/training-model";
 import { Companion } from "./companion";
-import catalog from "@/content/exercises.json";
+import { exerciseLibrary, searchExercises } from "@/lib/exercise-library";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
@@ -62,6 +62,8 @@ export function TrainingFlow({
       : 0,
   );
   const [add, setAdd] = useState(false);
+  const [addMode,setAddMode] = useState<"search"|"create">("search");
+  const [exerciseQuery,setExerciseQuery]=useState("");
   const [extraOpen, setExtraOpen] = useState(false);
   const [review, setReview] = useState(false);
   const [completedId, setCompletedId] = useState<string | null>(null);
@@ -79,6 +81,8 @@ export function TrainingFlow({
     const t = setInterval(() => setClock(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
+  const libraryItems=exerciseLibrary(state);
+  const addResults=searchExercises(libraryItems,exerciseQuery);
   const cycle = activeCycle(state);
   const count = cycle ? cycleProgressEvents(state,cycle.id).length : 0;
   const planned = scheduleEntry(state, date);
@@ -976,80 +980,80 @@ export function TrainingFlow({
         </Sheet>
       )}
       {add && (
-        <Sheet title="新增動作" onClose={() => setAdd(false)}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const name = String(
-                new FormData(e.currentTarget).get("name"),
-              ).trim();
-              if (!current || !name) return;
-              const index = current.exercises.length;
-              const entry = catalog.find((x) => x.name === name);
-              const fd = new FormData(e.currentTarget);
-              if (
-                save("新增訓練動作", (s) =>
-                  s.sessions
-                    .find((x) => x.id === current.id)!
-                    .exercises.push({
-                      id: uid(),
-                      name,
-                      sets: [],
-                      muscle: entry?.muscle ?? String(fd.get("muscle")),
-                      allowRestPause: fd.get("rp") === "on",
-                      allowDropSet: fd.get("drop") === "on",
-                    }),
-                )
-              ) {
-                setExercise(index);
-                setAdd(false);
-                notify();
-              }
-            }}
-          >
-            <Field label="動作名稱">
-              <input name="name" list="my-exercises" required maxLength={80} />
+        <Sheet title={addMode==="search"?"從動作庫加入":"建立我的動作"} onClose={()=>{setAdd(false);setAddMode("search");}}>
+          {addMode==="search" ? <div className="stack">
+            <Field label="搜尋動作名稱、品牌或器材">
+              <input value={exerciseQuery} autoFocus
+                onChange={e=>setExerciseQuery(e.target.value)}
+                placeholder="例如 Newtech、器械平胸推"/>
             </Field>
-            <datalist id="my-exercises">
-              {catalog.map((e) => (
-                <option key={e.id} value={e.name} />
-              ))}
-              {Array.from(
-                new Set(
-                  state.sessions.flatMap((s) => s.exercises.map((e) => e.name)),
-                ),
-              ).map((n) => (
-                <option key={n} value={n} />
-              ))}
-            </datalist>
-            <Field label="主要肌群">
-              <select name="muscle">
-                {[
-                  "Chest",
-                  "Back",
-                  "Shoulders",
-                  "Quads",
-                  "Hamstrings",
-                  "Glutes",
-                  "Biceps",
-                  "Triceps",
-                  "Calves",
-                  "Core",
-                ].map((m) => (
-                  <option key={m}>{m}</option>
-                ))}
-              </select>
-            </Field>
-            <label className="check">
-              <input type="checkbox" name="rp" />
-              啟用 Rest-Pause
-            </label>
-            <label className="check">
-              <input type="checkbox" name="drop" />
-              啟用 Drop Set
-            </label>
-            <button className="button">加入動作</button>
-          </form>
+            <div className="exercise-search-results">
+              {addResults.slice(0,45).map(item=><button type="button"
+                key={item.id} className="simple-row exercise-result"
+                onClick={()=>{
+                  if(!current)return;
+                  const index=current.exercises.length;
+                  if(save("從動作庫加入訓練動作",draft=>{
+                    const session=draft.sessions.find(s=>s.id===current.id)!;
+                    session.exercises.push({id:uid(),exerciseLibraryId:item.id,
+                      name:item.source==="personal"?item.name:item.name,
+                      muscle:item.muscle,sets:[],allowRestPause:item.allowRestPause,
+                      allowDropSet:item.allowDropSet});
+                  })){
+                    setExercise(index);setAdd(false);setExerciseQuery("");notify("動作已加入");
+                  }
+                }}>
+                <span><strong>{item.nameZh}</strong>
+                  <small>{item.brand} · {item.muscle} · {item.source==="personal"?"我的動作":"JFS"}</small>
+                </span><Plus size={16}/>
+              </button>)}
+              {!addResults.length && <p className="muted">沒有符合的動作，可以建立個人動作。</p>}
+            </div>
+            <button type="button" className="button secondary" onClick={()=>setAddMode("create")}>
+              ＋ 建立我的動作
+            </button>
+          </div> : <form className="stack" onSubmit={e=>{
+            e.preventDefault();
+            if(!current)return;
+            const fd=new FormData(e.currentTarget);
+            const name=String(fd.get("name")??"").trim();
+            const brand=String(fd.get("brand")??"").trim();
+            if(!name)return;
+            const id=uid(),index=current.exercises.length;
+            const muscle=String(fd.get("muscle")??"Chest");
+            if(save("儲存自訂動作並加入當次訓練",draft=>{
+              (draft.customExercises??=[]).push({
+                id,name,brand,equipment:String(fd.get("equipment")??"Machine"),
+                muscle,usage:String(fd.get("usage")??"training") as "training"|"warmup"|"both",
+                allowRestPause:fd.get("rp")==="on",allowDropSet:fd.get("drop")==="on",
+                createdAt:stamp(),
+              });
+              draft.sessions.find(s=>s.id===current.id)!.exercises.push({
+                id:uid(),exerciseLibraryId:id,name,muscle,sets:[],
+                allowRestPause:fd.get("rp")==="on",allowDropSet:fd.get("drop")==="on",
+              });
+            })){setExercise(index);setAdd(false);setAddMode("search");setExerciseQuery("");notify("已儲存到我的動作庫");}
+          }}>
+            <Field label="動作名稱"><input name="name" required maxLength={80} placeholder="器械平胸推"/></Field>
+            <Field label="器械品牌"><input name="brand" maxLength={80} placeholder="Newtech"/></Field>
+            <Field label="器材類型"><select name="equipment" defaultValue="Machine">
+              <option>Machine</option><option>Cable</option><option>Dumbbell</option>
+              <option>Barbell</option><option>Bodyweight</option><option>Other</option>
+            </select></Field>
+            <Field label="主要肌群"><select name="muscle">
+              {["Chest","Back","Shoulders","Quads","Hamstrings","Glutes","Biceps","Triceps","Calves","Core"]
+                .map(m=><option key={m}>{m}</option>)}
+            </select></Field>
+            <Field label="可使用於"><select name="usage" defaultValue="training">
+              <option value="training">訓練</option>
+              <option value="warmup">暖身</option>
+              <option value="both">暖身與訓練</option>
+            </select></Field>
+            <label className="check"><input type="checkbox" name="rp"/>Rest-Pause</label>
+            <label className="check"><input type="checkbox" name="drop"/>Drop Set</label>
+            <button type="submit" className="button">儲存並加入訓練</button>
+            <button type="button" className="text-link" onClick={()=>setAddMode("search")}>返回搜尋</button>
+          </form>}
         </Sheet>
       )}
     </div>
@@ -1057,51 +1061,65 @@ export function TrainingFlow({
 }
 
 function ExerciseCatalog() {
-  const [query, setQuery] = useState("");
-  const [muscle, setMuscle] = useState("");
-  const list = catalog.filter(
-    (e) =>
-      (!muscle || e.muscle === muscle) &&
-      `${e.name} ${e.nameZh} ${e.brand}`
-        .toLowerCase()
-        .includes(query.toLowerCase()),
-  );
-  return (
-    <>
-      <Field label="搜尋動作或器材">
-        <input value={query} onChange={(e) => setQuery(e.target.value)} />
-      </Field>
-      <Field label="肌群分類">
-        <select value={muscle} onChange={(e) => setMuscle(e.target.value)}>
-          <option value="">全部</option>
-          {[...new Set(catalog.map((e) => e.muscle))].map((m) => (
-            <option key={m}>{m}</option>
-          ))}
-        </select>
-      </Field>
-      <p className="muted">{list.length} 個動作</p>
-      {list.map((e) => (
-        <details className="history-list" key={e.id}>
-          <summary>
-            {e.nameZh} · {e.name}
-          </summary>
-          <p>
-            {e.brand} · {e.muscle}
-          </p>
-          {e.sourceUrl && (
-            <a
-              className="text-link"
-              href={e.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              器材來源
-            </a>
-          )}
-          <p className="muted">示範影片待補充</p>
-          <Link className="text-link" href={`/training/exercises/detail?id=${encodeURIComponent(e.id)}`}>查看動作詳情 →</Link>
-        </details>
-      ))}
-    </>
-  );
+  const {state,save}=useStore();
+  const [query,setQuery]=useState("");
+  const [muscle,setMuscle]=useState("");
+  const [create,setCreate]=useState(false);
+  const list=searchExercises(exerciseLibrary(state),query,muscle);
+  return <div className="stack">
+    <Field label="搜尋名稱、器材或品牌">
+      <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Newtech · 平胸推"/>
+    </Field>
+    <Field label="肌群">
+      <select value={muscle} onChange={e=>setMuscle(e.target.value)}>
+        <option value="">全部</option>
+        {["Chest","Back","Shoulders","Quads","Hamstrings","Glutes","Biceps","Triceps","Calves","Core"]
+          .map(m=><option key={m} value={m}>{m}</option>)}
+      </select>
+    </Field>
+    <button className="button secondary" type="button" onClick={()=>setCreate(true)}>＋ 建立我的動作</button>
+    <p className="muted">JFS 動作與我的動作一起搜尋 · {list.length} 個結果</p>
+    {list.map(item=><details className="history-list" key={item.id}>
+      <summary>{item.nameZh} · {item.brand}</summary>
+      <p>{item.muscle} · {item.equipment} · {item.source==="personal"?"我的動作":"JFS"}</p>
+      <div className="exercise-video-placeholder">
+        <strong>示範影片待補上</strong>
+        <div className="exercise-video-angles">
+          {(["正面","側面","45°","背面"] as const).map(label=><span key={label}>{label}</span>)}
+        </div>
+      </div>
+      {item.source==="jfs" && <Link className="text-link"
+        href={`/training/exercises/detail?id=${encodeURIComponent(item.id)}`}>查看詳情 →</Link>}
+    </details>)}
+    {create && <Sheet title="建立我的動作" onClose={()=>setCreate(false)}>
+      <form className="stack" onSubmit={e=>{
+        e.preventDefault();
+        const fd=new FormData(e.currentTarget);
+        const name=String(fd.get("name")??"").trim();
+        if(!name)return;
+        if(save("新增個人動作庫項目",draft=>{
+          (draft.customExercises??=[]).push({
+            id:uid(),name,brand:String(fd.get("brand")??"").trim(),
+            equipment:String(fd.get("equipment")??"Machine"),
+            muscle:String(fd.get("muscle")??"Chest"),
+            usage:String(fd.get("usage")??"training") as "warmup"|"training"|"both",
+            allowRestPause:false,allowDropSet:false,createdAt:stamp(),
+          });
+        }))setCreate(false);
+      }}>
+        <Field label="動作名稱"><input name="name" maxLength={80} required/></Field>
+        <Field label="器械品牌"><input name="brand" placeholder="例如 Newtech"/></Field>
+        <Field label="器材"><select name="equipment"><option>Machine</option><option>Cable</option>
+          <option>Dumbbell</option><option>Barbell</option><option>Bodyweight</option><option>Other</option></select></Field>
+        <Field label="肌群"><select name="muscle">
+          {["Chest","Back","Shoulders","Quads","Hamstrings","Glutes","Biceps","Triceps","Calves","Core"]
+            .map(m=><option key={m}>{m}</option>)}</select></Field>
+        <Field label="用途"><select name="usage">
+          <option value="training">訓練</option><option value="warmup">暖身</option>
+          <option value="both">兩者皆可</option>
+        </select></Field>
+        <button className="button">儲存到我的動作庫</button>
+      </form>
+    </Sheet>}
+  </div>;
 }
