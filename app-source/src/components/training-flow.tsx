@@ -215,9 +215,10 @@ export function TrainingFlow({
         phase:state.preferences?.warmupDefault === "skip" ? "workout" : "warmup",
         cycleId:origin.cycleId,trainingDayId:origin.trainingDayId,
         workoutDate:date,scheduledDate:date,round:origin.round,
-        exercises:(plannedSecond.exercises??[]).map(ex=>({
-          ...ex,id:uid(),plannedSets:ex.sets,sets:[],
-        })),
+        exercises:(plannedSecond.exercises??[]).map(ex=>{
+          const clean={...ex};delete clean.rir;
+          return {...clean,id:uid(),plannedSets:ex.sets,sets:[]};
+        }),
         warmupIds:[...(draft.warmupPreset??[])],createdAt:stamp(),
       });
     })) {
@@ -243,9 +244,10 @@ export function TrainingFlow({
         phase:state.preferences?.warmupDefault === "skip" ? "workout" : "warmup",
         workoutDate:date,scheduledDate:date,
         // Ad-hoc exercises are not associated with, or counted by, Cycle progression.
-        exercises:(fromDay?.exercises??[]).map(ex=>({
-          ...ex,id:uid(),plannedSets:ex.sets,sets:[],
-        })),
+        exercises:(fromDay?.exercises??[]).map(ex=>{
+          const clean={...ex};delete clean.rir;
+          return {...clean,id:uid(),plannedSets:ex.sets,sets:[]};
+        }),
         warmupIds:[...(draft.warmupPreset??[])],createdAt:stamp(),
       });
     })) {
@@ -277,12 +279,10 @@ export function TrainingFlow({
           scheduledDate: date,
           round: cycle.round ?? 1,
           cycleDayIndex: dayIndex,
-          exercises: (day.exercises ?? []).map((e) => ({
-            ...e,
-            id: uid(),
-            plannedSets: e.sets,
-            sets: [],
-          })),
+          exercises: (day.exercises ?? []).map((e) => {
+            const clean={...e};delete clean.rir;
+            return {...clean,id:uid(),plannedSets:e.sets,sets:[]};
+          }),
           warmupIds: [...(s.warmupPreset ?? [])],
           createdAt: stamp(),
         });
