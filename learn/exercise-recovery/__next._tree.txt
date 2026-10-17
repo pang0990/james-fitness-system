@@ -4,4 +4,4 @@
 :HL["/james-fitness-system/_next/static/css/84368f2916dbc5a7.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"learn/exercise-recovery","s":["_not-found","_global-error"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"A-WSsuD8xAl-IHBKi-zfs","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"9FRZoog4Gpds1fl4HplMl","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
