@@ -25,7 +25,7 @@ import {
 import { Companion } from "./companion";
 import catalog from "@/content/exercises.json";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -938,6 +938,44 @@ export function TrainingFlow({
           >
             確認略過
           </button>
+        </Sheet>
+      )}
+      {editingSet && current && ex && (
+        <Sheet title="編輯組次" onClose={()=>setEditingSetId(null)}>
+          <form className="stack" onSubmit={e=>{
+            e.preventDefault();
+            const data=new FormData(e.currentTarget);
+            const weight=Number(data.get("weight")), reps=Number(data.get("reps"));
+            const kind=String(data.get("type")) as Segment["type"];
+            if(!Number.isFinite(weight)||weight<0||weight>1000 ||
+              !Number.isInteger(reps)||reps<1||reps>500)return;
+            if(ex.sets.some(s=>s.parentId===editingSet.id)&&kind!=="working"){
+              notify("工作組含延伸組，請先移除延伸組再變更組型");return;
+            }
+            if(save("編輯訓練組",draft=>{
+              const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(x=>x.id===ex.id)!;
+              const set=target.sets.find(s=>s.id===editingSet.id)!;
+              set.weight=weight;set.reps=reps;set.type=kind;
+            })){setEditingSetId(null);notify("已儲存修改");}
+          }}>
+            <Field label="組型">
+              <select name="type" defaultValue={editingSet.type}>
+                {editingSet.parentId ? <>
+                  <option value="rp">Rest-Pause</option><option value="drop">Drop Set</option>
+                </> : <>
+                  <option value="working">Working Set</option>
+                  {!ex.sets.some(s=>s.parentId===editingSet.id) && <>
+                    <option value="warmup">Warm-up</option><option value="rampup">Ramp-up</option>
+                  </>}
+                </>}
+              </select>
+            </Field>
+            <div className="set-inputs">
+              <Num label="重量 kg" name="weight" max={1000} value={editingSet.weight}/>
+              <Num label="次數" name="reps" min={1} max={500} step="1" value={editingSet.reps}/>
+            </div>
+            <button type="submit" className="button">儲存修改</button>
+          </form>
         </Sheet>
       )}
       {add && (
