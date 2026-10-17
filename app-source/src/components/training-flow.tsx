@@ -109,7 +109,7 @@ export function TrainingFlow({
     .slice().sort((a,b) => (a.completedAt ?? a.createdAt).localeCompare(b.completedAt ?? b.createdAt));
   // A custom Cycle day can have an optional second session, without consuming another day.
   const plannedSecondFor = completedToday.find(session => {
-    if (!session.cycleId || !session.trainingDayId || session.isExtra) return false;
+    if (!session.cycleId || !session.trainingDayId || session.isExtra || session.cycleCounted===false) return false;
     const plan = state.cycles?.find(c => c.id === session.cycleId);
     const sourceDay = plan?.days.find((_,i) => dayId(plan,i) === session.trainingDayId);
     return !!sourceDay?.secondSession &&
@@ -498,7 +498,7 @@ export function TrainingFlow({
             </section>
           ) : review ? (
             <section className="card">
-              <h2>訓練回顧</h2>
+              <h2>完成本次訓練</h2>
               <p>
                 {current.exercises.length} 個動作 ·{" "}
                 {
@@ -508,25 +508,44 @@ export function TrainingFlow({
                 }{" "}
                 工作組
               </p>
+              {plannedWorking>0 && <p className="muted">
+                課表目標 {plannedWorking} 工作組 · 實際完成 {completedWorking} 組
+              </p>}
+              {partialCycle && <fieldset className="cycle-completion-choice">
+                <legend>尚有 {plannedWorking-completedWorking} 組未完成。這個 Cycle Day 怎麼處理？</legend>
+                <label className="check"><input type="radio" name="cycleDecision"
+                  checked={cycleDecision==="count"} onChange={()=>setCycleDecision("count")}/>
+                  視為完成，推進到下一個 Cycle Day
+                </label>
+                <label className="check"><input type="radio" name="cycleDecision"
+                  checked={cycleDecision==="keep"} onChange={()=>setCycleDecision("keep")}/>
+                  只保存本次訓練，保留此 Cycle Day 待完成
+                </label>
+              </fieldset>}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   const feedback = String(
                     new FormData(e.currentTarget).get("feedback"),
                   );
+                  if (partialCycle && cycleDecision===null) {
+                    notify("請先選擇是否將未完成的課表計入 Cycle");
+                    return;
+                  }
                   if (
                     save("完成訓練與 Cycle Day", (s) => {
                       const session = s.sessions.find(
                         (x) => x.id === current.id,
                       )!;
                       if (session.status === "completed") return;
-                      completeSession(s, session, stamp());
+                      completeSession(s, session, stamp(), {countTowardCycle:!partialCycle || cycleDecision==="count"});
                       session.feedback = feedback;
                     })
                   ) {
                     setReview(false);
+                    setCycleDecision(null);
                     setCompletedId(current.id);
-                    notify("訓練已保存");
+                    notify(partialCycle && cycleDecision==="keep"?"已保存訓練，Cycle Day 保留待完成":"訓練已保存");
                   }
                 }}
               >
