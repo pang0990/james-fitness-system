@@ -1159,8 +1159,10 @@ function ExerciseCatalog() {
           {(["正面","側面","45°","背面"] as const).map(label=><span key={label}>{label}</span>)}
         </div>
       </div>
-      {item.source==="jfs" && <Link className="text-link"
-        href={`/training/exercises/detail?id=${encodeURIComponent(item.id)}`}>查看詳情 →</Link>}
+      <Link className="text-link"
+        href={`/training/exercises/detail?id=${encodeURIComponent(item.id)}`}>
+        查看示範與動作詳情 →
+      </Link>
     </details>)}
     {create && <Sheet title="建立我的動作" onClose={()=>setCreate(false)}>
       <form className="stack" onSubmit={e=>{
