@@ -116,7 +116,7 @@ export function TrainingFlow({
     if (current && exercise >= current.exercises.length) setExercise(0);
   }, [current?.id, current?.exercises.length, exercise]);
   const ex = current?.exercises[exercise];
-  useEffect(() => { setRecorded(false); setEntryVersion(v=>v+1); }, [ex?.id,current?.id]);
+  useEffect(() => { setSetRecorded(false); setEntryVersion(v=>v+1); }, [ex?.id,current?.id]);
   const editingSet = ex?.sets.find(s=>s.id===editingSetId);
   function deleteRecordedSet(id:string){
     if(!current || !ex) return;
@@ -657,7 +657,7 @@ export function TrainingFlow({
                           });
                         })
                       ) {
-                        setRecorded(true);
+                        setSetRecorded(true);
                         notify("這組已保存");
                         if (
                           type === "working" &&
@@ -724,7 +724,7 @@ export function TrainingFlow({
                     </button>
                   </form>
                   {setRecorded && <button type="button" className="button secondary"
-                    onClick={()=>{setEntryVersion(v=>v+1);setRecorded(false);}}>
+                    onClick={()=>{setEntryVersion(v=>v+1);setSetRecorded(false);}}>
                     ＋ 記錄下一組
                   </button>}
                 </section>
