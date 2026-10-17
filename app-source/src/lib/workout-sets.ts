@@ -1,4 +1,4 @@
-import type { Segment } from "./domain";
+import type { Segment, Session } from "./domain";
 
 export function removeWorkoutSet(sets:Segment[],id:string){
   const removed=sets.filter(s=>s.id===id||s.parentId===id);
@@ -36,4 +36,25 @@ export function replaceWorkoutSet(
   const kind=original.parentId?["rp","drop"]:["working","warmup","rampup"];
   if(!kind.includes(patch.type))throw Error("組型不適用此組次");
   return sets.map(s=>s.id===id?{...s,...patch}:s);
+}
+
+/** Historic corrections preserve the previous values and never change plan templates. */
+export function correctCompletedSet(
+  session:Session,exerciseId:string,setId:string,
+  patch:Pick<Segment,"weight"|"reps"|"type">,
+  changedAt:string,correctionId:string,
+){
+  if(session.status!=="completed")throw Error("只能更正已完成的訓練");
+  const exercise=session.exercises.find(e=>e.id===exerciseId);
+  const beforeSet=exercise?.sets.find(s=>s.id===setId);
+  if(!exercise||!beforeSet)throw Error("找不到歷史組次");
+  const before={weight:beforeSet.weight,reps:beforeSet.reps,type:beforeSet.type};
+  if(before.weight===patch.weight&&before.reps===patch.reps&&before.type===patch.type)return false;
+  const replaced=replaceWorkoutSet(exercise.sets,setId,patch);
+  exercise.sets=replaced;
+  (session.setCorrections??=[]).push({
+    id:correctionId,editedAt:changedAt,exerciseId,setId,
+    before,after:{weight:patch.weight,reps:patch.reps,type:patch.type},
+  });
+  return true;
 }
