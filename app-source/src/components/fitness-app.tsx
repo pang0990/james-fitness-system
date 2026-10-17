@@ -1065,7 +1065,7 @@ function Training({
       id: id(),
       weight: Number(d.get("weight")),
       reps: Number(d.get("reps")),
-      rir: d.get("rir") === "" ? null : Number(d.get("rir")),
+      rir: null,
       type,
       createdAt: now(),
       ...(["rp", "drop"].includes(type) ? { parentId } : {}),
@@ -1400,13 +1400,7 @@ function Training({
                       max={500}
                       step="1"
                     />
-                    <NumberField
-                      name="rir"
-                      label="RIR（選填）"
-                      max={10}
-                      step="0.5"
-                      required={false}
-                    />
+
                     <Field label="RP／Drop 所屬工作組">
                       <select name="parent">
                         <option value="">一般組不需要</option>
