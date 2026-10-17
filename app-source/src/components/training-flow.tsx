@@ -66,6 +66,13 @@ export function TrainingFlow({
   const [review, setReview] = useState(false);
   const [completedId, setCompletedId] = useState<string | null>(null);
   const [type, setType] = useState<Segment["type"]>("working");
+  const [editingSetId, setEditingSetId] = useState<string | null>(null);
+  const [undoDeletion, setUndoDeletion] = useState<{
+    sessionId:string; exerciseId:string; removed:Segment[]; indices:number[];
+  } | null>(null);
+  const [setRecorded, setSetRecorded] = useState(false);
+  const [entryVersion, setEntryVersion] = useState(0);
+  const submitLock = useRef(false);
   const [skip, setSkip] = useState(false);
   const [timerEnd, setTimerEnd] = useState<number | null>(null);
   const [remaining, setRemaining] = useState(0);
@@ -111,6 +118,22 @@ export function TrainingFlow({
     if (current && exercise >= current.exercises.length) setExercise(0);
   }, [current?.id, current?.exercises.length, exercise]);
   const ex = current?.exercises[exercise];
+  useEffect(() => { setRecorded(false); setEntryVersion(v=>v+1); }, [ex?.id,current?.id]);
+  const editingSet = ex?.sets.find(s=>s.id===editingSetId);
+  function deleteRecordedSet(id:string){
+    if(!current || !ex) return;
+    const root=ex.sets.find(s=>s.id===id);
+    if(!root)return;
+    const removed=ex.sets.filter(s=>s.id===id || s.parentId===id);
+    if(removed.length>1 && !window.confirm("刪除這一組會一併移除其 RP／Drop 延伸組，確定？"))return;
+    const indices=removed.map(s=>ex.sets.findIndex(t=>t.id===s.id));
+    if(save("刪除訓練組",draft=>{
+      const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
+      const ids=new Set(removed.map(s=>s.id));
+      target.sets=target.sets.filter(s=>!ids.has(s.id));
+    }))setUndoDeletion({sessionId:current.id,exerciseId:ex.id,
+      removed:structuredClone(removed),indices});
+  }
   const previousSets = state.sessions
     .filter((s) => s.status === "completed")
     .slice()
@@ -558,31 +581,54 @@ export function TrainingFlow({
                       </label>
                     ))}
                   </details>
-                  <div className="set-history">
-                    {ex.sets.map((set, i) => (
-                      <div className="session-set" key={set.id}>
-                        <span>
-                          {i + 1} · {set.type.toUpperCase()}
-                        </span>
-                        <strong>
-                          {set.weight} kg × {set.reps}
-                          {set.type === "working" &&
-                            ex.sets
-                              .filter((t) => t.parentId === set.id)
-                              .map(
-                                (t) =>
-                                  ` + ${t.type === "drop" ? t.weight + " kg × " : ""}${t.reps} ${t.type.toUpperCase()}`,
-                              )
-                              .join("")}
-                        </strong>
-
+                  <div className="set-history" aria-label="已記錄組次">
+                    {ex.sets.filter(s=>!s.parentId || !ex.sets.some(p=>p.id===s.parentId)).map((set,i)=>(
+                      <div className="set-group" key={set.id}>
+                        <div className="session-set">
+                          <span>{i+1} · {set.type.toUpperCase()}</span>
+                          <strong>{set.weight} kg × {set.reps}</strong>
+                          <div className="set-row-controls">
+                            <button type="button" className="text-link" onClick={()=>setEditingSetId(set.id)}>編輯</button>
+                            <button type="button" className="text-link" onClick={()=>deleteRecordedSet(set.id)}>刪除</button>
+                          </div>
+                        </div>
+                        {ex.sets.filter(s=>s.parentId===set.id).map(child=>(
+                          <div className="session-set session-set-child" key={child.id}>
+                            <span>└ {child.type.toUpperCase()}</span>
+                            <strong>{child.weight} kg × {child.reps}</strong>
+                            <div className="set-row-controls">
+                              <button type="button" className="text-link" onClick={()=>setEditingSetId(child.id)}>編輯</button>
+                              <button type="button" className="text-link" onClick={()=>deleteRecordedSet(child.id)}>刪除</button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     ))}
                   </div>
+                  {undoDeletion?.sessionId===current.id &&
+                   undoDeletion.exerciseId===ex.id && (
+                    <div role="status" className="set-undo-banner">
+                      已刪除組次
+                      <button type="button" className="text-link" onClick={()=>{
+                        if(save("復原刪除組次",draft=>{
+                          const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
+                          const entries=undoDeletion.removed.map((s,i)=>({s,index:undoDeletion.indices[i]}))
+                            .sort((a,b)=>a.index-b.index);
+                          entries.forEach(({s,index})=>{
+                            if(!target.sets.some(t=>t.id===s.id))
+                              target.sets.splice(Math.min(index,target.sets.length),0,s);
+                          });
+                        }))setUndoDeletion(null);
+                      }}>復原</button>
+                    </div>
+                  )}
                   <form
-                    key={ex.id}
+                    key={ex.id + "-" + entryVersion}
                     onSubmit={(e) => {
                       e.preventDefault();
+                      if (submitLock.current || setRecorded) return;
+                      submitLock.current = true;
+                      window.setTimeout(()=>{submitLock.current=false;},650);
                       const d = new FormData(e.currentTarget);
                       if (
                         save("保存訓練段落", (s) => {
@@ -610,6 +656,7 @@ export function TrainingFlow({
                           });
                         })
                       ) {
+                        setRecorded(true);
                         notify("這組已保存");
                         if (
                           type === "working" &&
@@ -670,11 +717,15 @@ export function TrainingFlow({
                         </select>
                       </Field>
                     )}
-                    <button className="button" disabled={!!current.pausedAt}>
-                      保存這一組
+                    <button className="button" disabled={!!current.pausedAt || setRecorded}>
+                      {setRecorded ? "已保存" : "完成這一組"}
                       <Check size={16} />
                     </button>
                   </form>
+                  {setRecorded && <button type="button" className="button secondary"
+                    onClick={()=>{setEntryVersion(v=>v+1);setRecorded(false);}}>
+                    ＋ 記錄下一組
+                  </button>}
                 </section>
               ) : (
                 <section className="card">
