@@ -40,6 +40,10 @@ import {
 import { useStore } from "@/lib/store";
 import { addDays, type Segment } from "@/lib/domain";
 import { PageTitle, Sheet, Field, Num, uid, stamp } from "./daily";
+function formatWorkoutSeconds(total:number) {
+  const hours=Math.floor(total/3600),min=Math.floor(total%3600/60),sec=total%60;
+  return [hours,min,sec].map(n=>String(n).padStart(2,"0")).join(":");
+}
 export function TrainingFlow({
   date,
   path,
@@ -416,15 +420,10 @@ export function TrainingFlow({
             </button>
             <span>
               {current.name} ·{" "}
-              {Math.floor(
-                Math.max(
-                  0,
-                  (current.pausedAt ? Date.parse(current.pausedAt) : clock) -
-                    Date.parse(current.createdAt) -
-                    (current.pausedDuration ?? 0),
-                ) / 60000,
-              )}{" "}
-              MIN
+              {formatWorkoutSeconds(Math.floor(Math.max(0,
+                (current.pausedAt?Date.parse(current.pausedAt):clock) -
+                  Date.parse(current.createdAt) - (current.pausedDuration??0)
+              ) / 1000))}
             </span>
             <span>
               {current.phase === "warmup"
