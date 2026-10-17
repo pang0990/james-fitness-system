@@ -381,7 +381,7 @@ export function TrainingFlow({
                 })
               }
             >
-              {current.pausedAt ? "Resume Workout" : "Pause Workout"}
+              {current.pausedAt ? "繼續訓練" : "暫停訓練"}
             </button>
             <span>
               {current.name} ·{" "}
@@ -520,7 +520,7 @@ export function TrainingFlow({
                   <h2>{ex.name}</h2>
                   {ex.plannedSets && (
                     <p className="muted">
-                      計畫 {ex.plannedSets} 組 × {ex.reps} · RIR {ex.rir} · 休息{" "}
+                      計畫 {ex.plannedSets} 組 × {ex.reps} · 休息{" "}
                       {ex.restSeconds} 秒
                     </p>
                   )}
@@ -575,7 +575,7 @@ export function TrainingFlow({
                               )
                               .join("")}
                         </strong>
-                        <small>RIR {set.rir ?? "—"}</small>
+
                       </div>
                     ))}
                   </div>
@@ -602,10 +602,7 @@ export function TrainingFlow({
                             type,
                             weight: Number(d.get("weight")),
                             reps: Number(d.get("reps")),
-                            rir:
-                              d.get("rir") === "" || d.get("rir") === null
-                                ? null
-                                : Number(d.get("rir")),
+                            rir: null, // Preserve legacy schema, stop collecting RIR.
                             createdAt: stamp(),
                             ...(["rp", "drop"].includes(type)
                               ? { parentId: parent }
@@ -616,7 +613,7 @@ export function TrainingFlow({
                         notify("這組已保存");
                         if (
                           type === "working" &&
-                          state.preferences?.autoRest !== false
+                          state.preferences?.autoRest === true
                         )
                           startTimer();
                       }
@@ -657,9 +654,7 @@ export function TrainingFlow({
                         step="1"
                         value={previous?.reps}
                       />
-                      {state.preferences?.showRIR !== false && (
-                        <Num label="RIR" name="rir" max={10} required={false} />
-                      )}
+
                     </div>
                     {["rp", "drop"].includes(type) && (
                       <Field label="所屬工作組">
