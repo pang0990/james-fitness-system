@@ -77,7 +77,6 @@ export function TrainingFlow({
   const [undoDeletion, setUndoDeletion] = useState<{
     sessionId:string; exerciseId:string; removed:Segment[]; indices:number[];
   } | null>(null);
-  const [setRecorded, setSetRecorded] = useState(false);
   const [lastSavedId,setLastSavedId]=useState<string|null>(null);
   const [entryVersion, setEntryVersion] = useState(0);
   const submitLock = useRef(false);
@@ -126,7 +125,7 @@ export function TrainingFlow({
     if (current && exercise >= current.exercises.length) setExercise(0);
   }, [current?.id, current?.exercises.length, exercise]);
   const ex = current?.exercises[exercise];
-  useEffect(() => { setSetRecorded(false);setLastSavedId(null);setEntryVersion(v=>v+1); }, [ex?.id,current?.id]);
+  useEffect(() => {setLastSavedId(null);setEntryVersion(v=>v+1);},[ex?.id,current?.id]);
   const editingSet = ex?.sets.find(s=>s.id===editingSetId);
   function deleteRecordedSet(id:string){
     if(!current || !ex) return;
@@ -642,7 +641,7 @@ export function TrainingFlow({
                     key={ex.id + "-" + entryVersion}
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (submitLock.current || setRecorded) return;
+                      if (submitLock.current) return;
                       submitLock.current = true;
                       window.setTimeout(()=>{submitLock.current=false;},650);
                       const d = new FormData(e.currentTarget);
@@ -674,8 +673,9 @@ export function TrainingFlow({
                         })
                       ) {
                         setLastSavedId(newSetId);
-                        setSetRecorded(true);
-                        notify("這組已保存");
+                        // Each completed set becomes a row immediately. The next draft is blank.
+                        setEntryVersion(v=>v+1);
+                        notify("已記錄，下一組請重新輸入重量與次數");
                         if (
                           type === "working" &&
                           state.preferences?.autoRest === true
@@ -709,7 +709,6 @@ export function TrainingFlow({
                         label="重量 kg"
                         name="weight"
                         max={1000}
-                        value={previous?.weight}
                       />
                       <Num
                         label="次數"
@@ -717,7 +716,6 @@ export function TrainingFlow({
                         min={1}
                         max={500}
                         step="1"
-                        value={previous?.reps}
                       />
 
                     </div>
@@ -735,23 +733,22 @@ export function TrainingFlow({
                         </select>
                       </Field>
                     )}
-                    <button className="button" disabled={!!current.pausedAt || setRecorded}>
-                      {setRecorded ? "已保存" : "完成這一組"}
+                    <button className="button" disabled={!!current.pausedAt}>
+                      完成這一組
                       <Check size={16} />
                     </button>
                   </form>
-                  {setRecorded && <div className="two-actions">
-                    <button type="button" className="button secondary"
-                      onClick={()=>{setEntryVersion(v=>v+1);setSetRecorded(false);setLastSavedId(null);}}>
-                      ＋ 記錄下一組
-                    </button>
-                    {lastSavedId && <button type="button" className="text-link"
-                      onClick={()=>{
-                        if(save("復原誤存組次",draft=>{
-                          const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
-                          target.sets=target.sets.filter(s=>s.id!==lastSavedId);
-                        })){setLastSavedId(null);setSetRecorded(false);notify("已撤銷保存");}
-                      }}>撤銷本次保存</button>}
+                  {lastSavedId && <div className="set-undo-banner" role="status">
+                    <span>已新增組次，下方是空白的下一組</span>
+                    <button type="button" className="text-link" onClick={()=>{
+                      if(save("撤銷誤存組次",draft=>{
+                        const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
+                        // Never erase a group that has acquired child RP/Drop sets.
+                        if(target.sets.some(s=>s.parentId===lastSavedId))
+                          throw Error("此組已有延伸組，請從組次列表編輯或刪除");
+                        target.sets=target.sets.filter(s=>s.id!==lastSavedId);
+                      })){setLastSavedId(null);notify("已撤銷上一筆保存");}
+                    }}>復原上一組</button>
                   </div>}
                 </section>
               ) : (
