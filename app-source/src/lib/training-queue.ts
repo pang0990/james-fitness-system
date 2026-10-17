@@ -29,6 +29,15 @@ export function completeSession(
   now: string,
 ) {
   if (session.status !== "in_progress") throw Error("這次訓練已結束");
+  if(session.restStartedAt){
+    (session.restHistory??=[]).push({
+      startedAt:session.restStartedAt,endedAt:now,
+      elapsedSeconds:Math.max(0,Math.round((Date.parse(now)-Date.parse(session.restStartedAt))/1000)),
+      targetSeconds:session.restTargetSeconds??120,
+    });
+    delete session.restStartedAt;
+    delete session.restTargetSeconds;
+  }
   session.status = "completed";
   session.completedAt = now;
   const elapsed = Math.max(0, Date.parse(now) - Date.parse(session.createdAt));
