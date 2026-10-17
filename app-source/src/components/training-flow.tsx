@@ -25,6 +25,7 @@ import {
 import { Companion } from "./companion";
 import { exerciseLibrary, searchExercises } from "@/lib/exercise-library";
 import {removeWorkoutSet,restoreWorkoutSets,replaceWorkoutSet} from "@/lib/workout-sets";
+import { startRestInterval, endRestInterval } from "@/lib/rest-intervals";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
@@ -71,6 +72,7 @@ export function TrainingFlow({
   const [exerciseQuery,setExerciseQuery]=useState("");
   const [extraOpen, setExtraOpen] = useState(false);
   const [review, setReview] = useState(false);
+  const [cycleDecision, setCycleDecision] = useState<"count"|"keep"|null>(null);
   const [completedId, setCompletedId] = useState<string | null>(null);
   const [type, setType] = useState<Segment["type"]>("working");
   const [editingSetId, setEditingSetId] = useState<string | null>(null);
@@ -172,32 +174,48 @@ export function TrainingFlow({
       document.removeEventListener("visibilitychange", acquire);
     };
   }, [workout, state.preferences?.keepAwake]);
-  const restStart=current?.restStartedAt ? Date.parse(current.restStartedAt) : null;
+  const rpStart=current?.rpRestStartedAt ? Date.parse(current.rpRestStartedAt) : null;
+  const rpTarget=current?.rpRestTargetSeconds ?? Number(state.preferences?.rpRestSeconds ?? 20);
+  const rpElapsed=rpStart === null ? 0 : Math.max(0,Math.floor(((
+    current?.pausedAt ? Date.parse(current.pausedAt) : clock
+  ) - rpStart)/1000));
+  const rpRemaining=Math.max(0,rpTarget-rpElapsed);
+  const plannedWorking=current?.exercises.reduce((n,e)=>n+(e.plannedSets??0),0)??0;
+  const completedWorking=current?.exercises.reduce((n,e)=>n+e.sets.filter(s=>s.type==="working").length,0)??0;
+  const partialCycle=!!current?.cycleId && !current.isExtra &&
+    plannedWorking>0 && completedWorking<plannedWorking;
+    const restStart=current?.restStartedAt ? Date.parse(current.restStartedAt) : null;
   const restElapsed=restStart !== null ? Math.max(0,Math.floor(((current?.pausedAt?Date.parse(current.pausedAt):clock)-restStart)/1000)) : 0;
   const restTarget=current?.restTargetSeconds ??
     Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120);
   const remaining=Math.max(0,restTarget-restElapsed);
   function startTimer(){
-    if(!current || current.restStartedAt || current.pausedAt)return;
-    save("開始組間休息",state=>{
+    if(!current || current.pausedAt)return;
+    save("開始一般組間休息",state=>{
       const session=state.sessions.find(s=>s.id===current.id)!;
-      session.restStartedAt=stamp();
-      session.restTargetSeconds=Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120);
+      startRestInterval(session,"standard",stamp(),
+        Number(ex?.restSeconds ?? state.preferences?.restSeconds ?? 120));
     });
   }
   function stopTimer(){
     if(!current?.restStartedAt)return;
-    save("結束組間休息",state=>{
+    save("結束一般組間休息",state=>{
       const session=state.sessions.find(s=>s.id===current.id)!;
-      if(!session.restStartedAt)return;
-      const end=stamp();
-      (session.restHistory??=[]).push({
-        startedAt:session.restStartedAt,endedAt:end,
-        elapsedSeconds:Math.max(0,Math.round((Date.parse(end)-Date.parse(session.restStartedAt))/1000)),
-        targetSeconds:session.restTargetSeconds??120,
-      });
-      delete session.restStartedAt;
-      delete session.restTargetSeconds;
+      endRestInterval(session,"standard",stamp());
+    });
+  }
+  function startRpTimer(){
+    if(!current || current.pausedAt)return;
+    save("開始 RP 短休息",state=>{
+      const session=state.sessions.find(s=>s.id===current.id)!;
+      startRestInterval(session,"rp",stamp(),Number(state.preferences?.rpRestSeconds??20));
+    });
+  }
+  function stopRpTimer(){
+    if(!current?.rpRestStartedAt)return;
+    save("結束 RP 短休息",state=>{
+      const session=state.sessions.find(s=>s.id===current.id)!;
+      endRestInterval(session,"rp",stamp());
     });
   }
   function startPlannedSecond() {
@@ -405,6 +423,7 @@ export function TrainingFlow({
                   if (x.pausedAt) {
                     const pausedMs=Date.now()-Date.parse(x.pausedAt);
                     if(x.restStartedAt) x.restStartedAt=new Date(Date.parse(x.restStartedAt)+pausedMs).toISOString();
+                    if(x.rpRestStartedAt) x.rpRestStartedAt=new Date(Date.parse(x.rpRestStartedAt)+pausedMs).toISOString();
                     x.pausedDuration =
                       (x.pausedDuration ?? 0) +
                       Date.now() -
@@ -776,7 +795,22 @@ export function TrainingFlow({
                   <ArrowRight size={16} />
                 </button>
               </div>
-              <div className="rest-dock rest-dock-dual">
+              {(ex?.allowRestPause || rpStart!==null) && <div className="rest-dock rest-dock-dual rp-short-rest">
+                <Timer size={19}/>
+                <span>RP 短休息 · 獨立計時</span>
+                <div className="rest-times">
+                  <span>已休息 <strong>{Math.floor(rpElapsed/60)}:{String(rpElapsed%60).padStart(2,"0")}</strong></span>
+                  <span>{rpStart===null?"預設目標":rpElapsed>rpTarget?"超時":"剩餘"}
+                    <strong>{formatWorkoutSeconds(rpStart===null?rpTarget:Math.abs(rpTarget-rpElapsed)).slice(3)}</strong>
+                  </span>
+                </div>
+                <button type="button" className="button secondary"
+                  disabled={!!current.pausedAt}
+                  onClick={()=>rpStart===null?startRpTimer():stopRpTimer()}>
+                  {rpStart===null?"開始 RP 短休息":"結束 RP 短休息"}
+                </button>
+              </div>}
+                            <div className="rest-dock rest-dock-dual">
                 <Timer size={19}/>
                 <span>組間休息 {state.preferences?.autoRest===true ? "· 自動" : "· 手動"}</span>
                 <div className="rest-times">
