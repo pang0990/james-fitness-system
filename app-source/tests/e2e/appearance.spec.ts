@@ -1,14 +1,14 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./authenticated";
 test("appearance persists, follows system, hides companion without hiding notices", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ colorScheme: "light", reducedMotion: "reduce" });
   await page.goto("/settings/appearance/");
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByLabel("顯示模式").selectOption("system");
-  await page.getByLabel("顯示 Companion").uncheck();
-  await page.getByRole("button", { name: "儲存外觀" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.getByLabel("明暗模式").selectOption("system");
+  await page.getByLabel(/顯示 Companion/).uncheck();
+  await page.getByRole("button", { name: "儲存並套用" }).click();
   await expect(page).toHaveURL(/settings\/appearance/);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.reload();
