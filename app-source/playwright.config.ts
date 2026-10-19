@@ -7,7 +7,7 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: "npm run dev -- --port 3100",
+    command: "npm run start",
     url: "http://127.0.0.1:3100",
     reuseExistingServer: !process.env.CI,
   },
