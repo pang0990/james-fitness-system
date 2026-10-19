@@ -16,6 +16,7 @@ import { WeeklyCheckin } from "./weekly-checkin";
 import Link from "next/link";
 import { NutritionV2 } from "./daily";
 import { TodayReference } from "./today-reference";
+import { TodayMinimalV3 } from "./today-minimal-v3";
 import { GoogleLogin, GoogleCallback, LegacyDataOffer } from "./auth-pages";
 import { useAuth } from "@/lib/auth-context";
 import { TrainingFlow } from "./training-flow";
@@ -430,7 +431,11 @@ export function FitnessApp({ path }: { path: string }) {
             ) : section === "login" || section === "signup" ? (
               <Login />
             ) : section === "today" ? (
-              <TodayReference date={date} notify={notify} />
+              state.appearance?.visualStyle === "cinematic" ? (
+                <TodayReference date={date} notify={notify} />
+              ) : (
+                <TodayMinimalV3 date={date} notify={notify} />
+              )
             ) : section === "nutrition" ? (
               path === "nutrition/meals" ? (
                 <MealSettings notify={notify} />
