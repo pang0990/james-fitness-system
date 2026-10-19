@@ -58,7 +58,7 @@ export function ProgressDirection({ date }: { date: string }) {
         <Link href="/progress/body">Body</Link>
         <Link href="/progress/training">Strength</Link>
       </nav>
-      <section className="direction-hero">
+      <section className={`direction-hero${weights.length===0 ? " direction-hero-empty" : ""}`}>
         <div className="range-control" aria-label="趨勢圖期間">
           {["7", "30", "90", "365"].map((r) => (
             <button
@@ -98,6 +98,12 @@ export function ProgressDirection({ date }: { date: string }) {
           unit="kg"
           large
         />
+        {weights.length < 2 && (
+          <Link className="progress-empty-action" href="/progress/body">
+            {weights.length === 0 ? "記錄第一筆體重" : "記錄下一筆體重以建立趨勢"}
+            <ChevronRight size={17} aria-hidden="true" />
+          </Link>
+        )}
         <p className="muted">
           {gain
             ? improved.length
