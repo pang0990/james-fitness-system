@@ -90,9 +90,9 @@ export function UiProgressTrack({
   return (
     <div
       className={`jfs-ui-progress ${className}`.trim()}
-      role="progressbar"
-      aria-label={label}
-      aria-valuemin={0}
+      role={hasTarget ? "progressbar" : "img"}
+      aria-label={hasTarget ? label : label + "：目標尚未設定"}
+      aria-valuemin={hasTarget ? 0 : undefined}
       aria-valuemax={hasTarget ? target : undefined}
       aria-valuenow={hasTarget ? Math.min(target, Math.max(0, value)) : undefined}
       aria-valuetext={hasTarget ? `${value} / ${target}` : `${value}，目標未設定`}
