@@ -160,7 +160,7 @@ export function TodayReference({ date, notify }: TodayReferenceProps) {
               <strong>{current ? "繼續今天的訓練" : day ? "今天 · 準備開始訓練" : "今天 · 建立訓練計畫"}</strong>
               <span>{trainingName}{trainingExercises ? ` · ${trainingExercises} 個動作` : ""}</span>
             </div>
-            <span className="today-ref-action-pill">{trainingButton} <ArrowRight size={15}/></span>
+            {isMinimal ? <ChevronRight className="today-ref-action-next" size={20} aria-hidden="true"/> : <span className="today-ref-action-pill">{trainingButton} <ArrowRight size={15}/></span>}
           </Link>
           <Link className="today-ref-action-row today-ref-nutrition-row" href="/nutrition">
             <Utensils size={23} aria-hidden="true"/>
