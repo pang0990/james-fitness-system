@@ -9,7 +9,8 @@ for (const viewport of [
     const errors: string[] = [];
     page.on("pageerror", error => errors.push(error.message));
     for (const route of ["/today/", "/nutrition/", "/training/", "/progress/"]) {
-      await page.goto(route);
+      const response = await page.goto(route);
+      expect(response?.status(), `unexpected HTTP response at ${route}`).toBe(200);
       await expect(page.getByRole("button", { name: /CONTINUE WITH GOOGLE/ })).toBeVisible();
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth > window.innerWidth + 1,
