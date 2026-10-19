@@ -1,0 +1,90 @@
+/* Developer-only component inspection surface — not an app dashboard. */
+html[data-visual-style="minimal"] .jfs-showcase {
+  --surface:var(--jfs3-paper);
+  width:min(100% - 44px,1140px);
+  margin:38px auto 80px;
+  color:var(--jfs3-ink);
+  font-family:var(--jfs3-font);
+}
+html[data-visual-style="minimal"] .jfs-showcase-heading {
+  display:flex;align-items:start;justify-content:space-between;gap:20px;
+  padding-bottom:28px;border-bottom:1px solid var(--jfs3-line);
+}
+html[data-visual-style="minimal"] .jfs-showcase-heading h1 {
+  margin:6px 0 9px;font-size:clamp(27px,4vw,39px);
+  letter-spacing:-.055em;line-height:1.15;
+}
+html[data-visual-style="minimal"] .jfs-showcase-heading p,
+html[data-visual-style="minimal"] .jfs-showcase-feedback {
+  margin:0;color:var(--jfs3-ink-secondary);font-size:13px;line-height:1.6;
+}
+html[data-visual-style="minimal"] .jfs-showcase-overline {
+  font-size:10px;letter-spacing:.13em;font-weight:740;color:var(--jfs3-ink-secondary);
+}
+html[data-visual-style="minimal"] .jfs-showcase-version {
+  padding:9px 13px;border:1px solid var(--jfs3-line);border-radius:12px;
+  white-space:nowrap;font-size:11px;font-weight:700;background:var(--jfs3-paper);
+}
+html[data-visual-style="minimal"] .jfs-showcase-group {margin-top:28px}
+html[data-visual-style="minimal"] .jfs-showcase-group>.jfs-ui-section-heading {
+  margin-bottom:15px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-surface-grid {
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-surface {
+  min-height:156px;padding:20px;
+  display:flex;flex-direction:column;gap:9px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-surface strong {font-size:22px}
+html[data-visual-style="minimal"] .jfs-showcase-surface small {
+  color:var(--jfs3-ink-secondary);font-size:12px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-actions {
+  display:flex;flex-wrap:wrap;gap:11px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-feedback {margin-top:12px}
+html[data-visual-style="minimal"] .jfs-showcase-data {
+  min-height:137px;padding:20px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-data strong {
+  color:var(--jfs3-ink-secondary);font-size:13px;font-weight:560;
+}
+html[data-visual-style="minimal"] .jfs-showcase-data p {
+  margin:13px 0;font-size:12px;color:var(--jfs3-ink-secondary);
+}
+html[data-visual-style="minimal"] .jfs-showcase-data p b {
+  color:var(--jfs3-ink);font-size:28px;letter-spacing:-.055em;
+  font-variant-numeric:tabular-nums;
+}
+html[data-visual-style="minimal"] .jfs-showcase-tabs {
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;
+  padding:5px;background:var(--jfs3-inset);border:1px solid var(--jfs3-line);
+  border-radius:15px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-tabs button {
+  min-height:44px;border:1px solid transparent;border-radius:11px;
+  background:transparent;color:var(--jfs3-ink-secondary);
+  cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;
+}
+html[data-visual-style="minimal"] .jfs-showcase-tabs button.active {
+  color:var(--jfs3-ink);background:var(--jfs3-paper);
+  border-color:var(--jfs3-line);box-shadow:0 2px 7px rgba(0,0,0,.065);
+}
+html[data-visual-style="minimal"] .jfs-showcase-empty {padding:16px 22px}
+html[data-visual-style="minimal"] .jfs-showcase-tabs button:focus-visible {
+  outline:3px solid var(--jfs3-ink);outline-offset:3px;
+}
+@media(max-width:767px){
+  html[data-visual-style="minimal"] .jfs-showcase {
+    width:calc(100% - 32px);margin:20px auto 60px;
+  }
+  html[data-visual-style="minimal"] .jfs-showcase-heading {flex-wrap:wrap}
+  html[data-visual-style="minimal"] .jfs-showcase-surface-grid {
+    grid-template-columns:1fr;
+  }
+  html[data-visual-style="minimal"] .jfs-showcase-surface {
+    min-height:106px;
+  }
+  html[data-visual-style="minimal"] .jfs-showcase-tabs button {font-size:11px}
+}
