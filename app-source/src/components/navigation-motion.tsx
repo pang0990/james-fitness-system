@@ -5,6 +5,7 @@ export function navigateWithMotion(push: (href: string) => void, href: string) {
   if (
     typeof document === "undefined" ||
     !document.startViewTransition ||
+    document.documentElement.dataset.reduceMotion === "true" ||
     matchMedia("(prefers-reduced-motion: reduce)").matches
   ) {
     push(href);
