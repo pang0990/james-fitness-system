@@ -1,5 +1,5 @@
-import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
 "use client";
+import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
 import Link from "next/link";
 import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
 import { DailyActivity } from "./daily-activity";
