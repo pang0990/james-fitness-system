@@ -54,6 +54,10 @@
 - `src/app/design-system-v2.css`：Minimal 第一階段 tokens、主按鈕、分頁導覽、空狀態與手機營養圓環尺寸；原主題可隨時移除新匯入而還原。
 - `src/components/today-reference.tsx`：Action Queue 移除 Minimal 重複大型訓練 CTA，但保留整列導航。
 - `src/components/progress-direction.tsx`：無足夠體重資料時提供下一步，不製造趨勢數據。
+- `src/components/training-flow.tsx`：有進行中的額外訓練、但尚無正式訓練計畫時，文案明確區分當前 Session 與未來課表。
+- `playwright.config.ts`：Browser QA 改用靜態匯出來測真正部署檔（CI 使用先前建置結果）。
+- `tests/e2e/auth-guest.spec.ts`：390px 與 1440px 未登入路由、HTTP 200 與 callback 錯誤處理。
+- `tests/e2e/mock-auth-workspaces.spec.ts`：只用測試 fixture 模擬登入狀態，驗證主要頁面和 localStorage 飲水持續性；**不等同真實 OAuth/RLS 驗證**。
 
 ## 尚未驗證（不得標示完成）
 
