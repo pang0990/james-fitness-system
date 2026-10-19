@@ -80,3 +80,35 @@ test("motion and appearance: reduced-motion respected; dark Minimal stays graysc
   expect(ink).toBe("#f5f5f7");
   await page.screenshot({ path: "test-results/monochrome-today-dark.png", fullPage: true });
 });
+
+test("in-app reduced motion: internal links do not request a view transition", async ({ page }) => {
+  await page.goto("/today/");
+  await page.evaluate(key => {
+    const state = JSON.parse(localStorage.getItem(key)!);
+    state.preferences = { ...(state.preferences || {}), reduceMotion: true };
+    localStorage.setItem(key, JSON.stringify(state));
+  }, DATA_KEY);
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-reduce-motion", "true");
+  await page.evaluate(() => {
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      value: () => { throw new Error("View transitions are not allowed when app reduced motion is on"); },
+    });
+  });
+  await page.locator('.bottom-nav a[href="/nutrition"]').click();
+  await expect(page).toHaveURL(/\/nutrition\/?$/);
+});
+
+test("mobile bottom dock: final Today activity is reachable above the overlay", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/today/");
+  await expect(page.locator(".today-reference-page>.daily-activity")).toBeVisible();
+  const metrics = await page.evaluate(() => {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+    const nav = document.querySelector(".bottom-nav")!.getBoundingClientRect();
+    const activity = document.querySelector(".today-reference-page>.daily-activity")!.getBoundingClientRect();
+    return { navTop: nav.top, activityBottom: activity.bottom };
+  });
+  expect(metrics.activityBottom).toBeLessThan(metrics.navTop - 4);
+});
