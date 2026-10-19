@@ -93,11 +93,18 @@ export function ProgressDirection({ date }: { date: string }) {
               : `${delta > 0 ? "+" : ""}${delta} kg · ${weights[0].date} — ${weights.at(-1)!.date}`}
           </span>
         </div>
-        <LineChart
-          points={weights.map((w) => ({ date: w.date, value: w.weight }))}
-          unit="kg"
-          large
-        />
+        {weights.length < 2 && state.appearance?.visualStyle !== "cinematic" ? (
+          <div className="jfs-progress-empty" role="status">
+            <p>{weights.length === 0 ? "尚未記錄體重" : "再記錄一次體重，就能開始比較變化。"}</p>
+            <Link href="/progress/body">前往體重紀錄 <ChevronRight size={16} aria-hidden="true" /></Link>
+          </div>
+        ) : (
+          <LineChart
+            points={weights.map((w) => ({ date: w.date, value: w.weight }))}
+            unit="kg"
+            large
+          />
+        )}
         <p className="muted">
           {gain
             ? improved.length

@@ -7,7 +7,8 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: "npm run dev -- --port 3100",
+    // Browser QA exercises the actual static export, not Next dev’s fallback routes.
+    command: process.env.CI ? "npm run start" : "npm run build && npm run start",
     url: "http://127.0.0.1:3100",
     reuseExistingServer: !process.env.CI,
   },

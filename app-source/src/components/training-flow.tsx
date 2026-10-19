@@ -859,7 +859,7 @@ export function TrainingFlow({
             <span className="eyebrow">CURRENT PLAN</span>
             <div className="training-v3-heading">
               <div><h2>{current?.name ?? (day ? day.name : "尚未建立訓練計畫")}</h2>
-                <span className="training-v3-caption">{day ? `${day.exercises?.length ?? 0} 個動作` : "先建立自己的訓練計畫"}</span>
+                <span className="training-v3-caption">{day ? `${day.exercises?.length ?? 0} 個動作` : current ? "訓練進行中 · 完成後可建立正式課表" : "先建立自己的訓練計畫"}</span>
               </div>
               <Link href="/training/plan" className="training-v3-edit" aria-label="編輯課表"><ChevronRight size={17}/></Link>
             </div>

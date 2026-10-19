@@ -1,0 +1,116 @@
+/*
+ * JFS Design System 2.0 — phase 1 (review-only branch).
+ * Apple-inspired clarity + James graphite/champagne identity.
+ * Deliberately scoped to Minimal: Cinematic remains unchanged.
+ */
+html[data-visual-style="minimal"] {
+  --jfs-v2-primary:#202124;
+  --jfs-v2-primary-text:#fff;
+  --jfs-v2-accent:#76572b;
+  --jfs-v2-accent-tint:#f5eee4;
+  --jfs-v2-focus:#956e30;
+  --color-brand-primary:var(--jfs-v2-primary);
+  --color-brand-bright:var(--jfs-v2-accent);
+  --color-border-active:var(--jfs-v2-accent);
+  --color-calories:var(--jfs-v2-accent);
+  --minimal-accent:var(--jfs-v2-accent);
+  --minimal-glass:rgba(255,255,255,.90);
+  --minimal-glass-raised:rgba(255,255,255,.94);
+  --minimal-glass-soft:rgba(249,248,246,.92);
+  --minimal-glass-stroke:rgba(205,201,195,.72);
+  --minimal-glass-shadow:0 8px 24px rgba(27,27,30,.05),inset 0 1px 0 rgba(255,255,255,.75);
+}
+html[data-visual-style="minimal"][data-theme="dark"] {
+  --jfs-v2-primary:#e6c995;
+  --jfs-v2-primary-text:#1d1b17;
+  --jfs-v2-accent:#e6c995;
+  --jfs-v2-accent-tint:rgba(230,201,149,.13);
+  --jfs-v2-focus:#e6c995;
+  --minimal-glass:rgba(34,35,40,.9);
+  --minimal-glass-raised:rgba(35,36,42,.95);
+  --minimal-glass-soft:rgba(42,43,49,.88);
+  --minimal-glass-stroke:rgba(157,148,134,.25);
+  --minimal-glass-shadow:0 9px 28px rgba(0,0,0,.20);
+}
+html[data-visual-style="minimal"] body,
+html[data-visual-style="minimal"] body:has(.page-nutrition),
+html[data-visual-style="minimal"] body:has(.page-training),
+html[data-visual-style="minimal"] body:has(.page-progress){
+  background:radial-gradient(ellipse at 92% 0%,rgba(197,164,97,.065),transparent 42%),var(--color-bg-primary)!important;
+}
+html[data-visual-style="minimal"] :is(.button:not(.secondary):not(.tertiary),.today-ref-small-action,.today-ref-inline-add),
+html[data-visual-style="minimal"] body .training-v3 .training-today>.button {
+  color:var(--jfs-v2-primary-text)!important;
+  background:var(--jfs-v2-primary)!important;
+  border-color:var(--jfs-v2-primary)!important;
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .bottom-nav>a.active,
+html[data-visual-style="minimal"] .page-today .bottom-nav>a.active {
+  color:var(--jfs-v2-accent)!important;
+  background:var(--jfs-v2-accent-tint)!important;
+}
+html[data-visual-style="minimal"] .bottom-nav>a.active svg {
+  color:var(--jfs-v2-accent)!important;
+}
+html[data-visual-style="minimal"] .bottom-nav,
+html[data-visual-style="minimal"] .page-today .bottom-nav {
+  height:68px!important;
+  border-color:var(--minimal-glass-stroke)!important;
+}
+html[data-visual-style="minimal"] :is(.text-link,.today-ref-section-heading>a){
+  color:var(--jfs-v2-accent)!important;
+}
+html[data-visual-style="minimal"] .page-today :is(.today-ref-section-heading h2 svg,
+  .today-ref-action-row>svg,.today-ref-nutrition-row>svg,.today-ref-card-label svg){
+  color:var(--jfs-v2-accent)!important;
+}
+html[data-visual-style="minimal"] .page-today .today-ref-action-next {
+  flex:none;
+  color:var(--jfs-v2-accent);
+}
+html[data-visual-style="minimal"] .page-today .today-ref-action-row {
+  min-height:60px!important;
+}
+html[data-visual-style="minimal"] :is(button,a,input,select,textarea):focus-visible {
+  outline:2px solid var(--jfs-v2-focus)!important;
+  outline-offset:3px;
+}
+html[data-visual-style="minimal"] .page-progress .jfs-progress-empty {
+  min-height:116px;
+  display:flex;flex-direction:column;align-items:flex-start;
+  justify-content:center;gap:13px;
+  padding:20px 16px;margin:12px 0;
+  background:var(--minimal-glass-soft);
+  border:1px dashed var(--minimal-glass-stroke);
+  border-radius:16px;
+}
+html[data-visual-style="minimal"] .page-progress .jfs-progress-empty p {
+  margin:0;color:var(--color-text-secondary);font-size:14px;
+}
+html[data-visual-style="minimal"] .page-progress .jfs-progress-empty a {
+  display:inline-flex;align-items:center;gap:5px;
+  color:var(--jfs-v2-accent);font-size:14px;font-weight:650;
+  min-height:44px;
+}
+@media(max-width:600px){
+  html[data-visual-style="minimal"] body .page-nutrition .nutrition-v3-calorie-ring {
+    width:min(40vw,156px)!important;height:min(40vw,156px)!important;
+  }
+  html[data-visual-style="minimal"] body .page-nutrition .nutrition-v3-energy{
+    min-height:0!important;
+  }
+  html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress) .daily-page {
+    padding-bottom:calc(135px + env(safe-area-inset-bottom))!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-visual-style="minimal"] .jfs-progress-empty,
+  html[data-visual-style="minimal"] .bottom-nav {
+    animation:none!important;transition:none!important;
+  }
+}
+html[data-visual-style="minimal"][data-reduce-transparency="true"] .bottom-nav {
+  background:var(--color-surface-primary)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
