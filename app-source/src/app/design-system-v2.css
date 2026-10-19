@@ -1,0 +1,71 @@
+/*
+ * James Fitness System · Design System 2.0 / foundation pass
+ *
+ * Apple-inspired hierarchy, own JFS black/white/gold identity.
+ * Phase 1 intentionally scopes changes to Minimal + light.
+ * Dark Minimal and Cinematic/2077 remain exactly as before until their
+ * own contrast and screenshot checks have been completed.
+ */
+html[data-visual-style="minimal"][data-theme="light"] {
+  --jfs-v2-ink:#1d1d1f;
+  --jfs-v2-gold:#78591f;
+  --jfs-v2-gold-muted:#a98a4c;
+  --jfs-v2-gold-wash:rgba(120,89,31,.085);
+  --jfs-v2-focus:#78591f;
+  --jfs-v2-radius-card:22px;
+  --jfs-v2-radius-control:14px;
+  --jfs-v2-tap-min:44px;
+  --color-brand-primary:var(--jfs-v2-gold);
+  --color-brand-bright:#674a16;
+  --color-border-active:var(--jfs-v2-gold-muted);
+  --color-calories:var(--jfs-v2-gold);
+  --minimal-accent:var(--jfs-v2-gold);
+}
+
+/* High-contrast gold replaces the borrowed system-blue ACTION identity.
+ * Distinct data colors (protein, carbs, hydration, pain) are retained.
+ */
+html[data-visual-style="minimal"][data-theme="light"]
+  :is(.button,.button:not(.secondary),.today-ref-small-action,.today-ref-inline-add) {
+  background:var(--jfs-v2-gold)!important;
+  border-color:var(--jfs-v2-gold)!important;
+  color:#fff!important;
+}
+html[data-visual-style="minimal"][data-theme="light"]
+  .page-today .today-ref-action-pill {
+  background:var(--jfs-v2-gold)!important;
+  color:#fff!important;
+}
+html[data-visual-style="minimal"][data-theme="light"]
+  :is(.bottom-nav>a.active,.page-today .bottom-nav>a.active) {
+  color:var(--jfs-v2-gold)!important;
+  background:var(--jfs-v2-gold-wash)!important;
+}
+html[data-visual-style="minimal"][data-theme="light"]
+  :is(.jfs-style-option.selected) {
+  border-color:var(--jfs-v2-gold)!important;
+  box-shadow:0 0 0 3px var(--jfs-v2-gold-wash)!important;
+}
+html[data-visual-style="minimal"][data-theme="light"]
+  :is(.jfs-style-option>input) {
+  accent-color:var(--jfs-v2-gold)!important;
+}
+html[data-visual-style="minimal"][data-theme="light"]
+  :is(button,a,input,select,textarea):focus-visible {
+  outline:3px solid var(--jfs-v2-focus)!important;
+  outline-offset:3px!important;
+}
+html[data-visual-style="minimal"][data-theme="light"]
+  .page-today .today-reference-page {
+  --today-gold:var(--jfs-v2-gold);
+}
+html[data-visual-style="minimal"][data-theme="light"]
+  .page-today .today-ref-action-row>svg {
+  color:var(--jfs-v2-gold)!important;
+}
+
+/* Ensure the bottom dock keeps a usable minimum hit target while the
+ * existing safe-area-aware layout and Cinematic mode remain untouched. */
+html[data-visual-style="minimal"][data-theme="light"] .bottom-nav>a {
+  min-height:var(--jfs-v2-tap-min);
+}
