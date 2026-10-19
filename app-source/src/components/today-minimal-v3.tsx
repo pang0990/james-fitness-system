@@ -16,6 +16,7 @@ import {
 import { NoticeCarousel } from "./notices";
 import { RecoveryQuickLog } from "./recovery-log";
 import { DailyActivity } from "./daily-activity";
+import { FitnessEquipmentVisual } from "./ui/fitness-equipment-visual";
 import { NutritionV2, Num, Sheet, stamp, uid } from "./daily";
 
 type QuickKind = RecoveryEntry["type"] | "weight";
@@ -128,8 +129,8 @@ export function TodayMinimalV3({ date, notify }: Props) {
               <h2 id="today-v3-focus-title">{focusName}</h2>
               <p>{focusMeta}</p>
             </div>
-            <div className="today-v3-focus-glyph" aria-hidden="true">
-              {isDone ? <Check size={38} strokeWidth={1.35}/> : <Dumbbell size={46} strokeWidth={1.2}/>}
+            <div className={"today-v3-focus-glyph" + (isDone ? "" : " equipment")} aria-hidden="true">
+              {isDone ? <Check size={38} strokeWidth={1.35}/> : <FitnessEquipmentVisual/>}
             </div>
           </div>
           <Link className="jfs3-primary today-v3-focus-action" href={trainingHref}>
