@@ -59,6 +59,7 @@ const version =
   crypto
     .createHash("sha256")
     .update(JSON.stringify(files))
+    .update("oauth-bypass-v1")
     .digest("hex")
     .slice(0, 10);
 fs.writeFileSync(
