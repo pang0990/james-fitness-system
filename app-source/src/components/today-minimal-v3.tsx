@@ -17,6 +17,7 @@ import { NoticeCarousel } from "./notices";
 import { RecoveryQuickLog } from "./recovery-log";
 import { DailyActivity } from "./daily-activity";
 import { FitnessEquipmentVisual } from "./ui/fitness-equipment-visual";
+import { UiActionLink, UiProgressTrack, UiSurface } from "./ui/design-system";
 import { NutritionV2, Num, Sheet, stamp, uid } from "./daily";
 
 type QuickKind = RecoveryEntry["type"] | "weight";
@@ -119,7 +120,7 @@ export function TodayMinimalV3({ date, notify }: Props) {
       </div>
 
       <div className="today-v3-grid">
-        <section className="today-v3-focus jfs3-surface" aria-labelledby="today-v3-focus-title">
+        <UiSurface className="today-v3-focus jfs3-surface" aria-labelledby="today-v3-focus-title">
           <div className="jfs3-section-heading">
             <span className="jfs3-heading-label"><Dumbbell size={17} aria-hidden="true" /> 今日重點</span>
             <span className="today-v3-focus-state">{current ? "進行中" : isDone ? "已完成" : day ? "已排定" : "尚未設定"}</span>
@@ -133,10 +134,10 @@ export function TodayMinimalV3({ date, notify }: Props) {
               {isDone ? <Check size={38} strokeWidth={1.35}/> : <FitnessEquipmentVisual/>}
             </div>
           </div>
-          <Link className="jfs3-primary today-v3-focus-action" href={trainingHref}>
+          <UiActionLink className="jfs3-primary today-v3-focus-action" href={trainingHref}>
             {actionLabel}<ArrowRight size={19} aria-hidden="true"/>
-          </Link>
-        </section>
+          </UiActionLink>
+        </UiSurface>
 
         <section className="today-v3-nutrition jfs3-surface" aria-labelledby="today-v3-nutrition-title">
           <div className="jfs3-section-heading">
@@ -190,9 +191,8 @@ export function TodayMinimalV3({ date, notify }: Props) {
             <div className="today-v3-water-total">
               <strong>{fmt(hydration)}</strong><small> / {hydrationTarget ? fmt(hydrationTarget) : "—"} ml</small>
             </div>
-            <div className="jfs3-track today-v3-water-track" aria-label={"飲水進度 " + Math.round(waterPercentage) + "%"}>
-              <i style={{ width: String(waterPercentage) + "%" }}/>
-            </div>
+            <UiProgressTrack className="today-v3-water-track"
+              value={hydration} target={hydrationTarget} label="今日飲水進度" />
             <div className="today-v3-water-actions">
               <button type="button" onClick={() => addWater(Number(state.preferences?.waterQuick1 ?? 250))}>
                 +{state.preferences?.waterQuick1 ?? 250} ml
