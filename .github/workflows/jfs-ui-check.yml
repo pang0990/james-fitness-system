@@ -48,7 +48,7 @@ jobs:
       - name: Run existing browser suite (baseline)
         run: |
           mkdir -p ../work
-          npm run test:e2e -- --workers=2 --trace=retain-on-failure --screenshot=only-on-failure
+          npm run test:e2e -- --workers=2 --trace=retain-on-failure
         env:
           CI: "true"
       - name: Preserve browser audit evidence
