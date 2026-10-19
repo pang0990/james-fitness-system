@@ -47,7 +47,7 @@ test("shared action and data components keep real save flow", async ({ page }) =
   await expect(page.locator(".jfs-ui-action--primary")).toHaveCount(1);
   await expect(page.locator(".jfs-ui-surface").first()).toBeVisible();
   await page.getByRole("button", { name: "+250 ml", exact: true }).click();
-  const track = page.getByRole("img", { name: /今日飲水進度.*目標尚未設定/ });
+  const track = page.locator(".jfs-ui-progress.today-v3-water-track");
   await expect(track).toBeVisible();
   await expect(page.locator(".today-v3-water-total strong")).toContainText("250");
 });
