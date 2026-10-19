@@ -46,6 +46,12 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx playwright install --with-deps chromium
+      - name: Verify authenticated mobile/desktop smoke suite first
+        run: |
+          mkdir -p ../work
+          npm run test:e2e -- tests/e2e/production-smoke.spec.ts --workers=2 --trace=retain-on-failure
+        env:
+          CI: "true"
       - name: Run existing browser suite (baseline)
         run: |
           mkdir -p ../work
