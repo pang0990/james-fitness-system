@@ -1,3 +1,4 @@
+import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
 "use client";
 import Link from "next/link";
 import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
@@ -802,9 +803,14 @@ export function NutritionV2({
             <a href="#nutrition-meals">Meals</a>
             <Link href="/nutrition/recipes">Recipes</Link>
           </nav>
-          <section className="nutrition-v3-dashboard">
-            <NutritionSummary date={selectedDate} variant="full" />
-          </section>
+          {state.appearance?.visualStyle !== "cinematic" && !inlineClose ? (
+            <NutritionDashboardV3 date={selectedDate}
+              onAddMeal={() => { setSlot(state.mealSlots[0]); setSheet("add"); }} />
+          ) : (
+            <section className="nutrition-v3-dashboard">
+              <NutritionSummary date={selectedDate} variant="full" />
+            </section>
+          )}
           <div className="nutrition-v3-meal-icons" aria-label="快速選擇餐次">
             {state.mealSlots.slice(0,4).map((name,index)=><button type="button" key={name}
               onClick={()=>{setSlot(name);setSheet("add");}}>
@@ -869,9 +875,11 @@ export function NutritionV2({
               </div>
             ))}
           </section>
-          <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
-            <Plus size={18} /> 新增飲食
-          </button>
+          {(state.appearance?.visualStyle === "cinematic" || inlineClose) && (
+            <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
+              <Plus size={18} /> 新增飲食
+            </button>
+          )}
           <section className="nutrition-cookbook-section" aria-labelledby="nutrition-cookbook-heading">
             <div className="nutrition-cookbook-section-title">
               <span>DISCOVER</span>
