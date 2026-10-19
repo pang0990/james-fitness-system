@@ -19,6 +19,7 @@ import "./tokens-v3.css";
 import "./today-v3.css";
 import "./app-shell-v3.css";
 import "./components-v3.css";
+import "./nutrition-v3b.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
