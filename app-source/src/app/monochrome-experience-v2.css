@@ -1,0 +1,383 @@
+/*
+ * James Fitness System / Visual Experience 2.0
+ * Monochrome, dimensional, accessible motion.
+ * Opt-in via data-visual-style=minimal. 2077 Cinematic is untouched.
+ * Imported after the existing Minimal compatibility stylesheet.
+ */
+html[data-visual-style="minimal"] {
+  --jfs2-ink:#19191b;
+  --jfs2-ink-soft:#505053;
+  --jfs2-canvas:#f4f4f6;
+  --jfs2-paper:#ffffff;
+  --jfs2-paper-high:#fcfcfd;
+  --jfs2-sunken:#ededf0;
+  --jfs2-stroke:rgba(25,25,27,.095);
+  --jfs2-stroke-strong:rgba(25,25,27,.16);
+  --jfs2-highlight:rgba(255,255,255,.98);
+  --jfs2-wash:rgba(25,25,27,.065);
+  --jfs2-shadow:0 3px 6px rgba(14,14,20,.025),0 14px 34px rgba(14,14,20,.055),
+    inset 0 1px 0 rgba(255,255,255,.96);
+  --jfs2-shadow-hover:0 8px 16px rgba(14,14,20,.05),0 24px 48px rgba(14,14,20,.085),
+    inset 0 1px 0 rgba(255,255,255,.98);
+  --jfs2-control-shadow:0 1px 2px rgba(0,0,0,.035),inset 0 1px 0 #fff;
+  --jfs2-ease:cubic-bezier(.22,1,.36,1);
+  --jfs2-ease-press:cubic-bezier(.25,.75,.2,1);
+  --jfs2-radius-lg:24px;
+  --color-brand-primary:var(--jfs2-ink);
+  --color-brand-bright:#353538;
+  --color-border-active:#737378;
+  --color-calories:#242426;
+  --color-protein:#3d3d40;
+  --color-carbs:#747479;
+  --color-fat:#a4a4aa;
+  --color-water:#45454a;
+  --color-recovery:#56565c;
+  --minimal-accent:var(--jfs2-ink);
+  --minimal-glass:rgba(255,255,255,.87);
+  --minimal-glass-raised:rgba(255,255,255,.93);
+  --minimal-glass-soft:rgba(247,247,249,.95);
+  --minimal-glass-stroke:var(--jfs2-stroke);
+  --minimal-glass-shadow:var(--jfs2-shadow);
+  --jfs-ring-track:#e7e7e9;
+  --jfs-ring-track-calorie:#e7e7e9;
+  --glass-bg:rgba(255,255,255,.87);
+}
+html[data-visual-style="minimal"][data-theme="dark"] {
+  --jfs2-ink:#f5f5f7;
+  --jfs2-ink-soft:#b1b1b7;
+  --jfs2-canvas:#111113;
+  --jfs2-paper:#222225;
+  --jfs2-paper-high:#29292d;
+  --jfs2-sunken:#1a1a1d;
+  --jfs2-stroke:rgba(255,255,255,.10);
+  --jfs2-stroke-strong:rgba(255,255,255,.18);
+  --jfs2-highlight:rgba(255,255,255,.10);
+  --jfs2-wash:rgba(255,255,255,.12);
+  --jfs2-shadow:0 3px 9px rgba(0,0,0,.16),0 16px 38px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.075);
+  --jfs2-shadow-hover:0 6px 12px rgba(0,0,0,.24),0 26px 52px rgba(0,0,0,.36),
+    inset 0 1px 0 rgba(255,255,255,.10);
+  --jfs2-control-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+  --color-brand-primary:#f5f5f7;
+  --color-brand-bright:#e8e8eb;
+  --color-calories:#f0f0f2;
+  --color-protein:#d6d6db;
+  --color-carbs:#a7a7ac;
+  --color-fat:#88888e;
+  --color-water:#d0d0d5;
+  --color-recovery:#b6b6bc;
+  --minimal-glass:rgba(33,33,37,.91);
+  --minimal-glass-raised:rgba(40,40,44,.94);
+  --minimal-glass-soft:rgba(29,29,33,.96);
+  --jfs-ring-track:#47474b;
+  --jfs-ring-track-calorie:#47474b;
+  --glass-bg:rgba(34,34,38,.9);
+}
+/* Canvas and floating surfaces: lighting without ornamental graphics. */
+html[data-visual-style="minimal"] body,
+html[data-visual-style="minimal"] body:has(.page-nutrition),
+html[data-visual-style="minimal"] body:has(.page-training),
+html[data-visual-style="minimal"] body:has(.page-progress) {
+  background:radial-gradient(ellipse 85% 52% at 93% 0%,var(--jfs2-highlight),transparent 75%),
+    linear-gradient(175deg,var(--jfs2-canvas),var(--color-bg-primary) 48%,var(--jfs2-canvas))!important;
+}
+html[data-visual-style="minimal"] :is(.topbar,.page-today .topbar) {
+  background:var(--glass-bg)!important;
+  border-bottom:1px solid var(--jfs2-stroke)!important;
+  box-shadow:0 4px 20px rgba(0,0,0,.035)!important;
+}
+html[data-visual-style="minimal"] :is(
+  .card,.sheet,.meal-section,.simple-row,.date-type,.nutrition-v3-dashboard,
+  .direction-hero,.progress-v3-photos,.progress-v3-stats,.training-today,
+  .today-ref-action-panel,.today-ref-card,.today-ref-quick-panel,
+  .today-reference-page>.daily-activity,.review-glass
+) {
+  background:linear-gradient(155deg,var(--minimal-glass-raised),var(--minimal-glass) 76%)!important;
+  border:1px solid var(--jfs2-stroke)!important;
+  box-shadow:var(--jfs2-shadow)!important;
+  border-radius:var(--jfs2-radius-lg)!important;
+}
+html[data-visual-style="minimal"] :is(.account-menu summary,.today-header-bell,.training-v3-edit) {
+  background:linear-gradient(150deg,var(--jfs2-paper),var(--jfs2-paper-high))!important;
+  border:1px solid var(--jfs2-stroke-strong)!important;
+  box-shadow:var(--jfs2-control-shadow)!important;
+  color:var(--jfs2-ink)!important;
+}
+html[data-visual-style="minimal"] :is(.topbar,.card,.today-ref-card,.training-today)
+  :is(h1,h2,h3,strong) {letter-spacing:-.025em}
+html[data-visual-style="minimal"] .eyebrow {
+  color:var(--jfs2-ink-soft)!important;letter-spacing:.115em!important;
+}
+/* Primary action: tactile black/white (reversed in dark), no blue or gold. */
+html[data-visual-style="minimal"] :is(
+  .button:not(.secondary):not(.tertiary),.today-ref-small-action,.today-ref-inline-add,
+  .page-today .today-ref-action-pill,.training-v3 .training-today>.button:not(.secondary)
+) {
+  background:linear-gradient(180deg,#343437,#151516)!important;
+  border:1px solid #161618!important;
+  color:#fff!important;
+  box-shadow:0 2px 5px rgba(0,0,0,.11),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  border-radius:15px!important;
+}
+html[data-visual-style="minimal"][data-theme="dark"] :is(
+  .button:not(.secondary):not(.tertiary),.today-ref-small-action,.today-ref-inline-add,
+  .page-today .today-ref-action-pill,.training-v3 .training-today>.button:not(.secondary)
+){
+  background:linear-gradient(180deg,#f7f7f9,#dcdce1)!important;
+  border-color:#e2e2e5!important;color:#171719!important;
+  box-shadow:0 3px 9px rgba(0,0,0,.25),inset 0 1px 0 #fff!important;
+}
+html[data-visual-style="minimal"] :is(.button.secondary,.button.tertiary,
+  .today-ref-water-actions button,.today-ref-quick-grid button,.recipe-filter-tabs button) {
+  background:linear-gradient(150deg,var(--jfs2-paper-high),var(--jfs2-sunken))!important;
+  color:var(--jfs2-ink)!important;
+  border:1px solid var(--jfs2-stroke-strong)!important;
+  box-shadow:var(--jfs2-control-shadow)!important;
+}
+html[data-visual-style="minimal"] :is(input,textarea,select) {
+  caret-color:var(--jfs2-ink)!important;
+  accent-color:var(--jfs2-ink);
+}
+html[data-visual-style="minimal"] :is(button,a,input,textarea,select,summary):focus-visible {
+  outline:3px solid var(--jfs2-ink)!important;
+  outline-offset:3px!important;
+}
+html[data-visual-style="minimal"] :is(.text-link,.page-heading a,.simple-heading a,
+  .today-ref-section-heading>a,.nutrition-cookbook-card .cookbook-card-topline) {
+  color:var(--jfs2-ink)!important;
+}
+/* A thinner, more tactile floating navigation, anchored above iOS bottom area. */
+html[data-visual-style="minimal"] :is(.bottom-nav,.page-today .bottom-nav) {
+  height:66px!important;
+  padding:6px!important;
+  border-radius:23px!important;
+  border:1px solid var(--jfs2-stroke-strong)!important;
+  background:var(--minimal-glass-raised)!important;
+  box-shadow:0 7px 16px rgba(0,0,0,.065),0 18px 42px rgba(0,0,0,.075),
+    inset 0 1px 0 var(--jfs2-highlight)!important;
+  -webkit-backdrop-filter:blur(28px)!important;
+  backdrop-filter:blur(28px)!important;
+}
+html[data-visual-style="minimal"] :is(.bottom-nav,.page-today .bottom-nav)>a {
+  display:flex;align-items:center;justify-content:center;
+  min-width:0;min-height:52px!important;gap:3px;
+  border-radius:17px!important;color:var(--jfs2-ink-soft)!important;
+  font-size:11px!important;
+}
+html[data-visual-style="minimal"] :is(.bottom-nav,.page-today .bottom-nav)>a.active {
+  color:var(--jfs2-ink)!important;
+  background:linear-gradient(160deg,var(--jfs2-paper),var(--jfs2-sunken))!important;
+  box-shadow:0 2px 7px rgba(0,0,0,.08),inset 0 1px 0 var(--jfs2-highlight)!important;
+}
+html[data-visual-style="minimal"] :is(.bottom-nav,.page-today .bottom-nav)>a.active svg {
+  color:var(--jfs2-ink)!important;filter:none!important;
+}
+html[data-visual-style="minimal"] .page-today .today-reference-page {
+  --today-gold:var(--jfs2-ink)!important;
+  padding-bottom:calc(158px + env(safe-area-inset-bottom))!important;
+}
+html[data-visual-style="minimal"] .page-today :is(
+  .today-ref-action-row>svg,.today-ref-card-label svg,
+  .today-ref-section-heading h2 svg,.today-ref-nutrition-row>svg
+) {color:var(--jfs2-ink)!important}
+html[data-visual-style="minimal"] .page-today .today-ref-action-row {
+  border:1px solid var(--jfs2-stroke)!important;
+  background:linear-gradient(160deg,var(--jfs2-paper-high),var(--jfs2-sunken))!important;
+  box-shadow:inset 0 1px 0 var(--jfs2-highlight)!important;
+}
+html[data-visual-style="minimal"] .page-today .today-ref-action-panel {gap:12px!important}
+html[data-visual-style="minimal"] .page-today .today-ref-action-list {gap:10px!important}
+html[data-visual-style="minimal"] .page-today .today-ref-energy-ring {
+  background:conic-gradient(var(--jfs2-ink) 0 var(--today-ring-fill),
+    var(--jfs-ring-track) var(--today-ring-fill) 100%)!important;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.08),0 1px 0 var(--jfs2-highlight)!important;
+}
+html[data-visual-style="minimal"] .page-today .today-ref-energy-ring>div {
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.05)!important;
+}
+html[data-visual-style="minimal"] .page-today :is(
+  .today-ref-macro-track i,.today-ref-water-meter span
+) {background:var(--jfs2-ink)!important}
+html[data-visual-style="minimal"] .page-today :is(
+  .today-ref-macro-track,.today-ref-water-meter
+) {box-shadow:inset 0 1px 3px rgba(0,0,0,.07)!important}
+/* Remove second oversized Continue CTA only in Minimal; the main action
+ * remains at the top and training card label still links to Training. */
+html[data-visual-style="minimal"] .page-today .today-ref-training>.today-ref-small-action {
+  display:none!important;
+}
+html[data-visual-style="minimal"] .page-today .today-ref-training {min-height:0!important}
+html[data-visual-style="minimal"] .page-today .today-ref-card {gap:12px!important}
+/* More information fits without sacrificing breathing room. */
+html[data-visual-style="minimal"] .page-today .today-ref-food {min-height:0!important}
+html[data-visual-style="minimal"] .page-today .today-ref-water {min-height:0!important}
+html[data-visual-style="minimal"] .page-today .today-ref-quick-panel {padding:18px!important}
+html[data-visual-style="minimal"] .page-today .today-ref-water-feedback:not(:empty) {
+  color:var(--jfs2-ink)!important;text-shadow:none!important;
+}
+/* Monochrome calorie + macro progress, preserving real progress percentages. */
+html[data-visual-style="minimal"] body .nutrition-v3-calorie-ring {
+  background:conic-gradient(var(--jfs2-ink) 0 var(--jfs2-fill,0%),
+    var(--jfs-ring-track-calorie) var(--jfs2-fill,0%) 100%)!important;
+  box-shadow:0 2px 10px rgba(0,0,0,.065),inset 0 2px 4px rgba(0,0,0,.055)!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-mini-ring {
+  background:conic-gradient(var(--jfs2-macro-tone,#414145) 0 var(--jfs2-fill,0%),
+    var(--jfs-ring-track) var(--jfs2-fill,0%) 100%)!important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.07)!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-macro:nth-child(1) {--jfs2-macro-tone:#38383b}
+html[data-visual-style="minimal"] body .nutrition-v3-macro:nth-child(2) {--jfs2-macro-tone:#75757a}
+html[data-visual-style="minimal"] body .nutrition-v3-macro:nth-child(3) {--jfs2-macro-tone:#a5a5aa}
+html[data-visual-style="minimal"][data-theme="dark"] body .nutrition-v3-macro:nth-child(1) {--jfs2-macro-tone:#f0f0f2}
+html[data-visual-style="minimal"][data-theme="dark"] body .nutrition-v3-macro:nth-child(2) {--jfs2-macro-tone:#b5b5bb}
+html[data-visual-style="minimal"][data-theme="dark"] body .nutrition-v3-macro:nth-child(3) {--jfs2-macro-tone:#87878e}
+html[data-visual-style="minimal"] body .nutrition-v3-energy {min-height:0!important;gap:18px!important}
+html[data-visual-style="minimal"] body .nutrition-v3-calorie-ring {
+  width:clamp(122px,30vw,160px)!important;height:auto!important;aspect-ratio:1;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-mini-ring {
+  width:52px!important;height:52px!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-macros {gap:8px!important;padding-top:14px!important}
+html[data-visual-style="minimal"] body .nutrition-v3-dashboard {
+  padding:20px!important;
+}
+html[data-visual-style="minimal"] body .nutrition-v3-panel {gap:14px!important}
+html[data-visual-style="minimal"] body .nutrition-v3-remaining strong {
+  font-variant-numeric:tabular-nums;color:var(--jfs2-ink)!important;
+}
+/* Segmented navigation should look selected without a blue fill. */
+html[data-visual-style="minimal"] body :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments),
+html[data-visual-style="minimal"] body .page-progress .direction-hero .range-control {
+  background:var(--jfs2-sunken)!important;
+  border:1px solid var(--jfs2-stroke)!important;
+  box-shadow:inset 0 1px 4px rgba(0,0,0,.055)!important;
+}
+html[data-visual-style="minimal"] body :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments)>.active,
+html[data-visual-style="minimal"] body .page-progress .direction-hero .range-control>button[aria-pressed="true"] {
+  background:var(--jfs2-paper)!important;
+  color:var(--jfs2-ink)!important;
+  border:1px solid var(--jfs2-stroke)!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.09),inset 0 1px 0 var(--jfs2-highlight)!important;
+}
+html[data-visual-style="minimal"] body :is(.recipe-filter-tabs button.selected,.jfs-style-option.selected) {
+  background:var(--jfs2-wash)!important;
+  color:var(--jfs2-ink)!important;
+  border-color:var(--jfs2-stroke-strong)!important;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.04)!important;
+}
+html[data-visual-style="minimal"] .jfs-style-option>input {accent-color:var(--jfs2-ink)!important}
+html[data-visual-style="minimal"] body .page-training :is(.training-today,.training-v3-exercise) {
+  border-color:var(--jfs2-stroke)!important;
+}
+html[data-visual-style="minimal"] body .page-training .training-v3-exercise-art {
+  background:linear-gradient(145deg,var(--jfs2-paper),var(--jfs2-sunken))!important;
+  color:var(--jfs2-ink)!important;
+  box-shadow:inset 0 1px 0 var(--jfs2-highlight),0 2px 6px rgba(0,0,0,.05)!important;
+}
+html[data-visual-style="minimal"] body .page-training .training-v3 .training-today>.button {
+  color:#fff!important;
+  background:linear-gradient(180deg,#343437,#151516)!important;
+  border-color:#161618!important;
+}
+html[data-visual-style="minimal"][data-theme="dark"] body .page-training .training-v3 .training-today>.button {
+  color:#171719!important;
+  background:linear-gradient(180deg,#f7f7f9,#dcdce1)!important;
+  border-color:#e2e2e5!important;
+}
+html[data-visual-style="minimal"] body .page-progress .direction-hero .line-chart svg {
+  filter:grayscale(1)!important;
+}
+html[data-visual-style="minimal"] body .page-progress .direction-hero .chart-empty {
+  min-height:84px!important;display:grid;place-items:center;
+  color:var(--jfs2-ink-soft)!important;
+}
+html[data-visual-style="minimal"] body .page-progress .direction-hero:has(.chart-empty) {
+  padding-bottom:20px!important;
+}
+html[data-visual-style="minimal"] body .page-progress .direction-evidence {
+  margin-block:10px 5px!important;
+}
+html[data-visual-style="minimal"] body .page-progress .progress-v3-photo-empty {
+  background:linear-gradient(150deg,var(--jfs2-paper-high),var(--jfs2-sunken))!important;
+  border-color:var(--jfs2-stroke)!important;
+}
+/* Physicality: hover is for pointers, touch gets short pressed feedback.
+ * Only compositor-friendly opacity/transform transitions on large surfaces.
+ */
+@media (hover:hover) and (pointer:fine) {
+  html[data-visual-style="minimal"] :is(
+    .today-ref-card,.meal-section,.training-today,.progress-v3-photos,.progress-v3-stats
+  ):hover {box-shadow:var(--jfs2-shadow-hover)!important}
+  html[data-visual-style="minimal"] :is(
+    .button,.today-ref-action-row,.today-ref-water-actions button,
+    .today-ref-quick-grid button,.training-v3-exercise,.meal-section button
+  ):not(:disabled):hover {filter:brightness(.965)}
+}
+@media (prefers-reduced-motion:no-preference) {
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"]) :is(
+    .button,.bottom-nav>a,.today-ref-action-row,.today-ref-quick-grid button,
+    .today-ref-water-actions button,.training-v3-exercise,.recipe-filter-tabs button,
+    .training-v3-segments>a,.nutrition-v3-tabs>a,.progress-v3-segments>a
+  ) {
+    transition:transform 180ms var(--jfs2-ease-press),
+      background-color 200ms ease,color 200ms ease,box-shadow 240ms var(--jfs2-ease),
+      filter 180ms ease!important;
+    -webkit-tap-highlight-color:transparent;
+  }
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"]) :is(
+    button,.button,.today-ref-action-row,.bottom-nav>a
+  ):not(:disabled):active {
+    transform:scale(.975);
+  }
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"]) :is(
+    .today-ref-action-panel,.nutrition-v3-dashboard,.training-today,.direction-hero
+  ) {
+    animation:jfs2-reveal 380ms var(--jfs2-ease) both;
+  }
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"]) :is(
+    .today-ref-macro-track i,.today-ref-water-meter span,.track>span,.progressbar>span
+  ) {
+    transition:width 560ms var(--jfs2-ease)!important;
+  }
+}
+@keyframes jfs2-reveal {
+  from {opacity:.75;transform:translateY(7px)}
+  to {opacity:1;transform:translateY(0)}
+}
+/* Keep app and OS accessibility preferences authoritative. */
+@media (prefers-reduced-motion:reduce){
+  html[data-visual-style="minimal"] * {scroll-behavior:auto!important}
+  html[data-visual-style="minimal"] :is(
+    .today-ref-action-panel,.nutrition-v3-dashboard,.training-today,.direction-hero
+  ){animation:none!important}
+}
+html[data-visual-style="minimal"][data-reduce-motion="true"] :is(
+  .today-ref-action-panel,.nutrition-v3-dashboard,.training-today,.direction-hero
+){animation:none!important}
+html[data-visual-style="minimal"][data-reduce-transparency="true"] :is(
+  .topbar,.bottom-nav,.card,.sheet,.meal-section,.nutrition-v3-dashboard,
+  .direction-hero,.training-today,.today-ref-card,.today-ref-action-panel
+){
+  background:var(--jfs2-paper)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+@supports not (backdrop-filter:blur(1px)) {
+  html[data-visual-style="minimal"] :is(.topbar,.bottom-nav,.sheet) {
+    background:var(--jfs2-paper)!important;
+  }
+}
+@media (max-width:600px) {
+  html[data-visual-style="minimal"] .page-today .today-ref-action-panel {padding:16px!important}
+  html[data-visual-style="minimal"] .page-today .today-ref-card {padding:17px!important}
+  html[data-visual-style="minimal"] body .nutrition-v3-dashboard {padding:16px!important}
+  html[data-visual-style="minimal"] body .nutrition-v3-calorie-ring {
+    width:118px!important;height:118px!important;
+  }
+  html[data-visual-style="minimal"] body .nutrition-v3-mini-ring {
+    width:46px!important;height:46px!important;
+  }
+  html[data-visual-style="minimal"] body .nutrition-v3-energy {gap:12px!important}
+  html[data-visual-style="minimal"] body .nutrition-v3-panel {gap:12px!important}
+}
