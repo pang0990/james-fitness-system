@@ -1,0 +1,163 @@
+/* Nutrition 3.0 / Phase 1 — real data, independent Minimal dashboard. */
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b {
+  min-width:0;
+  padding:23px 24px;
+  margin:0 0 17px;
+  border:1px solid var(--jfs3-line);
+  border-radius:var(--jfs3-radius-surface);
+  background:var(--jfs3-paper);
+  box-shadow:var(--jfs3-surface-shadow);
+  color:var(--jfs3-ink);
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-topline,
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro-top,
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-footer {
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-eyebrow {
+  font-size:10px;font-weight:690;letter-spacing:.105em;
+  color:var(--jfs3-ink-secondary);
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b h2 {
+  margin:6px 0 0;color:var(--jfs3-ink);font-size:20px;
+  letter-spacing:-.04em;font-weight:720;line-height:1.2;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-daytype {
+  font-size:12px;font-weight:610;white-space:nowrap;
+  padding:7px 11px;border-radius:10px;
+  color:var(--jfs3-ink-secondary);background:var(--jfs3-inset);
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-upper {
+  display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.2fr);
+  gap:clamp(15px,3vw,33px);align-items:center;
+  padding:19px 0 21px;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy {
+  display:flex;align-items:center;gap:15px;min-width:0;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy-ring {
+  flex:none;width:118px;height:118px;display:grid;place-items:center;
+  border-radius:50%;
+  background:conic-gradient(var(--jfs3-ink) 0 var(--nutrition-v3b-percent),
+    var(--jfs3-track) var(--nutrition-v3b-percent) 100%);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.055);
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-ring-inner {
+  width:101px;height:101px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:var(--jfs3-paper);
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-ring-inner strong {
+  color:var(--jfs3-ink);font-size:25px;line-height:1.12;
+  letter-spacing:-.055em;font-variant-numeric:tabular-nums;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-ring-inner small {
+  color:var(--jfs3-ink-secondary);font-size:10px;margin-top:5px;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy-stats {
+  min-width:0;display:flex;flex-direction:column;gap:4px;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy-stats>span {
+  font-size:12px;font-weight:530;color:var(--jfs3-ink-secondary);
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy-stats strong {
+  font-size:clamp(25px,2.6vw,34px);letter-spacing:-.055em;
+  font-weight:700;color:var(--jfs3-ink);font-variant-numeric:tabular-nums;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy-stats small {
+  font-size:11px;color:var(--jfs3-ink-secondary);
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy-stats p {
+  margin:5px 0 0;color:var(--jfs3-ink-secondary);
+  font-size:11px;line-height:1.4;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macros {
+  display:grid;gap:13px;min-width:0;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro {
+  display:flex;flex-direction:column;gap:7px;min-width:0;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro-top {
+  font-size:12px;color:var(--jfs3-ink-secondary);
+  font-variant-numeric:tabular-nums;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro-top span {
+  white-space:nowrap;font-size:12px;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro-top b {
+  font-weight:760;color:var(--jfs3-ink);margin-right:4px;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro-top strong {
+  font-size:13px;color:var(--jfs3-ink);font-weight:650;white-space:nowrap;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro-top small {
+  font-size:11px;font-weight:470;color:var(--jfs3-ink-secondary);
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro .jfs-ui-progress {
+  height:6px;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-over {
+  align-self:flex-end;font-size:11px;font-weight:650;
+  color:var(--jfs3-ink);
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-footer {
+  border-top:1px solid var(--jfs3-line);padding-top:16px;flex-wrap:wrap;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-status {
+  display:flex;align-items:center;gap:7px;min-height:38px;
+  color:var(--jfs3-ink-secondary);font-size:12px;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-add {
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-width:150px;min-height:44px;padding:10px 17px;
+  color:var(--jfs3-action-text);background:var(--jfs3-action);
+  border:1px solid transparent;border-radius:13px;
+  box-shadow:0 2px 5px rgba(0,0,0,.08);
+  font-family:inherit;font-weight:670;font-size:13px;cursor:pointer;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b :is(a,button):focus-visible {
+  outline:3px solid var(--jfs3-ink);outline-offset:3px;
+}
+html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b .jfs-ui-empty {
+  padding-top:16px;border-top:1px solid var(--jfs3-line);
+}
+@media(max-width:767px) {
+  html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b {
+    padding:17px 16px;border-radius:18px;
+  }
+  html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-upper {
+    grid-template-columns:1fr;gap:17px;
+  }
+  html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy {
+    gap:18px;
+  }
+  html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy-ring {
+    width:98px;height:98px;
+  }
+  html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-ring-inner {
+    width:83px;height:83px;
+  }
+  html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-ring-inner strong {
+    font-size:21px;
+  }
+  html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macros {
+    gap:12px;
+  }
+  html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-footer {
+    gap:8px;
+  }
+  html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-add {
+    flex-grow:1;
+  }
+}
+@media(prefers-reduced-motion:no-preference) {
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"])
+    .page-nutrition .nutrition-v3b-add {
+      transition:transform 160ms ease,box-shadow 160ms ease;
+  }
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"])
+    .page-nutrition .nutrition-v3b-add:active {
+      transform:translateY(1px) scale(.985);box-shadow:none;
+  }
+}
