@@ -88,6 +88,7 @@ test("motion and appearance: reduced-motion respected; dark Minimal stays graysc
 });
 
 test("in-app reduced motion: internal links do not request a view transition", async ({ page }) => {
+  await page.setViewportSize({width:390,height:844});
   await page.goto("/today/");
   await page.evaluate(key => {
     const state = JSON.parse(localStorage.getItem(key)!);
