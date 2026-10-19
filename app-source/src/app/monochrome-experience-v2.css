@@ -299,6 +299,14 @@ html[data-visual-style="minimal"] body .page-progress .direction-hero:has(.chart
 html[data-visual-style="minimal"] body .page-progress .direction-evidence {
   margin-block:10px 5px!important;
 }
+html[data-visual-style="minimal"] body .page-progress .progress-empty-action {
+  display:inline-flex;align-items:center;justify-content:space-between;
+  gap:10px;width:100%;min-height:46px;margin-top:4px;
+  padding:11px 14px;text-decoration:none;font-weight:630;font-size:13px;
+  border-radius:14px;border:1px solid var(--jfs2-stroke-strong);
+  background:linear-gradient(155deg,var(--jfs2-paper-high),var(--jfs2-sunken));
+  box-shadow:var(--jfs2-control-shadow);color:var(--jfs2-ink)!important;
+}
 html[data-visual-style="minimal"] body .page-progress .progress-v3-photo-empty {
   background:linear-gradient(150deg,var(--jfs2-paper-high),var(--jfs2-sunken))!important;
   border-color:var(--jfs2-stroke)!important;
