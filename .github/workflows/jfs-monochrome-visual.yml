@@ -1,0 +1,43 @@
+name: JFS Monochrome UI visual QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "app-source/**"
+      - ".github/workflows/jfs-monochrome-visual.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  monochrome-browser:
+    name: Monochrome mobile and desktop browser checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: app-source
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app-source/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Check monochrome visual and motion behavior
+        run: npm run test:e2e -- tests/e2e/monochrome-experience.spec.ts tests/e2e/production-smoke.spec.ts --workers=2 --trace=retain-on-failure
+        env:
+          CI: "true"
+      - name: Upload screenshots and failure traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jfs-monochrome-visual-qa
+          path: |
+            app-source/test-results/
+            app-source/playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
