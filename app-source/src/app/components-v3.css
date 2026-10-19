@@ -1,0 +1,101 @@
+/*
+ * JFS Component Library 1.0 — Minimal only, no global element overrides.
+ * Tokens live in today-v3.css for the prototype and will migrate into tokens.css.
+ */
+html[data-visual-style="minimal"] .jfs-ui-surface {
+  color:var(--jfs3-ink);
+  border:1px solid var(--jfs3-line);
+  border-radius:20px;
+  min-width:0;
+}
+html[data-visual-style="minimal"] .jfs-ui-surface--flat {
+  background:var(--jfs3-inset);
+  box-shadow:none;
+}
+html[data-visual-style="minimal"] .jfs-ui-surface--card {
+  background:var(--jfs3-paper);
+  box-shadow:var(--jfs3-surface-shadow);
+}
+html[data-visual-style="minimal"] .jfs-ui-surface--raised {
+  background:linear-gradient(155deg,var(--jfs3-paper),var(--jfs3-paper-soft));
+  box-shadow:var(--jfs3-floating-shadow);
+}
+html[data-visual-style="minimal"] .jfs-ui-action {
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:44px;padding:10px 16px;
+  border:1px solid transparent;border-radius:13px;
+  text-decoration:none;font:650 13px/1.35 inherit;
+  cursor:pointer;
+  transition:transform 150ms ease,box-shadow 180ms ease,background-color 180ms ease;
+}
+html[data-visual-style="minimal"] .jfs-ui-action--primary {
+  color:var(--jfs3-action-text)!important;
+  background:var(--jfs3-action)!important;
+  box-shadow:0 2px 5px rgba(0,0,0,.085);
+}
+html[data-visual-style="minimal"] .jfs-ui-action--secondary {
+  color:var(--jfs3-ink)!important;
+  background:var(--jfs3-paper-soft)!important;
+  border-color:var(--jfs3-line-strong)!important;
+}
+html[data-visual-style="minimal"] .jfs-ui-action--quiet {
+  color:var(--jfs3-ink)!important;
+  background:transparent!important;
+}
+html[data-visual-style="minimal"] .jfs-ui-action:disabled {
+  opacity:.45;cursor:not-allowed;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .jfs-ui-section-heading {
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  min-height:28px;
+}
+html[data-visual-style="minimal"] .jfs-ui-section-heading h2 {
+  display:flex;align-items:center;gap:9px;
+  margin:0;font-size:15px;font-weight:680;letter-spacing:-.025em;
+  color:var(--jfs3-ink);
+}
+html[data-visual-style="minimal"] .jfs-ui-progress {
+  width:100%;height:7px;
+  overflow:hidden;border-radius:999px;background:var(--jfs3-track);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.035);
+}
+html[data-visual-style="minimal"] .jfs-ui-progress>span {
+  display:block;height:100%;border-radius:inherit;
+  background:var(--jfs3-ink);
+}
+html[data-visual-style="minimal"] .jfs-ui-empty {
+  display:flex;flex-direction:column;gap:8px;align-items:flex-start;
+  padding:20px 0;min-height:84px;color:var(--jfs3-ink);
+}
+html[data-visual-style="minimal"] .jfs-ui-empty strong {
+  font-size:16px;font-weight:660;
+}
+html[data-visual-style="minimal"] .jfs-ui-empty p {
+  margin:0;color:var(--jfs3-ink-secondary);font-size:13px;line-height:1.5;
+}
+html[data-visual-style="minimal"] .jfs-ui-empty-action {margin-top:6px}
+html[data-visual-style="minimal"] :is(
+  .jfs-ui-action,.jfs-ui-surface a,.jfs-ui-section-heading a
+):focus-visible {
+  outline:3px solid var(--jfs3-ink)!important;
+  outline-offset:3px!important;
+}
+@media(hover:hover) and (pointer:fine) {
+  html[data-visual-style="minimal"] .jfs-ui-action:not(:disabled):hover {
+    filter:brightness(.95);
+  }
+}
+@media(prefers-reduced-motion:no-preference) {
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"])
+    .jfs-ui-action:not(:disabled):active {transform:translateY(1px) scale(.985)}
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"])
+    .jfs-ui-progress>span {transition:width 480ms cubic-bezier(.22,1,.36,1)}
+}
+@media(prefers-reduced-motion:reduce) {
+  html[data-visual-style="minimal"] :is(.jfs-ui-action,.jfs-ui-progress>span) {
+    transition:none!important;
+  }
+}
+html[data-reduce-motion="true"] :is(.jfs-ui-action,.jfs-ui-progress>span) {
+  transition:none!important;
+}
