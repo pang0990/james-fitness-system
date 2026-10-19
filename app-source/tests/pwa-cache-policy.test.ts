@@ -24,6 +24,8 @@ test("generated PWA worker excludes OAuth callbacks and query-bearing URLs", () 
     const worker = readFileSync(path.join(out, "sw.js"), "utf8");
     vm.runInNewContext(worker, {
       URL,
+      // Safe mock for allowed GETs; no network requests in this unit test.
+      fetch: async () => ({ ok: false }),
       self: {
         location: { origin: "https://example.test" },
         addEventListener: (name: string, fn: (event: any) => void) => {
