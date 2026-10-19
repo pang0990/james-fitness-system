@@ -44,6 +44,7 @@ jobs:
           cache: npm
           cache-dependency-path: app-source/package-lock.json
       - run: npm ci
+      - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Run existing browser suite (baseline)
         run: |
