@@ -29,4 +29,4 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test tests/e2e/auth-guest.spec.ts
+      - run: npx playwright test tests/e2e/auth-guest.spec.ts tests/e2e/mock-auth-workspaces.spec.ts
