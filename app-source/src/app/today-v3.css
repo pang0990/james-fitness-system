@@ -92,6 +92,16 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 .today-v3 .today-v3-notice-content {flex:1;min-width:0;color:var(--jfs3-ink)}
 .today-v3 .today-v3-notice :is(a,button) {color:var(--jfs3-ink)!important}
 .today-v3 .today-v3-notice :is(p,span,small) {font-size:12px}
+/* Existing notice links carry Cinematic text colors; force accessible Minimal contrast. */
+.today-v3 .today-v3-notice .notice-current-content,
+.today-v3 .today-v3-notice .notice-current-content :is(span,svg),
+.today-v3 .today-v3-notice .notice-carousel .text-link {
+  color:var(--jfs3-ink)!important;opacity:1!important;
+}
+.today-v3 .today-v3-notice:has(.today-v3-notice-content:empty) {display:none}
+.today-v3 .today-v3-notice:has(.notice-carousel.safety) {
+  border-left:3px solid var(--jfs3-ink-strong,var(--jfs3-ink));
+}
 .today-v3 .today-v3-notice .notice-carousel {
   background:transparent!important;border:0!important;box-shadow:none!important;
   padding:0!important;margin:0!important;min-height:0!important;
