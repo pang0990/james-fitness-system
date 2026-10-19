@@ -96,7 +96,7 @@ test("in-app reduced motion: internal links do not request a view transition", a
       value: () => { throw new Error("View transitions are not allowed when app reduced motion is on"); },
     });
   });
-  await page.locator('.bottom-nav a[href="/nutrition"]').click();
+  await page.locator('.bottom-nav a[href*="/nutrition"]').click();
   await expect(page).toHaveURL(/\/nutrition\/?$/);
 });
 
