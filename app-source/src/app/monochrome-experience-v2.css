@@ -311,6 +311,28 @@ html[data-visual-style="minimal"] body .page-progress .progress-v3-photo-empty {
   background:linear-gradient(150deg,var(--jfs2-paper-high),var(--jfs2-sunken))!important;
   border-color:var(--jfs2-stroke)!important;
 }
+/* Remove remaining inherited system-blue accents across secondary controls. */
+html[data-visual-style="minimal"] :is(.track>span,.progressbar>span) {
+  background:var(--jfs2-ink)!important;
+}
+html[data-visual-style="minimal"] :is(
+  .page-today .today-ref-cycle-count strong,.page-today .today-ref-logged
+) {color:var(--jfs2-ink)!important}
+html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-cta {
+  background:var(--jfs2-wash)!important;
+  color:var(--jfs2-ink)!important;
+}
+html[data-visual-style="minimal"] .set-group .session-set-child {
+  background:var(--jfs2-wash)!important;
+}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"]) :is(
+    .today-ref-card,.training-today,.meal-section,.progress-v3-photos,.progress-v3-stats
+  ) {transition:transform 260ms var(--jfs2-ease),box-shadow 260ms var(--jfs2-ease)!important}
+  html[data-visual-style="minimal"]:not([data-reduce-motion="true"]) :is(
+    .today-ref-card,.training-today,.meal-section,.progress-v3-photos,.progress-v3-stats
+  ):hover {transform:translateY(-2px)}
+}
 /* Physicality: hover is for pointers, touch gets short pressed feedback.
  * Only compositor-friendly opacity/transform transitions on large surfaces.
  */
