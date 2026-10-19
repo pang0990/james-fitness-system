@@ -13,6 +13,7 @@ import {
   useState,
   type ReactNode,
   type FormEvent,
+  type CSSProperties,
 } from "react";
 import {
   ArrowLeft,
@@ -189,7 +190,7 @@ export function NutritionSummary({ date, variant = "compact" }: { date: string; 
       <div className="nutrition-v3-energy">
         <div className="nutrition-v3-calorie-ring" role="img"
           aria-label={`已攝取 ${recorded?total.kcal:"尚未記錄"}，目標 ${calorieTarget||"未設定"} kcal`}
-          style={{background:`conic-gradient(#46c4e8 0% ${pct*.62}%, #56c7ac ${pct*.62}% ${pct}%, #caad73 ${pct}% ${Math.min(100,pct+2)}%, var(--jfs-ring-track-calorie,#26272a) ${Math.min(100,pct+2)}% 100%)`}}>
+          style={{background:`conic-gradient(#46c4e8 0% ${pct*.62}%, #56c7ac ${pct*.62}% ${pct}%, #caad73 ${pct}% ${Math.min(100,pct+2)}%, var(--jfs-ring-track-calorie,#26272a) ${Math.min(100,pct+2)}% 100%)`, "--jfs2-fill":`${pct}%`} as CSSProperties}>
           <div className="nutrition-v3-ring-inner">
             <strong>{recorded?Math.round(total.kcal).toLocaleString("en-US"):"—"}</strong>
             <small>/ {calorieTarget?calorieTarget.toLocaleString("en-US"):"—"} kcal</small>
@@ -207,7 +208,7 @@ export function NutritionSummary({ date, variant = "compact" }: { date: string; 
           const color=["#679fe8","#48cfcb","#e2b969"][i];
           const label=["Protein","Carbs","Fat"][i];
           return <div className="nutrition-v3-macro" key={key}>
-            <div className="nutrition-v3-mini-ring" style={{background:`conic-gradient(${color} 0 ${percent}%,var(--jfs-ring-track,#292c31) ${percent}% 100%)`}}>
+            <div className="nutrition-v3-mini-ring" style={{background:`conic-gradient(${color} 0 ${percent}%,var(--jfs-ring-track,#292c31) ${percent}% 100%)`, "--jfs2-fill":`${percent}%`} as CSSProperties}>
               <span>{Math.round(percent)}%</span>
             </div>
             <strong>{label}</strong>
