@@ -38,11 +38,12 @@ test("minimal mobile: tactile Today, monochrome dock, accessible progress entry"
 test("minimal Nutrition: rings use real fill values and grayscale gradients", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/nutrition/");
-  const ring = page.locator(".nutrition-v3-calorie-ring");
+  const ring = page.locator(".nutrition-v3b-energy-ring");
   await expect(ring).toBeVisible();
+  await expect(page.getByTestId("nutrition-v3b")).toBeVisible();
   const visual = await ring.evaluate(el => ({
     bg: getComputedStyle(el).backgroundImage,
-    progress: getComputedStyle(el).getPropertyValue("--jfs2-fill").trim(),
+    progress: getComputedStyle(el).getPropertyValue("--nutrition-v3b-percent").trim(),
     width: Math.round(el.getBoundingClientRect().width),
   }));
   expect(visual.progress).toBe("0%");
