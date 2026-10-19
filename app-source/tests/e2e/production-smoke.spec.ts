@@ -27,13 +27,13 @@ test("desktop: primary app workspaces and account-scoped data load", async ({ pa
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/today/");
   await expect(page.locator(".today-reference-page")).toBeVisible();
-  await expect(page.locator(".sidebar")).toBeVisible();
+  await expect(page.locator(".topbar")).toBeVisible();
   const state = await page.evaluate(key => localStorage.getItem(key), DATA_KEY);
   expect(state).not.toBeNull();
   for (const path of ["nutrition", "training", "progress"]) {
     await page.goto(`/${path}/`);
     await expect(page.locator(".main")).toBeVisible();
-    await expect(page.locator(".sidebar")).toBeVisible();
+    await expect(page.locator(".topbar")).toBeVisible();
   }
 });
 
@@ -61,7 +61,7 @@ test("backup: invalid JSON is rejected without changing account records", async 
     mimeType: "application/json",
     buffer: Buffer.from("{}"),
   });
-  await expect(page.getByRole("alert")).toContainText("備份格式無效");
+  await expect(page.locator("p[role=alert]")).toContainText("備份格式無效");
   const after = await page.evaluate(key => localStorage.getItem(key), DATA_KEY);
   expect(after).toEqual(before);
 });
