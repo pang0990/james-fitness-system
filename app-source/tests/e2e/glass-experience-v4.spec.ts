@@ -85,14 +85,14 @@ test("Black canvas / white crystal: every small Today tile is raised translucent
     return { color: styles.color, surface: styles.backgroundColor,
       blur: styles.backdropFilter, shadow: styles.boxShadow };
   });
-  expect(sample.surface).toMatch(/rgba?\\(255,\\s*255,\\s*255/);
+  expect(sample.surface).toMatch(/rgba?\(255,\s*255,\s*255/);
   expect(sample.color).toBe("rgb(22, 23, 27)");
   expect(sample.blur).toContain("blur(");
   expect(sample.shadow).not.toBe("none");
   for (const selector of [".today-v3-focus", ".today-v3-water-actions button",
     ".today-v3-quick-item", ".today-v3-focus-action"]) {
     const color = await page.locator(selector).first().evaluate(el => getComputedStyle(el).backgroundColor);
-    expect(color, selector).toMatch(/rgba?\\(255,\\s*255,\\s*255/);
+    expect(color, selector).toMatch(/rgba?\(255,\s*255,\s*255/);
   }
 });
 
@@ -104,7 +104,7 @@ test("Black canvas / white crystal: Navigation and desktop glass are light", asy
     bg: getComputedStyle(el).backgroundColor,
     blur: getComputedStyle(el).backdropFilter,
   }));
-  expect(props.bg).toMatch(/rgba?\\(255,\\s*255,\\s*255/);
+  expect(props.bg).toMatch(/rgba?\(255,\s*255,\s*255/);
   expect(props.blur).toContain("blur(");
   await page.screenshot({ path: "test-results/glass-v5-today-desktop.png", fullPage: true });
 });
@@ -114,7 +114,7 @@ test("Dark-mode user preference does not turn white crystal panels smoke gray", 
   await page.goto("/today/");
   await page.evaluate(() => { document.documentElement.dataset.theme = "dark"; });
   const color = await page.locator(".today-v3-focus").evaluate(el => getComputedStyle(el).backgroundColor);
-  expect(color).toMatch(/rgba?\\(255,\\s*255,\\s*255/);
+  expect(color).toMatch(/rgba?\(255,\s*255,\s*255/);
   expect(await page.locator(".app.jfs3-shell").evaluate(el => getComputedStyle(el).backgroundColor))
     .toBe("rgb(3, 3, 4)");
   await page.screenshot({path:"test-results/glass-v5-today-dark-preference.png",fullPage:true});
