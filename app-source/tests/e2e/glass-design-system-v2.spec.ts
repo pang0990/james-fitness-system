@@ -59,3 +59,40 @@ for(const width of [390,1440]) {
     await page.screenshot({path:`test-results/glass-ds2-today-${width}.png`,fullPage:true});
   });
 }
+
+for (const width of [375, 390, 430]) {
+  test(`mobile ${width}px: quick-log Chinese labels and water buttons stay on one line`, async ({page})=>{
+    await page.setViewportSize({width,height:844});
+    await page.goto("/today/");
+    const tiles = await page.locator(".today-v3-quick-item").evaluateAll(elements => elements.map(button => {
+      const label = button.querySelector("span")!;
+      const rect = label.getBoundingClientRect();
+      const container = button.getBoundingClientRect();
+      return {
+        text: label.textContent,
+        whiteSpace: getComputedStyle(label).whiteSpace,
+        within: rect.left >= container.left - 1 && rect.right <= container.right + 1,
+      };
+    }));
+    expect(tiles).toHaveLength(5);
+    for (const tile of tiles) {
+      expect(tile.whiteSpace, tile.text ?? "").toBe("nowrap");
+      expect(tile.within, tile.text ?? "").toBe(true);
+    }
+    const water = await page.locator(".today-v3-water-actions .jfs-glass-button").evaluateAll(elements =>
+      elements.map(el => ({
+        whiteSpace:getComputedStyle(el).whiteSpace,
+        inside: el.scrollWidth <= el.clientWidth + 1,
+      }))
+    );
+    expect(water).toHaveLength(2);
+    for (const button of water) {
+      expect(button.whiteSpace).toBe("nowrap");
+      expect(button.inside).toBe(true);
+    }
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+    if(width === 390) {
+      await page.screenshot({path:"test-results/glass-ds2-today-390-polished.png",fullPage:true});
+    }
+  });
+}
