@@ -24,7 +24,7 @@ test("minimal mobile: tactile Today, monochrome dock, accessible progress entry"
     };
   });
   expect(style.primary).toBe("#19191b");
-  expect(style.activeColor).toBe("rgb(25, 25, 27)");
+  expect(style.activeColor).toBe("rgb(21, 21, 25)"); // crystal-glass active label: high-contrast dark ink
   expect(style.dockShadow).not.toBe("none");
   expect(style.cardShadow).not.toBe("none");
   expect(style.overflow).toBeLessThanOrEqual(1);
