@@ -22,6 +22,30 @@ test("Glass Lab: compare white crystal, lighter and opaque materials with real b
     getComputedStyle(el).backdropFilter)).toBe("none");
 });
 
+test("Glass transparency slider changes real white-glass alpha on a black background", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/ui-showcase/");
+  const stage = page.getByTestId("ui-showcase");
+  const slider = page.getByRole("slider", { name: "玻璃透明度" });
+  await expect(stage).toHaveAttribute("data-material", "crystal");
+  await expect(slider).toHaveValue("25");
+  const card = stage.locator(".jfs-ui-surface--card").first();
+  const initial = await card.evaluate(el => getComputedStyle(el).backgroundColor);
+  expect(initial).toBe("rgba(255, 255, 255, 0.75)");
+  await slider.focus();
+  await slider.press("ArrowRight");
+  await expect(slider).toHaveValue("30");
+  await expect(stage.getByText(/白色不透明度 70%/)).toBeVisible();
+  const updated = await card.evaluate(el => getComputedStyle(el).backgroundColor);
+  expect(updated).toBe("rgba(255, 255, 255, 0.7)");
+  await page.screenshot({ path: "test-results/glass-v5-transparency-30-percent-desktop.png", fullPage: true });
+  await page.getByRole("button", { name: "原本霧面" }).click();
+  await expect(slider).toBeHidden();
+  await page.getByRole("button", { name: "黑底白玻璃" }).click();
+  await expect(slider).toHaveValue("30");
+  expect(await card.evaluate(el => getComputedStyle(el).backgroundColor)).toBe(updated);
+});
+
 test("Glass Lab: small screen remains usable with black canvas and white crystal tiles", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ui-showcase/");
