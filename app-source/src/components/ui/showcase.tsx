@@ -20,11 +20,11 @@ export function UiShowcase() {
   return (
     <main className="jfs-showcase" data-testid="ui-showcase" data-material={material}>
       <header className="jfs-showcase-heading">
-        <div><span className="jfs-showcase-overline">JFS GLASS LAB · DESIGN SYSTEM 4.0</span>
+        <div><span className="jfs-showcase-overline">JFS CRYSTAL GLASS LAB · DESIGN SYSTEM 5.0</span>
           <h1>James Fitness · White Crystal Glass</h1>
           <p>參考 iPhone 控制中心的玻璃層次：光線、霧化、透明度和實際操作。以下全部為示範資料。</p>
         </div>
-        <span className="jfs-showcase-version">GLASS V4 / REVIEW</span>
+        <span className="jfs-showcase-version">CRYSTAL V5 / REVIEW</span>
       </header>
       <div className="jfs-showcase-material-switch" role="group" aria-label="玻璃材質比較">
         {([
