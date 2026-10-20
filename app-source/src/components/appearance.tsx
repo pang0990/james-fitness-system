@@ -22,7 +22,9 @@ export function AppearanceController() {
       document
         .querySelector('meta[name="theme-color"]')
         ?.setAttribute("content", visualStyle === "minimal"
-          ? (light ? "#f5f5f7" : "#111216")
+          // Minimal now uses a black canvas for both preferences; match the
+          // browser chrome to the actual page instead of the legacy light UI.
+          ? "#030304"
           : (light ? "#f5f3ee" : "#070708"));
     };
     apply();
