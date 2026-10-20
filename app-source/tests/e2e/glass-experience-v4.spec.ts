@@ -103,7 +103,7 @@ test("White glass appears bright on black while remaining actually translucent",
   const app = page.locator(".app.jfs3-shell");
   expect(await app.evaluate(el=>getComputedStyle(el).backgroundColor)).toBe("rgb(3, 3, 4)");
   const selectors = [
-    [".today-v3-focus", 0.93],
+    [".today-v3-focus", 0.96], // raised GlassCard (93% baseline, 96% elevation)
     [".today-v3-water-actions button", 0.95],
     [".today-v3-focus-action", 0.96],
   ] as const;
