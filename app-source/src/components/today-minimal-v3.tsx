@@ -17,8 +17,9 @@ import { NoticeCarousel } from "./notices";
 import { RecoveryQuickLog } from "./recovery-log";
 import { DailyActivity } from "./daily-activity";
 import { FitnessEquipmentVisual } from "./ui/fitness-equipment-visual";
-import { UiActionLink, UiProgressTrack, UiSurface } from "./ui/design-system";
-import { NutritionV2, Num, Sheet, stamp, uid } from "./daily";
+import { UiActionLink } from "./ui/design-system";
+import { GlassCard, GlassButton, GlassInput, GlassProgress, GlassSheet } from "./ui/glass-system";
+import { NutritionV2, stamp, uid } from "./daily";
 
 type QuickKind = RecoveryEntry["type"] | "weight";
 type Props = { date: string; notify: (message?: string) => void };
@@ -120,7 +121,7 @@ export function TodayMinimalV3({ date, notify }: Props) {
       </div>
 
       <div className="today-v3-grid">
-        <UiSurface className="today-v3-focus jfs3-surface" aria-labelledby="today-v3-focus-title">
+        <GlassCard className="today-v3-focus jfs3-surface" raised aria-labelledby="today-v3-focus-title">
           <div className="jfs3-section-heading">
             <span className="jfs3-heading-label"><Dumbbell size={17} aria-hidden="true" /> 今日重點</span>
             <span className="today-v3-focus-state">{current ? "進行中" : isDone ? "已完成" : day ? "已排定" : "尚未設定"}</span>
@@ -137,9 +138,9 @@ export function TodayMinimalV3({ date, notify }: Props) {
           <UiActionLink className="jfs3-primary today-v3-focus-action" href={trainingHref}>
             {actionLabel}<ArrowRight size={19} aria-hidden="true"/>
           </UiActionLink>
-        </UiSurface>
+        </GlassCard>
 
-        <section className="today-v3-nutrition jfs3-surface" aria-labelledby="today-v3-nutrition-title">
+        <GlassCard className="today-v3-nutrition jfs3-surface" aria-labelledby="today-v3-nutrition-title">
           <div className="jfs3-section-heading">
             <h2 id="today-v3-nutrition-title"><Utensils size={17} aria-hidden="true" /> 今日飲食</h2>
             <Link href="/nutrition" className="jfs3-icon-link" aria-label="查看完整營養資訊"><ChevronRight size={18}/></Link>
@@ -166,12 +167,12 @@ export function TodayMinimalV3({ date, notify }: Props) {
               ))}
             </div>
           </div>
-          <button type="button" className="jfs3-secondary today-v3-food-add" onClick={() => setFoodOpen(true)}>
+          <GlassButton kind="secondary" className="jfs3-secondary today-v3-food-add" onClick={() => setFoodOpen(true)}>
             <Plus size={17} aria-hidden="true"/> 加入飲食
-          </button>
-        </section>
+          </GlassButton>
+        </GlassCard>
 
-        <section className="today-v3-training jfs3-surface" aria-labelledby="today-v3-training-title">
+        <GlassCard className="today-v3-training jfs3-surface" aria-labelledby="today-v3-training-title">
           <div className="jfs3-section-heading">
             <h2 id="today-v3-training-title"><Dumbbell size={17} aria-hidden="true" /> 今日訓練</h2>
             <Link href="/training" className="jfs3-icon-link" aria-label="查看訓練課表"><ChevronRight size={18}/></Link>
@@ -179,10 +180,10 @@ export function TodayMinimalV3({ date, notify }: Props) {
           <strong>{isDone ? "訓練完成" : current?.name || day?.name || "尚未安排課表"}</strong>
           <p>{isDone ? focusMeta : current ? "訓練進行中" : day ?
             String(day.exercises?.length ?? 0) + " 個動作" : "前往 Training 建立訓練計畫"}</p>
-        </section>
+        </GlassCard>
 
         <div className="today-v3-wellness">
-          <section className="today-v3-water jfs3-surface" aria-labelledby="today-v3-water-title">
+          <GlassCard className="today-v3-water jfs3-surface" aria-labelledby="today-v3-water-title">
             <div className="jfs3-section-heading">
               <h2 id="today-v3-water-title"><Droplet size={17} aria-hidden="true"/> 飲水</h2>
               <button type="button" className="jfs3-icon-link" onClick={() => setWaterEdit(true)}
@@ -191,53 +192,53 @@ export function TodayMinimalV3({ date, notify }: Props) {
             <div className="today-v3-water-total">
               <strong>{fmt(hydration)}</strong><small> / {hydrationTarget ? fmt(hydrationTarget) : "—"} ml</small>
             </div>
-            <UiProgressTrack className="today-v3-water-track"
+            <GlassProgress className="today-v3-water-track"
               value={hydration} target={hydrationTarget} label="今日飲水進度" />
             <div className="today-v3-water-actions">
-              <button type="button" onClick={() => addWater(Number(state.preferences?.waterQuick1 ?? 250))}>
+              <GlassButton kind="secondary" onClick={() => addWater(Number(state.preferences?.waterQuick1 ?? 250))}>
                 +{state.preferences?.waterQuick1 ?? 250} ml
-              </button>
-              <button type="button" onClick={() => addWater(Number(state.preferences?.waterQuick2 ?? 500))}>
+              </GlassButton>
+              <GlassButton kind="secondary" onClick={() => addWater(Number(state.preferences?.waterQuick2 ?? 500))}>
                 +{state.preferences?.waterQuick2 ?? 500} ml
-              </button>
+              </GlassButton>
             </div>
             <span className="today-v3-water-feedback" role="status" aria-live="polite">
               {waterFeedback !== null ? "+" + waterFeedback + " ml 已儲存" : ""}
             </span>
-          </section>
+          </GlassCard>
 
-          <section className="today-v3-recovery jfs3-surface" aria-labelledby="today-v3-recovery-title">
+          <GlassCard className="today-v3-recovery jfs3-surface" aria-labelledby="today-v3-recovery-title">
             <div className="jfs3-section-heading">
               <h2 id="today-v3-recovery-title"><HeartPulse size={17} aria-hidden="true"/> 恢復狀態</h2>
               <Link href="/progress" className="jfs3-icon-link" aria-label="查看恢復詳情"><ChevronRight size={18}/></Link>
             </div>
             <strong>{recovery.length ? "已建立紀錄" : "尚無紀錄"}</strong>
             <p>{recovery.length ? "今天 " + recovery.length + " 筆恢復紀錄" : "記錄今天的身體狀態"}</p>
-            <button type="button" className="jfs3-secondary today-v3-recovery-add"
+            <GlassButton kind="secondary" className="jfs3-secondary today-v3-recovery-add"
               onClick={() => setQuick({ date, kind: "sleep" })}>
               {recovery.length ? "新增紀錄" : "開始記錄"} <ArrowRight size={15} aria-hidden="true"/>
-            </button>
-          </section>
+            </GlassButton>
+          </GlassCard>
         </div>
 
-        <section className="today-v3-quick jfs3-surface" aria-labelledby="today-v3-quick-title">
+        <GlassCard className="today-v3-quick jfs3-surface" aria-labelledby="today-v3-quick-title">
           <div className="jfs3-section-heading">
             <h2 id="today-v3-quick-title"><Plus size={18} aria-hidden="true"/> 快速紀錄</h2>
             <Link href="/progress" className="jfs3-see-all">更多 <ChevronRight size={16}/></Link>
           </div>
           <div className="today-v3-quick-grid">
             {quicks.map(({ label, kind, icon: Icon }) => (
-              <button type="button" key={kind} className="today-v3-quick-item"
+              <GlassButton kind="secondary" key={kind} className="today-v3-quick-item"
                 aria-label={"記錄" + label} onClick={() => setQuick({ date, kind })}>
                 <Icon size={19} strokeWidth={1.7} aria-hidden="true" />
                 <span>{label}</span>
                 {(kind !== "weight" && recoveryKinds.includes(kind))
                   ? <Check size={16} strokeWidth={2} aria-hidden="true"/>
                   : <Plus size={15} strokeWidth={1.8} aria-hidden="true"/>}
-              </button>
+              </GlassButton>
             ))}
           </div>
-        </section>
+        </GlassCard>
 
         <div className="today-v3-activity">
           <DailyActivity date={date} notify={notify}/>
@@ -256,7 +257,7 @@ export function TodayMinimalV3({ date, notify }: Props) {
         />
       )}
       {waterEdit && (
-        <Sheet title="修正今日飲水" onClose={() => setWaterEdit(false)}>
+        <GlassSheet title="修正今日飲水" onClose={() => setWaterEdit(false)}>
           <form onSubmit={(e) => {
             e.preventDefault();
             const value = Number(new FormData(e.currentTarget).get("ml"));
@@ -268,10 +269,10 @@ export function TodayMinimalV3({ date, notify }: Props) {
               setWaterEdit(false);
             }
           }}>
-            <Num label="今日總飲水量 ml" name="ml" value={hydration} step="50" max={10000}/>
-            <button type="submit" className="button">儲存</button>
+            <GlassInput label="今日總飲水量 ml" type="number" required name="ml" defaultValue={hydration} min={0} step={50} max={10000}/>
+            <GlassButton type="submit">儲存飲水量</GlassButton>
           </form>
-        </Sheet>
+        </GlassSheet>
       )}
     </div>
   );
