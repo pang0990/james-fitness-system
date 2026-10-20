@@ -13,12 +13,12 @@ html[data-visual-style="minimal"] .jfs-ui-surface--flat {
   box-shadow:none;
 }
 html[data-visual-style="minimal"] .jfs-ui-surface--card {
-  background:var(--jfs3-paper);
-  box-shadow:var(--jfs3-surface-shadow);
+  background:var(--jfs4-glass-surface);
+  box-shadow:var(--jfs4-glass-shadow-soft);
 }
 html[data-visual-style="minimal"] .jfs-ui-surface--raised {
-  background:linear-gradient(155deg,var(--jfs3-paper),var(--jfs3-paper-soft));
-  box-shadow:var(--jfs3-floating-shadow);
+  background:var(--jfs4-glass-raised);
+  box-shadow:var(--jfs4-glass-shadow);
 }
 html[data-visual-style="minimal"] .jfs-ui-action {
   display:inline-flex;align-items:center;justify-content:center;gap:10px;
@@ -35,8 +35,8 @@ html[data-visual-style="minimal"] .jfs-ui-action--primary {
 }
 html[data-visual-style="minimal"] .jfs-ui-action--secondary {
   color:var(--jfs3-ink)!important;
-  background:var(--jfs3-paper-soft)!important;
-  border-color:var(--jfs3-line-strong)!important;
+  background:var(--jfs4-glass-control)!important;
+  border-color:var(--jfs4-glass-edge)!important;
 }
 html[data-visual-style="minimal"] .jfs-ui-action--quiet {
   color:var(--jfs3-ink)!important;
