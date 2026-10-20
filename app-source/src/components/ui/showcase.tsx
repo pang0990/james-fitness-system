@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { ArrowRight, ChevronRight, Dumbbell, Plus, Utensils, Activity } from "lucide-react";
 import {
   UiActionLink, UiButton, UiEmptyState, UiProgressTrack,
@@ -17,8 +17,16 @@ export function UiShowcase() {
   const [log, setLog] = useState(0);
   const [note, setNote] = useState("");
   const [material, setMaterial] = useState<"crystal" | "clear" | "solid">("crystal");
+  // Showcase-only control; this does not mutate account preferences or the live site.
+  const [transparency, setTransparency] = useState(25);
+  const whiteAlpha = 1 - transparency / 100;
+  const crystalStyle = material === "crystal" ? ({
+    "--jfs4-glass-surface": `rgba(255,255,255,${whiteAlpha.toFixed(2)})`,
+    "--jfs4-glass-raised": `rgba(255,255,255,${Math.min(.96, whiteAlpha + .07).toFixed(2)})`,
+    "--jfs4-glass-control": `rgba(255,255,255,${Math.min(.94, whiteAlpha + .05).toFixed(2)})`,
+  } as CSSProperties) : undefined;
   return (
-    <main className="jfs-showcase" data-testid="ui-showcase" data-material={material}>
+    <main className="jfs-showcase" data-testid="ui-showcase" data-material={material} style={crystalStyle}>
       <header className="jfs-showcase-heading">
         <div><span className="jfs-showcase-overline">JFS CRYSTAL GLASS LAB · DESIGN SYSTEM 5.0</span>
           <h1>James Fitness · White Crystal Glass</h1>
@@ -38,6 +46,18 @@ export function UiShowcase() {
           </button>
         ))}
       </div>
+      {material === "crystal" && (
+        <div className="jfs-showcase-transparency" aria-label="調整白色玻璃透明度">
+          <div className="jfs-showcase-transparency-heading">
+            <label htmlFor="jfs-showcase-opacity">玻璃透明度</label>
+            <strong>{transparency}%</strong>
+          </div>
+          <input id="jfs-showcase-opacity" type="range"
+            min={10} max={45} step={5} value={transparency}
+            onChange={e => setTransparency(Number(e.currentTarget.value))}/>
+          <p>白色不透明度 {100 - transparency}% · 黑色背景微微透出。此滑桿只調整展示預覽。</p>
+        </div>
+      )}
       <p className="jfs-showcase-feedback" aria-live="polite">
         {material === "crystal" ? "黑底白玻璃｜每塊面板都有半透明白色、立體邊緣與背景模糊" :
           material === "clear" ? "高透白玻璃｜黑底上更透明、可看出更明顯的玻璃景深" :
