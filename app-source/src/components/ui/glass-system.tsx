@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {
-  useEffect, useId, useRef, type ButtonHTMLAttributes, type InputHTMLAttributes,
+  useEffect, useId, useRef, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
@@ -14,11 +14,9 @@ import { UiProgressTrack } from "./design-system";
  * authentication or saved user data. Material is controlled by CSS tokens.
  */
 export function GlassCard({
-  children, className = "", raised = false, label,
-}: {
-  children: ReactNode; className?: string; raised?: boolean; label?: string;
-}) {
-  return <section aria-label={label} data-glass-level={raised ? "raised" : "surface"}
+  children, className = "", raised = false, ...rest
+}: HTMLAttributes<HTMLElement> & { children: ReactNode; raised?: boolean }) {
+  return <section {...rest} data-glass-level={raised ? "raised" : "surface"}
     className={`jfs-glass-card ${className}`.trim()}>{children}</section>;
 }
 
