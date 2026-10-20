@@ -18,12 +18,12 @@ export function UiShowcase() {
   const [note, setNote] = useState("");
   const [material, setMaterial] = useState<"crystal" | "clear" | "solid">("crystal");
   // Showcase-only control; this does not mutate account preferences or the live site.
-  const [transparency, setTransparency] = useState(25);
+  const [transparency, setTransparency] = useState(7);
   const whiteAlpha = 1 - transparency / 100;
   const crystalStyle = material === "crystal" ? ({
     "--jfs4-glass-surface": `rgba(255,255,255,${whiteAlpha.toFixed(2)})`,
-    "--jfs4-glass-raised": `rgba(255,255,255,${Math.min(.96, whiteAlpha + .07).toFixed(2)})`,
-    "--jfs4-glass-control": `rgba(255,255,255,${Math.min(.94, whiteAlpha + .05).toFixed(2)})`,
+    "--jfs4-glass-raised": `rgba(255,255,255,${Math.min(.98, whiteAlpha + .03).toFixed(2)})`,
+    "--jfs4-glass-control": `rgba(255,255,255,${Math.min(.98, whiteAlpha + .02).toFixed(2)})`,
   } as CSSProperties) : undefined;
   return (
     <main className="jfs-showcase" data-testid="ui-showcase" data-material={material} style={crystalStyle}>
@@ -53,14 +53,14 @@ export function UiShowcase() {
             <strong>{transparency}%</strong>
           </div>
           <input id="jfs-showcase-opacity" type="range"
-            min={10} max={45} step={5} value={transparency}
+            min={3} max={16} step={1} value={transparency}
             onChange={e => setTransparency(Number(e.currentTarget.value))}/>
-          <p>白色不透明度 {100 - transparency}% · 黑色背景微微透出。此滑桿只調整展示預覽。</p>
+          <p>白色不透明度 {100 - transparency}% · 保持明亮白玻璃，只讓少量黑底透出。僅影響展示預覽。</p>
         </div>
       )}
       <p className="jfs-showcase-feedback" aria-live="polite">
         {material === "crystal" ? "黑底白玻璃｜每塊面板都有半透明白色、立體邊緣與背景模糊" :
-          material === "clear" ? "高透白玻璃｜黑底上更透明、可看出更明顯的玻璃景深" :
+          material === "clear" ? "較透明白玻璃｜玻璃仍然偏白，但背景透出稍多" :
           "原本霧面｜實心背景、不使用玻璃模糊"}
       </p>
       <div className="jfs-showcase-group">
