@@ -21,7 +21,7 @@ fs.writeFileSync(
       start_url: base + "/today/",
       scope: base + "/",
       display: "standalone",
-      background_color: "#070708",
+      background_color: "#030304",
       theme_color: "#030304",
       icons,
     },
