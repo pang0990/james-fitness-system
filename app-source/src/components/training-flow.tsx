@@ -42,6 +42,7 @@ import {
 import { useStore } from "@/lib/store";
 import { addDays, type Segment } from "@/lib/domain";
 import { PageTitle, Sheet, Field, Num, uid, stamp } from "./daily";
+import { GlassCard, GlassButton } from "./ui/glass-system";
 function formatWorkoutSeconds(total:number) {
   const hours=Math.floor(total/3600),min=Math.floor(total%3600/60),sec=total%60;
   return [hours,min,sec].map(n=>String(n).padStart(2,"0")).join(":");
@@ -855,7 +856,7 @@ export function TrainingFlow({
             <span className="active">Plan</span>
             <Link href="/training/history">History</Link>
           </div>
-          <section className="training-today card">
+          <GlassCard className="training-today card" aria-label="今日訓練計畫">
             <span className="eyebrow">CURRENT PLAN</span>
             <div className="training-v3-heading">
               <div><h2>{current?.name ?? (day ? day.name : "尚未建立訓練計畫")}</h2>
@@ -876,7 +877,7 @@ export function TrainingFlow({
             </div>}
             {current ? (
               <>
-                <Link className="button" href="/training/session">繼續訓練 <ArrowRight size={16}/></Link>
+                <Link className="jfs-glass-nav-link training-v3-start" href="/training/session">繼續訓練 <ArrowRight size={16}/></Link>
                 <details className="training-other-actions">
                   <summary>其他操作</summary>
                   <div className="stack">
@@ -898,7 +899,7 @@ export function TrainingFlow({
               </>
             ) : day ? (
               <>
-                <button className="button" onClick={start}>開始訓練 <ArrowRight size={16}/></button>
+                <GlassButton kind="primary" className="training-v3-start" onClick={start}>開始訓練 <ArrowRight size={16}/></GlassButton>
                 <details className="training-other-actions">
                   <summary>其他操作</summary>
                   <div className="stack">
@@ -912,11 +913,11 @@ export function TrainingFlow({
                 </details>
               </>
             ) : (
-              <Link className="button" href="/training/plan">建立訓練課表 <ArrowRight size={16}/></Link>
+              <Link className="jfs-glass-nav-link training-v3-start" href="/training/plan">建立訓練課表 <ArrowRight size={16}/></Link>
             )}
-          </section>
+          </GlassCard>
           {(completedToday.length > 0 || !!plannedSecond) && (
-            <section className="card stack training-daily-sessions" aria-label="今天完成的訓練">
+            <GlassCard className="card stack training-daily-sessions" aria-label="今天完成的訓練">
               <div className="training-daily-sessions-heading">
                 <h2>今日訓練 · {completedToday.length} 場已完成</h2>
                 <small>共 {Math.round(completedToday.reduce((sum,s) => sum +
@@ -936,11 +937,11 @@ export function TrainingFlow({
                 className="button" onClick={startPlannedSecond}>
                 開始自訂課表第二場 · {plannedSecond.name} <ArrowRight size={16}/>
               </button>}
-            </section>
+            </GlassCard>
           )}
           {!current && (
-            <button type="button" className="button secondary training-add-session"
-              onClick={() => setExtraOpen(true)}>＋ 新增一場訓練</button>
+            <GlassButton kind="secondary" className="training-add-session"
+              onClick={() => setExtraOpen(true)}>＋ 新增一場訓練</GlassButton>
           )}
           {cycle && <Link className="training-plan-summary" href="/training/plan">
             <span><small>目前課表</small><strong>{cycle.name}</strong><small>{cycle.days.length} 個訓練日 · 本輪尚有 {pendingIds(state,cycle).length} 天</small></span>
