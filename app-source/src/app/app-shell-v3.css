@@ -12,7 +12,7 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) {
   --jfs3-shell-inset:var(--jfs3-inset,#f1f1f3);
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main {
-  background:var(--jfs3-shell-canvas)!important;
+  background:transparent!important;
   min-width:0!important;max-width:none!important;
   min-height:100dvh;
 }
@@ -22,7 +22,7 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar {
   padding:0 clamp(18px,3vw,32px)!important;
   display:flex!important;align-items:center!important;
   border:0!important;border-bottom:1px solid var(--jfs3-shell-line)!important;
-  background:var(--jfs3-shell-paper)!important;
+  background:var(--jfs4-glass-navigation)!important;
   box-shadow:none!important;
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar .breadcrumb {
@@ -39,7 +39,7 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar .
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(.today-header-bell,.account-menu>summary) {
   color:var(--jfs3-shell-ink)!important;
-  background:var(--jfs3-shell-paper)!important;
+  background:var(--jfs4-glass-navigation)!important;
   border:1px solid var(--jfs3-shell-line)!important;
   box-shadow:none!important;
   border-radius:50%!important;
@@ -72,7 +72,7 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foo
     position:fixed!important;inset:0 auto 0 0!important;
     width:206px!important;min-height:100dvh!important;
     padding:29px 15px!important;gap:0!important;
-    background:var(--jfs3-shell-paper)!important;
+    background:var(--jfs4-glass-navigation)!important;
     border-right:1px solid var(--jfs3-shell-line)!important;
     box-shadow:none!important;
   }
