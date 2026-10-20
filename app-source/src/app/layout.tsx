@@ -20,7 +20,6 @@ import "./today-v3.css";
 import "./app-shell-v3.css";
 import "./components-v3.css";
 import "./nutrition-v3b.css";
-import "./ui-showcase-v3.css";
 import "./glass-experience-v4.css";
 import "./glass-black-crystal-v5.css";
 import "./glass-system-v2.css";
@@ -38,7 +37,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#070708",
+  themeColor: "#030304",
   viewportFit: "cover",
 };
 export default function RootLayout({
