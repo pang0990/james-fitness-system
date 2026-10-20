@@ -12,7 +12,7 @@ test("Glass V3: black browser chrome matches the live white-glass canvas", async
   expect(manifest.ok()).toBe(true);
   const data = await manifest.json();
   expect(data.theme_color).toBe("#030304");
-  expect(data.background_color).toBe("#070708");
+  expect(data.background_color).toBe("#030304");
   await page.screenshot({ path: "test-results/glass-v3-browser-chrome-mobile.png", fullPage: false });
 });
 
