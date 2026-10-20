@@ -40,7 +40,7 @@ for(const width of [390,1440]) {
     await page.setViewportSize({width,height:width===390?844:900});
     await page.goto("/today/");
     await expect(page.locator(".today-v3 .jfs-glass-card")).toHaveCount(6);
-    await expect(page.locator(".today-v3 .jfs-glass-button")).toHaveCount(5);
+    await expect(page.locator(".today-v3-quick-grid .jfs-glass-button")).toHaveCount(5);
     const water=page.getByRole("img",{name:/今日飲水進度/});
     await expect(water).toBeVisible();
     await page.getByRole("button",{name:"+250 ml",exact:true}).click();
