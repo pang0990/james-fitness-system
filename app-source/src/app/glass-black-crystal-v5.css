@@ -342,3 +342,79 @@ html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] :is(.jfs-
   .jfs-ui-action--primary,.jfs-ui-action--secondary,.jfs-showcase-tabs button.active) {
   background-image:none!important;
 }
+
+/* Legibility outside glass: light page titles on the black canvas. */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .daily-page>.simple-heading h1,
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .daily-page>.simple-heading>h1 {
+  color:#f8f8fa!important;
+  text-shadow:none!important;
+}
+/* All four dashboard segmented controls become raised WHITE GLASS panels.
+ * An unselected dark-on-black label was unreadable in Nutrition QA screenshots.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments,.date-type) {
+  color:#18191d!important;
+  background:var(--jfs4-glass-surface)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  -webkit-backdrop-filter:var(--jfs4-glass-blur);
+  backdrop-filter:var(--jfs4-glass-blur);
+  box-shadow:inset 0 1px 0 #fff,var(--jfs4-glass-shadow-soft)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments)
+  :is(a,button,span) {
+  color:#32333b!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments)
+  .active {
+  color:#141519!important;
+  background:rgba(255,255,255,.94)!important;
+  border:1px solid #fff!important;
+  box-shadow:inset 0 1px 0 #fff,0 4px 10px rgba(0,0,0,.13)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .date-type :is(input,select) {
+  color:#18191d!important;
+  background:var(--jfs4-glass-control)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  box-shadow:inset 0 1px 0 #fff,0 2px 7px rgba(0,0,0,.08)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .nutrition-v3-meal-icons>button {
+  color:#19191d!important;
+  background:var(--jfs4-glass-surface)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  border-radius:16px!important;
+  -webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px);
+  box-shadow:inset 0 1px 0 #fff,0 8px 16px rgba(0,0,0,.17)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .nutrition-v3-meal-icons>button>span {
+  background:var(--jfs4-glass-raised)!important;
+  border:1px solid #fff!important;
+  border-radius:13px!important;
+  box-shadow:inset 0 1px 0 #fff,0 3px 8px rgba(0,0,0,.10)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .nutrition-v3-meal-icons>button :is(svg,strong) {
+  color:#19191d!important;
+}
+/* Opaque accessibility material must apply to controls, not only content cards. */
+@media(prefers-reduced-transparency:reduce) {
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+    :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments,
+      .date-type,.nutrition-v3-meal-icons>button) {
+    background:#fff!important;
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+}
+html[data-visual-style="minimal"][data-reduce-transparency="true"]
+  .app.jfs3-shell:not(.workout-active) :is(.nutrition-v3-tabs,.training-v3-segments,
+  .progress-v3-segments,.date-type,.nutrition-v3-meal-icons>button) {
+  background:#fff!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
