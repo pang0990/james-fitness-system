@@ -17,11 +17,11 @@ html[data-visual-style="minimal"][data-theme="dark"] {
   --jfs3-action:#151519;
   --jfs3-action-text:#fff;
   --jfs3-track:rgba(23,24,29,.17);
-  --jfs4-glass-surface:rgba(255,255,255,.77);
-  --jfs4-glass-raised:rgba(255,255,255,.85);
+  --jfs4-glass-surface:rgba(255,255,255,.86);
+  --jfs4-glass-raised:rgba(255,255,255,.94);
   --jfs4-glass-inset:rgba(255,255,255,.53);
-  --jfs4-glass-control:rgba(255,255,255,.68);
-  --jfs4-glass-navigation:rgba(255,255,255,.81);
+  --jfs4-glass-control:rgba(255,255,255,.89);
+  --jfs4-glass-navigation:rgba(255,255,255,.90);
   --jfs4-glass-border:rgba(255,255,255,.9);
   --jfs4-glass-edge:rgba(255,255,255,.65);
   --jfs4-glass-specular:rgba(255,255,255,.98);
@@ -118,10 +118,12 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
   :is(.today-v3 .jfs3-primary,.nutrition-v3b-add,.jfs-ui-action--primary) {
-  color:#fff!important;
-  background:#141418!important;
-  border-color:rgba(255,255,255,.2)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 6px 17px rgba(0,0,0,.2)!important;
+  color:#141418!important;
+  background:var(--jfs4-glass-raised)!important;
+  border:1px solid rgba(255,255,255,.94)!important;
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:inset 0 1.5px 0 #fff, inset 0 -1px 0 rgba(255,255,255,.38),
+    0 10px 20px rgba(0,0,0,.17),0 2px 4px rgba(0,0,0,.10)!important;
 }
 /* Navigation is also a floating white glass slab with distinct selected tiles. */
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
@@ -159,7 +161,7 @@ html[data-visual-style="minimal"] .jfs-showcase[data-material] {
   --jfs3-track:rgba(23,24,29,.16);
   --jfs4-glass-surface:rgba(255,255,255,.77);
   --jfs4-glass-raised:rgba(255,255,255,.87);
-  --jfs4-glass-control:rgba(255,255,255,.73);
+  --jfs4-glass-control:rgba(255,255,255,.88);
   --jfs4-glass-border:rgba(255,255,255,.87);
   --jfs4-glass-edge:rgba(255,255,255,.67);
   --jfs4-glass-specular:#fff;
@@ -174,14 +176,14 @@ html[data-visual-style="minimal"] .jfs-showcase[data-material] {
   background-image:var(--jfs4-glass-ambient)!important;
 }
 html[data-visual-style="minimal"] .jfs-showcase[data-material="crystal"] {
-  --jfs4-glass-surface:rgba(255,255,255,.79);
-  --jfs4-glass-raised:rgba(255,255,255,.88);
+  --jfs4-glass-surface:rgba(255,255,255,.87);
+  --jfs4-glass-raised:rgba(255,255,255,.94);
   --jfs4-glass-control:rgba(255,255,255,.73);
 }
 html[data-visual-style="minimal"] .jfs-showcase[data-material="clear"] {
-  --jfs4-glass-surface:rgba(255,255,255,.56);
-  --jfs4-glass-raised:rgba(255,255,255,.7);
-  --jfs4-glass-control:rgba(255,255,255,.55);
+  --jfs4-glass-surface:rgba(255,255,255,.67);
+  --jfs4-glass-raised:rgba(255,255,255,.79);
+  --jfs4-glass-control:rgba(255,255,255,.71);
 }
 html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] {
   --jfs4-glass-surface:#fff;
@@ -247,5 +249,62 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"]
   .app.jfs3-shell:not(.workout-active) :is(
     .today-v3-quick-item,.today-v3-water-actions button,.today-v3-cycle,
     .activity-metric,.meal-entry,.training-v3-exercise,.progress-v3-stat-row) {
+  background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+
+/* App root is the page class, so choose descendant cards directly (not .page-X nesting). */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.meal-section,.nutrition-cookbook-card,.nutrition-v3-panel,
+      .training-today,.training-daily-sessions,.training-plan-summary,
+      .direction-hero,.progress-v3-stats,.progress-v3-photos,.review-glass,
+      .main .card) {
+  background:var(--jfs4-glass-surface)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  color:#16171b!important;
+  -webkit-backdrop-filter:var(--jfs4-glass-blur);
+  backdrop-filter:var(--jfs4-glass-blur);
+  box-shadow:inset 0 1.2px 0 rgba(255,255,255,.98),
+    inset 0 -1px 0 rgba(255,255,255,.42),
+    var(--jfs4-glass-shadow-soft)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.meal-entry,.meal-empty,.nutrition-v3-meal-icons>button,
+      .nutrition-v3-food-thumb,.training-v3-exercise,
+      .training-v3-segments button,.training-daily-session,
+      .progress-v3-stat-row,.progress-v3-segments button,
+      .progress-v3-photo-empty,.performance-row,.activity-metric,.activity-log-row) {
+  color:#16171b!important;
+  background:var(--jfs4-glass-raised)!important;
+  border:1px solid var(--jfs4-glass-border)!important;
+  -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);
+  box-shadow:inset 0 1px 0 #fff,
+    0 6px 13px rgba(0,0,0,.11),0 1px 3px rgba(0,0,0,.06)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3-focus-action,.nutrition-v3b-add,.jfs-ui-action--primary)
+  :is(span,svg) {
+  color:#141418!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-action--primary {
+  color:#16171b!important;
+  background:var(--jfs4-glass-raised)!important;
+  border:1px solid rgba(255,255,255,.96)!important;
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  box-shadow:inset 0 1px 0 #fff,0 9px 21px rgba(0,0,0,.24)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] .jfs-ui-action--primary {
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+/* Full-page input/safety overlays remain opaque for readability and accessibility. */
+@media(prefers-reduced-transparency:reduce) {
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+    :is(.main .card,.meal-entry,.nutrition-v3-meal-icons>button,
+        .training-v3-exercise,.progress-v3-stat-row,.activity-metric) {
+    background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+}
+html[data-visual-style="minimal"][data-reduce-transparency="true"] .app.jfs3-shell:not(.workout-active)
+  :is(.main .card,.meal-entry,.nutrition-v3-meal-icons>button,
+      .training-v3-exercise,.progress-v3-stat-row,.activity-metric) {
   background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
