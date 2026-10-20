@@ -37,8 +37,8 @@ for (const route of ["today", "nutrition", "training", "progress"] as const) {
     await page.goto("/" + route + "/");
     const app = page.locator(".app.jfs3-shell");
     await expect(app).toBeVisible();
-    const css = await page.locator(".topbar").evaluate(el => getComputedStyle(el));
-    expect(css.backdropFilter).toContain("blur(");
+    const backdrop = await page.locator(".topbar").evaluate(el => getComputedStyle(el).backdropFilter);
+    expect(backdrop).toContain("blur(");
     const keySurface = route === "today" ? ".today-v3-focus" :
       route === "nutrition" ? ".nutrition-v3b" :
       route === "training" ? ".training-today" : ".direction-hero";
