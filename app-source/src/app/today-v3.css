@@ -4,17 +4,17 @@ html[data-visual-style="minimal"] .page-today .topbar {
   height:64px!important;min-height:64px!important;align-items:center!important;
   padding:0 24px!important;margin:0!important;
   border-bottom:1px solid var(--jfs3-line)!important;
-  background:var(--jfs3-paper)!important;
+  background:var(--jfs4-glass-navigation)!important;
   box-shadow:none!important;
 }
 html[data-visual-style="minimal"] .page-today .today-header-bell,
 html[data-visual-style="minimal"] .page-today .account-menu>summary {
   width:40px;height:40px;border:1px solid var(--jfs3-line-strong)!important;
-  box-shadow:none!important;background:var(--jfs3-paper)!important;
+  box-shadow:none!important;background:var(--jfs4-glass-navigation)!important;
   color:var(--jfs3-ink)!important;
 }
 html[data-visual-style="minimal"] .page-today .main {
-  background:var(--jfs3-canvas)!important;
+  background:transparent!important;
 }
 html[data-visual-style="minimal"] .page-today .today-v3 {
   display:block!important;max-width:1120px!important;
@@ -75,9 +75,9 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 }
 .today-v3 .jfs3-surface {
   min-width:0;margin:0!important;
-  background:var(--jfs3-paper);border:1px solid var(--jfs3-line);
+  background:var(--jfs4-glass-surface);border:1px solid var(--jfs4-glass-edge);
   border-radius:20px;padding:21px 22px;
-  box-shadow:var(--jfs3-surface-shadow);
+  box-shadow:var(--jfs4-glass-shadow-soft);
   color:var(--jfs3-ink);
 }
 .today-v3 .jfs3-section-heading {
@@ -108,7 +108,7 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
   box-shadow:0 2px 4px rgba(0,0,0,.075),inset 0 1px 0 rgba(255,255,255,.11)!important;
 }
 .today-v3 .jfs3-secondary {
-  color:var(--jfs3-ink)!important;background:var(--jfs3-paper-soft)!important;
+  color:var(--jfs3-ink)!important;background:var(--jfs4-glass-control)!important;
   border:1px solid var(--jfs3-line-strong)!important;
   box-shadow:0 1px 2px rgba(0,0,0,.018)!important;
 }
@@ -217,7 +217,7 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 .today-v3 .today-v3-water-actions {display:flex;gap:8px;margin-top:13px}
 .today-v3 .today-v3-water-actions button {
   flex:1;min-width:0;min-height:42px;border-radius:12px;
-  background:var(--jfs3-paper-soft);color:var(--jfs3-ink);
+  background:var(--jfs4-glass-control);color:var(--jfs3-ink);
   border:1px solid var(--jfs3-line-strong);box-shadow:0 1px 2px rgba(0,0,0,.018);
   cursor:pointer;font:600 12px/1.2 inherit;
 }
@@ -240,7 +240,7 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   min-width:0;min-height:83px;gap:5px;padding:10px 5px;
   border:1px solid var(--jfs3-line);border-radius:13px;
-  background:var(--jfs3-paper-soft);color:var(--jfs3-ink);
+  background:var(--jfs4-glass-control);color:var(--jfs3-ink);
   cursor:pointer;box-shadow:0 1px 1px rgba(0,0,0,.025);
   font-size:12px;
 }
@@ -248,7 +248,7 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 .today-v3 .today-v3-activity {grid-area:activity;min-width:0}
 html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.daily-activity {
   display:block;margin:0!important;min-height:158px;
-  height:100%;padding:20px!important;background:var(--jfs3-paper)!important;
+  height:100%;padding:20px!important;background:var(--jfs4-glass-navigation)!important;
   border:1px solid var(--jfs3-line)!important;box-shadow:var(--jfs3-surface-shadow)!important;
   border-radius:20px!important;
 }
@@ -339,7 +339,7 @@ html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.dail
     display:flex!important;flex-direction:column;
     width:206px!important;min-height:100dvh;
     padding:29px 15px!important;gap:0!important;
-    background:var(--jfs3-paper)!important;border-right:1px solid var(--jfs3-line)!important;
+    background:var(--jfs4-glass-navigation)!important;border-right:1px solid var(--jfs3-line)!important;
     box-shadow:none!important;
   }
   html[data-visual-style="minimal"] .page-today .sidebar .brand {
