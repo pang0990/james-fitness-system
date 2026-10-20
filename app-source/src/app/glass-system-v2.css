@@ -199,3 +199,65 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"]
   background-color:#fff!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
+
+/* Full high-fidelity UI lab sample: real components, not a design-image placeholder. */
+html[data-visual-style="minimal"] .jfs-glass-system-lab-grid {
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-glass-live-card {
+  display:flex;flex-direction:column;gap:17px;
+  min-height:254px;padding:23px;
+  color:#17181c;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-glass-live-card .jfs-showcase-overline {
+  color:#545560!important;
+}
+html[data-visual-style="minimal"] .jfs-glass-live-number {
+  display:flex;align-items:baseline;gap:8px;
+  font-variant-numeric:tabular-nums;
+}
+html[data-visual-style="minimal"] .jfs-glass-live-number strong {
+  font-size:clamp(30px,3vw,42px);line-height:1;font-weight:760;letter-spacing:-.055em;
+}
+html[data-visual-style="minimal"] .jfs-glass-live-number span {
+  font-size:13px;color:#5c5c65;
+}
+html[data-visual-style="minimal"] .jfs-glass-live-actions {
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;
+}
+html[data-visual-style="minimal"] .jfs-glass-live-note {
+  margin:auto 0 0;font-size:12px;color:#50515c;
+}
+html[data-visual-style="minimal"] .jfs-glass-live-description {
+  margin:0 0 20px;font-size:14px;line-height:1.6;color:#45464f;
+}
+@media(max-width:767px) {
+  html[data-visual-style="minimal"] .jfs-glass-system-lab-grid {grid-template-columns:1fr}
+  html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-glass-live-card {min-height:210px;padding:17px}
+}
+/* Page-level rhythm: tighter cards, clearer hierarchy, zero extra decorative sections. */
+@media(min-width:1024px) {
+  html[data-visual-style="minimal"] .page-today .today-v3-heading h1 {
+    font-size:clamp(27px,2.7vw,37px)!important;
+  }
+  html[data-visual-style="minimal"] .page-today .today-v3-focus {
+    min-height:238px;
+  }
+}
+@media(max-width:767px) {
+  html[data-visual-style="minimal"] .page-today .today-v3 .jfs-glass-card {
+    border-radius:19px;
+  }
+}
+/* Explicit real-value data motion: native progress width, no synthetic numbers. */
+html[data-visual-style="minimal"] .page-today .jfs-glass-progress .jfs-ui-progress>span {
+  transition:width 460ms cubic-bezier(.18,.72,.28,1);
+}
+@media(prefers-reduced-motion:reduce) {
+  html[data-visual-style="minimal"] .page-today .jfs-glass-progress .jfs-ui-progress>span {
+    transition:none!important;
+  }
+}
+html[data-reduce-motion="true"] .page-today .jfs-glass-progress .jfs-ui-progress>span {
+  transition:none!important;
+}
