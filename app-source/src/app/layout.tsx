@@ -21,6 +21,7 @@ import "./app-shell-v3.css";
 import "./components-v3.css";
 import "./nutrition-v3b.css";
 import "./ui-showcase-v3.css";
+import "./glass-experience-v4.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
