@@ -1,7 +1,7 @@
 /*
  * JFS Black Canvas / White Crystal Glass — corrected visual direction.
  * Background is near-black; ALL visible dashboard panels including small tiles
- * use adjustable translucent white glass. Main surface opacity is 75%,\n * so a little black remains visible through the glass. Typography stays dark.
+ * use adjustable translucent white glass. Main surfaces are 93% opaque,\n * so the black backdrop is subtly visible without making panels look gray.
  * Scoped to Minimal and development lab; Cinematic & workout-active unchanged.
  */
 html[data-visual-style="minimal"],
@@ -17,11 +17,11 @@ html[data-visual-style="minimal"][data-theme="dark"] {
   --jfs3-action:#151519;
   --jfs3-action-text:#fff;
   --jfs3-track:rgba(23,24,29,.17);
-  --jfs4-glass-surface:rgba(255,255,255,.75);
-  --jfs4-glass-raised:rgba(255,255,255,.82);
-  --jfs4-glass-inset:rgba(255,255,255,.53);
-  --jfs4-glass-control:rgba(255,255,255,.80);
-  --jfs4-glass-navigation:rgba(255,255,255,.82);
+  --jfs4-glass-surface:rgba(255,255,255,.93);
+  --jfs4-glass-raised:rgba(255,255,255,.96);
+  --jfs4-glass-inset:rgba(255,255,255,.87);
+  --jfs4-glass-control:rgba(255,255,255,.95);
+  --jfs4-glass-navigation:rgba(255,255,255,.94);
   --jfs4-glass-border:rgba(255,255,255,.9);
   --jfs4-glass-edge:rgba(255,255,255,.65);
   --jfs4-glass-specular:rgba(255,255,255,.98);
@@ -137,7 +137,7 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
   .bottom-nav a.active,
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
   .sidebar .nav-item.active {
-  background:rgba(255,255,255,.86)!important;
+  background:rgba(255,255,255,.96)!important;
   border:1px solid rgba(255,255,255,.89)!important;
   color:#151519!important;
   box-shadow:inset 0 1px 0 #fff,0 4px 12px rgba(0,0,0,.11)!important;
@@ -159,9 +159,9 @@ html[data-visual-style="minimal"] .jfs-showcase[data-material] {
   --jfs3-action:#16171b;
   --jfs3-action-text:#fff;
   --jfs3-track:rgba(23,24,29,.16);
-  --jfs4-glass-surface:rgba(255,255,255,.77);
-  --jfs4-glass-raised:rgba(255,255,255,.87);
-  --jfs4-glass-control:rgba(255,255,255,.80);
+  --jfs4-glass-surface:rgba(255,255,255,.93);
+  --jfs4-glass-raised:rgba(255,255,255,.96);
+  --jfs4-glass-control:rgba(255,255,255,.95);
   --jfs4-glass-border:rgba(255,255,255,.87);
   --jfs4-glass-edge:rgba(255,255,255,.67);
   --jfs4-glass-specular:#fff;
@@ -176,14 +176,14 @@ html[data-visual-style="minimal"] .jfs-showcase[data-material] {
   background-image:var(--jfs4-glass-ambient)!important;
 }
 html[data-visual-style="minimal"] .jfs-showcase[data-material="crystal"] {
-  --jfs4-glass-surface:rgba(255,255,255,.75);
-  --jfs4-glass-raised:rgba(255,255,255,.82);
-  --jfs4-glass-control:rgba(255,255,255,.73);
+  --jfs4-glass-surface:rgba(255,255,255,.93);
+  --jfs4-glass-raised:rgba(255,255,255,.96);
+  --jfs4-glass-control:rgba(255,255,255,.95);
 }
 html[data-visual-style="minimal"] .jfs-showcase[data-material="clear"] {
-  --jfs4-glass-surface:rgba(255,255,255,.60);
-  --jfs4-glass-raised:rgba(255,255,255,.69);
-  --jfs4-glass-control:rgba(255,255,255,.64);
+  --jfs4-glass-surface:rgba(255,255,255,.84);
+  --jfs4-glass-raised:rgba(255,255,255,.89);
+  --jfs4-glass-control:rgba(255,255,255,.87);
 }
 html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] {
   --jfs4-glass-surface:#fff;
@@ -372,7 +372,7 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
   :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments)
   .active {
   color:#141519!important;
-  background:rgba(255,255,255,.94)!important;
+  background:rgba(255,255,255,.97)!important;
   border:1px solid #fff!important;
   box-shadow:inset 0 1px 0 #fff,0 4px 10px rgba(0,0,0,.13)!important;
 }
@@ -436,7 +436,7 @@ html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-action:di
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .jfs-ui-action:disabled {
   opacity:1!important;
   color:#666771!important;
-  background:rgba(255,255,255,.78)!important;
+  background:rgba(255,255,255,.94)!important;
   border:1px solid rgba(255,255,255,.82)!important;
   box-shadow:inset 0 1px 0 #fff,0 3px 10px rgba(0,0,0,.10)!important;
   cursor:not-allowed;
