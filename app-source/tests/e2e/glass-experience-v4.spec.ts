@@ -119,3 +119,22 @@ test("Dark-mode user preference does not turn white crystal panels smoke gray", 
     .toBe("rgb(3, 3, 4)");
   await page.screenshot({path:"test-results/glass-v5-today-dark-preference.png",fullPage:true});
 });
+
+test("White crystal Nutrition: black canvas titles and readable glass tabs", async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/nutrition/");
+  await expect(page.locator(".nutrition-v3b")).toBeVisible();
+  const title = await page.locator(".daily-page>.simple-heading h1").evaluate(el => getComputedStyle(el).color);
+  expect(title).toBe("rgb(248, 248, 250)");
+  const tab = page.locator(".nutrition-v3-tabs");
+  const styles = await tab.evaluate(el=>({
+    background:getComputedStyle(el).backgroundColor,
+    blur:getComputedStyle(el).backdropFilter,
+  }));
+  expect(styles.background).toMatch(/rgba?\(255,\s*255,\s*255/);
+  expect(styles.blur).toContain("blur(");
+  const inactive = await tab.getByRole("link",{name:"Meals"}).evaluate(el=>getComputedStyle(el).color);
+  expect(inactive).toBe("rgb(50, 51, 59)");
+  await expect(page.locator(".nutrition-v3-meal-icons>button")).toHaveCount(4);
+  await page.screenshot({path:"test-results/glass-v5-nutrition-readable-mobile.png",fullPage:true});
+});
