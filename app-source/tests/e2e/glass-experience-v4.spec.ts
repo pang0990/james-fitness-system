@@ -28,21 +28,21 @@ test("Glass transparency slider changes real white-glass alpha on a black backgr
   const stage = page.getByTestId("ui-showcase");
   const slider = page.getByRole("slider", { name: "玻璃透明度" });
   await expect(stage).toHaveAttribute("data-material", "crystal");
-  await expect(slider).toHaveValue("25");
+  await expect(slider).toHaveValue("7");
   const card = stage.locator(".jfs-ui-surface--card").first();
   const initial = await card.evaluate(el => getComputedStyle(el).backgroundColor);
-  expect(initial).toBe("rgba(255, 255, 255, 0.75)");
+  expect(initial).toBe("rgba(255, 255, 255, 0.93)");
   await slider.focus();
   await slider.press("ArrowRight");
-  await expect(slider).toHaveValue("30");
-  await expect(stage.getByText(/白色不透明度 70%/)).toBeVisible();
+  await expect(slider).toHaveValue("8");
+  await expect(stage.getByText(/白色不透明度 92%/)).toBeVisible();
   const updated = await card.evaluate(el => getComputedStyle(el).backgroundColor);
-  expect(updated).toBe("rgba(255, 255, 255, 0.7)");
-  await page.screenshot({ path: "test-results/glass-v5-transparency-30-percent-desktop.png", fullPage: true });
+  expect(updated).toBe("rgba(255, 255, 255, 0.92)");
+  await page.screenshot({ path: "test-results/glass-v5-white-8-percent-transparency-desktop.png", fullPage: true });
   await page.getByRole("button", { name: "原本霧面" }).click();
   await expect(slider).toBeHidden();
   await page.getByRole("button", { name: "黑底白玻璃" }).click();
-  await expect(slider).toHaveValue("30");
+  await expect(slider).toHaveValue("8");
   expect(await card.evaluate(el => getComputedStyle(el).backgroundColor)).toBe(updated);
 });
 
@@ -95,6 +95,29 @@ test("Reduce Transparency makes glass surfaces opaque and disables backdrop blur
   }));
   expect(after.blur).toBe("none");
   expect(after.background).toMatch(/rgb\(/);
+});
+
+test("White glass appears bright on black while remaining actually translucent", async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/today/");
+  const app = page.locator(".app.jfs3-shell");
+  expect(await app.evaluate(el=>getComputedStyle(el).backgroundColor)).toBe("rgb(3, 3, 4)");
+  const selectors = [
+    [".today-v3-focus", 0.93],
+    [".today-v3-water-actions button", 0.95],
+    [".today-v3-focus-action", 0.96],
+  ] as const;
+  for (const [selector, opacity] of selectors) {
+    const panel = page.locator(selector).first();
+    await expect(panel).toBeVisible();
+    const result = await panel.evaluate(el=>{
+      const computed = getComputedStyle(el);
+      return {color:computed.backgroundColor,blur:computed.backdropFilter};
+    });
+    expect(result.color,selector).toBe(`rgba(255, 255, 255, ${opacity})`);
+    expect(result.blur).toContain("blur(");
+  }
+  await page.screenshot({path:"test-results/white-glass-93-percent-phone.png",fullPage:true});
 });
 
 test("Black canvas / white crystal: every small Today tile is raised translucent white", async ({ page }) => {
