@@ -308,3 +308,37 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"] .app.jfs3-she
       .training-v3-exercise,.progress-v3-stat-row,.activity-metric) {
   background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
+
+/* Optical depth: specular bands over the translucent white material.
+ * Keep the rgba base background COLOR so native backdrop blur still has meaning.
+ * Static lens accents only: no looping effects or GPU-heavy animated filters.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.jfs3-surface,.nutrition-v3b,.daily-activity,.main .card,
+    .meal-section,.training-today,.training-daily-sessions,
+    .direction-hero,.progress-v3-stats,.progress-v3-photos,.jfs-ui-surface) {
+  background-image:
+    linear-gradient(145deg,rgba(255,255,255,.35),rgba(255,255,255,.04) 32%,transparent 55%,rgba(255,255,255,.11) 78%,rgba(255,255,255,.26))!important;
+  background-blend-mode:screen;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3-quick-item,.today-v3-water-actions button,
+    .today-v3 .jfs3-secondary,.nutrition-v3b-add,.today-v3 .jfs3-primary,
+    .activity-metric,.training-v3-exercise,.meal-entry,
+    .progress-v3-stat-row,.jfs-ui-action--primary,.jfs-ui-action--secondary) {
+  background-image:
+    linear-gradient(154deg,rgba(255,255,255,.46),rgba(255,255,255,.02) 39%,rgba(255,255,255,.20) 88%)!important;
+  background-blend-mode:screen;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-surface {
+  background-image:
+    linear-gradient(145deg,rgba(255,255,255,.37),rgba(255,255,255,.04) 34%,transparent 60%,rgba(255,255,255,.24))!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-ui-action--primary,.jfs-ui-action--secondary,.jfs-showcase-tabs button.active) {
+  background-image:linear-gradient(155deg,rgba(255,255,255,.42),transparent 50%,rgba(255,255,255,.17))!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] :is(.jfs-ui-surface,
+  .jfs-ui-action--primary,.jfs-ui-action--secondary,.jfs-showcase-tabs button.active) {
+  background-image:none!important;
+}
