@@ -38,3 +38,18 @@ Following visual feedback, the glass should let **a little black background show
 - Contrast and motion/accessibility standards remain unchanged. Reduced Transparency still forces fully opaque white materials and disables backdrop blur.
 
 Review both mobile and desktop screenshots at these defaults and use the preview slider to decide if the white layer needs more or less transparency. Do not conflate a passing Chromium test with real iPhone Safari performance approval.
+
+## Visual correction: WHITE must remain WHITE (2026-10-20)
+
+The previous 75% white surface on #030304 rendered visually around RGB(191,191,191), understandably gray. **Transparency is not the visual goal on its own**: the user requested a white-looking panel with *only a trace of black backdrop visible*.
+
+Current actual style tokens (Minimal mode only):
+- Main glass: **93% white opacity** (7% transparency); visually close to RGB(237,237,237) over black
+- Raised/primary buttons: **96% white opacity**, controls **95%**
+- Header/sidebar/bottom dock: **94% white opacity**
+- Slightly more transparent comparison preset: 84–89% white opacity
+- Highlights, edge reflections, backdrop blur, soft shadows stay in place; no dark-gray card gradients
+
+Developer Showcase slider: default **7% transparency**, adjustable **3–16%** in 1% increments. The user can compare true white-glass concentrations without going back to visibly gray 25–45% transparency. The Showcase slider changes only local demonstration styles.
+
+The app is still a Draft PR preview: no release, no data changes. Check actual Chromium screenshots and later real iPhone Safari before approval.
