@@ -418,3 +418,36 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"]
   background:#fff!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
+
+/* All small action plates remain light glass, including quiet/disabled states.
+ * Disabled controls communicate state through muted ink + cursor, never a gray slab.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.jfs-ui-action--quiet,.jfs-ui-action--secondary,.button.secondary),
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-ui-action--quiet,.jfs-ui-action--secondary) {
+  color:#18191d!important;
+  background:var(--jfs4-glass-control)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);
+  box-shadow:inset 0 1px 0 #fff,0 5px 13px rgba(0,0,0,.13)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-action:disabled,
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .jfs-ui-action:disabled {
+  opacity:1!important;
+  color:#666771!important;
+  background:rgba(255,255,255,.78)!important;
+  border:1px solid rgba(255,255,255,.82)!important;
+  box-shadow:inset 0 1px 0 #fff,0 3px 10px rgba(0,0,0,.10)!important;
+  cursor:not-allowed;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.meal-entry,.meal-empty,.today-v3-quick-item,.training-v3-exercise,.progress-v3-stat-row) {
+  border-radius:14px!important;
+}
+/* The original matte comparator deliberately has no translucent or bevel highlight. */
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"]
+  :is(.jfs-ui-action--quiet,.jfs-ui-action--secondary,.jfs-ui-action:disabled) {
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  box-shadow:none!important;
+}
