@@ -46,8 +46,8 @@ export function GlassInput({
 export function GlassProgress({
   value, target, label, className = "",
 }: { value: number; target?: number | null; label: string; className?: string }) {
-  return <div className={`jfs-glass-progress ${className}`.trim()}>
-    <UiProgressTrack label={label} value={value} target={target}/>
+  return <div className="jfs-glass-progress">
+    <UiProgressTrack className={className} label={label} value={value} target={target}/>
   </div>;
 }
 
