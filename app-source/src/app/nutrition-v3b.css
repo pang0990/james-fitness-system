@@ -3,11 +3,7 @@ html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b {
   min-width:0;
   padding:23px 24px;
   margin:0 0 17px;
-  border:1px solid var(--jfs3-line);
-  border-radius:var(--jfs3-radius-surface);
-  background:var(--jfs4-glass-surface);
-  box-shadow:var(--jfs4-glass-shadow-soft);
-  color:var(--jfs3-ink);
+  /* Shared glass material comes from glass-system-v2.css (GlassCard). */
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-topline,
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro-top,
