@@ -83,7 +83,7 @@ export function UiShowcase() {
             <span className="jfs-showcase-overline">NAVIGATION / FORM</span>
             <GlassNavigation label="展示分段導覽"
               value={glassSegment} onChange={setGlassSegment}
-              options={[{key:"today",label:"Today"},{key:"nutrition",label:"Nutrition"},{key:"training",label:"Training"}]}/>
+              options={[{key:"today",label:"Today"},{key:"nutrition",label:"Food"},{key:"training",label:"Training"}]}/>
             <GlassInput type="text" label="元件輸入示範" placeholder="輸入內容…" autoComplete="off"/>
             <p className="jfs-glass-live-note">選中：{glassSegment}</p>
           </GlassCard>
