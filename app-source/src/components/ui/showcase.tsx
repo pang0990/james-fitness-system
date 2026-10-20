@@ -16,15 +16,33 @@ export function UiShowcase() {
   const [active, setActive] = useState<"today" | "nutrition" | "training" | "progress">("today");
   const [log, setLog] = useState(0);
   const [note, setNote] = useState("");
+  const [material, setMaterial] = useState<"smoked" | "clear" | "solid">("smoked");
   return (
-    <main className="jfs-showcase" data-testid="ui-showcase">
+    <main className="jfs-showcase" data-testid="ui-showcase" data-material={material}>
       <header className="jfs-showcase-heading">
-        <div><span className="jfs-showcase-overline">INTERNAL UI LAB · DESIGN SYSTEM 3.0</span>
-          <h1>James Fitness · Components</h1>
-          <p>黑白灰視覺、立體材質、互動狀態與響應式元件。以下全部為示範資料。</p>
+        <div><span className="jfs-showcase-overline">JFS GLASS LAB · DESIGN SYSTEM 4.0</span>
+          <h1>James Fitness · Glass Experience</h1>
+          <p>參考 iPhone 控制中心的玻璃層次：光線、霧化、透明度和實際操作。以下全部為示範資料。</p>
         </div>
-        <span className="jfs-showcase-version">V3.0 / REVIEW</span>
+        <span className="jfs-showcase-version">GLASS V4 / REVIEW</span>
       </header>
+      <div className="jfs-showcase-material-switch" role="group" aria-label="玻璃材質比較">
+        {([
+          ["smoked", "深色玻璃"],
+          ["clear", "霧白玻璃"],
+          ["solid", "原本霧面"],
+        ] as const).map(([key, label]) => (
+          <button key={key} type="button" aria-pressed={material === key}
+            onClick={() => setMaterial(key)}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <p className="jfs-showcase-feedback" aria-live="polite">
+        {material === "smoked" ? "煙燻玻璃｜深色透光、內側反光與柔和背景模糊" :
+          material === "clear" ? "霧白玻璃｜低彩度半透明、浮動層次與柔和景深" :
+          "原本霧面｜實心背景、不使用玻璃模糊"}
+      </p>
       <div className="jfs-showcase-group">
         <UiSectionHeading title="Surface & Elevation" icon={Dumbbell} />
         <div className="jfs-showcase-surface-grid">
