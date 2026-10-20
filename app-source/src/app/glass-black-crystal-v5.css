@@ -1,7 +1,7 @@
 /*
  * JFS Black Canvas / White Crystal Glass — corrected visual direction.
  * Background is near-black; ALL visible dashboard panels including small tiles
- * use translucent white glass. No grey-smoke panels. Typography inside is dark.
+ * use adjustable translucent white glass. Main surface opacity is 75%,\n * so a little black remains visible through the glass. Typography stays dark.
  * Scoped to Minimal and development lab; Cinematic & workout-active unchanged.
  */
 html[data-visual-style="minimal"],
@@ -17,11 +17,11 @@ html[data-visual-style="minimal"][data-theme="dark"] {
   --jfs3-action:#151519;
   --jfs3-action-text:#fff;
   --jfs3-track:rgba(23,24,29,.17);
-  --jfs4-glass-surface:rgba(255,255,255,.86);
-  --jfs4-glass-raised:rgba(255,255,255,.94);
+  --jfs4-glass-surface:rgba(255,255,255,.75);
+  --jfs4-glass-raised:rgba(255,255,255,.82);
   --jfs4-glass-inset:rgba(255,255,255,.53);
-  --jfs4-glass-control:rgba(255,255,255,.89);
-  --jfs4-glass-navigation:rgba(255,255,255,.90);
+  --jfs4-glass-control:rgba(255,255,255,.80);
+  --jfs4-glass-navigation:rgba(255,255,255,.82);
   --jfs4-glass-border:rgba(255,255,255,.9);
   --jfs4-glass-edge:rgba(255,255,255,.65);
   --jfs4-glass-specular:rgba(255,255,255,.98);
@@ -161,7 +161,7 @@ html[data-visual-style="minimal"] .jfs-showcase[data-material] {
   --jfs3-track:rgba(23,24,29,.16);
   --jfs4-glass-surface:rgba(255,255,255,.77);
   --jfs4-glass-raised:rgba(255,255,255,.87);
-  --jfs4-glass-control:rgba(255,255,255,.88);
+  --jfs4-glass-control:rgba(255,255,255,.80);
   --jfs4-glass-border:rgba(255,255,255,.87);
   --jfs4-glass-edge:rgba(255,255,255,.67);
   --jfs4-glass-specular:#fff;
@@ -176,14 +176,14 @@ html[data-visual-style="minimal"] .jfs-showcase[data-material] {
   background-image:var(--jfs4-glass-ambient)!important;
 }
 html[data-visual-style="minimal"] .jfs-showcase[data-material="crystal"] {
-  --jfs4-glass-surface:rgba(255,255,255,.87);
-  --jfs4-glass-raised:rgba(255,255,255,.94);
+  --jfs4-glass-surface:rgba(255,255,255,.75);
+  --jfs4-glass-raised:rgba(255,255,255,.82);
   --jfs4-glass-control:rgba(255,255,255,.73);
 }
 html[data-visual-style="minimal"] .jfs-showcase[data-material="clear"] {
-  --jfs4-glass-surface:rgba(255,255,255,.67);
-  --jfs4-glass-raised:rgba(255,255,255,.79);
-  --jfs4-glass-control:rgba(255,255,255,.71);
+  --jfs4-glass-surface:rgba(255,255,255,.60);
+  --jfs4-glass-raised:rgba(255,255,255,.69);
+  --jfs4-glass-control:rgba(255,255,255,.64);
 }
 html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] {
   --jfs4-glass-surface:#fff;
