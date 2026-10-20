@@ -10,9 +10,9 @@ test("Glass System 2.0 showcase: actual nested glass materials, live progress an
   await expect(bar).toHaveAttribute("aria-valuenow","250");
   await lab.getByRole("button",{name:"+250 ml",exact:true}).click();
   await expect(bar).toHaveAttribute("aria-valuenow","500");
-  await expect(lab.getByText("500")).toBeVisible();
-  await lab.getByRole("button",{name:"Nutrition"}).click();
-  await expect(lab.getByRole("button",{name:"Nutrition"})).toHaveAttribute("aria-pressed","true");
+  await expect(lab.locator(".jfs-glass-live-number strong")).toHaveText("500");
+  await lab.getByRole("button",{name:"Food"}).click();
+  await expect(lab.getByRole("button",{name:"Food"})).toHaveAttribute("aria-pressed","true");
   await expect(lab.getByText("選中：nutrition")).toBeVisible();
   await page.screenshot({path:"test-results/glass-ds2-showcase-desktop.png",fullPage:true});
 });
