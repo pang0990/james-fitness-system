@@ -26,3 +26,15 @@ Inspired by the user's iOS Control Center image. Not a literal clone: smoked tra
 
 ## What is not being claimed
 No new nutritional formulas, no redesign of deep Training/Recipes or end-to-end account sync, no real Apple-branded Liquid Glass framework, no production deployment.
+
+## White Crystal Glass transparency calibration (2026-10-20)
+Following visual feedback, the glass should let **a little black background show through**—not be solid white, and not turn into a dark gray smoky card. The design remains near-black `#030304` canvas with translucent **white** panels and dark foreground text.
+
+- Normal main panels: **75% white opacity**, previously 86%.
+- Raised mini-panels / key buttons: **about 80–82% opacity**, previously 89–94%; these stay brighter than their parent.
+- Floating navigation: **82% opacity**, previously 90%.
+- High-transparency comparison material: ~60% white opacity.
+- Developer `/ui-showcase/` now has **玻璃透明度** live slider (10–45% transparency, default 25%) for the Black + White Crystal option. It changes actual CSS alpha of Surface/raised/controls in the showcase **only**; it does not modify global app state or production.
+- Contrast and motion/accessibility standards remain unchanged. Reduced Transparency still forces fully opaque white materials and disables backdrop blur.
+
+Review both mobile and desktop screenshots at these defaults and use the preview slider to decide if the white layer needs more or less transparency. Do not conflate a passing Chromium test with real iPhone Safari performance approval.
