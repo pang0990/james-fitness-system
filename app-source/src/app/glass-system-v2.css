@@ -261,3 +261,29 @@ html[data-visual-style="minimal"] .page-today .jfs-glass-progress .jfs-ui-progre
 html[data-reduce-motion="true"] .page-today .jfs-glass-progress .jfs-ui-progress>span {
   transition:none!important;
 }
+
+/* Real-device visual QA fix: touch-size glass tiles must NOT force Chinese labels
+ * into vertical word wrapping at narrow 375–390px viewport widths.
+ */
+html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-quick-grid
+  .today-v3-quick-item.jfs-glass-button {
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-width:0;min-height:77px;
+  padding:8px 2px!important;gap:7px!important;
+  font-size:11px!important;line-height:1.25!important;
+  white-space:nowrap!important;word-break:keep-all!important;
+}
+html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-quick-item>span {
+  display:block;white-space:nowrap!important;word-break:keep-all!important;
+}
+html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-water-actions
+  .jfs-glass-button {
+  flex:1 1 0;min-width:0;padding:8px 3px!important;
+  font-size:11px!important;line-height:1.2!important;
+  white-space:nowrap!important;word-break:keep-all!important;
+}
+@media(max-width:374px) {
+  html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-quick-grid {
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
