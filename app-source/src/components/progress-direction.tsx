@@ -10,6 +10,7 @@ import { addDays, round, visibleMeasurements } from "@/lib/domain";
 import { activeCycle, performance } from "@/lib/training-model";
 import { LineChart } from "./trends";
 import { PageTitle } from "./daily";
+import { GlassCard, GlassNavigation } from "./ui/glass-system";
 export function ProgressDirection({ date }: { date: string }) {
   const { state } = useStore();
   const [range, setRange] = useState("30");
@@ -58,18 +59,12 @@ export function ProgressDirection({ date }: { date: string }) {
         <Link href="/progress/body">Body</Link>
         <Link href="/progress/training">Strength</Link>
       </nav>
-      <section className={`direction-hero${weights.length===0 ? " direction-hero-empty" : ""}`}>
-        <div className="range-control" aria-label="趨勢圖期間">
-          {["7", "30", "90", "365"].map((r) => (
-            <button
-              key={r}
-              aria-pressed={r === range}
-              onClick={() => setRange(r)}
-            >
-              {r === "365" ? "1Y" : r + "D"}
-            </button>
-          ))}
-        </div>
+      <GlassCard className={`direction-hero${weights.length===0 ? " direction-hero-empty" : ""}`} aria-label="身體趨勢">
+        <GlassNavigation label="趨勢圖期間" value={range}
+          onChange={setRange}
+          options={["7", "30", "90", "365"].map(r => ({
+            key:r, label:r==="365" ? "1Y" : r+"D",
+          }))} />
         <p className="eyebrow">{status}</p>
         <h2>
           {gain
@@ -111,16 +106,16 @@ export function ProgressDirection({ date }: { date: string }) {
               : "不只看體重；持續記錄相同動作的重量與次數。"
             : "圖表顯示所選期間的變化；是否調整，依下方獨立 Review 判斷。"}
         </p>
-      </section>
-      <section className="progress-v3-photos">
+      </GlassCard>
+      <GlassCard className="progress-v3-photos" aria-label="身體照片日誌">
         <div className="progress-v3-section-header"><h2>Photos</h2><span>BODY JOURNAL</span></div>
         <div className="progress-v3-photo-empty">
           <span aria-hidden="true">◇</span>
           <p>尚無身體照片紀錄</p>
           <small>目前版本未提供照片上傳；不會顯示示意人物照片。</small>
         </div>
-      </section>
-      <section className="progress-v3-stats">
+      </GlassCard>
+      <GlassCard className="progress-v3-stats" aria-label="進度統計">
         <h2>Key Stats</h2>
         <div className="progress-v3-stat-row"><span>Workout Sessions</span>
           <strong>{state.sessions.filter(session=>session.status==="completed" && session.date>=start && session.date<=date).length}</strong></div>
@@ -131,10 +126,10 @@ export function ProgressDirection({ date }: { date: string }) {
             ? Math.round(state.dailySteps.filter(row=>row.date>=addDays(date,-6)&&row.date<=date)
               .reduce((sum,row)=>sum+row.steps,0) / state.dailySteps.filter(row=>row.date>=addDays(date,-6)&&row.date<=date).length).toLocaleString("en-US")
             : "—"}</strong></div>
-      </section>
+      </GlassCard>
       <WeeklySummary date={date} />
       <ActivityTrend date={date} />
-      <section className="review-glass">
+      <GlassCard className="review-glass" aria-label="進度檢視">
         <p className="eyebrow">PROGRESS REVIEW</p>
         <p>
           {pending
@@ -153,14 +148,11 @@ export function ProgressDirection({ date }: { date: string }) {
             ? "查看觀察資料與調整原因，再選擇 Accept 或 Keep。"
             : `${full} / ${reviewDays} 天完整飲食紀錄。${full < 10 ? "目前不據此推定需要修改計畫。" : "開啟 Review，檢視本期證據。"}`}
         </p>
-        <Link
-          className="button"
-          href={pending ? "/progress/review" : "/progress/review"}
-        >
+        <Link className="jfs-glass-nav-link" href="/progress/review">
           View review <ChevronRight size={18} />
         </Link>
-      </section>
-      <section className="system-status">
+      </GlassCard>
+      <GlassCard className="system-status" aria-label="系統狀態">
         <p className="eyebrow">SYSTEM STATUS</p>
         {[
           [
@@ -190,8 +182,8 @@ export function ProgressDirection({ date }: { date: string }) {
             <ChevronRight size={18} />
           </Link>
         ))}
-      </section>
-      <section className="training-evidence">
+      </GlassCard>
+      <GlassCard className="training-evidence" aria-label="訓練進度">
         <p className="eyebrow">TRAINING PROGRESS</p>
         <Link className="text-link" href="/progress/training/exercises">查看單一動作完整歷史 →</Link>
         <h2>
@@ -226,7 +218,7 @@ export function ProgressDirection({ date }: { date: string }) {
         <Link className="text-link" href="/progress/training">
           View training progress <ChevronRight size={16} />
         </Link>
-      </section>
+      </GlassCard>
     </div>
   );
 }

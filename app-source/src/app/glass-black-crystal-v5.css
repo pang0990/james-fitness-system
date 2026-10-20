@@ -1,0 +1,482 @@
+/*
+ * JFS Black Canvas / White Crystal Glass — corrected visual direction.
+ * Background is near-black; ALL visible dashboard panels including small tiles
+ * use adjustable translucent white glass. Main surfaces are 93% opaque,\n * so the black backdrop is subtly visible without making panels look gray.
+ * Scoped to Minimal and development lab; Cinematic & workout-active unchanged.
+ */
+html[data-visual-style="minimal"],
+html[data-visual-style="minimal"][data-theme="dark"] {
+  --jfs3-canvas:#030304;
+  --jfs3-paper:#fff;
+  --jfs3-paper-soft:#f6f6f8;
+  --jfs3-inset:#e5e5eb;
+  --jfs3-ink:#16171b;
+  --jfs3-ink-secondary:#454650;
+  --jfs3-line:rgba(16,17,22,.12);
+  --jfs3-line-strong:rgba(15,16,21,.20);
+  --jfs3-action:#151519;
+  --jfs3-action-text:#fff;
+  --jfs3-track:rgba(23,24,29,.17);
+  --jfs4-glass-surface:rgba(255,255,255,.93);
+  --jfs4-glass-raised:rgba(255,255,255,.96);
+  --jfs4-glass-inset:rgba(255,255,255,.87);
+  --jfs4-glass-control:rgba(255,255,255,.95);
+  --jfs4-glass-navigation:rgba(255,255,255,.94);
+  --jfs4-glass-border:rgba(255,255,255,.9);
+  --jfs4-glass-edge:rgba(255,255,255,.65);
+  --jfs4-glass-specular:rgba(255,255,255,.98);
+  --jfs4-glass-shadow:0 21px 38px rgba(0,0,0,.32),0 5px 14px rgba(0,0,0,.19);
+  --jfs4-glass-shadow-soft:0 14px 26px rgba(0,0,0,.23),0 3px 8px rgba(0,0,0,.15);
+  --jfs4-glass-blur:blur(22px) saturate(1.13);
+  --jfs4-glass-blur-strong:blur(30px) saturate(1.15);
+  --jfs4-glass-ambient:
+    radial-gradient(ellipse 44% 33% at 90% 14%,rgba(255,255,255,.075),transparent 96%),
+    radial-gradient(ellipse 36% 44% at 5% 70%,rgba(255,255,255,.052),transparent 98%),
+    linear-gradient(#030304,#030304);
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) {
+  background-color:#030304!important;
+  background-image:var(--jfs4-glass-ambient)!important;
+  color:#f5f5f7;
+}
+/* The ambient page is black and uncarded labels are white.
+ * Text inside glass containers remains deep black, including dark OS mode.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3-heading,.daily-page>.simple-heading,.daily-page>.eyebrow,.training-v3-heading,
+    .training-v3-caption,.progress-direction>.simple-heading) {
+  color:#f7f7f9!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .today-v3-heading :is(time,h1,p) {
+  color:#f7f7f9!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foot {
+  color:#b6b6bf!important;
+}
+/* Every visible large card: dimensional white glass with a defined illuminated rim. */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3 .jfs3-surface,.today-v3-activity>.daily-activity,
+      .nutrition-v3b,.jfs-ui-surface,
+      .page-nutrition .meal-section,.page-nutrition .nutrition-cookbook-card,
+      .page-nutrition .nutrition-v3-panel,
+      .page-training .training-today,.page-training .training-daily-sessions,
+      .page-training .training-plan-summary,
+      .page-progress .direction-hero,.page-progress .progress-v3-stats,
+      .page-progress .progress-v3-photos,.page-progress .review-glass) {
+  background:var(--jfs4-glass-surface)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  color:var(--jfs3-ink)!important;
+  -webkit-backdrop-filter:var(--jfs4-glass-blur);
+  backdrop-filter:var(--jfs4-glass-blur);
+  box-shadow:
+    inset 0 1.25px 0 var(--jfs4-glass-specular),
+    inset 1px 0 0 rgba(255,255,255,.42),
+    inset 0 -1.3px 0 rgba(255,255,255,.40),
+    0 1px 0 rgba(255,255,255,.13),
+    var(--jfs4-glass-shadow-soft)!important;
+}
+/* Most important change: secondary panels and every small interactive tile
+ * are also WHITE GLASS, not dark-gray chips on translucent big cards.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3-quick-item,.today-v3-water-actions button,.today-v3-cycle,
+      .today-v3-focus-state,.today-v3-notice,.today-v3 .jfs3-secondary,
+      .today-v3 .jfs3-icon-link,.today-v3-recovery-add,
+      .activity-metric,.activity-log-row,
+      .nutrition-v3b-daytype,.nutrition-v3-meal-icons>button,
+      .page-nutrition .meal-entry,.page-nutrition .meal-empty,
+      .page-nutrition .nutrition-v3-food-thumb,.page-nutrition .nutrition-cookbook-categories button,
+      .page-training .training-v3-exercise,.page-training .training-v3-segments button,
+      .page-training .training-v3-exercise-art,.page-training .training-daily-session,
+      .page-progress .progress-v3-stat-row,.page-progress .progress-v3-segments button,
+      .page-progress .progress-v3-photo-empty,.page-progress .performance-row,
+      .jfs-ui-action--secondary,.jfs-ui-surface--flat) {
+  background:var(--jfs4-glass-control)!important;
+  color:var(--jfs3-ink)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  -webkit-backdrop-filter:blur(13px) saturate(1.08);
+  backdrop-filter:blur(13px) saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 var(--jfs4-glass-specular),
+    inset 0 -1px 0 rgba(255,255,255,.33),
+    0 6px 13px rgba(0,0,0,.1),
+    0 1px 3px rgba(0,0,0,.07)!important;
+}
+/* Separate small panels should read as raised objects even within white glass. */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3-quick-item,.today-v3-water-actions button,
+      .page-training .training-v3-exercise,.page-progress .progress-v3-stat-row) {
+  background:var(--jfs4-glass-raised)!important;
+}
+/* Icon/text color normalizations prevent dark-mode white-on-white. */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3 .jfs3-surface,.nutrition-v3b,.page-training .training-today,
+    .page-progress .direction-hero,.today-v3-activity>.daily-activity)
+  :is(h2,h3,strong,span,svg,button,small) {
+  color:inherit;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3 .jfs3-primary,.nutrition-v3b-add,.jfs-ui-action--primary) {
+  color:#141418!important;
+  background:var(--jfs4-glass-raised)!important;
+  border:1px solid rgba(255,255,255,.94)!important;
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:inset 0 1.5px 0 #fff, inset 0 -1px 0 rgba(255,255,255,.38),
+    0 10px 20px rgba(0,0,0,.17),0 2px 4px rgba(0,0,0,.10)!important;
+}
+/* Navigation is also a floating white glass slab with distinct selected tiles. */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.topbar,.sidebar,.bottom-nav) {
+  color:#151519!important;
+  background:var(--jfs4-glass-navigation)!important;
+  border-color:var(--jfs4-glass-edge)!important;
+  box-shadow:inset 0 1.3px 0 rgba(255,255,255,.98),var(--jfs4-glass-shadow-soft)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .bottom-nav a.active,
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .sidebar .nav-item.active {
+  background:rgba(255,255,255,.96)!important;
+  border:1px solid rgba(255,255,255,.89)!important;
+  color:#151519!important;
+  box-shadow:inset 0 1px 0 #fff,0 4px 12px rgba(0,0,0,.11)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .bottom-nav a {
+  color:#3c3c43!important;
+}
+/* Showcase: all three choices share black canvas and LIGHT materials.
+ * "crystal" is the desired reference. "clear" is more transparent.
+ * "solid" is the old matte control, preserved for comparison.
+ */
+html[data-visual-style="minimal"] .jfs-showcase[data-material] {
+  --jfs3-ink:#16171b;
+  --jfs3-ink-secondary:#454650;
+  --jfs3-paper:#fff;
+  --jfs3-paper-soft:#f7f7f9;
+  --jfs3-inset:#e8e8ec;
+  --jfs3-action:#16171b;
+  --jfs3-action-text:#fff;
+  --jfs3-track:rgba(23,24,29,.16);
+  --jfs4-glass-surface:rgba(255,255,255,.93);
+  --jfs4-glass-raised:rgba(255,255,255,.96);
+  --jfs4-glass-control:rgba(255,255,255,.95);
+  --jfs4-glass-border:rgba(255,255,255,.87);
+  --jfs4-glass-edge:rgba(255,255,255,.67);
+  --jfs4-glass-specular:#fff;
+  --jfs4-glass-shadow:0 20px 36px rgba(0,0,0,.34),0 4px 12px rgba(0,0,0,.18);
+  --jfs4-glass-shadow-soft:0 13px 25px rgba(0,0,0,.24),0 3px 8px rgba(0,0,0,.13);
+  --jfs4-glass-ambient:
+    radial-gradient(ellipse 52% 33% at 88% 17%,rgba(255,255,255,.085),transparent),
+    radial-gradient(ellipse 46% 46% at 12% 77%,rgba(255,255,255,.06),transparent),
+    linear-gradient(#030304,#030304);
+  color:#f6f6f9!important;
+  background-color:#030304!important;
+  background-image:var(--jfs4-glass-ambient)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="crystal"] {
+  --jfs4-glass-surface:rgba(255,255,255,.93);
+  --jfs4-glass-raised:rgba(255,255,255,.96);
+  --jfs4-glass-control:rgba(255,255,255,.95);
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="clear"] {
+  --jfs4-glass-surface:rgba(255,255,255,.84);
+  --jfs4-glass-raised:rgba(255,255,255,.89);
+  --jfs4-glass-control:rgba(255,255,255,.87);
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] {
+  --jfs4-glass-surface:#fff;
+  --jfs4-glass-raised:#fff;
+  --jfs4-glass-control:#f1f1f5;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-showcase-heading,.jfs-showcase-heading h1,.jfs-showcase-heading p,
+    .jfs-showcase-overline,.jfs-showcase-feedback,.jfs-ui-section-heading>h2) {
+  color:#f7f7fb!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-showcase-heading {
+  border-bottom:1px solid rgba(255,255,255,.22);
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-surface {
+  background:var(--jfs4-glass-surface)!important;
+  color:#16171b!important;
+  border:1px solid var(--jfs4-glass-border)!important;
+  -webkit-backdrop-filter:var(--jfs4-glass-blur);backdrop-filter:var(--jfs4-glass-blur);
+  box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(255,255,255,.5),
+    var(--jfs4-glass-shadow-soft)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-surface--raised {
+  background:var(--jfs4-glass-raised)!important;
+  box-shadow:inset 0 1px 0 #fff,var(--jfs4-glass-shadow)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-ui-action--secondary,.jfs-showcase-tabs,.jfs-showcase-tabs button.active,
+    .jfs-showcase-material-switch,.jfs-showcase-version) {
+  color:#16171b!important;
+  background:var(--jfs4-glass-control)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  box-shadow:inset 0 1px 0 #fff,0 5px 15px rgba(0,0,0,.15)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-showcase-tabs button,.jfs-showcase-material-switch button) {
+  color:#353640!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-ui-surface,.jfs-ui-surface--flat,.jfs-ui-surface--raised) :is(strong,small,p,b,span) {
+  color:inherit;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-section-heading {
+  color:#f7f7fb!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-showcase-version {
+  color:#16171b!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] :is(
+  .jfs-ui-surface,.jfs-showcase-tabs,.jfs-showcase-material-switch,
+  .jfs-ui-action--secondary) {
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+/* User/OS accessibility preferences disable transparency even on a black stage. */
+@media(prefers-reduced-transparency:reduce) {
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
+    .today-v3-quick-item,.today-v3-water-actions button,.today-v3-cycle,
+    .activity-metric,.meal-entry,.training-v3-exercise,.progress-v3-stat-row) {
+    background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+}
+html[data-visual-style="minimal"][data-reduce-transparency="true"]
+  .app.jfs3-shell:not(.workout-active) :is(
+    .today-v3-quick-item,.today-v3-water-actions button,.today-v3-cycle,
+    .activity-metric,.meal-entry,.training-v3-exercise,.progress-v3-stat-row) {
+  background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+
+/* App root is the page class, so choose descendant cards directly (not .page-X nesting). */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.meal-section,.nutrition-cookbook-card,.nutrition-v3-panel,
+      .training-today,.training-daily-sessions,.training-plan-summary,
+      .direction-hero,.progress-v3-stats,.progress-v3-photos,.review-glass,
+      .main .card) {
+  background:var(--jfs4-glass-surface)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  color:#16171b!important;
+  -webkit-backdrop-filter:var(--jfs4-glass-blur);
+  backdrop-filter:var(--jfs4-glass-blur);
+  box-shadow:inset 0 1.2px 0 rgba(255,255,255,.98),
+    inset 0 -1px 0 rgba(255,255,255,.42),
+    var(--jfs4-glass-shadow-soft)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.meal-entry,.meal-empty,.nutrition-v3-meal-icons>button,
+      .nutrition-v3-food-thumb,.training-v3-exercise,
+      .training-v3-segments button,.training-daily-session,
+      .progress-v3-stat-row,.progress-v3-segments button,
+      .progress-v3-photo-empty,.performance-row,.activity-metric,.activity-log-row) {
+  color:#16171b!important;
+  background:var(--jfs4-glass-raised)!important;
+  border:1px solid var(--jfs4-glass-border)!important;
+  -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);
+  box-shadow:inset 0 1px 0 #fff,
+    0 6px 13px rgba(0,0,0,.11),0 1px 3px rgba(0,0,0,.06)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3-focus-action,.nutrition-v3b-add,.jfs-ui-action--primary)
+  :is(span,svg) {
+  color:#141418!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-action--primary {
+  color:#16171b!important;
+  background:var(--jfs4-glass-raised)!important;
+  border:1px solid rgba(255,255,255,.96)!important;
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  box-shadow:inset 0 1px 0 #fff,0 9px 21px rgba(0,0,0,.24)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] .jfs-ui-action--primary {
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+/* Full-page input/safety overlays remain opaque for readability and accessibility. */
+@media(prefers-reduced-transparency:reduce) {
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+    :is(.main .card,.meal-entry,.nutrition-v3-meal-icons>button,
+        .training-v3-exercise,.progress-v3-stat-row,.activity-metric) {
+    background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+}
+html[data-visual-style="minimal"][data-reduce-transparency="true"] .app.jfs3-shell:not(.workout-active)
+  :is(.main .card,.meal-entry,.nutrition-v3-meal-icons>button,
+      .training-v3-exercise,.progress-v3-stat-row,.activity-metric) {
+  background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+
+/* Optical depth: specular bands over the translucent white material.
+ * Keep the rgba base background COLOR so native backdrop blur still has meaning.
+ * Static lens accents only: no looping effects or GPU-heavy animated filters.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.jfs3-surface,.nutrition-v3b,.daily-activity,.main .card,
+    .meal-section,.training-today,.training-daily-sessions,
+    .direction-hero,.progress-v3-stats,.progress-v3-photos,.jfs-ui-surface) {
+  background-image:
+    linear-gradient(145deg,rgba(255,255,255,.35),rgba(255,255,255,.04) 32%,transparent 55%,rgba(255,255,255,.11) 78%,rgba(255,255,255,.26))!important;
+  background-blend-mode:screen;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.today-v3-quick-item,.today-v3-water-actions button,
+    .today-v3 .jfs3-secondary,.nutrition-v3b-add,.today-v3 .jfs3-primary,
+    .activity-metric,.training-v3-exercise,.meal-entry,
+    .progress-v3-stat-row,.jfs-ui-action--primary,.jfs-ui-action--secondary) {
+  background-image:
+    linear-gradient(154deg,rgba(255,255,255,.46),rgba(255,255,255,.02) 39%,rgba(255,255,255,.20) 88%)!important;
+  background-blend-mode:screen;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-surface {
+  background-image:
+    linear-gradient(145deg,rgba(255,255,255,.37),rgba(255,255,255,.04) 34%,transparent 60%,rgba(255,255,255,.24))!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-ui-action--primary,.jfs-ui-action--secondary,.jfs-showcase-tabs button.active) {
+  background-image:linear-gradient(155deg,rgba(255,255,255,.42),transparent 50%,rgba(255,255,255,.17))!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] :is(.jfs-ui-surface,
+  .jfs-ui-action--primary,.jfs-ui-action--secondary,.jfs-showcase-tabs button.active) {
+  background-image:none!important;
+}
+
+/* Legibility outside glass: light page titles on the black canvas. */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .daily-page>.simple-heading h1,
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .daily-page>.simple-heading>h1 {
+  color:#f8f8fa!important;
+  text-shadow:none!important;
+}
+/* All four dashboard segmented controls become raised WHITE GLASS panels.
+ * An unselected dark-on-black label was unreadable in Nutrition QA screenshots.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments,.date-type) {
+  color:#18191d!important;
+  background:var(--jfs4-glass-surface)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  -webkit-backdrop-filter:var(--jfs4-glass-blur);
+  backdrop-filter:var(--jfs4-glass-blur);
+  box-shadow:inset 0 1px 0 #fff,var(--jfs4-glass-shadow-soft)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments)
+  :is(a,button,span) {
+  color:#32333b!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments)
+  .active {
+  color:#141519!important;
+  background:rgba(255,255,255,.97)!important;
+  border:1px solid #fff!important;
+  box-shadow:inset 0 1px 0 #fff,0 4px 10px rgba(0,0,0,.13)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .date-type :is(input,select) {
+  color:#18191d!important;
+  background:var(--jfs4-glass-control)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  box-shadow:inset 0 1px 0 #fff,0 2px 7px rgba(0,0,0,.08)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .nutrition-v3-meal-icons>button {
+  color:#19191d!important;
+  background:var(--jfs4-glass-surface)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  border-radius:16px!important;
+  -webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px);
+  box-shadow:inset 0 1px 0 #fff,0 8px 16px rgba(0,0,0,.17)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .nutrition-v3-meal-icons>button>span {
+  background:var(--jfs4-glass-raised)!important;
+  border:1px solid #fff!important;
+  border-radius:13px!important;
+  box-shadow:inset 0 1px 0 #fff,0 3px 8px rgba(0,0,0,.10)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .nutrition-v3-meal-icons>button :is(svg,strong) {
+  color:#19191d!important;
+}
+/* Opaque accessibility material must apply to controls, not only content cards. */
+@media(prefers-reduced-transparency:reduce) {
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+    :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments,
+      .date-type,.nutrition-v3-meal-icons>button) {
+    background:#fff!important;
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+}
+html[data-visual-style="minimal"][data-reduce-transparency="true"]
+  .app.jfs3-shell:not(.workout-active) :is(.nutrition-v3-tabs,.training-v3-segments,
+  .progress-v3-segments,.date-type,.nutrition-v3-meal-icons>button) {
+  background:#fff!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+
+/* All small action plates remain light glass, including quiet/disabled states.
+ * Disabled controls communicate state through muted ink + cursor, never a gray slab.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.jfs-ui-action--quiet,.jfs-ui-action--secondary,.button.secondary),
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-ui-action--quiet,.jfs-ui-action--secondary) {
+  color:#18191d!important;
+  background:var(--jfs4-glass-control)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);
+  box-shadow:inset 0 1px 0 #fff,0 5px 13px rgba(0,0,0,.13)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-action:disabled,
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .jfs-ui-action:disabled {
+  opacity:1!important;
+  color:#666771!important;
+  background:rgba(255,255,255,.94)!important;
+  border:1px solid rgba(255,255,255,.82)!important;
+  box-shadow:inset 0 1px 0 #fff,0 3px 10px rgba(0,0,0,.10)!important;
+  cursor:not-allowed;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  :is(.meal-entry,.meal-empty,.today-v3-quick-item,.training-v3-exercise,.progress-v3-stat-row) {
+  border-radius:14px!important;
+}
+/* The original matte comparator deliberately has no translucent or bevel highlight. */
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"]
+  :is(.jfs-ui-action--quiet,.jfs-ui-action--secondary,.jfs-ui-action:disabled) {
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  box-shadow:none!important;
+}
+
+/* Developer UI Lab: interactive transparency calibration.
+ * The live slider changes only the Showcase inline CSS variables, not account data.
+ */
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-showcase-transparency {
+  width:min(100%,420px);margin:17px 0 10px;
+  padding:14px 17px;border:1px solid rgba(255,255,255,.58);
+  border-radius:17px;background:rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 14px rgba(0,0,0,.14);
+  color:#f8f8fa;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency-heading {
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:13px;font-weight:640;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency-heading strong {
+  font-variant-numeric:tabular-nums;font-size:14px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency input[type="range"] {
+  display:block;width:100%;height:32px;margin:10px 0 2px;
+  cursor:pointer;accent-color:#f7f7f9;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency input:focus-visible {
+  outline:3px solid #fff;outline-offset:2px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency p {
+  margin:5px 0 0;font-size:11px;line-height:1.6;color:rgba(255,255,255,.79);
+}

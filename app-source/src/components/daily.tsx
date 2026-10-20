@@ -1,4 +1,6 @@
 "use client";
+import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
+import { GlassCard, GlassButton } from "./ui/glass-system";
 import Link from "next/link";
 import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
 import { DailyActivity } from "./daily-activity";
@@ -802,24 +804,29 @@ export function NutritionV2({
             <a href="#nutrition-meals">Meals</a>
             <Link href="/nutrition/recipes">Recipes</Link>
           </nav>
-          <section className="nutrition-v3-dashboard">
-            <NutritionSummary date={selectedDate} variant="full" />
-          </section>
+          {state.appearance?.visualStyle !== "cinematic" && !inlineClose ? (
+            <NutritionDashboardV3 date={selectedDate}
+              onAddMeal={() => { setSlot(state.mealSlots[0]); setSheet("add"); }} />
+          ) : (
+            <section className="nutrition-v3-dashboard">
+              <NutritionSummary date={selectedDate} variant="full" />
+            </section>
+          )}
           <div className="nutrition-v3-meal-icons" aria-label="快速選擇餐次">
-            {state.mealSlots.slice(0,4).map((name,index)=><button type="button" key={name}
+            {state.mealSlots.slice(0,4).map((name,index)=><GlassButton type="button" kind="secondary" className="nutrition-v3-meal-shortcut" key={name}
               onClick={()=>{setSlot(name);setSheet("add");}}>
               <span aria-hidden="true">{index===0?<Coffee size={20} strokeWidth={1.4}/>:
                 index===1?<Utensils size={20} strokeWidth={1.4}/>:
                 index===2?<Soup size={20} strokeWidth={1.4}/>:<Cookie size={20} strokeWidth={1.4}/>}</span>
               <strong>{name}</strong>
-            </button>)}
+            </GlassButton>)}
           </div>
 
           <section className="meal-list" id="nutrition-meals">
             {Array.from(
               new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map((m) => m.slot)]),
             ).map((name) => (
-              <div key={name} className="meal-section">
+              <GlassCard key={name} className="meal-section" aria-label={`${name}飲食紀錄`}>
                 <div className="meal-head">
                   <h2>{state.mealSlots.includes(name) ? (
                     <button type="button" className="meal-name-edit" title="點擊修改餐次名稱" aria-label={`修改餐次名稱：${name}`}
@@ -866,12 +873,14 @@ export function NutritionV2({
                 ) : (
                   <div className="meal-empty"><span className="muted">尚無紀錄</span></div>
                 )}
-              </div>
+              </GlassCard>
             ))}
           </section>
-          <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
-            <Plus size={18} /> 新增飲食
-          </button>
+          {(state.appearance?.visualStyle === "cinematic" || inlineClose) && (
+            <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
+              <Plus size={18} /> 新增飲食
+            </button>
+          )}
           <section className="nutrition-cookbook-section" aria-labelledby="nutrition-cookbook-heading">
             <div className="nutrition-cookbook-section-title">
               <span>DISCOVER</span>

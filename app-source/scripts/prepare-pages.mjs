@@ -27,7 +27,10 @@ for (const name of old) {
     throw Error("Invalid old export entry");
   fs.rmSync(path.join(root, name), { recursive: true, force: true });
 }
-const names = fs.readdirSync(path.join(source, "out"));
+// UI Showcase is a developer review surface, never a production Pages route.
+// Important: GitHub Pages is public, so "unlinked" alone would not be private.
+const excluded = new Set(["ui-showcase", "ui-showcase.html"]);
+const names = fs.readdirSync(path.join(source, "out")).filter((name) => !excluded.has(name));
 for (const name of names)
   fs.cpSync(path.join(source, "out", name), path.join(root, name), {
     recursive: true,

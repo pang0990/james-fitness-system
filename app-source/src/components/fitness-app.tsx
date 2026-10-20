@@ -16,6 +16,8 @@ import { WeeklyCheckin } from "./weekly-checkin";
 import Link from "next/link";
 import { NutritionV2 } from "./daily";
 import { TodayReference } from "./today-reference";
+import { TodayMinimalV3 } from "./today-minimal-v3";
+import { AppSidebar, AppBottomNavigation } from "./ui/app-navigation";
 import { GoogleLogin, GoogleCallback, LegacyDataOffer } from "./auth-pages";
 import { useAuth } from "@/lib/auth-context";
 import { TrainingFlow } from "./training-flow";
@@ -87,12 +89,7 @@ import {
 } from "@/lib/domain";
 import sourceFoods from "@/content/foods.json";
 
-const nav = [
-  { path: "today", label: "Today", zh: "今日", icon: Home },
-  { path: "nutrition", label: "Nutrition", zh: "飲食", icon: Utensils },
-  { path: "training", label: "Training", zh: "訓練", icon: Dumbbell },
-  { path: "progress", label: "Progress", zh: "進度", icon: Activity },
-];
+
 const id = () => crypto.randomUUID();
 const now = () => new Date().toISOString();
 const labelMap: Record<string, string> = {
@@ -335,33 +332,10 @@ export function FitnessApp({ path }: { path: string }) {
       className={
         path === "training/session"
           ? `app page-${section} workout-active`
-          : `app page-${section}`
+          : `app page-${section} ${["today", "nutrition", "training", "progress"].includes(section) ? "jfs3-shell" : ""}`
       }
     >
-      <aside className="sidebar">
-        <Link href="/today" className="brand">
-          <div className="brand-mark">J</div>
-          <div>
-            <strong>JAMES</strong>
-            <small>FITNESS SYSTEM</small>
-          </div>
-        </Link>
-
-        <nav>
-          {nav.map((n) => (
-            <Link
-              className={`nav-item ${section === n.path ? "active" : ""}`}
-              href={"/" + n.path}
-              key={n.path}
-              aria-label={n.label}
-              title={n.label}
-            >
-              <n.icon size={17} />
-              <span className="rail-label">{n.label}</span>
-            </Link>
-          ))}
-        </nav>
-      </aside>
+      <AppSidebar section={section} />
       <main className="main">
         <header className="topbar">
           <div className="breadcrumb" aria-label="目前所在頁面">
@@ -430,7 +404,11 @@ export function FitnessApp({ path }: { path: string }) {
             ) : section === "login" || section === "signup" ? (
               <Login />
             ) : section === "today" ? (
-              <TodayReference date={date} notify={notify} />
+              state.appearance?.visualStyle === "cinematic" ? (
+                <TodayReference date={date} notify={notify} />
+              ) : (
+                <TodayMinimalV3 date={date} notify={notify} />
+              )
             ) : section === "nutrition" ? (
               path === "nutrition/meals" ? (
                 <MealSettings notify={notify} />
@@ -519,18 +497,7 @@ export function FitnessApp({ path }: { path: string }) {
           <span>JAMES FITNESS SYSTEM</span>
         </footer>
       </main>
-      <nav className="bottom-nav" aria-label="主要導覽">
-        {nav.map((n) => (
-          <Link
-            key={n.path}
-            href={"/" + n.path}
-            className={section === n.path ? "active" : ""}
-          >
-            <n.icon size={20} />
-            {n.label}
-          </Link>
-        ))}
-      </nav>
+      <AppBottomNavigation section={section} />
       {toast && (
         <div className="toast" role="status">
           {toast}

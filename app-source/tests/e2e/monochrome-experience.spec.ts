@@ -6,14 +6,15 @@ test("minimal mobile: tactile Today, monochrome dock, accessible progress entry"
   page.on("pageerror", e => errors.push(e.message));
   await page.goto("/today/");
   await expect(page.locator("html")).toHaveAttribute("data-visual-style", "minimal");
-  await expect(page.locator(".today-ref-action-panel")).toBeVisible();
+  await expect(page.locator(".today-v3-focus")).toBeVisible();
   await expect(page.locator(".bottom-nav a.active")).toContainText("Today");
-  await expect(page.locator(".today-ref-training>.today-ref-small-action")).toBeHidden();
+  await expect(page.locator(".today-v3 .jfs3-primary")).toHaveCount(1);
+  await expect(page.locator(".today-v3-nutrition")).toBeVisible();
   const style = await page.evaluate(() => {
     const html = getComputedStyle(document.documentElement);
     const dock = getComputedStyle(document.querySelector(".bottom-nav")!);
     const active = getComputedStyle(document.querySelector(".bottom-nav a.active")!);
-    const card = getComputedStyle(document.querySelector(".today-ref-action-panel")!);
+    const card = getComputedStyle(document.querySelector(".today-v3-focus")!);
     return {
       primary: html.getPropertyValue("--jfs2-ink").trim(),
       activeColor: active.color,
@@ -23,7 +24,7 @@ test("minimal mobile: tactile Today, monochrome dock, accessible progress entry"
     };
   });
   expect(style.primary).toBe("#19191b");
-  expect(style.activeColor).toBe("rgb(25, 25, 27)");
+  expect(style.activeColor).toBe("rgb(21, 21, 25)"); // crystal-glass active label: high-contrast dark ink
   expect(style.dockShadow).not.toBe("none");
   expect(style.cardShadow).not.toBe("none");
   expect(style.overflow).toBeLessThanOrEqual(1);
@@ -37,11 +38,12 @@ test("minimal mobile: tactile Today, monochrome dock, accessible progress entry"
 test("minimal Nutrition: rings use real fill values and grayscale gradients", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/nutrition/");
-  const ring = page.locator(".nutrition-v3-calorie-ring");
+  const ring = page.locator(".nutrition-v3b-energy-ring");
   await expect(ring).toBeVisible();
+  await expect(page.getByTestId("nutrition-v3b")).toBeVisible();
   const visual = await ring.evaluate(el => ({
     bg: getComputedStyle(el).backgroundImage,
-    progress: getComputedStyle(el).getPropertyValue("--jfs2-fill").trim(),
+    progress: getComputedStyle(el).getPropertyValue("--nutrition-v3b-percent").trim(),
     width: Math.round(el.getBoundingClientRect().width),
   }));
   expect(visual.progress).toBe("0%");
@@ -56,6 +58,11 @@ test("minimal desktop: all four tabs load without horizontal overflow", async ({
   for (const route of ["today", "nutrition", "training", "progress"]) {
     await page.goto("/" + route + "/");
     await expect(page.locator(".main")).toBeVisible();
+    if (route === "today") {
+      await expect(page.locator(".sidebar .nav-item.active")).toBeVisible();
+      await expect(page.locator(".bottom-nav")).toBeHidden();
+      await page.screenshot({ path: "test-results/today-v3-desktop.png", fullPage: true });
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   }
   await page.screenshot({ path: "test-results/monochrome-progress-desktop.png", fullPage: true });
@@ -65,8 +72,8 @@ test("motion and appearance: reduced-motion respected; dark Minimal stays graysc
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/today/");
-  await expect(page.locator(".today-ref-action-panel")).toBeVisible();
-  const animation = await page.locator(".today-ref-action-panel").evaluate(el => getComputedStyle(el).animationName);
+  await expect(page.locator(".today-v3-focus")).toBeVisible();
+  const animation = await page.locator(".today-v3-focus").evaluate(el => getComputedStyle(el).animationName);
   expect(animation).toBe("none");
   await page.evaluate(key => {
     const state = JSON.parse(localStorage.getItem(key)!);
@@ -75,13 +82,14 @@ test("motion and appearance: reduced-motion respected; dark Minimal stays graysc
   }, DATA_KEY);
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(page.locator(".today-ref-action-panel")).toBeVisible();
+  await expect(page.locator(".today-v3-focus")).toBeVisible();
   const ink = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--jfs2-ink").trim());
   expect(ink).toBe("#f5f5f7");
   await page.screenshot({ path: "test-results/monochrome-today-dark.png", fullPage: true });
 });
 
 test("in-app reduced motion: internal links do not request a view transition", async ({ page }) => {
+  await page.setViewportSize({width:390,height:844});
   await page.goto("/today/");
   await page.evaluate(key => {
     const state = JSON.parse(localStorage.getItem(key)!);
@@ -103,12 +111,32 @@ test("in-app reduced motion: internal links do not request a view transition", a
 test("mobile bottom dock: final Today activity is reachable above the overlay", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/today/");
-  await expect(page.locator(".today-reference-page>.daily-activity")).toBeVisible();
+  await expect(page.locator(".today-v3-activity>.daily-activity")).toBeVisible();
   const metrics = await page.evaluate(() => {
     window.scrollTo(0, document.documentElement.scrollHeight);
     const nav = document.querySelector(".bottom-nav")!.getBoundingClientRect();
-    const activity = document.querySelector(".today-reference-page>.daily-activity")!.getBoundingClientRect();
+    const activity = document.querySelector(".today-v3-activity>.daily-activity")!.getBoundingClientRect();
     return { navTop: nav.top, activityBottom: activity.bottom };
   });
   expect(metrics.activityBottom).toBeLessThan(metrics.navTop - 4);
+});
+
+test("Today 3: main action stays unique and water quick log persists", async ({ page }) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/today/");
+  await expect(page.getByTestId("today-v3")).toBeVisible();
+  await expect(page.getByTestId("today-v3").locator(".jfs3-primary")).toHaveCount(1);
+  await page.getByRole("button", {name:"+250 ml", exact:true}).click();
+  await expect(page.locator(".today-v3-water-feedback")).toContainText("+250 ml 已儲存");
+  await page.reload();
+  await expect(page.locator(".today-v3-water-total strong")).toContainText("250");
+  await page.getByRole("button", {name:"加入飲食"}).click();
+  await expect(page.locator(".inline-nutrition")).toBeVisible();
+});
+
+test("Today 3: small-screen layout has no horizontal overflow", async ({ page }) => {
+  await page.setViewportSize({width:375,height:812});
+  await page.goto("/today/");
+  await expect(page.getByTestId("today-v3")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
 });

@@ -1,0 +1,142 @@
+/*
+ * JFS Design System 3 / Responsive App Shell
+ * Existing Minimal UI only. Preserves Cinematic and full-screen workout sessions.
+ * Applied to four primary workspaces; do not duplicate the page-specific layout.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) {
+  --jfs3-shell-paper:var(--jfs3-paper,#fff);
+  --jfs3-shell-canvas:var(--jfs3-canvas,#f5f5f7);
+  --jfs3-shell-ink:var(--jfs3-ink,#1d1d1f);
+  --jfs3-shell-muted:var(--jfs3-ink-secondary,#6e6e73);
+  --jfs3-shell-line:var(--jfs3-line,rgba(29,29,31,.09));
+  --jfs3-shell-inset:var(--jfs3-inset,#f1f1f3);
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main {
+  background:transparent!important;
+  min-width:0!important;max-width:none!important;
+  min-height:100dvh;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar {
+  height:64px!important;min-height:64px!important;
+  margin:0 0 24px!important;
+  padding:0 clamp(18px,3vw,32px)!important;
+  display:flex!important;align-items:center!important;
+  border:0!important;border-bottom:1px solid var(--jfs3-shell-line)!important;
+  background:var(--jfs4-glass-navigation)!important;
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar .breadcrumb {
+  display:flex;align-items:center;gap:9px;
+  min-width:0;letter-spacing:0!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar .wordmark {
+  font-size:16px!important;font-weight:690!important;
+  letter-spacing:-.045em!important;color:var(--jfs3-shell-ink)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar .current-section {
+  font-size:13px!important;font-weight:560!important;
+  color:var(--jfs3-shell-muted)!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(.today-header-bell,.account-menu>summary) {
+  color:var(--jfs3-shell-ink)!important;
+  background:var(--jfs4-glass-navigation)!important;
+  border:1px solid var(--jfs3-shell-line)!important;
+  box-shadow:none!important;
+  border-radius:50%!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foot {
+  color:var(--jfs3-shell-muted)!important;
+}
+@media (max-width:1023px) {
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar {
+    display:none!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main {
+    width:100%!important;max-width:none!important;margin-left:0!important;
+    padding:0 0 calc(100px + env(safe-area-inset-bottom))!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.bottom-nav {
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    align-items:center!important;
+    position:fixed!important;
+    bottom:calc(12px + env(safe-area-inset-bottom))!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main>.daily-page {
+    width:min(calc(100% - 32px),780px);
+  }
+}
+@media (min-width:1024px) {
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar {
+    display:flex!important;flex-direction:column!important;
+    position:fixed!important;inset:0 auto 0 0!important;
+    width:206px!important;min-height:100dvh!important;
+    padding:29px 15px!important;gap:0!important;
+    background:var(--jfs4-glass-navigation)!important;
+    border-right:1px solid var(--jfs3-shell-line)!important;
+    box-shadow:none!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .brand {
+    display:flex!important;align-items:flex-start!important;justify-content:flex-start!important;
+    margin:0 0 43px!important;padding:0 11px!important;gap:0!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .brand-mark {
+    display:none!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .brand>div:last-child {
+    display:block!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .brand strong {
+    font-size:17px!important;line-height:1.2!important;
+    letter-spacing:-.04em!important;color:var(--jfs3-shell-ink)!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .brand small {
+    display:block;margin-top:4px;
+    font-size:9px!important;letter-spacing:.12em!important;
+    color:var(--jfs3-shell-muted)!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar nav {
+    display:grid!important;gap:4px!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .nav-item {
+    display:flex!important;justify-content:flex-start!important;align-items:center!important;
+    min-height:46px!important;gap:12px!important;padding:10px 13px!important;
+    border:0!important;border-radius:12px!important;
+    color:var(--jfs3-shell-muted)!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .nav-item.active {
+    color:var(--jfs3-shell-ink)!important;
+    background:var(--jfs3-shell-inset)!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .nav-item .rail-label {
+    display:block!important;position:static!important;
+    min-width:0!important;margin:0!important;padding:0!important;
+    border:0!important;box-shadow:none!important;
+    background:transparent!important;color:inherit!important;
+    font-size:13px!important;letter-spacing:-.015em!important;
+    font-weight:570!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main {
+    width:calc(100% - 206px)!important;max-width:none!important;
+    margin-left:206px!important;padding:0 0 32px!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.bottom-nav {
+    display:none!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .daily-page {
+    width:min(calc(100% - 56px),1040px)!important;
+    max-width:1040px!important;
+    margin-inline:auto!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foot {
+    max-width:1040px!important;
+    margin-inline:auto!important;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
+    .sidebar .nav-item,.bottom-nav>a
+  ) {
+    transition:none!important;
+  }
+}
