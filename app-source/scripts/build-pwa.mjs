@@ -22,7 +22,7 @@ fs.writeFileSync(
       scope: base + "/",
       display: "standalone",
       background_color: "#070708",
-      theme_color: "#070708",
+      theme_color: "#030304",
       icons,
     },
     null,
