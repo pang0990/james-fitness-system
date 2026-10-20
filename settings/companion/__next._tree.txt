@@ -1,8 +1,9 @@
-:HL["/james-fitness-system/_next/static/css/0246162b61d7b25d.css","style"]
+:HL["/james-fitness-system/_next/static/css/8247368cf533f488.css","style"]
 :HL["/james-fitness-system/_next/static/css/fa18f023088fb8a3.css","style"]
 :HL["/james-fitness-system/_next/static/css/9cdc9c31387c0109.css","style"]
 :HL["/james-fitness-system/_next/static/css/84368f2916dbc5a7.css","style"]
-:HL["/james-fitness-system/_next/static/css/fdc0949a47ca75b2.css","style"]
+:HL["/james-fitness-system/_next/static/css/2a195e474b05684e.css","style"]
+:HL["/james-fitness-system/_next/static/css/2ee53d9e80c784aa.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
-1:[["children",{"s":{"n":"slug","t":"c","k":"settings/companion","s":["_not-found","_global-error"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"1tk4DIS8Lk7a2pJyjmlDF","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+1:[["children",{"s":{"n":"slug","t":"c","k":"settings/companion","s":["_not-found","_global-error","ui-showcase"]},"h":65632,"c":"$Q2"}]]
+0:{"b":"p3kpmZXzVk4QH-FOR3kAC","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
