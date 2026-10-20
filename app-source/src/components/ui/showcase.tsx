@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
+import { GlassButton, GlassCard, GlassInput, GlassNavigation, GlassProgress, GlassSheet } from "./glass-system";
 import { ArrowRight, ChevronRight, Dumbbell, Plus, Utensils, Activity } from "lucide-react";
 import {
   UiActionLink, UiButton, UiEmptyState, UiProgressTrack,
@@ -15,6 +16,9 @@ import {
 export function UiShowcase() {
   const [active, setActive] = useState<"today" | "nutrition" | "training" | "progress">("today");
   const [log, setLog] = useState(0);
+  const [glassWater, setGlassWater] = useState(250);
+  const [glassSheetOpen, setGlassSheetOpen] = useState(false);
+  const [glassSegment, setGlassSegment] = useState("today");
   const [note, setNote] = useState("");
   const [material, setMaterial] = useState<"crystal" | "clear" | "solid">("crystal");
   // Showcase-only control; this does not mutate account preferences or the live site.
@@ -63,6 +67,35 @@ export function UiShowcase() {
           material === "clear" ? "較透明白玻璃｜玻璃仍然偏白，但背景透出稍多" :
           "原本霧面｜實心背景、不使用玻璃模糊"}
       </p>
+      <div className="jfs-showcase-group jfs-glass-system-lab" data-testid="glass-system-v2-lab">
+        <UiSectionHeading title="Glass System 2.0 · Live Components" icon={Activity}/>
+        <div className="jfs-glass-system-lab-grid">
+          <GlassCard className="jfs-glass-live-card" raised aria-label="玻璃互動示範卡">
+            <span className="jfs-showcase-overline">LIVE DASHBOARD</span>
+            <div className="jfs-glass-live-number"><strong>{glassWater.toLocaleString("en-US")}</strong><span> / 1,500 ml</span></div>
+            <GlassProgress value={glassWater} target={1500} label="示範飲水進度"/>
+            <div className="jfs-glass-live-actions">
+              <GlassButton kind="primary" onClick={() => setGlassWater(value => value + 250)}>+250 ml</GlassButton>
+              <GlassButton kind="secondary" onClick={() => setGlassSheetOpen(true)}>開啟玻璃面板</GlassButton>
+            </div>
+          </GlassCard>
+          <GlassCard className="jfs-glass-live-card" aria-label="玻璃分段選取與輸入">
+            <span className="jfs-showcase-overline">NAVIGATION / FORM</span>
+            <GlassNavigation label="展示分段導覽"
+              value={glassSegment} onChange={setGlassSegment}
+              options={[{key:"today",label:"Today"},{key:"nutrition",label:"Nutrition"},{key:"training",label:"Training"}]}/>
+            <GlassInput type="text" label="元件輸入示範" placeholder="輸入內容…" autoComplete="off"/>
+            <p className="jfs-glass-live-note">選中：{glassSegment}</p>
+          </GlassCard>
+        </div>
+      </div>
+      {glassSheetOpen && (
+        <GlassSheet title="玻璃 Bottom Sheet" onClose={() => setGlassSheetOpen(false)}>
+          <p className="jfs-glass-live-description">這是實際可操作的白玻璃視窗，支援 Escape、焦點循環及背景捲動鎖定。</p>
+          <GlassInput label="示範數字" type="number" min={0} defaultValue={glassWater}/>
+          <GlassButton kind="primary" onClick={() => setGlassSheetOpen(false)}>完成</GlassButton>
+        </GlassSheet>
+      )}
       <div className="jfs-showcase-group">
         <UiSectionHeading title="Surface & Elevation" icon={Dumbbell} />
         <div className="jfs-showcase-surface-grid">
