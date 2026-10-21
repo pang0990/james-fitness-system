@@ -28,12 +28,23 @@ export function completeSession(
   state: AppState,
   session: Session,
   now: string,
-  options: { countTowardCycle?: boolean } = {},
+  options: { countTowardCycle?: boolean; eventId?: () => string } = {},
 ) {
   if (session.status !== "in_progress") throw Error("這次訓練已結束");
   endRestInterval(session,"standard",now);
   endRestInterval(session,"rp",now);
-  if(session.cycleId)session.cycleCounted=!session.isExtra && options.countTowardCycle !== false;
+  const original = state.cycles?.find((p) => p.id === session.cycleId);
+  const id = session.trainingDayId ??
+    (original && session.cycleDayIndex !== undefined ? dayId(original, session.cycleDayIndex) : undefined);
+  // An offline/stale second session may finish successfully, but must not advance
+  // a day already consumed by another session or a previous Cycle round.
+  const eligible = Boolean(
+    original && id && !session.isExtra && options.countTowardCycle !== false &&
+    (session.round === undefined || session.round === (original.round ?? 1)) &&
+    pendingIds(state, original).includes(id) &&
+    !(state.cycleEvents ?? []).some(e => e.type === "completed" && e.sessionId === session.id),
+  );
+  if (session.cycleId) session.cycleCounted = eligible;
   session.status = "completed";
   session.completedAt = now;
   const elapsed = Math.max(0, Date.parse(now) - Date.parse(session.createdAt));
@@ -43,19 +54,15 @@ export function completeSession(
   session.elapsedDuration = elapsed;
   session.activeDuration = Math.max(0, elapsed - session.pausedDuration);
   delete session.pausedAt;
-  const original = state.cycles?.find((p) => p.id === session.cycleId);
-
-  const id =
-    session.trainingDayId ??
-    (original ? dayId(original, session.cycleDayIndex ?? 0) : undefined);
-  if (id && original && !session.isExtra && options.countTowardCycle !== false) consumeDay(state, original, id);
-  if (session.cycleId && !session.isExtra && options.countTowardCycle !== false)
+  if (eligible && original && id) {
+    consumeDay(state, original, id);
     (state.cycleEvents ??= []).push({
-      id: crypto.randomUUID(),
-      cycleId: session.cycleId,
+      id: options.eventId?.() ?? crypto.randomUUID(),
+      cycleId: original.id,
       type: "completed",
       date: session.workoutDate ?? session.date,
       sessionId: session.id,
       trainingDayId: id,
     });
+  }
 }

@@ -781,7 +781,7 @@ export function TrainingFlow({
               <Link href="/training/plan" className="training-v3-edit" aria-label="編輯課表"><ChevronRight size={17}/></Link>
             </div>
             {day && (day.exercises?.length ?? 0)>0 && <div className="training-v3-exercises">
-              {(day.exercises ?? []).map((item,index)=><Link href="/training/plan" className="training-v3-exercise" key={index}>
+              {(day.exercises ?? []).map((item,index)=><Link href={item.exerciseLibraryId ? `/training/exercises/detail?id=${encodeURIComponent(item.exerciseLibraryId)}` : "/training/plan"} className="training-v3-exercise" key={item.exerciseLibraryId ?? `${item.name}-${index}`} aria-label={item.exerciseLibraryId ? `查看${item.name}動作詳情` : `編輯${item.name}課表`}>
                 <span className="training-v3-exercise-art" aria-hidden="true"><Dumbbell size={20} strokeWidth={1.3}/></span>
                 <span className="training-v3-number">{index+1}</span>
                 <span className="training-v3-exercise-info">

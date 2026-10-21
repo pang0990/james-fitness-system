@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - integration/glass-training-v3-20261021
+      - feat/training-first-shared-core-v2-20261021
     paths:
       - "app-source/**"
       - ".github/workflows/jfs-training-first-core.yml"
@@ -29,8 +30,8 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - name: Training and Glass regression on static build
-        run: npm run test:e2e -- tests/e2e/training-v3.spec.ts tests/e2e/glass-v3-hardening.spec.ts --workers=1 --trace=retain-on-failure
+      - name: Full four-workspace and Training/Glass browser regression
+        run: npm run test:e2e -- --workers=1 --timeout=20000 --trace=retain-on-failure
         env:
           CI: "true"
       - name: Upload failure traces and screenshots
