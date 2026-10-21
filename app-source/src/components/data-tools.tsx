@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useStore } from "@/lib/store";
+import { REVIEW_PREVIEW } from "@/lib/review-preview";
 import { validateState, visibleMeals, visibleMeasurements, type AppState } from "@/lib/domain";
 export function DataTools({ notify }: { notify: (s?: string) => void }) {
   const { state, save } = useStore();
@@ -107,6 +108,13 @@ export function DataTools({ notify }: { notify: (s?: string) => void }) {
           .join("\r\n"),
       "text/csv;charset=utf-8",
     );
+  }
+  if (REVIEW_PREVIEW) {
+    return <section className="card stack">
+      <h2>預覽資料管理</h2>
+      <p>目前是合成測試資料。為避免誤用個人資訊，此測試版停用 JSON 備份匯入與匯出。</p>
+      <p>可以使用頁面最上方的「重設示範資料」將預覽紀錄恢復原狀。</p>
+    </section>;
   }
   return (
     <section className="card stack">
