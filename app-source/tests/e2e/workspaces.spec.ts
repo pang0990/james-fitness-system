@@ -135,7 +135,7 @@ test("invalid backup is rejected; valid restore saves downloadable pre-restore c
   await page.getByLabel("匯入 JSON 備份").setInputFiles({
     name: "invalid.json", mimeType: "application/json", buffer: Buffer.from("{}"),
   });
-  await expect(page.getByRole("alert")).toContainText("備份格式無效");
+  await expect(page.getByText("備份格式無效，未更動任何紀錄。", { exact: true })).toBeVisible();
   expect(await stored(page)).toEqual(before);
   const restored = structuredClone(before);
   restored.mealSlots = ["First Meal"];
