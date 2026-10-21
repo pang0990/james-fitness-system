@@ -1,3 +1,4 @@
+import { validateTrainingSessions } from "./training-validation";
 import type { Segment, Session } from "./domain";
 
 export function removeWorkoutSet(sets:Segment[],id:string){
@@ -57,4 +58,29 @@ export function correctCompletedSet(
     before,after:{weight:patch.weight,reps:patch.reps,type:patch.type},
   });
   return true;
+}
+
+/** An operation ID belongs to one attempted set, including retries after reload. */
+export function appendWorkoutSet(session:Session, exerciseId:string, set:Segment) {
+  if(session.setSubmissionIds?.includes(set.id) || session.exercises.some(e=>e.sets.some(s=>s.id===set.id)))return false;
+  if(session.status!=="in_progress" || session.pausedAt)throw Error("訓練已結束或暫停，不能新增組次");
+  const exercise=session.exercises.find(e=>e.id===exerciseId);
+  if(!exercise)throw Error("動作不存在");
+  const candidate=structuredClone(session);
+  candidate.exercises.find(e=>e.id===exerciseId)!.sets.push(set);
+  if(candidate.setDrafts)delete candidate.setDrafts[exerciseId];
+  validateTrainingSessions([candidate]);
+  exercise.sets.push({...set});
+  (session.setSubmissionIds??=[]).push(set.id);
+  if(session.setDrafts)delete session.setDrafts[exerciseId];
+  return true;
+}
+
+/** Stable IDs win. Name fallback is only safe when both records predate library IDs. */
+export function previousWorkingSets(sessions:Session[], exercise:Session["exercises"][number]) {
+  return sessions.filter(s=>s.status==="completed").slice()
+    .sort((a,b)=>(b.completedAt??b.createdAt).localeCompare(a.completedAt??a.createdAt))
+    .flatMap(s=>s.exercises)
+    .find(e=>exercise.exerciseLibraryId ? e.exerciseLibraryId===exercise.exerciseLibraryId :
+      !e.exerciseLibraryId && e.name===exercise.name)?.sets.filter(s=>s.type==="working");
 }

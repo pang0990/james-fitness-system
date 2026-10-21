@@ -1,5 +1,5 @@
 import { type AppState, type Cycle, type Session } from "./domain";
-import { activeCycle, cycleProgressEvents } from "./training-model";
+import { cycleProgressEvents } from "./training-model";
 import { endRestInterval } from "./rest-intervals";
 export const dayId = (plan: Cycle, index: number) =>
   plan.days[index]?.id ?? `${plan.id}:day:${index}`;
@@ -44,11 +44,11 @@ export function completeSession(
   session.activeDuration = Math.max(0, elapsed - session.pausedDuration);
   delete session.pausedAt;
   const original = state.cycles?.find((p) => p.id === session.cycleId);
-  const active = activeCycle(state);
+
   const id =
     session.trainingDayId ??
     (original ? dayId(original, session.cycleDayIndex ?? 0) : undefined);
-  if (id && active && !session.isExtra && options.countTowardCycle !== false) consumeDay(state, active, id);
+  if (id && original && !session.isExtra && options.countTowardCycle !== false) consumeDay(state, original, id);
   if (session.cycleId && !session.isExtra && options.countTowardCycle !== false)
     (state.cycleEvents ??= []).push({
       id: crypto.randomUUID(),
