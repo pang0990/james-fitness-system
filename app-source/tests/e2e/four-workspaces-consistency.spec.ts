@@ -77,3 +77,26 @@ test("Nutrition rejects out-of-range single meal without writing a record", asyn
   await expect(page.getByTestId("nutrition-v3b")).toContainText("290");
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key) || "{}").meals.length, DATA_KEY)).toBe(1);
 });
+
+test("Training home exercise opens its stable-ID guide instead of the plan editor", async ({ page }) => {
+  await page.goto("/training/");
+  await page.evaluate(key => {
+    const state = JSON.parse(localStorage.getItem(key)!);
+    state.cycles = [{
+      id: "cycle-detail", name: "測試課表", round: 1,
+      createdAt: new Date().toISOString(), pending: ["day-detail"],
+      days: [{id: "day-detail", name: "胸部", exercises: [{
+        exerciseLibraryId: "exercise-1", name: "Barbell Bench Press",
+        muscle: "Chest", sets: 3, reps: "8", restSeconds: 120,
+        allowRestPause: false, allowDropSet: false,
+      }]}],
+    }];
+    localStorage.setItem(key, JSON.stringify(state));
+  }, DATA_KEY);
+  await page.reload();
+  const link = page.getByRole("link", { name: "查看Barbell Bench Press動作詳情" });
+  await expect(link).toHaveAttribute("href", /training\/exercises\/detail\?id=exercise-1/);
+  await link.click();
+  await expect(page).toHaveURL(/\/training\/exercises\/detail\?id=exercise-1/);
+  await expect(page.getByRole("heading", { name: "Barbell Bench Press" })).toBeVisible();
+});
