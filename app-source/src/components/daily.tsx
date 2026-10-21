@@ -1,5 +1,6 @@
 "use client";
 import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
+import { validateNewMealInput } from "@/lib/nutrition-input";
 import { GlassCard, GlassButton } from "./ui/glass-system";
 import Link from "next/link";
 import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
@@ -679,6 +680,7 @@ export function NutritionV2({
   const [slot, setSlot] = useState(state.mealSlots[0]);
   const [quantity, setQuantity] = useState(0);
   const [renameSlot, setRenameSlot] = useState("");
+  const [mealError, setMealError] = useState("");
   const day = resolveDay(state, selectedDate);
   const meals = visibleMeals(state, selectedDate);
   const isLibrary = path === "nutrition/foods";
@@ -687,42 +689,47 @@ export function NutritionV2({
     setSheet(null);
     setEdit(null);
     setFood(null);
+    setMealError("");
   }
   function log(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setMealError("");
     const d = new FormData(e.currentTarget);
-    if (food && (!Number.isFinite(quantity) || quantity <= 0)) {
-      notify("請先填寫這次實際吃的份量");
+    const factor = food ? quantity / food.base : 1;
+    const p = round(food ? food.p * factor : Number(d.get("p")));
+    const c = round(food ? food.c * factor : Number(d.get("c")));
+    const f = round(food ? food.f * factor : Number(d.get("f")));
+    let meal;
+    try {
+      meal = validateNewMealInput({
+        name: food?.name ?? String(d.get("name") ?? ""),
+        slot: String(d.get("slot") ?? ""),
+        quantity: food ? quantity : 1,
+        p, c, f,
+        kcal: round(food ? food.kcal * factor : p * 4 + c * 4 + f * 9),
+      });
+    } catch (error) {
+      setMealError(error instanceof Error ? error.message : "飲食數值無效");
       return;
     }
-    const factor = food ? quantity / food.base : 1;
-    const p = round(food ? food.p * factor : Number(d.get("p"))),
-      c = round(food ? food.c * factor : Number(d.get("c"))),
-      f = round(food ? food.f * factor : Number(d.get("f")));
-    if (
-      save(edit ? "修正飲食" : "新增飲食", (s) => {
-        pinDay(s, selectedDate);
-        s.meals.push({
-          id: uid(),
-          date: selectedDate,
-          slot: String(d.get("slot")),
-          name: food?.name ?? String(d.get("name")),
-          quantity: food ? quantity : 1,
-          unit: food?.unit ?? "份",
-          p,
-          c,
-          f,
-          kcal: round(food ? food.kcal * factor : p * 4 + c * 4 + f * 9),
-          foodId: food?.id,
-          foodVersion: food?.version,
-          createdAt: stamp(),
-          ...(edit ? { supersedes: edit.id } : {}),
-        });
-        syncMealCompletion(s, selectedDate);
-      })
-    ) {
+    if (save(edit ? "修正飲食" : "新增飲食", (s) => {
+      pinDay(s, selectedDate);
+      s.meals.push({
+        id: uid(),
+        date: selectedDate,
+        ...meal,
+        unit: food?.unit ?? "份",
+        foodId: food?.id,
+        foodVersion: food?.version,
+        createdAt: stamp(),
+        ...(edit ? { supersedes: edit.id } : {}),
+      });
+      syncMealCompletion(s, selectedDate);
+    })) {
       notify();
       close();
+    } else {
+      setMealError("儲存失敗，輸入仍保留；請檢查頁面上方的資料狀態後重試。");
     }
   }
   return (
@@ -1158,12 +1165,13 @@ export function NutritionV2({
                     />
                   </Field>
                   <div className="form-grid">
-                    <Num label="蛋白質 g" name="p" value={edit?.p} />
-                    <Num label="碳水 g" name="c" value={edit?.c} />
-                    <Num label="脂肪 g" name="f" value={edit?.f} />
+                    <Num label="蛋白質 g" name="p" value={edit?.p} max={1000} />
+                    <Num label="碳水 g" name="c" value={edit?.c} max={1000} />
+                    <Num label="脂肪 g" name="f" value={edit?.f} max={1000} />
                   </div>
                 </>
               )}
+              {mealError && <p role="alert" className="notice error">{mealError}</p>}
               <button className="button">
                 {edit ? "保存修正" : "加入紀錄"}
               </button>
