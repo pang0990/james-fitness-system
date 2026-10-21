@@ -16,7 +16,7 @@ export function ReviewPreviewBanner() {
         borderBottom:"1px solid #75678e",
       }}>
       <strong>JFS · TEST PREVIEW</strong>
-      <span>四頁測試版｜100% 虛構資料｜僅儲存於本機｜未連接雲端同步</span>
+      <span>四頁測試版｜虛構初始資料｜請勿輸入個資｜僅儲存於本機，不連雲端</span>
       <button type="button" aria-label="還原虛構測試資料"
         style={{border:"1px solid #aca3be",borderRadius:6,color:"white",
           background:"transparent",padding:"4px 9px",cursor:"pointer"}}
