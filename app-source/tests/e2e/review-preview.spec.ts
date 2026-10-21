@@ -14,7 +14,7 @@ test("four workspaces show real app UI with synthetic records at mobile and desk
   async ({ page }, testInfo) => {
     const remoteAuthRequests: string[] = [];
     page.on("request", request => {
-      if (/\\.supabase\\.co/i.test(request.url())) remoteAuthRequests.push(request.url());
+      if (new URL(request.url()).hostname.endsWith(".supabase.co")) remoteAuthRequests.push(request.url());
     });
     for (const [label, width, height] of [
       ["mobile", 390, 844], ["desktop", 1440, 900],
@@ -49,7 +49,7 @@ test("review-only identity and storage are separate; water edit persists and can
   async ({ page }) => {
     const blocked: string[] = [];
     page.on("request", r => {
-      if (/\\.supabase\\.co/i.test(r.url())) blocked.push(r.url());
+      if (new URL(r.url()).hostname.endsWith(".supabase.co")) blocked.push(r.url());
     });
     await page.goto("/today/");
     await expect(page.getByTestId("jfs-review-banner")).toContainText("虛構初始資料");
