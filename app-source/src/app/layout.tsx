@@ -27,6 +27,8 @@ import "./glass-system-v2.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
+import "./training-v3.css";
+
 export const metadata: Metadata = {
   title: "James · Fitness System",
   description: "Nutrition · Training · Progress",

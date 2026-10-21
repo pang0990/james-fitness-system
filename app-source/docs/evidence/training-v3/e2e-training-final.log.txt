@@ -1,0 +1,24 @@
+> james-fitness-system@0.5.1 test:e2e
+> playwright test tests/e2e/training-v3.spec.ts --workers=1
+
+
+Running 14 tests using 1 worker
+
+(node:446) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/e2e/training-v3.spec.ts:50:5 › mobile: drafts recover across exercises and reload, stable history, duplicate submit and undo (834ms)
+  ✓   2 tests/e2e/training-v3.spec.ts:87:5 › rest survives pause/reload; edit, delete and restore; partial Cycle confirmation and summary (2.6s)
+  ✓   3 tests/e2e/training-v3.spec.ts:139:5 › storage failure retains input, retry succeeds offline and records exactly once (731ms)
+  ✓   4 tests/e2e/training-v3.spec.ts:176:5 › actual JSON download and restore preserve all training records; malformed nested backup does not write (365ms)
+  ✓   5 tests/e2e/training-v3.spec.ts:236:5 › warmup, RP and Drop linkage and explicit count advance exactly the intended Cycle (702ms)
+  ✓   6 tests/e2e/training-v3.spec.ts:273:5 › legacy adoption copies valid old records without modifying the unowned source (246ms)
+  ✓   7 tests/e2e/training-v3.spec.ts:306:5 › corrupt local Session stops writes and preserves the raw snapshot (195ms)
+  ✓   8 tests/e2e/training-v3.spec.ts:325:7 › viewport 375: meaningful glass UI, no overflow or error, keyboard input and focus (255ms)
+  ✓   9 tests/e2e/training-v3.spec.ts:325:7 › viewport 390: meaningful glass UI, no overflow or error, keyboard input and focus (262ms)
+  ✓  10 tests/e2e/training-v3.spec.ts:325:7 › viewport 430: meaningful glass UI, no overflow or error, keyboard input and focus (240ms)
+  ✓  11 tests/e2e/training-v3.spec.ts:325:7 › viewport 768: meaningful glass UI, no overflow or error, keyboard input and focus (286ms)
+  ✓  12 tests/e2e/training-v3.spec.ts:325:7 › viewport 1024: meaningful glass UI, no overflow or error, keyboard input and focus (256ms)
+  ✓  13 tests/e2e/training-v3.spec.ts:325:7 › viewport 1440: meaningful glass UI, no overflow or error, keyboard input and focus (274ms)
+  ✓  14 tests/e2e/training-v3.spec.ts:366:5 › revision conflict reloads newer records, retains draft and safely retries (431ms)
+
+  14 passed (8.7s)

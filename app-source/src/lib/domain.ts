@@ -1,6 +1,7 @@
 import type { GainSettings, GainDecision } from "./gain";
 import type { MuscleTarget, ScheduleEntry } from "./training-model";
 import { z } from "zod";
+import { validateTrainingSessions, validateCycleIntegrity } from "./training-validation";
 
 export const RULE_ID = "numbers-3.0-7b135702";
 export const sourceHash =
@@ -181,7 +182,13 @@ export type Segment = {
   parentId?: string;
   createdAt: string;
 };
+export type SetDraft = {
+  id:string; weight:string; reps:string; type:Segment["type"]; parentId:string; updatedAt:string;
+};
 export type Session = {
+  setDrafts?: Record<string, SetDraft>;
+  /** Retains consumed operation IDs even if a recorded set is later removed. */
+  setSubmissionIds?: string[];
   cycleId?: string;
   cycleDayIndex?: number;
   phase?: "warmup" | "workout";
@@ -740,6 +747,8 @@ export function validateState(value: unknown): AppState {
       )
     )
       throw Error("飲食資料無效");
+  validateTrainingSessions(s.sessions);
+  validateCycleIntegrity(s.cycles, s.cycleEvents);
   if (s.sessions.filter((x) => x.status === "in_progress").length > 1)
     throw Error("備份含多個進行中訓練，請先處理衝突");
   if (
