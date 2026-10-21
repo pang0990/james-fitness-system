@@ -1,4 +1,3 @@
-
 > james-fitness-system@0.5.1 test:e2e
 > playwright test --workers=1 --timeout=10000
 
@@ -104,7 +103,7 @@ Running 75 tests using 1 worker
   ✘  75 tests/e2e/workspaces.spec.ts:221:5 › four direct recovery entries persist and Progress supports backfill (10.0s)
 
 
-  1) tests/e2e/app.spec.ts:19:5 › mobile: target binding, food menus, revisions, water and persistence 
+  1) tests/e2e/app.spec.ts:19:5 › mobile: target binding, food menus, revisions, water and persistence
 
     Test timeout of 10000ms exceeded.
 
@@ -120,12 +119,12 @@ Running 75 tests using 1 worker
       5 |   await page.getByLabel("年齡").fill("30");
       6 |   await page.getByLabel("身高 cm").fill("175");
       7 |   await page.getByLabel("目前體重 kg").fill("63");
-        at setup (/Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/app.spec.ts:4:48)
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/app.spec.ts:25:3
+        at setup (app-source/tests/e2e/app.spec.ts:4:48)
+        at app-source/tests/e2e/app.spec.ts:25:3
 
     Error Context: test-results/app-mobile-target-binding--e2a93-sions-water-and-persistence/error-context.md
 
-  2) tests/e2e/app.spec.ts:66:5 › progress: missing data, individual curves, article reading and mobile layout 
+  2) tests/e2e/app.spec.ts:66:5 › progress: missing data, individual curves, article reading and mobile layout
 
     Test timeout of 10000ms exceeded.
 
@@ -141,12 +140,12 @@ Running 75 tests using 1 worker
       5 |   await page.getByLabel("年齡").fill("30");
       6 |   await page.getByLabel("身高 cm").fill("175");
       7 |   await page.getByLabel("目前體重 kg").fill("63");
-        at setup (/Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/app.spec.ts:4:48)
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/app.spec.ts:72:3
+        at setup (app-source/tests/e2e/app.spec.ts:4:48)
+        at app-source/tests/e2e/app.spec.ts:72:3
 
     Error Context: test-results/app-progress-missing-data--8ac1b-e-reading-and-mobile-layout/error-context.md
 
-  3) tests/e2e/app.spec.ts:128:5 › meal preferences persist and protein converts back to cooked portion 
+  3) tests/e2e/app.spec.ts:128:5 › meal preferences persist and protein converts back to cooked portion
 
     Test timeout of 10000ms exceeded.
 
@@ -162,11 +161,11 @@ Running 75 tests using 1 worker
       133 |   await page.getByLabel("每日餐次").fill("第一餐\n午-加餐\n晚餐");
       134 |   await page.getByRole("button", { name: "保存餐次" }).click();
       135 |   await page.goto("/nutrition/");
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/app.spec.ts:132:63
+        at app-source/tests/e2e/app.spec.ts:132:63
 
     Error Context: test-results/app-meal-preferences-persi-e082c-erts-back-to-cooked-portion/error-context.md
 
-  4) tests/e2e/appearance.spec.ts:2:5 › appearance persists, follows system, hides companion without hiding notices 
+  4) tests/e2e/appearance.spec.ts:2:5 › appearance persists, follows system, hides companion without hiding notices
 
     Error: expect(locator).toHaveAttribute(expected) failed
 
@@ -189,11 +188,11 @@ Running 75 tests using 1 worker
        9 |   await page.getByLabel("顯示模式").selectOption("system");
       10 |   await page.getByLabel("顯示 Companion").uncheck();
       11 |   await page.getByRole("button", { name: "儲存外觀" }).click();
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/appearance.spec.ts:8:38
+        at app-source/tests/e2e/appearance.spec.ts:8:38
 
     Error Context: test-results/appearance-appearance-pers-171d7-nion-without-hiding-notices/error-context.md
 
-  5) tests/e2e/ds3-showcase-nutrition.spec.ts:25:5 › Nutrition 3.0: reads true account totals and opens the existing meal entry 
+  5) tests/e2e/ds3-showcase-nutrition.spec.ts:25:5 › Nutrition 3.0: reads true account totals and opens the existing meal entry
 
     Error: expect(locator).toContainText(expected) failed
 
@@ -214,7 +213,7 @@ Running 75 tests using 1 worker
       43 |   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key) || "{}").meals?.length ?? 0, DATA_KEY)).toBe(before + 1);
       44 | });
       45 |
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/ds3-showcase-nutrition.spec.ts:42:51
+        at app-source/tests/e2e/ds3-showcase-nutrition.spec.ts:42:51
 
     Error Context: test-results/ds3-showcase-nutrition-Nut-3a500-ens-the-existing-meal-entry/error-context.md
 
@@ -239,11 +238,11 @@ Running 75 tests using 1 worker
       44 |   }
       45 |   await page.goto("/settings/profile/");
       46 |   await page.getByLabel("稱呼", { exact: true }).fill("Updated");
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/workspaces.spec.ts:43:24
+        at app-source/tests/e2e/workspaces.spec.ts:43:24
 
     Error Context: test-results/workspaces-canonical-redir-5c490-ings-stay-mobile-workspaces/error-context.md
 
-  7) tests/e2e/workspaces.spec.ts:82:5 › templates, pause, discard preserve queue and completion consumes exact day 
+  7) tests/e2e/workspaces.spec.ts:82:5 › templates, pause, discard preserve queue and completion consumes exact day
 
     Test timeout of 10000ms exceeded.
 
@@ -259,11 +258,11 @@ Running 75 tests using 1 worker
       88 |   await page
       89 |     .getByRole("button", { name: "使用 Default Template v1.0" })
       90 |     .click();
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/workspaces.spec.ts:87:33
+        at app-source/tests/e2e/workspaces.spec.ts:87:33
 
     Error Context: test-results/workspaces-templates-pause-3c499-mpletion-consumes-exact-day/error-context.md
 
-  8) tests/e2e/workspaces.spec.ts:126:5 › Today quick logs stay in Today and independent sleep appears in history 
+  8) tests/e2e/workspaces.spec.ts:126:5 › Today quick logs stay in Today and independent sleep appears in history
 
     Test timeout of 10000ms exceeded.
 
@@ -279,11 +278,11 @@ Running 75 tests using 1 worker
       131 |   await page.getByRole("radio", { name: "4", exact: true }).check();
       132 |   await page.getByRole("button", { name: "儲存紀錄", exact: true }).click();
       133 |   await expect(page).toHaveURL(/today/);
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/workspaces.spec.ts:130:65
+        at app-source/tests/e2e/workspaces.spec.ts:130:65
 
     Error Context: test-results/workspaces-Today-quick-log-1a9f3-nt-sleep-appears-in-history/error-context.md
 
-  9) tests/e2e/workspaces.spec.ts:156:5 › backup restore validates file and preserves a downloadable pre-restore copy 
+  9) tests/e2e/workspaces.spec.ts:156:5 › backup restore validates file and preserves a downloadable pre-restore copy
 
     Test timeout of 10000ms exceeded.
 
@@ -299,11 +298,11 @@ Running 75 tests using 1 worker
       162 |     .getByLabel("匯入 JSON 備份")
       163 |     .setInputFiles({
       164 |       name: "invalid.json",
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/workspaces.spec.ts:161:3
+        at app-source/tests/e2e/workspaces.spec.ts:161:3
 
     Error Context: test-results/workspaces-backup-restore--739be-wnloadable-pre-restore-copy/error-context.md
 
-  10) tests/e2e/workspaces.spec.ts:187:5 › editing plan preserves active snapshot; reset explicitly archives old session 
+  10) tests/e2e/workspaces.spec.ts:187:5 › editing plan preserves active snapshot; reset explicitly archives old session
 
     Test timeout of 10000ms exceeded.
 
@@ -319,11 +318,11 @@ Running 75 tests using 1 worker
       195 |   await page.getByRole("button", { name: "儲存計畫版本" }).click();
       196 |   await page.goto("/training/");
       197 |   await page.getByRole("button", { name: "開始訓練", exact: true }).click();
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/workspaces.spec.ts:194:6
+        at app-source/tests/e2e/workspaces.spec.ts:194:6
 
     Error Context: test-results/workspaces-editing-plan-pr-83330-icitly-archives-old-session/error-context.md
 
-  11) tests/e2e/workspaces.spec.ts:221:5 › four direct recovery entries persist and Progress supports backfill 
+  11) tests/e2e/workspaces.spec.ts:221:5 › four direct recovery entries persist and Progress supports backfill
 
     Test timeout of 10000ms exceeded.
 
@@ -339,20 +338,20 @@ Running 75 tests using 1 worker
       226 |     await page.getByRole("radio", { name: "3", exact: true }).check();
       227 |     await page.getByRole("button", { name: "儲存紀錄", exact: true }).click();
       228 |     await expect(page.getByRole("dialog")).toContainText("已儲存，歷史紀錄保留");
-        at /Users/jamespang/Downloads/Codex_Local_Archive/2026-10-21/referenced-chatgpt-conversation-this-is-an/work/james-fitness-system/app-source/tests/e2e/workspaces.spec.ts:225:96
+        at app-source/tests/e2e/workspaces.spec.ts:225:96
 
     Error Context: test-results/workspaces-four-direct-rec-17a48--Progress-supports-backfill/error-context.md
 
   11 failed
-    tests/e2e/app.spec.ts:19:5 › mobile: target binding, food menus, revisions, water and persistence 
-    tests/e2e/app.spec.ts:66:5 › progress: missing data, individual curves, article reading and mobile layout 
-    tests/e2e/app.spec.ts:128:5 › meal preferences persist and protein converts back to cooked portion 
-    tests/e2e/appearance.spec.ts:2:5 › appearance persists, follows system, hides companion without hiding notices 
-    tests/e2e/ds3-showcase-nutrition.spec.ts:25:5 › Nutrition 3.0: reads true account totals and opens the existing meal entry 
+    tests/e2e/app.spec.ts:19:5 › mobile: target binding, food menus, revisions, water and persistence
+    tests/e2e/app.spec.ts:66:5 › progress: missing data, individual curves, article reading and mobile layout
+    tests/e2e/app.spec.ts:128:5 › meal preferences persist and protein converts back to cooked portion
+    tests/e2e/appearance.spec.ts:2:5 › appearance persists, follows system, hides companion without hiding notices
+    tests/e2e/ds3-showcase-nutrition.spec.ts:25:5 › Nutrition 3.0: reads true account totals and opens the existing meal entry
     tests/e2e/workspaces.spec.ts:25:5 › canonical redirects, settings stay, mobile workspaces ──────
-    tests/e2e/workspaces.spec.ts:82:5 › templates, pause, discard preserve queue and completion consumes exact day 
-    tests/e2e/workspaces.spec.ts:126:5 › Today quick logs stay in Today and independent sleep appears in history 
-    tests/e2e/workspaces.spec.ts:156:5 › backup restore validates file and preserves a downloadable pre-restore copy 
-    tests/e2e/workspaces.spec.ts:187:5 › editing plan preserves active snapshot; reset explicitly archives old session 
-    tests/e2e/workspaces.spec.ts:221:5 › four direct recovery entries persist and Progress supports backfill 
+    tests/e2e/workspaces.spec.ts:82:5 › templates, pause, discard preserve queue and completion consumes exact day
+    tests/e2e/workspaces.spec.ts:126:5 › Today quick logs stay in Today and independent sleep appears in history
+    tests/e2e/workspaces.spec.ts:156:5 › backup restore validates file and preserves a downloadable pre-restore copy
+    tests/e2e/workspaces.spec.ts:187:5 › editing plan preserves active snapshot; reset explicitly archives old session
+    tests/e2e/workspaces.spec.ts:221:5 › four direct recovery entries persist and Progress supports backfill
   64 passed (2.2m)

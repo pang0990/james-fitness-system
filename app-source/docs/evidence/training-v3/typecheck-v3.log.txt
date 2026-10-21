@@ -1,4 +1,2 @@
-
 > james-fitness-system@0.5.1 typecheck
 > tsc --noEmit
-

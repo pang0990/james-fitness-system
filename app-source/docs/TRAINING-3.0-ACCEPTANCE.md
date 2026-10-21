@@ -35,7 +35,7 @@
 | Typecheck | 通過 |
 | Unit tests | **89 / 89 通過**（原有 68 + 新增 21） |
 | Next.js production build + PWA | 通過 |
-| Training 3.0 Playwright | **14 / 14 通過** |
+| Training 3.0 Playwright | **14 / 14 通過**，最後摘要連結對比修正後重跑，8.7 秒 |
 | 現行 PR CI 測試集合 + Training 3.0 | **64 / 64 通過**，serial Chromium，30.9 秒 |
 | 完整 repository Playwright | **64 通過 / 11 失敗，共 75**，保留失敗，不宣稱全部通過 |
 | 未修改 main 對照 | 針對原失敗的四份測試檔：5 通過 / 13 失敗；13 個名稱與第一輪改版全庫失敗相同 |
@@ -44,6 +44,7 @@
 
 完整測試失敗包含 10 項可在未修改 main 重現的舊 app / appearance / workspaces 測試，以及一次 Nutrition reload 停在帳號確認的間歇失敗。Nutrition 案例在最後 64 項 CI 集合重跑時通過，但不抹除先前失敗。原有 3 項 quick-log 測試沒有等畫面載入就 evaluateAll；本次補上等待 5 個項目出現，保留原尺寸／換行斷言，三項在最終集合通過。
 
+- [最後 Training 專項輸出](evidence/training-v3/e2e-training-final.log.txt)
 - [最終 CI 集合輸出](evidence/training-v3/e2e-release-gate.log.txt)
 - [完整 repository 執行與失敗](evidence/training-v3/e2e-final-all.log.txt)
 - [未修改 main 對照](evidence/training-v3/e2e-baseline.log.txt)

@@ -132,6 +132,7 @@ test("rest survives pause/reload; edit, delete and restore; partial Cycle confir
   expect(state.sessions[1].status).toBe("completed");
   expect(state.cycles![0].pending).toEqual(["day-a", "day-b"]);
   expect(state.cycleEvents).toHaveLength(0);
+  await expect(page.getByRole("link",{name:"查看下一個訓練日 →",exact:true})).toHaveCSS("color","rgb(36, 37, 43)");
   await shot(page, "training-v3-complete-summary", info);
 });
 

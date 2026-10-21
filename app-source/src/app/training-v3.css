@@ -344,3 +344,4 @@ html[data-visual-style="minimal"]
   font-size: 16px;
   font-weight: 500;
 }
+html[data-visual-style="minimal"] .workout-active .training-v3 .training-v3-summary a.text-link {color:#24252b!important;}
