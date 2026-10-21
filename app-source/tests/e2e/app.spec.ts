@@ -60,6 +60,8 @@ test("progress: empty-state information and knowledge article render on mobile",
 });
 
 test("legacy and current workspace routes render without horizontal overflow", async ({ page }) => {
+  // This deliberately checks 48 navigations; avoid hiding real regressions in a 15s per-test deadline.
+  test.setTimeout(60000);
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   for (const width of [390, 1440]) {
