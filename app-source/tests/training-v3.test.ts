@@ -152,3 +152,35 @@ test("completion updates original Cycle even when a different Cycle is newest", 
   assert.deepEqual(s.cycles![0].pending, ["day-b"]);
   assert.deepEqual(s.cycles![1].pending, ["day-a", "day-b"]);
 });
+
+test("two completed Sessions on one Cycle Day consume it once and preserve both histories", () => {
+  const state = trainingFixture();
+  const first = state.sessions[1];
+  first.round = 1;
+  completeSession(state, first, "2026-10-21T03:00:00.000Z", { eventId: () => "first-event" });
+  const second = structuredClone(first);
+  second.id = "another-session-same-day";
+  second.status = "in_progress";
+  second.completedAt = undefined;
+  second.cycleCounted = undefined;
+  state.sessions.push(second);
+  completeSession(state, second, "2026-10-21T04:00:00.000Z", { eventId: () => "second-event" });
+  assert.equal(second.status, "completed");
+  assert.equal(second.cycleCounted, false);
+  assert.deepEqual(state.cycles![0].pending, ["day-b"]);
+  assert.deepEqual(state.cycleEvents?.map(event => event.id), ["first-event"]);
+  validateState(state);
+});
+
+test("stale session from prior Cycle round cannot consume the same day again", () => {
+  const state = trainingFixture();
+  state.cycles![0].pending = ["day-b"];
+  state.cycles![0].round = 2;
+  const stale = state.sessions[1];
+  stale.round = 1;
+  completeSession(state, stale, "2026-10-21T03:00:00.000Z");
+  assert.equal(stale.status, "completed");
+  assert.equal(stale.cycleCounted, false);
+  assert.equal(state.cycleEvents?.length ?? 0, 0);
+  assert.deepEqual(state.cycles![0].pending, ["day-b"]);
+});
