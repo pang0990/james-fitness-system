@@ -26,6 +26,7 @@ import "./glass-system-v2.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
+import { ReviewPreviewBanner } from "@/components/review-preview-banner";
 import "./training-v3.css";
 
 export const metadata: Metadata = {
@@ -50,6 +51,7 @@ export default function RootLayout({
   return (
     <html lang="zh-Hant">
       <body>
+        <ReviewPreviewBanner />
         <AuthProvider>
           <StoreProvider>
           <AppearanceController />
