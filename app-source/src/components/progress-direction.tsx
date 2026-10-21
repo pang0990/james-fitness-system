@@ -152,7 +152,7 @@ export function ProgressDirection({ date }: { date: string }) {
             ? "有一項調整待確認"
             : !reviewDataReady
               ? "先補足紀錄"
-              : "檢視計畫"}
+              : "查看評估"}
         </h2>
         <p>
           {pending
