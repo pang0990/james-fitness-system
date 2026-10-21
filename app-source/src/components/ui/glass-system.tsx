@@ -77,6 +77,15 @@ export function GlassSheet({
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const closing = useRef(false);
+  // Callers often supply an inline onClose callback. Keep the event listener
+  // stable so a parent re-render never steals focus or resets scroll lock.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const requestClose = () => {
+    if (closing.current) return;
+    closing.current = true;
+    onCloseRef.current();
+  };
 
   useEffect(() => {
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -85,7 +94,7 @@ export function GlassSheet({
     closeRef.current?.focus();
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") { event.preventDefault(); onClose(); return; }
+      if (event.key === "Escape") { event.preventDefault(); requestClose(); return; }
       if (event.key !== "Tab") return;
       const focusables = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
         'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
@@ -93,29 +102,45 @@ export function GlassSheet({
       if (!focusables.length) { event.preventDefault(); return; }
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
+      // If an external widget has programmatically moved focus outside the
+      // modal, keep the next Tab inside the currently open GlassSheet.
+      if (!dialogRef.current?.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     }
 
+    const onFocusIn = (event: FocusEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        closeRef.current?.focus();
+      }
+    };
     document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("focusin", onFocusIn);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("focusin", onFocusIn);
       document.body.style.overflow = oldOverflow;
       previousFocus?.focus();
     };
-  }, [onClose]);
+    // The callback itself is read through onCloseRef on each request.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (typeof document === "undefined") return null;
 
   return createPortal(<div className="jfs-glass-sheet-layer" data-testid="glass-sheet">
-    <div className="jfs-glass-sheet-backdrop" aria-hidden="true" onClick={onClose}/>
+    <div className="jfs-glass-sheet-backdrop" aria-hidden="true" onClick={requestClose}/>
     <div className="jfs-glass-sheet" role="dialog" aria-modal="true"
       aria-labelledby={headingId} ref={dialogRef}>
       <div className="jfs-glass-sheet-handle" aria-hidden="true"/>
       <header className="jfs-glass-sheet-heading">
         <h2 id={headingId}>{title}</h2>
         <button type="button" className="jfs-glass-sheet-close" ref={closeRef}
-          onClick={() => { if (!closing.current) { closing.current = true; onClose(); } }}
+          onClick={requestClose}
           aria-label="關閉視窗"><X size={20} aria-hidden="true"/></button>
       </header>
       <div className="jfs-glass-sheet-content">{children}</div>
