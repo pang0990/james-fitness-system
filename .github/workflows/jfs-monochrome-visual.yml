@@ -28,7 +28,7 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Check monochrome visual and motion behavior
-        run: npm run test:e2e -- tests/e2e/monochrome-experience.spec.ts tests/e2e/production-smoke.spec.ts tests/e2e/app-shell-v3.spec.ts tests/e2e/ds3-showcase-nutrition.spec.ts tests/e2e/glass-experience-v4.spec.ts tests/e2e/glass-design-system-v2.spec.ts tests/e2e/glass-crosspages.spec.ts tests/e2e/training-v3.spec.ts --workers=2 --trace=retain-on-failure
+        run: npm run test:e2e -- tests/e2e/monochrome-experience.spec.ts tests/e2e/production-smoke.spec.ts tests/e2e/app-shell-v3.spec.ts tests/e2e/ds3-showcase-nutrition.spec.ts tests/e2e/glass-experience-v4.spec.ts tests/e2e/glass-design-system-v2.spec.ts tests/e2e/glass-crosspages.spec.ts tests/e2e/training-v3.spec.ts tests/e2e/glass-v3-hardening.spec.ts --workers=2 --trace=retain-on-failure
         env:
           CI: "true"
       - name: Upload screenshots and failure traces

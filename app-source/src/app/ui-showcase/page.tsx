@@ -1,3 +1,4 @@
+import "../ui-showcase-v3.css";
 import { UiShowcase } from "@/components/ui/showcase";
 
 export const metadata = {
