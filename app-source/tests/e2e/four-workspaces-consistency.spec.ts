@@ -95,8 +95,8 @@ test("Training home exercise opens its stable-ID guide instead of the plan edito
   }, DATA_KEY);
   await page.reload();
   const link = page.getByRole("link", { name: "查看Barbell Bench Press動作詳情" });
-  await expect(link).toHaveAttribute("href", /training\/exercises\/detail\?id=exercise-1/);
+  await expect(link).toHaveAttribute("href", /training\/exercises\/detail\/?\?id=exercise-1/);
   await link.click();
-  await expect(page).toHaveURL(/\/training\/exercises\/detail\?id=exercise-1/);
+  await expect(page).toHaveURL(/\/training\/exercises\/detail\/?\?id=exercise-1/);
   await expect(page.getByRole("heading", { name: "Barbell Bench Press" })).toBeVisible();
 });
