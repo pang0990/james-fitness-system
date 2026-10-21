@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - training/active-workout-v3-20261021
+      - qa/training-v3-release-gate-20261021
     paths:
       - "app-source/**"
       - ".github/workflows/jfs-training-full-e2e.yml"
