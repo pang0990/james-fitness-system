@@ -10,6 +10,7 @@ import {
 } from "react";
 import type { User } from "@supabase/supabase-js";
 import { appHref, supabase } from "./supabase-browser";
+import { REVIEW_PREVIEW, REVIEW_USER_ID } from "./review-preview";
 
 type Auth = {
   user: User | null;
@@ -27,6 +28,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (REVIEW_PREVIEW) {
+      // A synthetic local-only identity, never a Supabase session or JWT.
+      setUser({
+        id: REVIEW_USER_ID, aud: "authenticated", role: "authenticated",
+        email: "preview@example.invalid", app_metadata: { provider: "review" },
+        user_metadata: {}, created_at: "2026-01-01T00:00:00.000Z",
+      } as User);
+      setReady(true);
+      return;
+    }
     let active = true;
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
@@ -58,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInGoogle = useCallback(async () => {
     setError("");
+    if (REVIEW_PREVIEW) { setError("示範環境不使用真實 Google 登入。"); return; }
     if (!navigator.onLine) {
       setError("首次 Google 登入需要網路連線。");
       return;
@@ -74,6 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     setError("");
+    if (REVIEW_PREVIEW) { setError("此為本機測試版；可使用上方按鈕重設虛構資料。"); return; }
     // Offline sign-out is not a confirmed server-side revocation.
     if (!navigator.onLine) {
       setError("目前離線，請連線後再登出。");
