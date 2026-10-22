@@ -670,7 +670,7 @@ export function validateState(value: unknown): AppState {
     throw Error("歷史餐次快照資料格式無效");
   if (s.skippedMealSlots &&
       (!Array.isArray(s.skippedMealSlots) ||
-       s.skippedMealSlots.some(r => !/^\\d{4}-\\d{2}-\\d{2}$/.test(r.date) || !r.slot)))
+       s.skippedMealSlots.some(r => !/^\d{4}-\d{2}-\d{2}$/.test(r.date) || !r.slot)))
     throw Error("餐次未吃標記格式無效");
   const numeric = (n: unknown) => typeof n === "number" && Number.isFinite(n);
   for (const meal of s.meals)
