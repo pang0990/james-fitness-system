@@ -49,7 +49,7 @@ jobs:
         run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/session_rpc_isolation.sql
       - name: Confirm private schema remains inaccessible to client roles
         run: |
-          psql -X -v ON_ERROR_STOP=1 -Atc "select case when has_schema_privilege('authenticated', 'jfs_training_dev','USAGE') then 1 / 0 else 1 end;"
+          test "$(psql -X -v ON_ERROR_STOP=1 -Atc "select has_schema_privilege('authenticated','jfs_training_dev','USAGE');")" = "f"
   web-safety:
     name: Shared Training Core unchanged and Web builds
     runs-on: ubuntu-latest
