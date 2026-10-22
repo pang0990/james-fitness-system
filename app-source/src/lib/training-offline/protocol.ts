@@ -52,12 +52,16 @@ export type OfflineSaveInput = {
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+/** Training Session is JSON-serializable. Avoid depending on Hermes structuredClone support. */
+const cloneSession = (session: Session): Session =>
+  JSON.parse(JSON.stringify(session)) as Session;
+
 const equalKey = (a: TrainingOutboxCommand, b: TrainingOutboxCommand) =>
   a.sequence - b.sequence;
 
 export function serverSessionProjection(session: Session): Session {
   // Device-local drafts are never sent. Cycle progress is server-authoritative.
-  const payload = structuredClone(session);
+  const payload = cloneSession(session);
   delete payload.setDrafts;
   delete payload.cycleCounted;
   return payload;
@@ -89,7 +93,7 @@ export async function saveTrainingOffline(
     // reserve subsequent revisions in queue order, even while offline.
     const serverRevision = previous?.serverRevision ?? 0;
     const expectedRevision = serverRevision + commands.length;
-    const payload = structuredClone(session);
+    const payload = cloneSession(session);
     const command: TrainingOutboxCommand = {
       ownerId, commandId, sessionId: session.id, expectedRevision,
       sequence: (previous?.localSequence ?? 0) + 1,
