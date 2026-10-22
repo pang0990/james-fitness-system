@@ -124,7 +124,13 @@ revoke usage on schema jfs_training_dev from authenticated;
 commit;
 
 -- A failed write should never leave an extra ledger row behind.
-select case when
-  (select count(*) from jfs_training_dev.command_ledger) = 4
-then 'PASS: tenant isolation, RLS, idempotency, stale revisions and rollback'
-else (1 / 0)::text end;
+do $
+declare
+  total bigint;
+begin
+  select count(*) into total from jfs_training_dev.command_ledger;
+  if total <> 4 then
+    raise exception 'Expected 4 committed successful commands, got %', total;
+  end if;
+  raise notice 'PASS: tenant isolation, RLS, idempotency, stale revisions and rollback';
+end $;
