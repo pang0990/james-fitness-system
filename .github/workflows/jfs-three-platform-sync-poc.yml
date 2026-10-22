@@ -86,3 +86,27 @@ jobs:
       - name: Bundle JS for iOS and Android (not native device build)
         working-directory: native-poc
         run: npm run bundle
+  isolated-web-training-lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_PUBLIC_JFS_REVIEW_PREVIEW: "1"
+      NEXT_PUBLIC_JFS_OFFLINE_DEV_LAB: "1"
+    defaults:
+      run:
+        working-directory: app-source
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app-source/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify Web Training Set + IndexedDB Outbox survives reload
+        run: npm run test:e2e -- tests/e2e/training-offline-lab.spec.ts --workers=1 --trace=retain-on-failure
+        env:
+          CI: "true"
