@@ -37,7 +37,7 @@ fs.writeFileSync(path.join(target, "site", "_headers"), [
   "",
 ].join("\n"));
 fs.writeFileSync(path.join(target, "site", "robots.txt"),
-  "User-agent: *\\nDisallow: /\\n".replaceAll("\\\\n", "\\n"));
+  ["User-agent: *", "Disallow: /", ""].join("\n"));
 if (!fs.existsSync(path.join(target, "site", "index.html")) ||
     !fs.existsSync(path.join(target, "site", "today", "index.html"))) {
   throw Error("Missing preview root index or Today route");
