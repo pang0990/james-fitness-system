@@ -15,6 +15,7 @@ export type TrainingOutboxCommand = {
   commandId: string;
   sessionId: string;
   expectedRevision: number;
+  sequence: number;
   session: Session;
   createdAt: string;
   retryAfter: number;
@@ -52,7 +53,7 @@ export type OfflineSaveInput = {
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const equalKey = (a: TrainingOutboxCommand, b: TrainingOutboxCommand) =>
-  a.createdAt.localeCompare(b.createdAt) || a.commandId.localeCompare(b.commandId);
+  a.sequence - b.sequence;
 
 export function serverSessionProjection(session: Session): Session {
   // Device-local drafts are never sent. Cycle progress is server-authoritative.
@@ -91,6 +92,7 @@ export async function saveTrainingOffline(
     const payload = structuredClone(session);
     const command: TrainingOutboxCommand = {
       ownerId, commandId, sessionId: session.id, expectedRevision,
+      sequence: (previous?.localSequence ?? 0) + 1,
       session: serverSessionProjection(payload),
       createdAt: now, retryAfter: 0, attempts: 0, status: "pending",
     };
@@ -110,16 +112,16 @@ export async function readyTrainingCommands(
 ): Promise<TrainingOutboxCommand[]> {
   if (!ownerId) return [];
   return db.transact(async tx => {
-    const all = (await tx.listCommands(ownerId)).sort(equalKey);
-    const seen = new Set<string>();
-    const ready: TrainingOutboxCommand[] = [];
-    for (const command of all) {
-      if (seen.has(command.sessionId)) continue;
-      seen.add(command.sessionId);
-      if (command.status === "pending" && command.retryAfter <= nowMs)
-        ready.push(command);
+    const earliest = new Map<string, TrainingOutboxCommand>();
+    for (const command of await tx.listCommands(ownerId)) {
+      const prior = earliest.get(command.sessionId);
+      if (!prior || command.sequence < prior.sequence)
+        earliest.set(command.sessionId, command);
     }
-    return ready;
+    return [...earliest.values()]
+      .filter(command => command.status === "pending" && command.retryAfter <= nowMs)
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt) ||
+        a.commandId.localeCompare(b.commandId));
   });
 }
 export async function acknowledgeTrainingCommand(
