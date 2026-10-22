@@ -38,7 +38,8 @@ test("real Chromium IndexedDB commits Session + Outbox atomically and survives b
     const t="2026-10-22T08:00:00.000Z";
     const snapshot={
       id:"idb-session-1",date:"2026-10-22",name:"Synthetic",
-      status:"in_progress",createdAt:t,exercises:[],
+      status:"in_progress",createdAt:t,
+      exercises:[{id:"x",name:"Synthetic exercise",sets:[]}],
       setDrafts:{x:{id:"draft-x",weight:"80",reps:"9",type:"working",
         parentId:"",updatedAt:t}},
     };
