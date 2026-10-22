@@ -24,6 +24,24 @@ for (const [page,label] of pages) {
   }
 }
 fs.cpSync(build, path.join(target, "site"), { recursive: true });
+// Only the isolated review build receives deploy-host safety headers.
+// The real JFS GitHub Pages build is unaffected.
+fs.writeFileSync(path.join(target, "site", "_headers"), [
+  "/*",
+  "  X-Robots-Tag: noindex, nofollow, noarchive",
+  "  X-Frame-Options: DENY",
+  "  X-Content-Type-Options: nosniff",
+  "  Referrer-Policy: no-referrer",
+  "  Permissions-Policy: camera=(), microphone=(), geolocation=()",
+  "  Cache-Control: no-store",
+  "",
+].join("\n"));
+fs.writeFileSync(path.join(target, "site", "robots.txt"),
+  "User-agent: *\\nDisallow: /\\n".replaceAll("\\\\n", "\\n"));
+if (!fs.existsSync(path.join(target, "site", "index.html")) ||
+    !fs.existsSync(path.join(target, "site", "today", "index.html"))) {
+  throw Error("Missing preview root index or Today route");
+}
 const html = [
   '<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">',
   '<meta name="viewport" content="width=device-width,initial-scale=1">',
