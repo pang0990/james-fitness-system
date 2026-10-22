@@ -4,6 +4,7 @@ on:
     branches:
       - fix/four-workspaces-consistency-20261021
       - preview/isolated-four-workspaces-20261021
+      - qa/web-four-workspaces-release-gate-20261022
     paths:
       - "app-source/**"
       - ".github/workflows/jfs-isolated-review-preview.yml"
