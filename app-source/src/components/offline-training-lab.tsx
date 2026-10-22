@@ -43,7 +43,7 @@ export function OfflineTrainingLab() {
         createdAt:now,exercises:[{id:"example-row",name:"Barbell Row",sets:[]}],
       };
       appendWorkoutSet(updated,"example-row",{
-        id:crypto.randomUUID(),weight:60,reps:8,type:"working",createdAt:now,
+        id:crypto.randomUUID(),weight:60,reps:8,rir:2,type:"working",createdAt:now,
       });
       await saveTrainingOffline(database,{
         ownerId:REVIEW_USER_ID,commandId:crypto.randomUUID(),
