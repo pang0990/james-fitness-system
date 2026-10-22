@@ -27,7 +27,7 @@ export class WebIndexedDbTrainingDatabase implements OfflineTrainingDatabase {
     if (this.connection) return this.connection;
     if (typeof indexedDB === "undefined")
       return Promise.reject(Error("IndexedDB is unavailable in this environment"));
-    this.connection = new Promise((resolve, reject) => {
+    const connection = new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open(DATABASE, VERSION);
       request.onupgradeneeded = () => {
         const db = request.result;
@@ -51,7 +51,8 @@ export class WebIndexedDbTrainingDatabase implements OfflineTrainingDatabase {
       this.connection = undefined;
       throw error;
     });
-    return this.connection;
+    this.connection = connection;
+    return connection;
   }
 
   async transact<T>(fn: (tx: OfflineTrainingTransaction) => Promise<T>): Promise<T> {
@@ -94,9 +95,7 @@ export class WebIndexedDbTrainingDatabase implements OfflineTrainingDatabase {
       await committed;
       return result;
     } catch (error) {
-      if (transaction.readyState !== "done") {
-        try { transaction.abort(); } catch { /* it already aborted */ }
-      }
+      try { transaction.abort(); } catch { /* already completed or aborted */ }
       await committed.catch(() => {});
       throw error;
     }
