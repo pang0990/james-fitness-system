@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   warning:{fontSize:12,color:"#f3d5b9",marginBottom:18},
   cardTitle:{fontSize:16,color:"white",fontWeight:"600"},
   card:{backgroundColor:"#202025",borderRadius:18,padding:22,gap:12,marginBottom:12},
-  value:{fontSize:24,color:"white",fontWeight:"650"},
+  value:{fontSize:24,color:"white",fontWeight:"600"},
   meta:{fontSize:13,color:"#c9c9cd"},
   button:{backgroundColor:"#3e3e46",borderRadius:14,padding:17},
   secondaryButton:{backgroundColor:"#24242a",borderRadius:14,padding:17},
