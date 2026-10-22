@@ -51,3 +51,36 @@ test("shared action and data components keep real save flow", async ({ page }) =
   await expect(track).toBeVisible();
   await expect(page.locator(".today-v3-water-total strong")).toContainText("250");
 });
+
+for (const width of [390, 768] as const) {
+  test(`Today: no oversized blank tail above fixed dock at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/today/");
+    const activity = page.locator(".today-v3-activity");
+    const dock = page.getByRole("navigation", { name: "手機主導覽" });
+    await expect(activity).toBeVisible();
+    await expect(dock).toBeVisible();
+    const spacing = await page.evaluate(() => {
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
+      const shell = document.querySelector(".app.page-today.jfs3-shell")!;
+      const main = shell.querySelector<HTMLElement>(":scope > .main")!;
+      const content = main.querySelector<HTMLElement>(".today-v3")!;
+      const footer = main.querySelector<HTMLElement>(".page-foot")!;
+      const end = main.querySelector<HTMLElement>(".today-v3-activity")!;
+      const nav = shell.querySelector<HTMLElement>(":scope > .bottom-nav")!;
+      return {
+        mainBottomPadding: parseFloat(getComputedStyle(main).paddingBottom),
+        contentBottomPadding: parseFloat(getComputedStyle(content).paddingBottom),
+        footerDisplay: getComputedStyle(footer).display,
+        gapToDock: nav.getBoundingClientRect().top - end.getBoundingClientRect().bottom,
+        horizontalOverflow: document.documentElement.scrollWidth - innerWidth,
+      };
+    });
+    expect(spacing.mainBottomPadding).toBeLessThan(1);
+    expect(spacing.contentBottomPadding).toBeLessThanOrEqual(112);
+    expect(spacing.footerDisplay).toBe("none");
+    expect(spacing.gapToDock).toBeGreaterThanOrEqual(0);
+    expect(spacing.gapToDock).toBeLessThan(135);
+    expect(spacing.horizontalOverflow).toBeLessThanOrEqual(1);
+  });
+}
