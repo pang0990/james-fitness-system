@@ -34,6 +34,16 @@ jobs:
         run: npm run test:e2e -- --workers=1 --trace=retain-on-failure
         env:
           CI: "true"
+      - name: Dry-run actual GitHub Pages publish transform (no commit, no deploy)
+        run: |
+          npm run pages:prepare
+          test -s ../today/index.html
+          test -s ../nutrition/index.html
+          test -s ../training/index.html
+          test -s ../progress/index.html
+          test -s ../sw.js
+          grep -q '/james-fitness-system/today/' ../manifest.webmanifest
+          test ! -e ../ui-showcase/index.html
       - name: Confirm no preview branding in ordinary static output
         run: |
           if grep -rl 'jfs-isolated-review-v1' out/_next/static/chunks/ | grep -q .; then
