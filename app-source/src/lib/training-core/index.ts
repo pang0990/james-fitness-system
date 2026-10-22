@@ -21,3 +21,9 @@ export {
 } from "./workout-sets";
 export type { RestKind } from "./rest-intervals";
 export { startRestInterval, endRestInterval } from "./rest-intervals";
+
+export type { CoreCycle, CoreCycleDay, CoreCycleEvent, CoreCycleState } from "./cycle-transitions";
+export {
+  cycleDayId, countedCycleEvents, cyclePendingIds, cycleNextDayIndex,
+  cycleConsumeDay, finishTrainingSession,
+} from "./cycle-transitions";
