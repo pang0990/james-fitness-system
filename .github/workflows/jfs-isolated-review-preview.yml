@@ -84,6 +84,14 @@ jobs:
           path: app-source/review-kit/site/
           if-no-files-found: error
           retention-days: 7
+      - name: Create disposable isolated Netlify HTTPS preview
+        if: github.event_name == 'pull_request' && github.head_ref == 'preview/isolated-four-workspaces-20261021'
+        continue-on-error: true
+        env:
+          NETLIFY_TELEMETRY_DISABLED: "1"
+        run: |
+          npx --yes netlify-cli@latest deploy --allow-anonymous --no-build --dir=review-kit/site --json > "$RUNNER_TEMP/jfs-anonymous-netlify.json"
+          node scripts/announce-anonymous-preview.mjs "$RUNNER_TEMP/jfs-anonymous-netlify.json"
       - name: Upload private-from-production preview build and gallery
         if: always()
         uses: actions/upload-artifact@v4
