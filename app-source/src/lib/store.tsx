@@ -10,6 +10,7 @@ import {
 } from "react";
 import { initialState, validateState, type AppState } from "./domain";
 import { useAuth } from "./auth-context";
+import { REVIEW_PREVIEW, REVIEW_STORAGE_KEY, makeReviewSeed } from "./review-preview";
 
 /** Original version is preserved until user confirms a manual import. */
 export const STORAGE_KEY = "james-fitness-v1";
@@ -35,7 +36,7 @@ const Context = createContext<Store | null>(null);
 export function StoreProvider({ children }: { children: ReactNode }) {
   const { user, ready: authReady } = useAuth();
   const userId = user?.id ?? null;
-  const key = userId ? scopedStorageKey(userId) : null;
+  const key = userId ? (REVIEW_PREVIEW ? REVIEW_STORAGE_KEY : scopedStorageKey(userId)) : null;
   const [state, setState] = useState(initialState);
   const ref = useRef(state);
   const [ready, setReady] = useState(false);
@@ -57,10 +58,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
     try {
       const raw = localStorage.getItem(key);
-      const restored = raw ? validateState(JSON.parse(raw)) : initialState();
+      const restored = raw ? validateState(JSON.parse(raw)) :
+        REVIEW_PREVIEW ? makeReviewSeed() : initialState();
+      if (!raw && REVIEW_PREVIEW) localStorage.setItem(key, JSON.stringify(restored));
       ref.current = restored;
       setState(restored);
-      const legacy = localStorage.getItem(STORAGE_KEY);
+      const legacy = REVIEW_PREVIEW ? null : localStorage.getItem(STORAGE_KEY);
       setLegacyAvailable(
         !raw && legacy !== null && localStorage.getItem(skippedKey(userId)) !== "true",
       );
@@ -142,7 +145,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }
 
   function importLegacy(): boolean {
-    if (!key || !userId || loadedFor.current !== userId ||
+    if (REVIEW_PREVIEW || !key || !userId || loadedFor.current !== userId ||
       localStorage.getItem(key)) return false;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
