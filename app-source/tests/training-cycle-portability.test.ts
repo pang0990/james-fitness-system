@@ -53,5 +53,6 @@ test("portable core rejects stale Cycle rounds and duplicate completion", () => 
 test("portable Cycle source uses no browser IDs, React, Supabase or Next.js", async () => {
   const { readFileSync } = await import("node:fs");
   const content = readFileSync(new URL("../src/lib/training-core/cycle-transitions.ts", import.meta.url),"utf8");
-  assert.doesNotMatch(content,/\b(window|document|localStorage|indexedDB|crypto\.randomUUID|React|supabase)\b/);
+  const executable = content.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+  assert.doesNotMatch(executable,/\b(window|document|localStorage|indexedDB|crypto\.randomUUID|React|supabase)\b/);
 });
