@@ -1,0 +1,81 @@
+name: JFS Training V3 full E2E regression
+
+on:
+  pull_request:
+    branches:
+      - training/active-workout-v3-20261021
+      - qa/training-v3-release-gate-20261021
+    paths:
+      - "app-source/**"
+      - ".github/workflows/jfs-training-full-e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-e2e:
+    name: Full Chromium Playwright regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app-source
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app-source/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Run every E2E test in a serial, isolated browser suite
+        run: npm run test:e2e -- --workers=1 --timeout=15000 --trace=retain-on-failure
+        env:
+          CI: "true"
+      - name: Preserve screenshots, test traces, and failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jfs-training-v3-full-e2e
+          path: |
+            app-source/test-results/
+            app-source/playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  webkit-mobile:
+    name: WebKit mobile QA (not iPhone Safari hardware)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app-source
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app-source/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps webkit
+      - name: Exercise Training and Glass flows in WebKit
+        run: npm run test:e2e -- tests/e2e/training-v3.spec.ts tests/e2e/glass-v3-hardening.spec.ts --browser=webkit --workers=1 --timeout=20000 --trace=retain-on-failure
+        env:
+          CI: "true"
+      - name: Preserve WebKit traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jfs-training-v3-webkit-mobile
+          path: |
+            app-source/test-results/
+            app-source/playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7

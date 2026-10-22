@@ -1,6 +1,8 @@
+import type { Segment, SetDraft, Session } from "./training-core/types";
 import type { GainSettings, GainDecision } from "./gain";
 import type { MuscleTarget, ScheduleEntry } from "./training-model";
 import { z } from "zod";
+import { validateTrainingSessions, validateCycleIntegrity } from "./training-validation";
 
 export const RULE_ID = "numbers-3.0-7b135702";
 export const sourceHash =
@@ -172,70 +174,8 @@ export type Recovery = {
   note: string;
   createdAt: string;
 };
-export type Segment = {
-  id: string;
-  weight: number;
-  reps: number;
-  rir: number | null;
-  type: "working" | "warmup" | "rampup" | "rp" | "drop";
-  parentId?: string;
-  createdAt: string;
-};
-export type Session = {
-  cycleId?: string;
-  cycleDayIndex?: number;
-  phase?: "warmup" | "workout";
-  id: string;
-  date: string;
-  name: string;
-  status: "in_progress" | "completed" | "discarded";
-  isExtra?: boolean;
-  sessionPart?: "main" | "second" | "extra";
-  parentSessionId?: string;
-  workoutDate?: string;
-  scheduledDate?: string;
-  pausedAt?: string;
-  pausedDuration?: number;
-  activeDuration?: number;
-  elapsedDuration?: number;
-  /** Timestamp-based per-session rest timing. Old session records may omit these. */
-  restStartedAt?: string;
-  restTargetSeconds?: number;
-  restHistory?: { startedAt:string; endedAt:string; elapsedSeconds:number; targetSeconds:number }[];
-  /** RP pause is independent from normal between-set rest. */
-  rpRestStartedAt?: string;
-  rpRestTargetSeconds?: number;
-  rpRestHistory?: { startedAt:string; endedAt:string; elapsedSeconds:number; targetSeconds:number }[];
-  /** Explicit answer when a planned session is completed before target sets. */
-  cycleCounted?: boolean;
-  /** Detailed correction history; does not rewrite the original audit log. */
-  setCorrections?: {
-    id:string; editedAt:string; exerciseId:string; setId:string;
-    before:{weight:number;reps:number;type:Segment["type"]};
-    after:{weight:number;reps:number;type:Segment["type"]};
-  }[];
-  discardedAt?: string;
-  trainingDayId?: string;
-  round?: number;
-  exercises: {
-    id: string;
-    name: string;
-    /** Stable ID when exercise originates in JFS or personal library. */
-    exerciseLibraryId?: string;
-    sets: Segment[];
-    restSeconds?: number;
-    plannedSets?: number;
-    reps?: string;
-    rir?: number;
-    muscle?: string;
-    allowRestPause?: boolean;
-    allowDropSet?: boolean;
-  }[];
-  warmupIds?: string[];
-  createdAt: string;
-  completedAt?: string;
-  feedback?: string;
-};
+// Re-export unchanged contracts for legacy Web consumers.
+export type { Segment, SetDraft, Session } from "./training-core/types";
 export type ActivityEvidence = {
   comparedAt: string;
   recentAverage: number | null;
@@ -730,7 +670,7 @@ export function validateState(value: unknown): AppState {
     throw Error("歷史餐次快照資料格式無效");
   if (s.skippedMealSlots &&
       (!Array.isArray(s.skippedMealSlots) ||
-       s.skippedMealSlots.some(r => !/^\\d{4}-\\d{2}-\\d{2}$/.test(r.date) || !r.slot)))
+       s.skippedMealSlots.some(r => !/^\d{4}-\d{2}-\d{2}$/.test(r.date) || !r.slot)))
     throw Error("餐次未吃標記格式無效");
   const numeric = (n: unknown) => typeof n === "number" && Number.isFinite(n);
   for (const meal of s.meals)
@@ -740,6 +680,8 @@ export function validateState(value: unknown): AppState {
       )
     )
       throw Error("飲食資料無效");
+  validateTrainingSessions(s.sessions);
+  validateCycleIntegrity(s.cycles, s.cycleEvents);
   if (s.sessions.filter((x) => x.status === "in_progress").length > 1)
     throw Error("備份含多個進行中訓練，請先處理衝突");
   if (

@@ -19,9 +19,16 @@ export function ProgressDirection({ date }: { date: string }) {
   const weights = visibleMeasurements(state).filter(
     (m) => m.date >= start && m.date <= date,
   );
-  const results = performance(state),
+  const sessionsInRange = state.sessions.filter((session) => {
+    const recordedDate = session.workoutDate ?? session.date;
+    return recordedDate >= start && recordedDate <= date;
+  });
+  const results = performance({ ...state, sessions: sessionsInRange }),
     improved = results.filter((r) => r.improved),
     comparable = results.filter((r) => r.comparable);
+  const stepsInRange = (state.dailySteps ?? []).filter(
+    (row) => row.date >= start && row.date <= date,
+  );
   const gain = state.profile?.goal === "GAIN";
   const delta =
     weights.length > 1
@@ -32,11 +39,15 @@ export function ProgressDirection({ date }: { date: string }) {
   const full = state.days.filter(
     (d) => d.date >= reviewStart && d.date <= date && d.complete,
   ).length;
+  // GAIN is a 14-day window with >=10 complete food days, per gainReview().
+  // Do not redefine nutrition rules from the visual overview.
+  const minimumCompleteDays = 10;
+  const reviewDataReady = full >= minimumCompleteDays;
   const recoveries = Array.from(
     new Map(
       recoveryEntries(state)
         .filter(
-          (r) => r.type === "sleep" && r.unit !== "rating" && r.date >= reviewStart && r.date <= date,
+          (r) => r.type === "sleep" && r.unit !== "rating" && r.date >= start && r.date <= date,
         )
         .map((r) => [r.date, { ...r, sleep: r.value / 60 }]),
     ).values(),
@@ -117,14 +128,14 @@ export function ProgressDirection({ date }: { date: string }) {
       </GlassCard>
       <GlassCard className="progress-v3-stats" aria-label="進度統計">
         <h2>Key Stats</h2>
+        <p className="muted">以下數據依上方 {range === "365" ? "1 年" : range + " 天"}區間計算；Weekly Summary 與 Review 使用各自固定期間。</p>
         <div className="progress-v3-stat-row"><span>Workout Sessions</span>
-          <strong>{state.sessions.filter(session=>session.status==="completed" && session.date>=start && session.date<=date).length}</strong></div>
+          <strong>{sessionsInRange.filter(session => session.status === "completed").length}</strong></div>
         <div className="progress-v3-stat-row"><span>Avg. Sleep</span>
           <strong>{recoveries.length>=3 ? `${round(recoveries.reduce((a,r)=>a+r.sleep,0)/recoveries.length)} h` : "—"}</strong></div>
         <div className="progress-v3-stat-row"><span>Avg. Steps</span>
-          <strong>{state.dailySteps?.filter(row=>row.date>=addDays(date,-6)&&row.date<=date).length
-            ? Math.round(state.dailySteps.filter(row=>row.date>=addDays(date,-6)&&row.date<=date)
-              .reduce((sum,row)=>sum+row.steps,0) / state.dailySteps.filter(row=>row.date>=addDays(date,-6)&&row.date<=date).length).toLocaleString("en-US")
+          <strong>{stepsInRange.length
+            ? Math.round(stepsInRange.reduce((sum, row) => sum + row.steps, 0) / stepsInRange.length).toLocaleString("en-US")
             : "—"}</strong></div>
       </GlassCard>
       <WeeklySummary date={date} />
@@ -139,14 +150,14 @@ export function ProgressDirection({ date }: { date: string }) {
         <h2>
           {pending
             ? "有一項調整待確認"
-            : full < (gain ? 10 : 10)
+            : !reviewDataReady
               ? "先補足紀錄"
-              : "檢視計畫"}
+              : "查看評估"}
         </h2>
         <p>
           {pending
             ? "查看觀察資料與調整原因，再選擇 Accept 或 Keep。"
-            : `${full} / ${reviewDays} 天完整飲食紀錄。${full < 10 ? "目前不據此推定需要修改計畫。" : "開啟 Review，檢視本期證據。"}`}
+            : `${full} / ${reviewDays} 天完整飲食紀錄。${!reviewDataReady ? `至少需要 ${minimumCompleteDays} 天完整紀錄；實際是否調整仍依 Review 判定。` : "已達飲食紀錄門檻；仍須於 Review 核對其他條件。"}`}
         </p>
         <Link className="jfs-glass-nav-link" href="/progress/review">
           View review <ChevronRight size={18} />

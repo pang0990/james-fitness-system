@@ -52,9 +52,8 @@ export function TodayMinimalV3({ date, notify }: Props) {
     )) / 60000, 0,
   ));
   const cycle = activeCycle(state);
-  const cycleCompleted = cycle ? state.cycleEvents?.filter((event) =>
-    event.cycleId === cycle.id && ["completed", "skipped"].includes(event.type)
-  ).length ?? 0 : 0;
+  // Round is distinct from the number of completed Cycle Days.
+  const cycleRound = cycle?.round ?? 1;
   const day = cycle?.days[Math.max(0, nextDayIndex(state, cycle))];
 
   const isDone = !current && completedToday.length > 0;
@@ -64,7 +63,7 @@ export function TodayMinimalV3({ date, notify }: Props) {
     ? String(completedToday.length) + " 場訓練 · " + completedMinutes + " 分鐘"
     : String(current?.exercises?.length ?? day?.exercises?.length ?? 0) +
       " 個動作" + (current ? " · 進行中" : day ? " · 準備開始" : "");
-  const trainingHref = current ? "/training/session" : "/training";
+  const trainingHref = current ? "/training/session" : isDone ? "/training/history" : day ? "/training" : "/training/plan";
   const actionLabel = current
     ? "繼續訓練" : isDone ? "查看訓練紀錄" : day ? "開始訓練" : "建立課表";
 
@@ -107,8 +106,8 @@ export function TodayMinimalV3({ date, notify }: Props) {
           <p>你的訓練與日常紀錄</p>
         </div>
         {cycle && (
-          <div className="today-v3-cycle" aria-label={"Cycle " + (cycleCompleted + 1)}>
-            Cycle {String(cycleCompleted + 1).padStart(2, "0")}
+          <div className="today-v3-cycle" aria-label={"Cycle 第 " + cycleRound + " 輪"}>
+            Cycle {String(cycleRound).padStart(2, "0")}
           </div>
         )}
       </div>

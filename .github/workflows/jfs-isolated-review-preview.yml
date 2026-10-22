@@ -1,0 +1,116 @@
+name: JFS Isolated Four-Workspace Preview
+on:
+  pull_request:
+    branches:
+      - fix/four-workspaces-consistency-20261021
+      - preview/isolated-four-workspaces-20261021
+    paths:
+      - "app-source/**"
+      - ".github/workflows/jfs-isolated-review-preview.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  production-parity:
+    name: Verify ordinary builds have no review login changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app-source
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app-source/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Real login gate and workspace browser regressions
+        run: npm run test:e2e -- --workers=1 --trace=retain-on-failure
+        env:
+          CI: "true"
+      - name: Dry-run actual GitHub Pages publish transform (no commit, no deploy)
+        run: |
+          npm run pages:prepare
+          test -s ../today/index.html
+          test -s ../nutrition/index.html
+          test -s ../training/index.html
+          test -s ../progress/index.html
+          test -s ../sw.js
+          grep -q '/james-fitness-system/today/' ../manifest.webmanifest
+          test ! -e ../ui-showcase/index.html
+      - name: Confirm no preview branding in ordinary static output
+        run: |
+          if grep -rl 'jfs-isolated-review-v1' out/_next/static/chunks/ | grep -q .; then
+            echo "Review feature code is present in a chunk; runtime mode must still be inactive."
+          fi
+          test -f out/today/index.html
+  isolated-review:
+    name: Generate isolated review build and eight screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app-source
+    env:
+      NEXT_PUBLIC_JFS_REVIEW_PREVIEW: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app-source/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Compile preview-only static site (no real OAuth or cloud API)
+        run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Review all four actual pages in two viewport sizes
+        run: npm run test:e2e -- tests/e2e/review-preview.spec.ts tests/e2e/review-user-journey.spec.ts --workers=1 --trace=retain-on-failure
+        env:
+          CI: "true"
+      - name: Assemble downloadable mobile/desktop review kit
+        run: node scripts/build-review-kit.mjs
+      - name: Validate ready-to-upload static preview root
+        run: |
+          test -s review-kit/site/index.html
+          test -s review-kit/site/today/index.html
+          test -s review-kit/site/nutrition/index.html
+          test -s review-kit/site/training/index.html
+          test -s review-kit/site/progress/index.html
+          test -s review-kit/site/_headers
+          test -s review-kit/site/robots.txt
+          test ! -e review-kit/site/.env
+      - name: Upload Netlify Drop ready-to-publish site ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: jfs-isolated-preview-netlify-drop
+          path: app-source/review-kit/site/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Create disposable isolated Netlify HTTPS preview
+        if: github.event_name == 'pull_request' && github.head_ref == 'preview/isolated-four-workspaces-20261021'
+        continue-on-error: true
+        env:
+          NETLIFY_TELEMETRY_DISABLED: "1"
+        run: |
+          npx --yes netlify-cli@latest deploy --allow-anonymous --no-build --dir=review-kit/site --json > "$RUNNER_TEMP/jfs-anonymous-netlify.json"
+          node scripts/announce-anonymous-preview.mjs "$RUNNER_TEMP/jfs-anonymous-netlify.json"
+      - name: Upload private-from-production preview build and gallery
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jfs-four-workspace-isolated-review
+          path: |
+            app-source/review-kit/
+            app-source/test-results/
+            app-source/playwright-report/
+          if-no-files-found: warn
+          retention-days: 7

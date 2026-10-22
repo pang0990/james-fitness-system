@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { WorkoutSetEntry } from "./workout-set-entry";
 import { TrainingPlan } from "./training-plan";
 import {
   dayId,
@@ -24,10 +25,10 @@ import {
 } from "@/lib/training-model";
 import { Companion } from "./companion";
 import { exerciseLibrary, searchExercises } from "@/lib/exercise-library";
-import {removeWorkoutSet,restoreWorkoutSets,replaceWorkoutSet} from "@/lib/workout-sets";
+import {removeWorkoutSet,restoreWorkoutSets,replaceWorkoutSet,previousWorkingSets} from "@/lib/workout-sets";
 import { startRestInterval, endRestInterval } from "@/lib/rest-intervals";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -56,18 +57,15 @@ export function TrainingFlow({
   path: string;
   notify: (s?: string) => void;
 }) {
-  const { state, save } = useStore();
+  const { state, save, error, saving } = useStore();
   const router = useRouter();
-  const [exercise, setExercise] = useState(() =>
-    typeof window !== "undefined"
-      ? Number(
-          sessionStorage.getItem(
-            "james-exercise-" +
-              state.sessions.find((s) => s.status === "in_progress")?.id,
-          ) ?? 0,
-        )
-      : 0,
-  );
+  const [exercise, setExercise] = useState(() => {
+    if(typeof window === "undefined")return 0;
+    try {
+      const index=Number(sessionStorage.getItem("james-exercise-"+state.sessions.find(s=>s.status==="in_progress")?.id)??0);
+      return Number.isInteger(index)&&index>=0?index:0;
+    } catch {return 0;}
+  });
   const [add, setAdd] = useState(false);
   const [addMode,setAddMode] = useState<"search"|"create">("search");
   const [exerciseQuery,setExerciseQuery]=useState("");
@@ -75,14 +73,15 @@ export function TrainingFlow({
   const [review, setReview] = useState(false);
   const [cycleDecision, setCycleDecision] = useState<"count"|"keep"|null>(null);
   const [completedId, setCompletedId] = useState<string | null>(null);
-  const [type, setType] = useState<Segment["type"]>("working");
+  const [online,setOnline]=useState(true);
+  useEffect(()=>{const update=()=>setOnline(navigator.onLine);update();window.addEventListener("online",update);window.addEventListener("offline",update);return()=>{window.removeEventListener("online",update);window.removeEventListener("offline",update);};},[]);
   const [editingSetId, setEditingSetId] = useState<string | null>(null);
   const [undoDeletion, setUndoDeletion] = useState<{
     sessionId:string; exerciseId:string; removed:Segment[]; indices:number[];
   } | null>(null);
+  const [undoEdit,setUndoEdit]=useState<{sessionId:string;exerciseId:string;before:Segment;after:Segment}|null>(null);
   const [lastSavedId,setLastSavedId]=useState<string|null>(null);
-  const [entryVersion, setEntryVersion] = useState(0);
-  const submitLock = useRef(false);
+
   const [skip, setSkip] = useState(false);
   const [clock, setClock] = useState(Date.now());
   useEffect(() => {
@@ -121,14 +120,15 @@ export function TrainingFlow({
   const plannedSecond = plannedSource?.days.find((_,i) =>
     dayId(plannedSource,i) === plannedSecondFor?.trainingDayId)?.secondSession;
   useEffect(() => {
-    if (current)
-      sessionStorage.setItem("james-exercise-" + current.id, String(exercise));
+    if (current) {
+      try {sessionStorage.setItem("james-exercise-" + current.id, String(exercise));} catch { /* Drafts remain in the account store. */ }
+    }
   }, [exercise, current?.id]);
   useEffect(() => {
     if (current && exercise >= current.exercises.length) setExercise(0);
   }, [current?.id, current?.exercises.length, exercise]);
   const ex = current?.exercises[exercise];
-  useEffect(() => {setLastSavedId(null);setEntryVersion(v=>v+1);},[ex?.id,current?.id]);
+  useEffect(() => {setLastSavedId(null);setEditingSetId(null);},[ex?.id,current?.id]);
   const editingSet = ex?.sets.find(s=>s.id===editingSetId);
   function deleteRecordedSet(id:string){
     if(!current || !ex) return;
@@ -142,14 +142,7 @@ export function TrainingFlow({
     }))setUndoDeletion({sessionId:current.id,exerciseId:ex.id,
       removed:structuredClone(removed),indices});
   }
-  const previousSets = state.sessions
-    .filter((s) => s.status === "completed")
-    .slice()
-    .reverse()
-    .flatMap((s) => s.exercises)
-    .find((e) => e.name === ex?.name)
-    ?.sets.filter((s) => s.type === "working");
-  const previous = previousSets?.at(-1);
+  const previousSets = ex ? previousWorkingSets(state.sessions,ex) : undefined;
   const workout = path === "training/session" && !!current;
   useEffect(() => {
     if (!workout || state.preferences?.keepAwake === false) return;
@@ -371,19 +364,24 @@ export function TrainingFlow({
       ),
     );
     return (
-      <div className="daily-page workout-success">
+      <div className="daily-page workout-page training-v3 workout-success">
+        <GlassCard className="training-v3-summary">
         <p className="eyebrow">WORKOUT COMPLETE</p>
         <h1>訓練完成</h1>
-        <Companion state="celebrating" onTap={() => {}} />
+        <h2>{finished.name}</h2>
+        <Check size={44} aria-hidden="true" />
         <p>
           {sets} WORKING SETS · {minutes} MIN
         </p>
+        <p>{finished.cycleId ? finished.cycleCounted===false?"本次已保存，Cycle Day 保留待完成":"本次已計入 Cycle":"單次訓練已保存"}</p>
+        <Link href={`/training/history/session?id=${encodeURIComponent(finished.id)}`} className="button secondary">查看本次組次紀錄</Link>
         <Link href="/today" className="button">
-          Back to Today
+          返回 Today
         </Link>
         <Link href="/training" className="text-link">
           查看下一個訓練日 →
         </Link>
+        </GlassCard>
       </div>
     );
   }
@@ -405,8 +403,8 @@ export function TrainingFlow({
       </div>
     );
   return (
-    <div className={`daily-page ${workout ? "workout-page" : ""}`}>
-      <PageTitle title={workout ? "Workout" : "Training"}>
+    <div className={`daily-page ${workout ? "workout-page training-v3" : ""}`}>
+      <PageTitle title={workout ? "Active Workout" : "Training"}>
         {workout ? (
           <Link href="/training" className="text-link">
             離開畫面（繼續計時）
@@ -415,6 +413,12 @@ export function TrainingFlow({
       </PageTitle>
       {workout ? (
         <>
+          <GlassCard className="training-v3-status" aria-label="訓練狀態">
+            <div><p className="eyebrow">TRAINING 3.0</p><strong>{current.pausedAt?"已暫停":review?"完成確認":restStart!==null||rpStart!==null?"休息中":"訓練中"}</strong></div>
+            <span>{completedWorking} / {plannedWorking || "—"} 工作組</span>
+            <p role="status">{!online?"離線 · 紀錄仍保存於此裝置":saving?"正在保存…":"本機保存 · 尚未雲端同步"}</p>
+            {error && <p role="alert">保存失敗：{error}</p>}
+          </GlassCard>
           <div className="workout-heading">
             <button
               className="button secondary"
@@ -500,6 +504,7 @@ export function TrainingFlow({
           ) : review ? (
             <section className="card">
               <h2>完成本次訓練</h2>
+              {Object.values(current.setDrafts??{}).some(d=>d.weight||d.reps) && <p className="workout-draft-status">仍有未提交草稿，草稿不計入完成組數；返回「繼續記錄」可完成輸入。</p>}
               <p>
                 {current.exercises.length} 個動作 ·{" "}
                 {
@@ -567,16 +572,15 @@ export function TrainingFlow({
               </form>
             </section>
           ) : (
-            <>
+            <div className="training-v3-grid">
               {ex ? (
-                <section className="card exercise-focus">
+                <GlassCard className="card exercise-focus">
                   <div className="exercise-nav">
                     <button
                       className="icon-button"
                       aria-label="上一個動作"
                       disabled={!exercise}
                       onClick={() => {
-                        setType("working");
                         setExercise(exercise - 1);
                       }}
                     >
@@ -590,7 +594,6 @@ export function TrainingFlow({
                       aria-label="下一個動作"
                       disabled={exercise >= current.exercises.length - 1}
                       onClick={() => {
-                        setType("working");
                         setExercise(exercise + 1);
                       }}
                     >
@@ -626,8 +629,7 @@ export function TrainingFlow({
                           type="checkbox"
                           checked={ex[key] ?? false}
                           onChange={(e) => {
-                            setType("working");
-                            save("更新本次動作選項", (s) => {
+                                save("更新本次動作選項", (s) => {
                               s.sessions
                                 .find((x) => x.id === current.id)!
                                 .exercises.find((x) => x.id === ex.id)![key] =
@@ -676,107 +678,21 @@ export function TrainingFlow({
                       }}>復原</button>
                     </div>
                   )}
-                  <form
-                    key={ex.id + "-" + entryVersion}
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (submitLock.current) return;
-                      submitLock.current = true;
-                      window.setTimeout(()=>{submitLock.current=false;},650);
-                      const d = new FormData(e.currentTarget);
-                      const newSetId=uid();
-                      if (
-                        save("保存訓練段落", (s) => {
-                          const target = s.sessions
-                            .find((x) => x.id === current.id)!
-                            .exercises.find((x) => x.id === ex.id)!;
-                          const parent = String(d.get("parent") ?? "");
-                          if (
-                            ["rp", "drop"].includes(type) &&
-                            !target.sets.some(
-                              (s) => s.id === parent && s.type === "working",
-                            )
-                          )
-                            throw Error("請選擇所屬工作組");
-                          target.sets.push({
-                            id: newSetId,
-                            type,
-                            weight: Number(d.get("weight")),
-                            reps: Number(d.get("reps")),
-                            rir: null, // Preserve legacy schema, stop collecting RIR.
-                            createdAt: stamp(),
-                            ...(["rp", "drop"].includes(type)
-                              ? { parentId: parent }
-                              : {}),
-                          });
-                        })
-                      ) {
-                        setLastSavedId(newSetId);
-                        // Each completed set becomes a row immediately. The next draft is blank.
-                        setEntryVersion(v=>v+1);
-                        notify("已記錄，下一組請重新輸入重量與次數");
-                        if (
-                          type === "working" &&
-                          state.preferences?.autoRest === true
-                        )
-                          startTimer();
-                      }
-                    }}
-                  >
-                    <Field label="組型">
-                      <select
-                        value={type}
-                        onChange={(e) =>
-                          setType(e.target.value as Segment["type"])
-                        }
-                      >
-                        <option value="working">Working Set</option>
-                        <option value="warmup">Warm-up</option>
-                        <option value="rampup">Ramp-up</option>
-                        {ex.allowRestPause &&
-                          state.preferences?.allowRestPause !== false && (
-                            <option value="rp">Rest-Pause</option>
-                          )}
-                        {ex.allowDropSet &&
-                          state.preferences?.allowDropSet !== false && (
-                            <option value="drop">Drop Set</option>
-                          )}
-                      </select>
-                    </Field>
-                    <div className="set-inputs">
-                      <Num
-                        label="重量 kg"
-                        name="weight"
-                        max={1000}
-                      />
-                      <Num
-                        label="次數"
-                        name="reps"
-                        min={1}
-                        max={500}
-                        step="1"
-                      />
-
-                    </div>
-                    {["rp", "drop"].includes(type) && (
-                      <Field label="所屬工作組">
-                        <select name="parent" required>
-                          <option value="">請選擇</option>
-                          {ex.sets
-                            .filter((s) => s.type === "working")
-                            .map((s, i) => (
-                              <option value={s.id} key={s.id}>
-                                工作組 {i + 1} · {s.weight} × {s.reps}
-                              </option>
-                            ))}
-                        </select>
-                      </Field>
-                    )}
-                    <button className="button" disabled={!!current.pausedAt}>
-                      完成這一組
-                      <Check size={16} />
-                    </button>
-                  </form>
+                  <WorkoutSetEntry key={current.id+ex.id} session={current} exercise={ex} onSaved={id=>{
+                    setLastSavedId(id);notify("已記錄，下一組請重新輸入重量與次數");
+                  }}/>
+                  {undoEdit?.sessionId===current.id && undoEdit.exerciseId===ex.id && <div className="set-undo-banner" role="status">
+                    已修改組次
+                    <button type="button" className="text-link" onClick={()=>{
+                      if(save("撤銷組次編輯",draft=>{
+                        const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
+                        const live=target.sets.find(s=>s.id===undoEdit.after.id);
+                        if(!live || live.weight!==undoEdit.after.weight || live.reps!==undoEdit.after.reps || live.type!==undoEdit.after.type)
+                          throw Error("這一組已再次變更，無法撤銷舊修改");
+                        target.sets=replaceWorkoutSet(target.sets,live.id,undoEdit.before);
+                      }))setUndoEdit(null);
+                    }}>撤銷編輯</button>
+                  </div>}
                   {lastSavedId && <div className="set-undo-banner" role="status">
                     <span>已新增組次，下方是空白的下一組</span>
                     <button type="button" className="text-link" onClick={()=>{
@@ -789,7 +705,7 @@ export function TrainingFlow({
                       })){setLastSavedId(null);notify("已撤銷上一筆保存");}
                     }}>復原上一組</button>
                   </div>}
-                </section>
+                </GlassCard>
               ) : (
                 <section className="card">
                   <h2>新增第一個動作</h2>
@@ -847,7 +763,7 @@ export function TrainingFlow({
                   {restStart!==null?"結束休息":"開始休息"}
                 </button>
               </div>
-            </>
+            </div>
           )}
         </>
       ) : (
@@ -865,7 +781,7 @@ export function TrainingFlow({
               <Link href="/training/plan" className="training-v3-edit" aria-label="編輯課表"><ChevronRight size={17}/></Link>
             </div>
             {day && (day.exercises?.length ?? 0)>0 && <div className="training-v3-exercises">
-              {(day.exercises ?? []).map((item,index)=><Link href="/training/plan" className="training-v3-exercise" key={index}>
+              {(day.exercises ?? []).map((item,index)=><Link href={item.exerciseLibraryId ? `/training/exercises/detail?id=${encodeURIComponent(item.exerciseLibraryId)}` : "/training/plan"} className="training-v3-exercise" key={item.exerciseLibraryId ?? `${item.name}-${index}`} aria-label={item.exerciseLibraryId ? `查看${item.name}動作詳情` : `編輯${item.name}課表`}>
                 <span className="training-v3-exercise-art" aria-hidden="true"><Dumbbell size={20} strokeWidth={1.3}/></span>
                 <span className="training-v3-number">{index+1}</span>
                 <span className="training-v3-exercise-info">
@@ -1029,7 +945,7 @@ export function TrainingFlow({
             if(save("編輯訓練組",draft=>{
               const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(x=>x.id===ex.id)!;
               target.sets=replaceWorkoutSet(target.sets,editingSet.id,{weight,reps,type:kind});
-            })){setEditingSetId(null);notify("已儲存修改");}
+            })){setUndoEdit({sessionId:current.id,exerciseId:ex.id,before:{...editingSet},after:{...editingSet,weight,reps,type:kind}});setEditingSetId(null);notify("已儲存修改");}
           }}>
             <Field label="組型">
               <select name="type" defaultValue={editingSet.type}>

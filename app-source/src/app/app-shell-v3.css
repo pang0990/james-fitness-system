@@ -65,6 +65,18 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foo
   html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main>.daily-page {
     width:min(calc(100% - 32px),780px);
   }
+
+  /* Keep one safe-area clearance, not the cumulative Today + main + footer gap. */
+  html[data-visual-style="minimal"] .app.jfs3-shell.page-today:not(.workout-active)>.main {
+    min-height:0!important;
+    padding-bottom:0!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell.page-today:not(.workout-active) .today-v3 {
+    padding-bottom:calc(96px + env(safe-area-inset-bottom))!important;
+  }
+  html[data-visual-style="minimal"] .app.jfs3-shell.page-today:not(.workout-active) .page-foot {
+    display:none!important;
+  }
 }
 @media (min-width:1024px) {
   html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar {

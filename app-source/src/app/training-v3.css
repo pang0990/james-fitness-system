@@ -1,0 +1,347 @@
+/* Active Workout only. Reuse GlassCard material; never recolor other pages. */
+html[data-visual-style="minimal"] .training-v3 {
+  max-width: 1040px;
+  margin-inline: auto;
+  padding-bottom: 36px;
+}
+.training-v3 .training-v3-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 24px;
+  margin-bottom: 18px;
+}
+.training-v3-status .eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  margin: 0 0 7px;
+}
+.training-v3-status strong {
+  font-size: 26px;
+  letter-spacing: -0.04em;
+}
+.training-v3-status > span {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.training-v3-status > p {
+  width: 100%;
+  margin: 0;
+  font-size: 13px;
+}
+.training-v3 .exercise-focus {
+  padding: 28px;
+}
+.training-v3 .exercise-focus > h2 {
+  font-size: clamp(26px, 4vw, 38px);
+  letter-spacing: -0.045em;
+  margin-block: 14px;
+}
+.training-v3 .exercise-symbol {
+  display: none;
+}
+.training-v3 .exercise-nav {
+  margin-bottom: 20px;
+}
+.training-v3 .workout-set-entry {
+  margin-top: 22px;
+  display: grid;
+  gap: 16px;
+}
+.training-v3 .set-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.training-v3 .set-inputs input {
+  min-width: 0;
+  width: 100%;
+  font-size: 32px !important;
+  font-weight: 650;
+  text-align: center;
+  min-height: 78px;
+  font-variant-numeric: tabular-nums;
+}
+.training-v3 .workout-draft-status {
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 14px;
+}
+.training-v3 .workout-draft-status button {
+  margin-left: 10px;
+  text-decoration: underline;
+}
+.training-v3 .set-row-controls {
+  display: flex;
+  gap: 14px;
+}
+.training-v3 .set-row-controls button {
+  min-height: 44px;
+}
+.training-v3 .session-set {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.training-v3 .rest-dock {
+  position: static !important;
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  border-radius: 22px;
+  padding: 20px;
+}
+html[data-visual-style="minimal"] .training-v3 .rest-dock {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.94),
+    rgba(240, 241, 246, 0.78)
+  ) !important;
+  color: #17181c !important;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 12px 36px #0004;
+  backdrop-filter: blur(24px);
+}
+html[data-visual-style="minimal"] .training-v3 .rest-dock span,
+html[data-visual-style="minimal"] .training-v3 .rest-dock strong {
+  color: #17181c !important;
+}
+.training-v3 .rest-times {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+}
+.training-v3 .rest-times strong {
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  display: block;
+}
+.training-v3 .workout-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.training-v3 button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+html[data-reduce-transparency="true"] .training-v3 .rest-dock {
+  background: #f1f1f4 !important;
+  backdrop-filter: none !important;
+}
+@media (max-width: 600px) {
+  .training-v3 .exercise-focus {
+    padding: 18px;
+  }
+  .training-v3 .training-v3-status {
+    padding: 18px;
+    gap: 10px;
+  }
+  .training-v3 .set-inputs {
+    gap: 12px;
+  }
+  .training-v3 .rest-dock > button {
+    width: 100%;
+  }
+  .training-v3 .workout-heading > span {
+    width: 100%;
+    font-size: 14px;
+  }
+}
+/* The legacy workout theme uses high-specificity dark cards. Opt this flow into
+   the existing white-glass tokens explicitly, without changing that theme. */
+html[data-visual-style="minimal"] .workout-active {
+  background: #030304 !important;
+}
+html[data-visual-style="minimal"] .training-v3 .card,
+html[data-visual-style="minimal"] .training-v3 .exercise-focus.jfs-glass-card {
+  background-color: var(
+    --jfs4-glass-surface,
+    rgba(255, 255, 255, 0.94)
+  ) !important;
+  background-image: linear-gradient(
+    150deg,
+    #ffffff55,
+    transparent 44%,
+    #ffffff22
+  ) !important;
+  border: 1px solid var(--jfs4-glass-edge, #fff) !important;
+  color: #17181c !important;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    var(--jfs4-glass-shadow-soft) !important;
+  -webkit-backdrop-filter: var(--jfs4-glass-blur);
+  backdrop-filter: var(--jfs4-glass-blur);
+}
+html[data-visual-style="minimal"]
+  .training-v3
+  .card
+  :is(h2, p, span, strong, summary, legend, label, .text-link, .exercise-nav) {
+  color: #24252b !important;
+}
+html[data-visual-style="minimal"]
+  .training-v3
+  .card
+  :is(input, select, textarea) {
+  background: rgba(255, 255, 255, 0.72) !important;
+  color: #18191d !important;
+  -webkit-text-fill-color: #18191d !important;
+  border: 1px solid #ffffffdd !important;
+}
+html[data-visual-style="minimal"]
+  .training-v3
+  .card
+  :is(.session-set, .set-undo-banner) {
+  background: #ffffff44 !important;
+  border-color: #20212722 !important;
+}
+html[data-visual-style="minimal"] .training-v3 .card .button {
+  background: #202127 !important;
+  color: #fff !important;
+}
+html[data-visual-style="minimal"] .training-v3 .icon-button {
+  color: #202127 !important;
+  background: #ffffff66 !important;
+  min-height: 44px;
+  min-width: 44px;
+}
+html[data-visual-style="minimal"] .training-v3 .icon-button svg {
+  color: inherit !important;
+}
+.training-v3 .exercise-focus > .muted {
+  margin: 8px 0 !important;
+}
+.training-v3 .exercise-nav {
+  margin-bottom: 8px !important;
+}
+.training-v3 .set-history:empty {
+  display: none;
+}
+.training-v3 .workout-heading {
+  margin-bottom: 16px !important;
+  gap: 12px !important;
+}
+.training-v3 .workout-heading > span {
+  width: auto;
+}
+.training-v3 .workout-danger-menu {
+  margin: 0 !important;
+}
+.training-v3-grid {
+  display: grid;
+  gap: 16px;
+}
+.training-v3-grid > .two-actions {
+  margin: 0 !important;
+}
+.training-v3 .rest-dock {
+  margin-top: 0 !important;
+}
+.training-v3 .workout-submit {
+  position: sticky;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 2;
+  min-height: 52px;
+}
+@media (min-width: 1024px) {
+  .training-v3-grid {
+    grid-template-columns: minmax(0, 1.65fr) minmax(270px, 1fr);
+    align-items: start;
+  }
+  .training-v3-grid > .exercise-focus {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+  }
+  .training-v3-grid > :not(.exercise-focus) {
+    grid-column: 2;
+  }
+}
+@media (max-width: 600px) {
+  .training-v3 .training-v3-status {
+    padding: 14px 18px;
+    margin-bottom: 12px;
+  }
+  .training-v3-status strong {
+    font-size: 20px;
+  }
+  .training-v3-status > span {
+    font-size: 18px;
+  }
+  .training-v3-status > p {
+    font-size: 12px;
+  }
+  .training-v3 .workout-heading > span {
+    font-size: 12px;
+  }
+  .training-v3 .workout-heading > button {
+    padding: 9px 12px;
+    min-height: 44px;
+  }
+  .training-v3 .workout-set-entry {
+    margin-top: 14px;
+    gap: 12px;
+  }
+  .training-v3 .set-inputs input {
+    min-height: 66px;
+  }
+}
+html[data-visual-style="minimal"][data-reduce-transparency="true"]
+  .training-v3
+  .card {
+  background: #f1f1f4 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* Keep the submit action in flow: a bottom-sticky button can cover number inputs
+   while the mobile keyboard shrinks the visual viewport. */
+.training-v3 .workout-submit {
+  position: static;
+}
+.training-v3 .workout-heading {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto;
+  align-items: center !important;
+  padding: 0 !important;
+}
+.training-v3 .workout-heading > span:nth-of-type(2) {
+  display: none;
+}
+.training-v3 .workout-heading .workout-danger-menu {
+  justify-self: end;
+}
+.training-v3 .workout-heading .workout-danger-menu summary {
+  font-size: 12px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.training-v3 .workout-set-entry input {
+  scroll-margin-block: 90px;
+}
+.training-v3 .training-v3-summary {
+  width: min(100%, 560px);
+  margin: 24px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 36px 24px;
+}
+html[data-visual-style="minimal"]
+  .training-v3-summary
+  :is(h1, h2, p, svg, .text-link) {
+  color: #17181c !important;
+  margin: 0;
+}
+.training-v3-summary h2 {
+  font-size: 16px;
+  font-weight: 500;
+}
+html[data-visual-style="minimal"] .workout-active .training-v3 .training-v3-summary a.text-link {color:#24252b!important;}

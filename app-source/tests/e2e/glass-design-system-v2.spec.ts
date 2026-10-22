@@ -64,6 +64,7 @@ for (const width of [375, 390, 430]) {
   test(`mobile ${width}px: quick-log Chinese labels and water buttons stay on one line`, async ({page})=>{
     await page.setViewportSize({width,height:844});
     await page.goto("/today/");
+    await expect(page.locator(".today-v3-quick-item")).toHaveCount(5);
     const tiles = await page.locator(".today-v3-quick-item").evaluateAll(elements => elements.map(button => {
       const label = button.querySelector("span")!;
       const rect = label.getBoundingClientRect();
