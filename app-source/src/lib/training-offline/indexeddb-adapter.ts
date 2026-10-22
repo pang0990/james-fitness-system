@@ -79,8 +79,9 @@ export class WebIndexedDbTrainingDatabase implements OfflineTrainingDatabase {
       getCommand: (ownerId, commandId) =>
         asPromise(commandStore.get([ownerId, commandId])) as Promise<TrainingOutboxCommand|undefined>,
       listCommands: ownerId =>
-        asPromise(commandStore.index("byAccount").getAll(ownerId))
-          as Promise<TrainingOutboxCommand[]>,
+        asPromise<TrainingOutboxCommand[]>(
+          commandStore.index("byAccount").getAll(ownerId),
+        ),
       putCommand: async command => {
         await asPromise(commandStore.put(structuredClone(command)));
       },
