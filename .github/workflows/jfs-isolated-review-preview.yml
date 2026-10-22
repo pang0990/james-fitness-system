@@ -67,6 +67,23 @@ jobs:
           CI: "true"
       - name: Assemble downloadable mobile/desktop review kit
         run: node scripts/build-review-kit.mjs
+      - name: Validate ready-to-upload static preview root
+        run: |
+          test -s review-kit/site/index.html
+          test -s review-kit/site/today/index.html
+          test -s review-kit/site/nutrition/index.html
+          test -s review-kit/site/training/index.html
+          test -s review-kit/site/progress/index.html
+          test -s review-kit/site/_headers
+          test -s review-kit/site/robots.txt
+          test ! -e review-kit/site/.env
+      - name: Upload Netlify Drop ready-to-publish site ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: jfs-isolated-preview-netlify-drop
+          path: app-source/review-kit/site/
+          if-no-files-found: error
+          retention-days: 7
       - name: Upload private-from-production preview build and gallery
         if: always()
         uses: actions/upload-artifact@v4
