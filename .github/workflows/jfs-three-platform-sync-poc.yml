@@ -1,0 +1,88 @@
+name: JFS Web iOS Android Sync POC QA
+on:
+  pull_request:
+    branches:
+      - feat/training-offline-web-outbox-v1-20261022
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  web-and-sqlite-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app-source
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app-source/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - name: Run actual SQLite engine, Web/Native shared contract and full unit suite
+        run: npm test
+      - run: npm run build
+      - name: Prepare standalone IndexedDB test adapter
+        run: ./node_modules/.bin/esbuild tests/fixtures/offline-browser-harness.ts --bundle --format=iife --platform=browser --target=es2022 --outfile=test-output/jfs-offline-harness.js
+      - run: npx playwright install --with-deps chromium
+      - name: Browser regression including IndexedDB and four Web pages
+        run: npm run test:e2e -- --workers=1 --trace=retain-on-failure
+        env:
+          CI: "true"
+  postgres-dev-protocol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: synthetic-ci-only
+          POSTGRES_DB: jfs_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d jfs_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: "5432"
+      PGDATABASE: jfs_ci
+      PGUSER: postgres
+      PGPASSWORD: synthetic-ci-only
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/bootstrap_auth_stub.sql
+      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/migrations/202610220001_training_dev_foundation.sql
+      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/session_rpc_isolation.sql
+      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/migrations/202610220002_training_dev_read_session.sql
+      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/session_rpc_read_isolation.sql
+  native-bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install shared Training Core deps
+        working-directory: app-source
+        run: npm ci
+      - name: Install isolated Expo SDK 57 PoC deps
+        working-directory: native-poc
+        run: npm install --no-audit --no-fund
+      - name: Static Native TypeScript verification
+        working-directory: native-poc
+        run: npm run typecheck
+      - name: Bundle JS for iOS and Android (not native device build)
+        working-directory: native-poc
+        run: npm run bundle
