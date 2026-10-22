@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./authenticated";
 async function setup(page: any) {
   await page.goto("/onboarding/");
   await page.getByLabel("稱呼", { exact: true }).fill("Tester");

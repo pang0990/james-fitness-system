@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, DATA_KEY } from "./authenticated";
 import { initialState } from "../../src/lib/domain";
 async function seed(page: any) {
   await page.goto("/today/");
@@ -17,8 +17,8 @@ async function seed(page: any) {
     waterTarget: 2500,
   };
   await page.evaluate(
-    (s: any) => localStorage.setItem("james-fitness-v1", JSON.stringify(s)),
-    s,
+    ({s,key}: any) => localStorage.setItem(key, JSON.stringify(s)),
+    {s, key: DATA_KEY},
   );
   await page.reload();
 }
@@ -196,20 +196,20 @@ test("editing plan preserves active snapshot; reset explicitly archives old sess
   await page.goto("/training/");
   await page.getByRole("button", { name: "開始訓練", exact: true }).click();
   const original = await page.evaluate(
-    () => JSON.parse(localStorage.getItem("james-fitness-v1")!).sessions[0],
+    () => JSON.parse(localStorage.getItem("james-fitness-user-v1:00000000-0000-4000-8000-000000000042")!).sessions[0],
   );
   await page.goto("/training/plan/");
   await page.getByLabel("訓練日 1", { exact: true }).fill("Updated Upper");
   await page.getByRole("button", { name: "儲存計畫版本" }).click();
   const retained = await page.evaluate(
-    () => JSON.parse(localStorage.getItem("james-fitness-v1")!).sessions[0],
+    () => JSON.parse(localStorage.getItem("james-fitness-user-v1:00000000-0000-4000-8000-000000000042")!).sessions[0],
   );
   expect(retained).toEqual(original);
   page.on("dialog", (d) => d.accept());
   await page.getByLabel("目前訓練如何處理").selectOption("reset");
   await page.getByRole("button", { name: "儲存計畫版本" }).click();
   const sessions = await page.evaluate(
-    () => JSON.parse(localStorage.getItem("james-fitness-v1")!).sessions,
+    () => JSON.parse(localStorage.getItem("james-fitness-user-v1:00000000-0000-4000-8000-000000000042")!).sessions,
   );
   expect(sessions.filter((s: any) => s.status === "in_progress")).toHaveLength(
     1,
