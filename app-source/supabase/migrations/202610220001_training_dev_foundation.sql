@@ -81,7 +81,7 @@ begin
      p_session->>'id' is distinct from p_session_id or
      coalesce(length(p_session->>'name'), 0) not between 1 and 160 or
      (p_session->>'status') not in ('in_progress','completed','discarded') or
-     coalesce(p_session->>'date','') !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2} or
+     coalesce(p_session->>'date','') !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' or
      jsonb_typeof(p_session->'exercises') is distinct from 'array' or
      jsonb_array_length(p_session->'exercises') > 100 or
      coalesce(length(p_session->>'createdAt'),0) not between 10 and 100 or
