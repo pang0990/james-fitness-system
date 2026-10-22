@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const bundle = resolve(process.cwd(), "test-results", "jfs-offline-harness.js");
+const bundle = resolve(process.cwd(), "test-output", "jfs-offline-harness.js");
 const script = readFileSync(bundle, "utf8");
 
 type Harness = {
