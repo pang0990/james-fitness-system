@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - fix/four-workspaces-consistency-20261021
+      - preview/isolated-four-workspaces-20261021
     paths:
       - "app-source/**"
       - ".github/workflows/jfs-isolated-review-preview.yml"
@@ -30,7 +31,7 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Real login gate and workspace browser regressions
-        run: npm run test:e2e -- tests/e2e/app.spec.ts tests/e2e/four-workspaces-consistency.spec.ts --workers=1 --trace=retain-on-failure
+        run: npm run test:e2e -- --workers=1 --trace=retain-on-failure
         env:
           CI: "true"
       - name: Confirm no preview branding in ordinary static output
@@ -62,7 +63,7 @@ jobs:
         run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Review all four actual pages in two viewport sizes
-        run: npm run test:e2e -- tests/e2e/review-preview.spec.ts --workers=1 --trace=retain-on-failure
+        run: npm run test:e2e -- tests/e2e/review-preview.spec.ts tests/e2e/review-user-journey.spec.ts --workers=1 --trace=retain-on-failure
         env:
           CI: "true"
       - name: Assemble downloadable mobile/desktop review kit
