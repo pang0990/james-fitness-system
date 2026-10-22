@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "JFS Training Offline POC",
+    "slug": "jfs-training-offline-poc",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "edgeToEdgeEnabled": true
+    },
+    "experiments": {
+      "reactCompiler": false
+    }
+  }
+}
