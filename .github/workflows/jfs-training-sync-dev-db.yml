@@ -3,9 +3,14 @@ on:
   pull_request:
     branches:
       - feat/training-core-cycle-portability-20261022
+      - feat/training-sync-dev-schema-v1-20261022
     paths:
       - "app-source/supabase/**"
       - "app-source/src/lib/training-core/**"
+      - "app-source/src/lib/training-offline/**"
+      - "app-source/tests/training-offline-*.test.ts"
+      - "app-source/tests/e2e/training-offline-*.spec.ts"
+      - "app-source/tests/fixtures/offline-browser-harness.ts"
       - ".github/workflows/jfs-training-sync-dev-db.yml"
   workflow_dispatch:
 permissions:
@@ -68,3 +73,10 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Bundle isolated IndexedDB adapter for real browser checks
+        run: ./node_modules/.bin/esbuild tests/fixtures/offline-browser-harness.ts --bundle --format=iife --platform=browser --target=es2022 --outfile=test-output/jfs-offline-harness.js
+      - run: npx playwright install --with-deps chromium
+      - name: Test actual Chromium IndexedDB atomic transaction and persistence
+        run: npm run test:e2e -- tests/e2e/training-offline-indexeddb.spec.ts --workers=1 --trace=retain-on-failure
+        env:
+          CI: "true"
