@@ -54,3 +54,29 @@ test("Black Line: primary CTA remains legible; data input and navigation retain 
   await expect(dock).toHaveCSS("background-color","rgb(0, 0, 0)");
   await expect(dock.getByRole("link",{name:"Training"})).toHaveAttribute("href",/training/);
 });
+
+/* Prevent the old Polish tokens from making live labels dark-on-black. */
+for(const route of ["nutrition","training","progress"] as const) {
+  test(`Black Line ${route}: workspace heading remains visible white`,async({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.goto("/"+route+"/");
+    await expect(page.locator(".daily-page>.simple-heading h1"))
+      .toHaveCSS("color","rgb(255, 255, 255)");
+    expect(await page.evaluate(()=>getComputedStyle(document.documentElement)
+      .getPropertyValue("--ui-primary").trim())).toBe("#ffffff");
+  });
+}
+test("Black Line: Training secondary links and plan name have readable contrast",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/training/");
+  await expect(page.locator(".training-v3-heading h2")).toHaveCSS("color","rgb(255, 255, 255)");
+  await expect(page.locator(".training-home-links>a").first()).toHaveCSS("color","rgb(255, 255, 255)");
+  await expect(page.locator(".training-home-links>a").first()).toHaveCSS("background-color","rgb(0, 0, 0)");
+});
+test("Black Line: Progress create-first-record action is black type on solid white",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/progress/");
+  const action=page.locator(".progress-empty-action");
+  await expect(action).toHaveCSS("background-color","rgb(255, 255, 255)");
+  await expect(action).toHaveCSS("color","rgb(0, 0, 0)");
+});
