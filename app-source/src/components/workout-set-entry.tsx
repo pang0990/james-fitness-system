@@ -114,7 +114,7 @@ export function WorkoutSetEntry({
             if (
               added &&
               draft.type === "working" &&
-              s.preferences?.autoRest === true
+              s.preferences?.autoRest !== false
             ) {
               const now = new Date().toISOString();
               endRestInterval(target, "standard", now);
