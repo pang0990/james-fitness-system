@@ -290,3 +290,130 @@ html[data-visual-style="minimal"] :is(.app button,.app a,.app input,.app select,
     width:min(100%,100vw - 28px)!important;
   }
 }
+/*
+ * Production workspace precedence bridge.
+ * Legacy White Crystal rules target .app.jfs3-shell:not(.workout-active)
+ * and page-specific descendants; matching the real route class beats those
+ * rules without changing their dev-only showcase semantics.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) {
+  background:#000000!important;background-image:none!important;color:#ffffff!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
+  .topbar,.sidebar,.bottom-nav,.account-menu>summary,.today-header-bell
+) {
+  background:#000000!important;background-image:none!important;
+  color:#ffffff!important;border-color:#626262!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
+  .bottom-nav>a,.sidebar .nav-item
+) {
+  background:#000000!important;color:#a0a0a0!important;
+  border:1px solid transparent!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
+  .bottom-nav>a.active,.sidebar .nav-item.active
+) {
+  background:#000000!important;color:#ffffff!important;
+  border:1px solid #888888!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .daily-page>.simple-heading h1 {color:#ffffff!important;}
+/* Surfaces across Nutrition, Training, Progress (main and nested routes). */
+html[data-visual-style="minimal"] .app.page-nutrition.jfs3-shell:not(.workout-active) :is(
+  .nutrition-v3b,.nutrition-v3-dashboard,.nutrition-v3-panel,
+  .meal-section,.meal-entry,.meal-empty,.nutrition-cookbook-card,
+  .jfs-glass-card,.jfs-ui-surface,.card,
+  .nutrition-v3-meal-icons>button,.nutrition-v3-food-thumb,
+  .nutrition-cookbook-categories button
+),
+html[data-visual-style="minimal"] .app.page-training.jfs3-shell:not(.workout-active) :is(
+  .training-today,.training-daily-sessions,.training-daily-session,
+  .training-plan-summary,.training-v3-exercise,.training-v3-exercise-art,
+  .jfs-glass-card,.jfs-ui-surface,.card
+),
+html[data-visual-style="minimal"] .app.page-progress.jfs3-shell:not(.workout-active) :is(
+  .direction-hero,.progress-v3-stats,.progress-v3-photos,.review-glass,
+  .progress-v3-stat-row,.progress-v3-photo-empty,.performance-row,
+  .jfs-glass-card,.jfs-ui-surface,.card
+) {
+  background:#000000!important;background-image:none!important;
+  background-color:#000000!important;color:#ffffff!important;
+  border:1px solid #626262!important;border-radius:2px!important;
+  box-shadow:none!important;text-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"] .app.page-nutrition.jfs3-shell:not(.workout-active)
+  .nutrition-v3b.jfs-glass-card {
+  background:#000000!important;background-image:none!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"] .app.page-training.jfs3-shell:not(.workout-active)
+  .training-today.jfs-glass-card,
+html[data-visual-style="minimal"] .app.page-progress.jfs3-shell:not(.workout-active)
+  .direction-hero.jfs-glass-card {
+  background:#000000!important;background-image:none!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+/* White primary action sits above the neutral secondary-control precedence. */
+html[data-visual-style="minimal"] .app.page-nutrition.jfs3-shell:not(.workout-active)
+  .nutrition-v3b .nutrition-v3b-add.jfs-glass-button--primary,
+html[data-visual-style="minimal"] .app.page-training.jfs3-shell:not(.workout-active)
+  .training-v3-start.jfs-glass-button--primary,
+html[data-visual-style="minimal"] .app.page-progress.jfs3-shell:not(.workout-active)
+  .jfs-ui-action--primary {
+  background:#ffffff!important;background-image:none!important;
+  color:#000000!important;border:1px solid #ffffff!important;
+  border-radius:2px!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"] .app.page-nutrition.jfs3-shell:not(.workout-active)
+  .nutrition-v3b .nutrition-v3b-add.jfs-glass-button--primary :is(span,strong,svg) {
+  color:#000000!important;
+}
+/* All three workspace tab strips are flat and remain readable. */
+html[data-visual-style="minimal"] .app.page-nutrition.jfs3-shell:not(.workout-active) .nutrition-v3-tabs,
+html[data-visual-style="minimal"] .app.page-training.jfs3-shell:not(.workout-active) .training-v3-segments,
+html[data-visual-style="minimal"] .app.page-progress.jfs3-shell:not(.workout-active) .progress-v3-segments {
+  background:#000000!important;background-image:none!important;
+  color:#ffffff!important;border:1px solid #626262!important;
+  border-radius:2px!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"] .app.page-nutrition.jfs3-shell:not(.workout-active)
+  .nutrition-v3-tabs :is(a,button,span),
+html[data-visual-style="minimal"] .app.page-training.jfs3-shell:not(.workout-active)
+  .training-v3-segments :is(a,button,span),
+html[data-visual-style="minimal"] .app.page-progress.jfs3-shell:not(.workout-active)
+  .progress-v3-segments :is(a,button,span) {
+  color:#a0a0a0!important;background:#000000!important;
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.page-nutrition.jfs3-shell:not(.workout-active)
+  .nutrition-v3-tabs :is(.active,.selected,[aria-pressed="true"]),
+html[data-visual-style="minimal"] .app.page-training.jfs3-shell:not(.workout-active)
+  .training-v3-segments :is(.active,.selected,[aria-pressed="true"]),
+html[data-visual-style="minimal"] .app.page-progress.jfs3-shell:not(.workout-active)
+  .progress-v3-segments :is(.active,.selected,[aria-pressed="true"]) {
+  color:#ffffff!important;background:#000000!important;
+  border:1px solid #ffffff!important;box-shadow:none!important;
+}
+/* Disable the accessibility fallbacks that used to repaint white glass. */
+html[data-visual-style="minimal"][data-reduce-transparency="true"]
+  .app.page-nutrition.jfs3-shell:not(.workout-active) :is(
+    .nutrition-v3b.jfs-glass-card,.meal-section,.meal-entry,
+    .nutrition-v3-meal-icons>button,.nutrition-v3-tabs
+  ),
+html[data-visual-style="minimal"][data-reduce-transparency="true"]
+  .app.page-training.jfs3-shell:not(.workout-active) :is(
+    .training-today.jfs-glass-card,.training-v3-exercise,.training-v3-segments
+  ),
+html[data-visual-style="minimal"][data-reduce-transparency="true"]
+  .app.page-progress.jfs3-shell:not(.workout-active) :is(
+    .direction-hero.jfs-glass-card,.progress-v3-stat-row,.progress-v3-segments
+  ) {
+  background:#000000!important;background-image:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  box-shadow:none!important;
+}
