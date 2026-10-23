@@ -1078,11 +1078,12 @@ function Training({
                       date: String(d.get("date")),
                       type: String(d.get("type")),
                       minutes: Number(d.get("minutes")),
-                      calories:
-                        d.get("calories") === ""
-                          ? null
-                          : Number(d.get("calories")),
-                      createdAt: now(),
+                      calories:d.get("calories")===""?null:Number(d.get("calories")),
+                       caloriesSource:String(d.get("caloriesSource"))==="machine"?"machine":"manual",
+                       distanceKm:d.get("distanceKm")===""?undefined:Number(d.get("distanceKm")),
+                       avgHeartRate:d.get("avgHeartRate")===""?undefined:Number(d.get("avgHeartRate")),
+                       source:"manual",
+                       createdAt: now(),
                     }),
                   )
                 ) {
@@ -1116,11 +1117,13 @@ function Training({
                   max={1440}
                   step="1"
                 />
-                <NumberField
-                  name="calories"
-                  label="器材／手動熱量 kcal（選填）"
-                  required={false}
-                />
+                <NumberField name="distanceKm" label="距離 km（選填）" min={0} max={1000} step="0.01" required={false}/>
+                 <NumberField name="avgHeartRate" label="平均心率 bpm（選填）" min={30} max={250} step="1" required={false}/>
+                 <NumberField name="calories" label="消耗 kcal（選填）" min={0} max={10000} required={false}/>
+                 <Field label="消耗數值來源"><select name="caloriesSource" defaultValue="manual">
+                   <option value="manual">自行填入</option>
+                   <option value="machine">器材數值</option>
+                 </select></Field>
               </div>
               <div className="form-actions">
                 <button className="button">保存紀錄</button>
