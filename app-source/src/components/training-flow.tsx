@@ -900,6 +900,8 @@ export function TrainingFlow({
           <div className="training-home-links">
             <Link href="/training/calendar">訓練日曆 <ChevronRight size={17}/></Link>
             <Link href="/training/history">訓練歷史 <ChevronRight size={17}/></Link>
+             <Link href="/training/activity">Cardio 有氧紀錄 <ChevronRight size={17}/></Link>
+             <Link href="/progress/weekly">恢復與 Deload Check <ChevronRight size={17}/></Link>
           </div>
           <details className="training-home-tools">
             <summary>其他訓練工具</summary>
