@@ -1,9 +1,9 @@
-/* Nutrition 3.0 / Phase 1 — real data, independent Minimal dashboard. */
+/* Nutrition 3.0 — real data, compact black-line Minimal dashboard. */
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b {
   min-width:0;
-  padding:23px 24px;
-  margin:0 0 17px;
-  /* Shared glass material comes from glass-system-v2.css (GlassCard). */
+  padding:14px;
+  margin:0 0 12px;
+  /* GlassCard is a compatibility component; presentation uses opaque Black Line tokens. */
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-topline,
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro-top,
@@ -20,13 +20,13 @@ html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b h2 {
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-daytype {
   font-size:12px;font-weight:610;white-space:nowrap;
-  padding:7px 11px;border-radius:10px;
-  color:var(--jfs3-ink-secondary);background:var(--jfs3-inset);
+  padding:7px 11px;border-radius:2px;
+  color:var(--jfs3-ink-secondary);background:#000000;
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-upper {
   display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.2fr);
-  gap:clamp(15px,3vw,33px);align-items:center;
-  padding:19px 0 21px;
+  gap:clamp(10px,2vw,20px);align-items:center;
+  padding:12px 0 14px;
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy {
   display:flex;align-items:center;gap:15px;min-width:0;
@@ -36,7 +36,7 @@ html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy-ring {
   border-radius:50%;
   background:conic-gradient(var(--jfs3-ink) 0 var(--nutrition-v3b-percent),
     var(--jfs3-track) var(--nutrition-v3b-percent) 100%);
-  box-shadow:inset 0 1px 3px rgba(0,0,0,.055);
+  box-shadow:none;
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-ring-inner {
   width:101px;height:101px;border-radius:50%;
@@ -69,7 +69,7 @@ html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-energy-stats p 
   font-size:11px;line-height:1.4;
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macros {
-  display:grid;gap:13px;min-width:0;
+  display:grid;gap:10px;min-width:0;
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-macro {
   display:flex;flex-direction:column;gap:7px;min-width:0;
@@ -98,7 +98,7 @@ html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-over {
   color:var(--jfs3-ink);
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-footer {
-  border-top:1px solid var(--jfs3-line);padding-top:16px;flex-wrap:wrap;
+  border-top:1px solid var(--jfs3-line);padding-top:10px;flex-wrap:wrap;
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-status {
   display:flex;align-items:center;gap:7px;min-height:38px;
@@ -107,9 +107,9 @@ html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-status {
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-add {
   display:inline-flex;align-items:center;justify-content:center;gap:9px;
   min-width:150px;min-height:44px;padding:10px 17px;
-  color:var(--jfs3-action-text);background:var(--jfs3-action);
-  border:1px solid transparent;border-radius:13px;
-  box-shadow:0 2px 5px rgba(0,0,0,.08);
+  color:#000000;background:#ffffff;
+  border:1px solid #ffffff;border-radius:2px;
+  box-shadow:none;
   font-family:inherit;font-weight:670;font-size:13px;cursor:pointer;
 }
 html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b :is(a,button):focus-visible {
@@ -120,7 +120,7 @@ html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b .jfs-ui-empty {
 }
 @media(max-width:767px) {
   html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b {
-    padding:17px 16px;border-radius:18px;
+    padding:14px;border-radius:2px;
   }
   html[data-visual-style="minimal"] .page-nutrition .nutrition-v3b-upper {
     grid-template-columns:1fr;gap:17px;
