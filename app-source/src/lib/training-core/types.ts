@@ -64,6 +64,7 @@ export type Session = {
     plannedSets?: number;
     reps?: string;
     rir?: number;
+    targetRir?: number;
     muscle?: string;
     allowRestPause?: boolean;
     allowDropSet?: boolean;
