@@ -67,3 +67,17 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"] {
   --jfs3-ink-secondary:#a0a0a0;--jfs4-glass-surface:#000000;
   --jfs4-glass-control:#000000;--jfs4-glass-raised:#000000;
 }
+
+/*
+ * Legacy Polish has :root[data-theme="light"] variables (specificity 0-2).
+ * The user's stored Light preference remains supported, but Minimal always
+ * resolves that older palette to the same canonical Black Line ink/surfaces.
+ */
+html[data-visual-style="minimal"][data-theme="light"] {
+  --ui-canvas:var(--jfs3-canvas);--ui-surface:var(--jfs3-paper);
+  --ui-surface-raised:var(--jfs3-paper);--ui-overlay:var(--jfs3-paper);
+  --ui-primary:var(--jfs3-ink);--ui-secondary:var(--jfs3-ink-secondary);
+  --ui-tertiary:#929292;--ui-border:var(--jfs3-line);
+  --ui-border-strong:var(--jfs3-line-strong);
+  --ui-accent:#ffffff;--ui-accent-fill:#ffffff;--ui-shadow:none;
+}
