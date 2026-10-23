@@ -1,7 +1,7 @@
 name: JFS Monochrome UI visual QA
 on:
   pull_request:
-    branches: [main, qa/web-four-workspaces-release-gate-20261022, design/all-pages-blackline-20261023]
+    branches: [main, qa/web-four-workspaces-release-gate-20261022, design/all-pages-blackline-20261023, refactor/blackline-native-consolidation-20261023]
     paths:
       - "app-source/**"
       - ".github/workflows/jfs-monochrome-visual.yml"
