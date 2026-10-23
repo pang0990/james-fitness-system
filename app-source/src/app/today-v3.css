@@ -585,6 +585,30 @@ html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active
 }
 html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
   .today-v3 .today-v3-water-actions button {min-height:44px!important;}
+/* Visible hierarchy is built with dividers, not nested shadow cards. */
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .jfs3-section-heading {
+  border-bottom:1px solid #454545;
+  padding-bottom:7px;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .activity-heading {
+  border-bottom:1px solid #454545;
+  padding-bottom:8px;
+  margin-bottom:10px;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .activity-overview {gap:8px;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .text-link {color:#ffffff!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .page-foot {margin:20px auto 12px!important;padding-top:10px!important;border-color:#454545!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  :is(.account-menu>div,.toast) {
+  background:#000000!important;background-image:none!important;
+  color:#ffffff!important;border:1px solid #626262!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
 /* Minimal line-based sidebar, account chrome and bottom dock. */
 html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
   :is(.topbar,.sidebar,.bottom-nav) {
