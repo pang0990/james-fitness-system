@@ -136,13 +136,13 @@ html[data-visual-style="minimal"] .page-today .today-ref-scene {
   min-height:198px!important;max-height:none!important;
   margin:0!important;padding:28px clamp(22px,4vw,42px)!important;
   background:#000000!important;
-  background-image:linear-gradient(125deg,#fff 0%,#f4f8ff 65%,#eaf2ff 100%)!important;
+  background-image:none;
   border:1px solid #e6ebf2!important;border-radius:2px!important;
   overflow:hidden!important;box-shadow:none;
 }
 html[data-visual-style="minimal"][data-theme="dark"] .page-today .today-ref-scene{
   background:#000000!important;
-  background-image:linear-gradient(125deg,#20232c,#191b23 70%,#172338)!important;
+  background-image:none;
   border-color:var(--color-border-default)!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-scene::before{
@@ -229,7 +229,7 @@ html[data-visual-style="minimal"] .page-today .today-ref-action-copy>span{
   color:var(--color-text-secondary)!important;font-size:12px!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-action-pill{
-  background:#ffffff!important;color:#fff!important;border:0!important;
+  background:#ffffff!important;color:#000000!important;border:1px solid #ffffff!important;
   box-shadow:none!important;border-radius:2px!important;font-size:12px!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-alert .notice-carousel,
@@ -406,7 +406,7 @@ html[data-visual-style="minimal"] .app,
 html[data-visual-style="minimal"] .main,
 html[data-visual-style="minimal"] body :is(.page-nutrition,.page-training,.page-progress) .main,
 html[data-visual-style="minimal"] .page-today .main{
-  background:transparent!important;
+  background:#000000!important;
 }
 html[data-visual-style="minimal"] .topbar,
 html[data-visual-style="minimal"] .page-today .topbar,
@@ -617,7 +617,7 @@ html[data-visual-style="minimal"] body .training-v3 .training-today>.button{
   border-radius:2px!important;
 }
 
-/* Progress — real stats, neutral tiles and blue chart accent. */
+/* Progress — real stats, flat neutral tiles and white chart accent. */
 html[data-visual-style="minimal"] body .page-progress .direction-hero{
   background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
