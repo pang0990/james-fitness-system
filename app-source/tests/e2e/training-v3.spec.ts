@@ -428,6 +428,7 @@ test("performance engine: stable exercise ID, optional RIR, e1RM and weekly work
   const recent=state.sessions[1];
   recent.status="completed";recent.date="2026-10-23";recent.workoutDate="2026-10-23";
   recent.completedAt="2026-10-23T12:00:00.000Z";
+  recent.exercises[0].muscle="Chest";
   recent.exercises[0].sets=[{...segment("new-working"),weight:61,rir:2},
     {...segment("rp-ignored"),type:"rp",weight:50,parentId:"new-working"}];
   const evidence=trainingProgressEvidence(state);
