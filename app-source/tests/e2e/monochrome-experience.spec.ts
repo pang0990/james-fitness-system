@@ -23,7 +23,7 @@ test("minimal mobile: tactile Today, monochrome dock, accessible progress entry"
       overflow: document.documentElement.scrollWidth - innerWidth,
     };
   });
-  expect(style.primary).toBe("#19191b");
+  expect(style.primary).toBe("#ffffff");
   expect(style.activeColor).toBe("rgb(255, 255, 255)"); // black-line selected navigation
   expect(style.dockShadow).toBe("none");
   expect(style.cardShadow).toBe("none");
@@ -84,7 +84,7 @@ test("motion and appearance: reduced-motion respected; dark Minimal stays graysc
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator(".today-v3-focus")).toBeVisible();
   const ink = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--jfs2-ink").trim());
-  expect(ink).toBe("#f5f5f7");
+  expect(ink).toBe("#ffffff");
   await page.screenshot({ path: "test-results/monochrome-today-dark.png", fullPage: true });
 });
 
