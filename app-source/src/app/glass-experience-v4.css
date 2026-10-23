@@ -1,74 +1,5 @@
-/*
- * Glass Experience V4: restrained Liquid Glass-inspired physical layering.
- * Glass belongs to navigation and key surfaces, NOT every text/input/icon.
- * Static ambient mesh; no continuous animation or background-video payload.
- * Cinematic and active workout routes are left unchanged.
- */
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) {
-  background:var(--jfs4-glass-ambient);
-  background-color:var(--jfs3-canvas);
-  isolation:isolate;
-}
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main {
-  background:transparent!important;
-}
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main .topbar,
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar,
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.bottom-nav {
-  background:var(--jfs4-glass-navigation)!important;
-  border-color:var(--jfs4-glass-edge)!important;
-  -webkit-backdrop-filter:var(--jfs4-glass-blur-strong);
-  backdrop-filter:var(--jfs4-glass-blur-strong);
-  box-shadow:inset 0 1px 0 var(--jfs4-glass-specular),
-    0 5px 20px rgba(0,0,0,.055)!important;
-}
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main .topbar {
-  border-bottom:1px solid var(--jfs4-glass-edge)!important;
-}
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.bottom-nav {
-  border:1px solid var(--jfs4-glass-border)!important;
-  box-shadow:inset 0 1px 0 var(--jfs4-glass-specular),
-    0 14px 32px rgba(0,0,0,.13)!important;
-}
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar {
-  border-right:1px solid var(--jfs4-glass-edge)!important;
-}
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
-  :is(.today-v3 .jfs3-surface,.today-v3-activity>.daily-activity,
-    .nutrition-v3b,.jfs-ui-surface,
-    .page-nutrition .meal-section,.page-training .training-today,
-    .page-progress .direction-hero,.page-progress .progress-v3-stats,
-    .page-progress .progress-v3-photos) {
-  background:var(--jfs4-glass-surface)!important;
-  border:1px solid var(--jfs4-glass-edge)!important;
-  -webkit-backdrop-filter:var(--jfs4-glass-blur);
-  backdrop-filter:var(--jfs4-glass-blur);
-  box-shadow:inset 0 1px 0 var(--jfs4-glass-specular),
-    inset 0 -1px 0 var(--jfs4-glass-edge),
-    var(--jfs4-glass-shadow-soft)!important;
-}
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
-  :is(.today-v3 .jfs3-surface,.nutrition-v3b,.page-training .training-today):hover {
-  box-shadow:inset 0 1px 0 var(--jfs4-glass-specular),
-    var(--jfs4-glass-shadow)!important;
-}
-/* Control-center-like rounded pill surfaces: pressable, not exaggerated glossy chrome. */
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
-  :is(.today-v3-cycle,.today-v3-water-actions button,.today-v3-quick-item,
-    .today-v3 .jfs3-secondary,.nutrition-v3-meal-icons>button>span,
-    .training-v3-exercise-art,.jfs-ui-action--secondary) {
-  background:var(--jfs4-glass-control)!important;
-  border-color:var(--jfs4-glass-edge)!important;
-  -webkit-backdrop-filter:blur(12px) saturate(1.1);
-  backdrop-filter:blur(12px) saturate(1.1);
-  box-shadow:inset 0 1px 0 var(--jfs4-glass-specular),
-    0 4px 12px rgba(0,0,0,.045)!important;
-}
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
-  :is(.today-v3-notice,.nutrition-v3b-daytype) {
-  background:var(--jfs4-glass-inset)!important;
-  border-color:var(--jfs4-glass-edge)!important;
-}
+/* Developer-only White Crystal showcase; production Black Line uses no glass. */
+html[data-visual-style="minimal"] .jfs-showcase[data-material] {--jfs4-glass-blur:blur(22px) saturate(1.13);--jfs4-glass-blur-strong:blur(30px) saturate(1.15);}
 /* Showcase uses identical component primitives but a selectable material stage. */
 html[data-visual-style="minimal"] .jfs-showcase[data-material] {
   position:relative;isolation:isolate;overflow:hidden;
@@ -195,38 +126,136 @@ html[data-visual-style="minimal"] .jfs-showcase-material-switch button[aria-pres
 html[data-visual-style="minimal"] .jfs-showcase-material-switch button:focus-visible {
   outline:3px solid var(--jfs3-ink);outline-offset:2px;
 }
-@supports not ((backdrop-filter:blur(4px)) or (-webkit-backdrop-filter:blur(4px))) {
-  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
-    .jfs3-surface,.nutrition-v3b,.jfs-ui-surface,.topbar,.sidebar,.bottom-nav,.meal-section,.training-today,.direction-hero) {
-    background:var(--jfs3-paper)!important;
-  }
-  html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-surface {
-    background:var(--jfs3-paper)!important;
-  }
-}
-/* Accessibility: replace every translucent layer with an opaque material.
- * The app's Reduce Transparency switch and Safari's OS preference both win.
+
+/* Showcase: all three choices share black canvas and LIGHT materials.
+ * "crystal" is the desired reference. "clear" is more transparent.
+ * "solid" is the old matte control, preserved for comparison.
  */
-@media (prefers-reduced-transparency:reduce) {
-  html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
-    .topbar,.sidebar,.bottom-nav,.jfs3-surface,.nutrition-v3b,
-    .jfs-ui-surface,.meal-section,.training-today,.direction-hero,
-    .progress-v3-stats,.progress-v3-photos) {
-    background:var(--jfs3-paper)!important;
-    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-  }
+html[data-visual-style="minimal"] .jfs-showcase[data-material] {
+  --jfs3-ink:#16171b;
+  --jfs3-ink-secondary:#454650;
+  --jfs3-paper:#fff;
+  --jfs3-paper-soft:#f7f7f9;
+  --jfs3-inset:#e8e8ec;
+  --jfs3-action:#16171b;
+  --jfs3-action-text:#fff;
+  --jfs3-track:rgba(23,24,29,.16);
+  --jfs4-glass-surface:rgba(255,255,255,.93);
+  --jfs4-glass-raised:rgba(255,255,255,.96);
+  --jfs4-glass-control:rgba(255,255,255,.95);
+  --jfs4-glass-border:rgba(255,255,255,.87);
+  --jfs4-glass-edge:rgba(255,255,255,.67);
+  --jfs4-glass-specular:#fff;
+  --jfs4-glass-shadow:0 20px 36px rgba(0,0,0,.34),0 4px 12px rgba(0,0,0,.18);
+  --jfs4-glass-shadow-soft:0 13px 25px rgba(0,0,0,.24),0 3px 8px rgba(0,0,0,.13);
+  --jfs4-glass-ambient:
+    radial-gradient(ellipse 52% 33% at 88% 17%,rgba(255,255,255,.085),transparent),
+    radial-gradient(ellipse 46% 46% at 12% 77%,rgba(255,255,255,.06),transparent),
+    linear-gradient(#030304,#030304);
+  color:#f6f6f9!important;
+  background-color:#030304!important;
+  background-image:var(--jfs4-glass-ambient)!important;
 }
-html[data-visual-style="minimal"][data-reduce-transparency="true"]
-  .app.jfs3-shell:not(.workout-active) :is(
-    .topbar,.sidebar,.bottom-nav,.jfs3-surface,.nutrition-v3b,.jfs-ui-surface,
-    .meal-section,.training-today,.direction-hero,.progress-v3-stats,.progress-v3-photos) {
-    background:var(--jfs3-paper)!important;
-    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+html[data-visual-style="minimal"] .jfs-showcase[data-material="crystal"] {
+  --jfs4-glass-surface:rgba(255,255,255,.93);
+  --jfs4-glass-raised:rgba(255,255,255,.96);
+  --jfs4-glass-control:rgba(255,255,255,.95);
 }
-html[data-visual-style="minimal"][data-reduce-transparency="true"] .jfs-showcase[data-material] .jfs-ui-surface {
-  background:var(--jfs3-paper)!important;
+html[data-visual-style="minimal"] .jfs-showcase[data-material="clear"] {
+  --jfs4-glass-surface:rgba(255,255,255,.84);
+  --jfs4-glass-raised:rgba(255,255,255,.89);
+  --jfs4-glass-control:rgba(255,255,255,.87);
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] {
+  --jfs4-glass-surface:#fff;
+  --jfs4-glass-raised:#fff;
+  --jfs4-glass-control:#f1f1f5;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-showcase-heading,.jfs-showcase-heading h1,.jfs-showcase-heading p,
+    .jfs-showcase-overline,.jfs-showcase-feedback,.jfs-ui-section-heading>h2) {
+  color:#f7f7fb!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-showcase-heading {
+  border-bottom:1px solid rgba(255,255,255,.22);
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-surface {
+  background:var(--jfs4-glass-surface)!important;
+  color:#16171b!important;
+  border:1px solid var(--jfs4-glass-border)!important;
+  -webkit-backdrop-filter:var(--jfs4-glass-blur);backdrop-filter:var(--jfs4-glass-blur);
+  box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(255,255,255,.5),
+    var(--jfs4-glass-shadow-soft)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-surface--raised {
+  background:var(--jfs4-glass-raised)!important;
+  box-shadow:inset 0 1px 0 #fff,var(--jfs4-glass-shadow)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-ui-action--secondary,.jfs-showcase-tabs,.jfs-showcase-tabs button.active,
+    .jfs-showcase-material-switch,.jfs-showcase-version) {
+  color:#16171b!important;
+  background:var(--jfs4-glass-control)!important;
+  border:1px solid var(--jfs4-glass-edge)!important;
+  box-shadow:inset 0 1px 0 #fff,0 5px 15px rgba(0,0,0,.15)!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-showcase-tabs button,.jfs-showcase-material-switch button) {
+  color:#353640!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material]
+  :is(.jfs-ui-surface,.jfs-ui-surface--flat,.jfs-ui-surface--raised) :is(strong,small,p,b,span) {
+  color:inherit;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-ui-section-heading {
+  color:#f7f7fb!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-showcase-version {
+  color:#16171b!important;
+}
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"] :is(
+  .jfs-ui-surface,.jfs-showcase-tabs,.jfs-showcase-material-switch,
+  .jfs-ui-action--secondary) {
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
+
+/* The original matte comparator deliberately has no translucent or bevel highlight. */
+html[data-visual-style="minimal"] .jfs-showcase[data-material="solid"]
+  :is(.jfs-ui-action--quiet,.jfs-ui-action--secondary,.jfs-ui-action:disabled) {
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  box-shadow:none!important;
+}
+
+
+/* Developer UI Lab: interactive transparency calibration.
+ * The live slider changes only the Showcase inline CSS variables, not account data.
+ */
+html[data-visual-style="minimal"] .jfs-showcase[data-material] .jfs-showcase-transparency {
+  width:min(100%,420px);margin:17px 0 10px;
+  padding:14px 17px;border:1px solid rgba(255,255,255,.58);
+  border-radius:17px;background:rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 14px rgba(0,0,0,.14);
+  color:#f8f8fa;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency-heading {
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:13px;font-weight:640;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency-heading strong {
+  font-variant-numeric:tabular-nums;font-size:14px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency input[type="range"] {
+  display:block;width:100%;height:32px;margin:10px 0 2px;
+  cursor:pointer;accent-color:#f7f7f9;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency input:focus-visible {
+  outline:3px solid #fff;outline-offset:2px;
+}
+html[data-visual-style="minimal"] .jfs-showcase-transparency p {
+  margin:5px 0 0;font-size:11px;line-height:1.6;color:rgba(255,255,255,.79);
+}
+
 @media(max-width:767px) {
   html[data-visual-style="minimal"] .jfs-showcase[data-material] {
     border-radius:23px;padding:18px;
