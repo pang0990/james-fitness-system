@@ -10,6 +10,7 @@ const emptyDraft = (): SetDraft => ({
   id: crypto.randomUUID(),
   weight: "",
   reps: "",
+  rir: "",
   type: "working",
   parentId: "",
   updatedAt: new Date().toISOString(),
@@ -55,6 +56,7 @@ export function WorkoutSetEntry({
     draft.weight ||
     draft.reps ||
     draft.parentId ||
+    draft.rir ||
     draft.type !== "working"
   );
   function persist(next: SetDraft) {
@@ -83,6 +85,7 @@ export function WorkoutSetEntry({
         lock.current = true;
         try {
           if (!draft.weight.trim() || !draft.reps.trim()) return;
+          if (draft.rir?.trim() && (!Number.isInteger(Number(draft.rir)) || Number(draft.rir)<0 || Number(draft.rir)>10))return;
           const ok = save("保存訓練段落", (s) => {
             const target = s.sessions.find((x) => x.id === session.id)!;
             const liveExercise = target.exercises.find(
@@ -102,7 +105,7 @@ export function WorkoutSetEntry({
               weight: Number(draft.weight),
               reps: Number(draft.reps),
               type: draft.type,
-              rir: null,
+              rir: draft.rir?.trim() ? Number(draft.rir) : null,
               createdAt: new Date().toISOString(),
               ...(["rp", "drop"].includes(draft.type)
                 ? { parentId: draft.parentId }
@@ -218,6 +221,13 @@ export function WorkoutSetEntry({
           />
         </Field>
       </div>
+      {state.preferences?.showRir !== false && (
+        <Field label="RIR · 還可再做幾次（選填）">
+          <input name="rir" type="number" min={0} max={10} step={1}
+            value={draft.rir??""} inputMode="numeric" disabled={!!session.pausedAt}
+            onChange={e=>change({rir:e.target.value})}/>
+        </Field>
+      )}
       {["rp", "drop"].includes(draft.type) && (
         <Field label="所屬工作組">
           <select
