@@ -3,7 +3,6 @@ import { addDays, type AppState, type Session } from "./domain";
 /** Versioned display-only training comparisons; never rewrite historical sets. */
 export const TRAINING_PERFORMANCE_RULE_VERSION = "working-sets-e1rm-v1";
 type Exercise = Session["exercises"][number];
-type Set = Exercise["sets"][number];
 export type SetEvidence = {
   date: string; sessionId: string; exerciseId: string;
   exerciseLibraryId?: string; name: string;
