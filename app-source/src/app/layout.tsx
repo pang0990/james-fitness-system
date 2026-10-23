@@ -29,6 +29,7 @@ import { ReviewPreviewBanner } from "@/components/review-preview-banner";
 import "./training-v3.css";
 // Today is migrated first; load its scoped black-line overrides after legacy Glass CSS.
 import "./today-v3.css";
+import "./black-line-system.css";
 
 export const metadata: Metadata = {
   title: "James · Fitness System",
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#030304",
+  themeColor: "#000000",
   viewportFit: "cover",
 };
 export default function RootLayout({
