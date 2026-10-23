@@ -2,15 +2,18 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useStore } from "@/lib/store";
-import { activeCycle, performance } from "@/lib/training-model";
+import { activeCycle } from "@/lib/training-model";
+import {trainingProgressEvidence,weeklyWorkingVolume,TRAINING_PERFORMANCE_RULE_VERSION} from "@/lib/training-performance";
+import {trainingSafetyReview} from "@/lib/training-review-evidence";
 import { uid } from "./daily";
 export function TrainingReview({ date }: { date: string }) {
   const { state, save } = useStore();
   const [recovery, setRecovery] = useState(false),
     [message, setMessage] = useState("");
   const plan = activeCycle(state);
-  const rows = performance(state).filter((r) => r.comparable),
-    improving = rows.some((r) => r.improved);
+  const rows = trainingProgressEvidence(state),
+    improving = rows.some((r) => r.outcome === "improved");
+  const weekly=weeklyWorkingVolume(state,date), safety=trainingSafetyReview(state,date);
   if (!plan) return null;
   const reason = !rows.length
     ? "資料不足，繼續記錄相同動作的重量與次數，才能比較表現。"
@@ -25,6 +28,27 @@ export function TrainingReview({ date }: { date: string }) {
         JAMES TRAINING REVIEW · {plan.stage ?? "Intensity"}
       </p>
       <p>{reason}</p>
+      <p className="muted">規則：{TRAINING_PERFORMANCE_RULE_VERSION} · 本週 Working Sets {weekly.totalWorkingSets} · {weekly.start}～{weekly.end}</p>
+      {weekly.unassigned>0 && <p className="muted">{weekly.unassigned} 組缺少主要肌群標記，不猜測其歸屬。</p>}
+      <div className="training-review-evidence">
+        <h3>相同動作表現比較</h3>
+        {rows.length ? rows.map(item=><div className="simple-row" key={item.key}>
+          <div className="stack">
+            <strong>{item.name}</strong>
+            <small>{item.before.date}：{item.before.weight} kg × {item.before.reps} · RIR {item.before.rir??"未填"}</small>
+            <small>{item.after.date}：{item.after.weight} kg × {item.after.reps} · RIR {item.after.rir??"未填"}</small>
+            <small>{item.reason} · e1RM 變化 {item.e1rmChangePercent===null?"無法估算":item.e1rmChangePercent.toFixed(1)+"%"}</small>
+          </div>
+        </div>):<p className="muted">需要相同動作兩次已完成訓練；不同 Library ID 不會依名稱強行合併。</p>}
+      </div>
+      <section className="card stack" aria-label="Deload 與恢復評估">
+        <h3>Deload Check · {safety.title}</h3>
+        <p>{safety.explanation}</p>
+        <p className="muted">可比較動作 {safety.comparableExercises} · 有進步證據 {safety.improvedExercises} · 近期恢復紀錄 {safety.recoveryEvidenceCount}</p>
+        {safety.painDescription && <p role="alert">{safety.painDescription}</p>}
+        <p className="muted">只評估，不自動變更課表或歷史；請先確認計畫版本的調整。</p>
+        <Link href="/progress/recovery" className="text-link">查看疼痛與恢復紀錄 →</Link>
+      </section>
       {!improving && !!rows.length && (
         <label className="check">
           <input
