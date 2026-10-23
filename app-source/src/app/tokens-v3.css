@@ -29,6 +29,19 @@ html[data-visual-style="minimal"] {
   --bg:#000000;--paper:#000000;--ink:#ffffff;--muted:#a0a0a0;
   --line:#626262;--gold:#ffffff;--gold-highlight:#ffffff;
   --glass-bg:#000000;--glass-border:#626262;--shadow:none;--glow:none;
+  --font-body:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang TC","Noto Sans TC","Helvetica Neue",sans-serif;
+  --color-calories:#ffffff;--color-protein:#eeeeee;--color-carbs:#c7c7c7;
+  --color-fat:#999999;--color-water:#d7d7d7;--color-recovery:#bbbbbb;
+  --minimal-accent:#ffffff;--minimal-glass:#000000;
+  --minimal-glass-raised:#000000;--minimal-glass-soft:#000000;
+  --minimal-glass-stroke:#626262;--minimal-glass-shadow:none;
+  --jfs-ring-track:#383838;--jfs-ring-track-calorie:#383838;
+  --jfs2-ink:#ffffff;--jfs2-ink-soft:#a0a0a0;
+  --jfs2-canvas:#000000;--jfs2-paper:#000000;--jfs2-paper-high:#000000;
+  --jfs2-sunken:#000000;--jfs2-stroke:#626262;--jfs2-stroke-strong:#888888;
+  --jfs2-shadow:none;--jfs2-shadow-hover:none;--jfs2-control-shadow:none;
+  --jfs2-highlight:transparent;--jfs2-wash:transparent;--jfs2-radius-lg:2px;
+
   /* Compatibility aliases during migration: these are opaque, never glass. */
   --jfs4-glass-surface:#000000;--jfs4-glass-raised:#000000;
   --jfs4-glass-inset:#000000;--jfs4-glass-control:#000000;
