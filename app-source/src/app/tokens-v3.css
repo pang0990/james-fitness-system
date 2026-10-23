@@ -41,6 +41,17 @@ html[data-visual-style="minimal"] {
   --jfs2-sunken:#000000;--jfs2-stroke:#626262;--jfs2-stroke-strong:#888888;
   --jfs2-shadow:none;--jfs2-shadow-hover:none;--jfs2-control-shadow:none;
   --jfs2-highlight:transparent;--jfs2-wash:transparent;--jfs2-radius-lg:2px;
+  /* Polish 01 aliases used by active route labels and secondary navigation. */
+  --ui-canvas:#000000;--ui-surface:#000000;
+  --ui-surface-raised:#000000;--ui-overlay:#000000;
+  --ui-border:#626262;--ui-border-strong:#888888;
+  --ui-primary:#ffffff;--ui-secondary:#a0a0a0;--ui-tertiary:#929292;
+  --ui-accent:#ffffff;--ui-accent-fill:#ffffff;--ui-shadow:none;
+  --ui-radius-sm:2px;--ui-radius:2px;--ui-radius-lg:2px;
+  --ui-page-pad:16px;--ui-space-sm:8px;--ui-space:12px;
+  --ui-space-lg:16px;--ui-space-xl:24px;
+  --ui-font:var(--font-body);--ui-display:var(--font-body);
+
 
   /* Compatibility aliases during migration: these are opaque, never glass. */
   --jfs4-glass-surface:#000000;--jfs4-glass-raised:#000000;
