@@ -56,15 +56,16 @@ test("Glass Lab: small screen remains usable with black canvas and white crystal
 });
 
 for (const route of ["today", "nutrition", "training", "progress"] as const) {
-  test(`Glass app: ${route} gets a frosted shell with no overflow`, async ({ page }) => {
+  test(`App material and navigation remain usable: ${route}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/" + route + "/");
     const app = page.locator(".app.jfs3-shell");
     await expect(app).toBeVisible();
     const canvasColor = await app.evaluate(el => getComputedStyle(el).backgroundColor);
-    expect(canvasColor).toBe("rgb(3, 3, 4)");
+    expect(canvasColor).toBe(route === "today" ? "rgb(0, 0, 0)" : "rgb(3, 3, 4)");
     const backdrop = await page.locator(".topbar").evaluate(el => getComputedStyle(el).backdropFilter);
-    expect(backdrop).toContain("blur(");
+    if (route === "today") expect(backdrop).toBe("none");
+    else expect(backdrop).toContain("blur(");
     const keySurface = route === "today" ? ".today-v3-focus" :
       route === "nutrition" ? ".nutrition-v3b" :
       route === "training" ? ".training-today" : ".direction-hero";
@@ -72,99 +73,91 @@ for (const route of ["today", "nutrition", "training", "progress"] as const) {
     const material = await page.locator(keySurface).first().evaluate(el => ({
       blur: getComputedStyle(el).backdropFilter,
       bg: getComputedStyle(el).backgroundColor,
+      shadow: getComputedStyle(el).boxShadow,
     }));
-    expect(material.blur).toContain("blur(");
-    expect(material.bg).toMatch(/rgba?\(/);
+    if (route === "today") {
+      expect(material).toMatchObject({blur:"none",bg:"rgb(0, 0, 0)",shadow:"none"});
+    } else {
+      expect(material.blur).toContain("blur(");
+      expect(material.bg).toMatch(/rgba?\(/);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
-    if (route === "today") await page.screenshot({ path: "test-results/glass-v5-today-mobile.png", fullPage: true });
+    if (route === "today") await page.screenshot({ path: "test-results/black-line-today-mobile.png", fullPage: true });
     if (route === "nutrition") await page.screenshot({ path: "test-results/glass-v5-nutrition-mobile.png", fullPage: true });
   });
 }
 
-test("Reduce Transparency makes glass surfaces opaque and disables backdrop blur", async ({ page }) => {
+test("Today reduced transparency keeps its black-line surface intact", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/today/");
   const surface = page.locator(".today-v3-focus");
   await expect(surface).toBeVisible();
-  await page.evaluate(() => {
-    document.documentElement.dataset.reduceTransparency = "true";
-  });
+  await page.evaluate(() => { document.documentElement.dataset.reduceTransparency = "true"; });
   const after = await surface.evaluate(el => ({
     blur: getComputedStyle(el).backdropFilter,
     background: getComputedStyle(el).backgroundColor,
   }));
-  expect(after.blur).toBe("none");
-  expect(after.background).toMatch(/rgb\(/);
+  expect(after).toEqual({blur:"none",background:"rgb(0, 0, 0)"});
 });
 
-test("White glass appears bright on black while remaining actually translucent", async ({page}) => {
+test("Today primary CTA is solid white, supporting panels stay black and outlined", async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto("/today/");
-  const app = page.locator(".app.jfs3-shell");
-  expect(await app.evaluate(el=>getComputedStyle(el).backgroundColor)).toBe("rgb(3, 3, 4)");
-  const selectors = [
-    [".today-v3-focus", 0.96], // raised GlassCard (93% baseline, 96% elevation)
-    [".today-v3-water-actions button", 0.95],
-    [".today-v3-focus-action", 0.96],
-  ] as const;
-  for (const [selector, opacity] of selectors) {
-    const panel = page.locator(selector).first();
-    await expect(panel).toBeVisible();
-    const result = await panel.evaluate(el=>{
-      const computed = getComputedStyle(el);
-      return {color:computed.backgroundColor,blur:computed.backdropFilter};
-    });
-    expect(result.color,selector).toBe(`rgba(255, 255, 255, ${opacity})`);
-    expect(result.blur).toContain("blur(");
+  for (const selector of [".today-v3-focus",".today-v3-water-actions button",".today-v3-quick-item"]) {
+    const el=page.locator(selector).first();
+    await expect(el).toBeVisible();
+    const style=await el.evaluate(node=>({
+      bg:getComputedStyle(node).backgroundColor,
+      blur:getComputedStyle(node).backdropFilter,
+      shadow:getComputedStyle(node).boxShadow,
+      width:getComputedStyle(node).borderTopWidth,
+    }));
+    expect(style,selector).toEqual({bg:"rgb(0, 0, 0)",blur:"none",shadow:"none",width:"1px"});
   }
-  await page.screenshot({path:"test-results/white-glass-93-percent-phone.png",fullPage:true});
+  const primary=page.locator(".today-v3-focus-action");
+  await expect(primary).toHaveCSS("background-color","rgb(255, 255, 255)");
+  await expect(primary).toHaveCSS("color","rgb(0, 0, 0)");
+  await page.screenshot({path:"test-results/today-blackline-phone.png",fullPage:true});
 });
 
-test("Black canvas / white crystal: every small Today tile is raised translucent white", async ({ page }) => {
+test("Today small shortcuts retain their five click targets, not white floating tiles", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/today/");
-  const app = page.locator(".app.jfs3-shell");
-  await expect(app).toBeVisible();
-  const miniTiles = page.locator(".today-v3-quick-item");
+  const miniTiles=page.locator(".today-v3-quick-item");
   await expect(miniTiles).toHaveCount(5);
-  const sample = await miniTiles.first().evaluate(el => {
-    const styles = getComputedStyle(el);
-    return { color: styles.color, surface: styles.backgroundColor,
-      blur: styles.backdropFilter, shadow: styles.boxShadow };
-  });
-  expect(sample.surface).toMatch(/rgba?\(255,\s*255,\s*255/);
-  expect(sample.color).toBe("rgb(22, 23, 27)");
-  expect(sample.blur).toContain("blur(");
-  expect(sample.shadow).not.toBe("none");
-  for (const selector of [".today-v3-focus", ".today-v3-water-actions button",
-    ".today-v3-quick-item", ".today-v3-focus-action"]) {
-    const color = await page.locator(selector).first().evaluate(el => getComputedStyle(el).backgroundColor);
-    expect(color, selector).toMatch(/rgba?\(255,\s*255,\s*255/);
-  }
+  const sample=await miniTiles.first().evaluate(el=>({
+    surface:getComputedStyle(el).backgroundColor,
+    ink:getComputedStyle(el).color,
+    blur:getComputedStyle(el).backdropFilter,
+    shadow:getComputedStyle(el).boxShadow,
+    minHeight:el.getBoundingClientRect().height
+  }));
+  expect(sample.surface).toBe("rgb(0, 0, 0)");
+  expect(sample.ink).toBe("rgb(255, 255, 255)");
+  expect(sample.blur).toBe("none");
+  expect(sample.shadow).toBe("none");
+  expect(sample.minHeight).toBeGreaterThanOrEqual(44);
 });
 
-test("Black canvas / white crystal: Navigation and desktop glass are light", async ({ page }) => {
+test("Today desktop sidebar follows black outline rules", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/today/");
   await expect(page.locator(".sidebar")).toBeVisible();
-  const props = await page.locator(".sidebar").evaluate(el => ({
-    bg: getComputedStyle(el).backgroundColor,
-    blur: getComputedStyle(el).backdropFilter,
+  const props=await page.locator(".sidebar").evaluate(el=>({
+    bg:getComputedStyle(el).backgroundColor,
+    shadow:getComputedStyle(el).boxShadow,
+    blur:getComputedStyle(el).backdropFilter,
   }));
-  expect(props.bg).toMatch(/rgba?\(255,\s*255,\s*255/);
-  expect(props.blur).toContain("blur(");
-  await page.screenshot({ path: "test-results/glass-v5-today-desktop.png", fullPage: true });
+  expect(props).toEqual({bg:"rgb(0, 0, 0)",shadow:"none",blur:"none"});
+  await page.screenshot({path:"test-results/today-blackline-desktop.png",fullPage:true});
 });
 
-test("Dark-mode user preference does not turn white crystal panels smoke gray", async ({ page }) => {
+test("Today stays pure black under dark-mode preference", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/today/");
-  await page.evaluate(() => { document.documentElement.dataset.theme = "dark"; });
-  const color = await page.locator(".today-v3-focus").evaluate(el => getComputedStyle(el).backgroundColor);
-  expect(color).toMatch(/rgba?\(255,\s*255,\s*255/);
-  expect(await page.locator(".app.jfs3-shell").evaluate(el => getComputedStyle(el).backgroundColor))
-    .toBe("rgb(3, 3, 4)");
-  await page.screenshot({path:"test-results/glass-v5-today-dark-preference.png",fullPage:true});
+  await page.evaluate(() => { document.documentElement.dataset.theme="dark"; });
+  await expect(page.locator(".today-v3-focus")).toHaveCSS("background-color","rgb(0, 0, 0)");
+  await expect(page.locator(".app.jfs3-shell")).toHaveCSS("background-color","rgb(0, 0, 0)");
 });
 
 test("White crystal Nutrition: black canvas titles and readable glass tabs", async ({page}) => {

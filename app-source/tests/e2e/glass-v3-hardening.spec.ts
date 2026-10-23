@@ -1,13 +1,13 @@
 import { expect, test } from "./authenticated";
 
-test("Glass V3: black browser chrome matches the live white-glass canvas", async ({ page }) => {
+test("Today black-line page remains legible inside the current PWA chrome", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/today/");
   await expect(page.locator(".today-v3-focus")).toBeVisible();
   await expect.poll(async () => page.locator('meta[name="theme-color"]').getAttribute("content"))
     .toBe("#030304");
   expect(await page.locator(".app.jfs3-shell").evaluate(el => getComputedStyle(el).backgroundColor))
-    .toBe("rgb(3, 3, 4)");
+    .toBe("rgb(0, 0, 0)");
   const manifest = await page.request.get("/manifest.webmanifest");
   expect(manifest.ok()).toBe(true);
   const data = await manifest.json();
