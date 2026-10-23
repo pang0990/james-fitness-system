@@ -152,3 +152,146 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foo
     transition:none!important;
   }
 }
+
+/* Shared Black Line application shell. */
+html[data-visual-style="minimal"] body:has(.app) {
+  color-scheme:dark;
+  --neutral-950:#000000;--neutral-900:#000000;
+  --neutral-850:#000000;--neutral-800:#000000;--neutral-750:#000000;
+  --color-bg-primary:#000000;--color-bg-secondary:#000000;
+  --color-surface-primary:#000000;--color-surface-elevated:#000000;
+  --color-text-primary:#ffffff;--color-text-secondary:#a0a0a0;
+  --color-text-tertiary:#929292;--color-text-muted:#929292;
+  --color-border-default:#626262;--color-border-active:#ffffff;
+  --color-brand-primary:#ffffff;--color-brand-bright:#ffffff;
+  --bg:#000000;--paper:#000000;--ink:#ffffff;--muted:#a0a0a0;
+  --line:#626262;--gold:#ffffff;--gold-highlight:#ffffff;
+  --glass-bg:#000000;--glass-border:#626262;--glass-blur:0px;
+  --glass:none;--shadow:none;--glow:none;
+  --jfs3-canvas:#000000;--jfs3-paper:#000000;
+  --jfs3-paper-soft:#000000;--jfs3-inset:#000000;
+  --jfs3-ink:#ffffff;--jfs3-ink-secondary:#a0a0a0;
+  --jfs3-line:#626262;--jfs3-line-strong:#888888;
+  --jfs3-action:#ffffff;--jfs3-action-text:#000000;
+  --jfs3-track:#383838;
+  --jfs3-surface-shadow:none;--jfs3-floating-shadow:none;
+  --jfs3-radius-surface:2px;--jfs3-radius-control:2px;
+  --jfs4-glass-surface:#000000;--jfs4-glass-raised:#000000;
+  --jfs4-glass-inset:#000000;--jfs4-glass-control:#000000;
+  --jfs4-glass-navigation:#000000;--jfs4-glass-edge:#626262;
+  --jfs4-glass-border:#626262;--jfs4-glass-specular:transparent;
+  --jfs4-glass-shadow:none;--jfs4-glass-shadow-soft:none;
+  --jfs4-glass-blur:none;--jfs4-glass-blur-strong:none;
+  --jfs4-glass-ambient:none;
+  --jfs-glass-radius:2px;--jfs-glass-sheet-radius:2px;
+}
+html[data-visual-style="minimal"] body:has(.app) {
+  background:#000000!important;color:#ffffff!important;
+}
+html[data-visual-style="minimal"] .app {
+  --jfs3-shell-canvas:#000000;--jfs3-shell-paper:#000000;
+  --jfs3-shell-ink:#ffffff;--jfs3-shell-muted:#a0a0a0;
+  --jfs3-shell-line:#626262;--jfs3-shell-inset:#000000;
+  background:#000000!important;background-image:none!important;
+  color:#ffffff!important;
+}
+html[data-visual-style="minimal"] .app :is(.main,.daily-page,.today-reference-page) {
+  background-color:transparent!important;background-image:none!important;
+  color:#ffffff;
+}
+/* Navigation: black planes and one outline, never floating white bars. */
+html[data-visual-style="minimal"] .app :is(.topbar,.sidebar,.bottom-nav) {
+  color:#ffffff!important;background:#000000!important;
+  background-image:none!important;border-color:#626262!important;
+  border-radius:2px!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"] .app :is(.breadcrumb,.wordmark,.current-section,.brand strong,.brand-mark) {
+  color:#ffffff!important;
+}
+html[data-visual-style="minimal"] .app :is(.brand small,.rail-label) {color:#a0a0a0!important;}
+html[data-visual-style="minimal"] .app :is(.bottom-nav a,.sidebar .nav-item) {
+  background:transparent!important;background-image:none!important;
+  border:1px solid transparent!important;border-radius:2px!important;
+  box-shadow:none!important;color:#a0a0a0!important;
+}
+html[data-visual-style="minimal"] .app :is(.bottom-nav a.active,.sidebar .nav-item.active) {
+  background:#000000!important;border:1px solid #888888!important;
+  color:#ffffff!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app :is(.account-menu>summary,.today-header-bell,.account-menu>div,.toast,.overflow-menu>div) {
+  background:#000000!important;color:#ffffff!important;
+  background-image:none!important;border:1px solid #626262!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+
+/*
+ * Production workspace precedence bridge.
+ * Legacy White Crystal rules target .app.jfs3-shell:not(.workout-active)
+ * and page-specific descendants; matching the real route class beats those
+ * rules without changing their dev-only showcase semantics.
+ */
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) {
+  background:#000000!important;background-image:none!important;color:#ffffff!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
+  .topbar,.sidebar,.bottom-nav,.account-menu>summary,.today-header-bell
+) {
+  background:#000000!important;background-image:none!important;
+  color:#ffffff!important;border-color:#626262!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
+  .bottom-nav>a,.sidebar .nav-item
+) {
+  background:#000000!important;color:#a0a0a0!important;
+  border:1px solid transparent!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(
+  .bottom-nav>a.active,.sidebar .nav-item.active
+) {
+  background:#000000!important;color:#ffffff!important;
+  border:1px solid #888888!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)
+  .daily-page>.simple-heading h1 {color:#ffffff!important;}
+
+/* Portal dialogs are mounted under body, outside the app DOM. */
+html[data-visual-style="minimal"] body:has(.app) :is(.sheet,.jfs-glass-sheet) {
+  color:#ffffff!important;background:#000000!important;background-image:none!important;
+  border:1px solid #777777!important;border-radius:2px!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"] body:has(.app) :is(.jfs-glass-sheet-heading h2,.jfs-glass-field>label,.sheet header h2) {
+  color:#ffffff!important;
+}
+html[data-visual-style="minimal"] body:has(.app) :is(.jfs-glass-input,.jfs-glass-sheet-close,.sheet input,.sheet textarea,.sheet select) {
+  color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;
+  background:#000000!important;border:1px solid #777777!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] body:has(.app) :is(.jfs-glass-sheet .jfs-glass-button--primary,.sheet .button:not(.secondary)) {
+  color:#000000!important;background:#ffffff!important;
+  background-image:none!important;border:1px solid #ffffff!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] body:has(.app) .jfs-glass-sheet-backdrop,
+html[data-visual-style="minimal"] .sheet::backdrop {
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"] body:has(.app) .jfs-glass-sheet-handle {background:#777777!important;}
+/* Keep focus and semantic error/warning distinction. */
+html[data-visual-style="minimal"] :is(.app button,.app a,.app input,.app select,.app textarea,.jfs-glass-sheet button):focus-visible {
+  outline:2px solid #ffffff!important;outline-offset:3px;
+}
+@media(max-width:767px) {
+  html[data-visual-style="minimal"] .app :is(.daily-page,.nutrition-v3b,.training-home,.progress-direction) {
+    min-width:0;
+  }
+  html[data-visual-style="minimal"] .app :is(.card,.jfs-glass-card,.nutrition-v3b,.direction-hero) {
+    padding:14px!important;
+  }
+  html[data-visual-style="minimal"] .app :is(.main>.daily-page,.page-nutrition .daily-page,.page-training .daily-page,.page-progress .daily-page) {
+    width:min(100%,100vw - 28px)!important;
+  }
+}
