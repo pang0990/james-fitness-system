@@ -15,7 +15,6 @@ import "./today-fullbleed.css";
 import "./auth.css";
 import "./minimal-theme.css";
 import "./monochrome-experience-v2.css";
-import "./glass-black-crystal-v5.css";
 import "./glass-system-v2.css";
 import "./tokens-v3.css";
 import "./app-shell-v3.css";
