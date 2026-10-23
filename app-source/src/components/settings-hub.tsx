@@ -116,6 +116,7 @@ export function SettingsHub({
           <h2>健身偏好</h2>
           <Link className="simple-row" href="/settings/nutrition">營養與飲水 <span>›</span></Link>
           <Link className="simple-row" href="/settings/training">訓練 <span>›</span></Link>
+           <Link className="simple-row" href="/settings/recovery">恢復與疼痛紀錄偏好 <span>›</span></Link>
           <Link className="simple-row" href="/settings/notifications">站內提醒 <span>›</span></Link>
         </section>
         <div className="settings-index-footer">
