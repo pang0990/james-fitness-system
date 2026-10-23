@@ -62,10 +62,9 @@ for (const route of ["today", "nutrition", "training", "progress"] as const) {
     const app = page.locator(".app.jfs3-shell");
     await expect(app).toBeVisible();
     const canvasColor = await app.evaluate(el => getComputedStyle(el).backgroundColor);
-    expect(canvasColor).toBe(route === "today" ? "rgb(0, 0, 0)" : "rgb(3, 3, 4)");
+    expect(canvasColor).toBe("rgb(0, 0, 0)");
     const backdrop = await page.locator(".topbar").evaluate(el => getComputedStyle(el).backdropFilter);
-    if (route === "today") expect(backdrop).toBe("none");
-    else expect(backdrop).toContain("blur(");
+    expect(backdrop).toBe("none");
     const keySurface = route === "today" ? ".today-v3-focus" :
       route === "nutrition" ? ".nutrition-v3b" :
       route === "training" ? ".training-today" : ".direction-hero";
@@ -75,12 +74,7 @@ for (const route of ["today", "nutrition", "training", "progress"] as const) {
       bg: getComputedStyle(el).backgroundColor,
       shadow: getComputedStyle(el).boxShadow,
     }));
-    if (route === "today") {
-      expect(material).toMatchObject({blur:"none",bg:"rgb(0, 0, 0)",shadow:"none"});
-    } else {
-      expect(material.blur).toContain("blur(");
-      expect(material.bg).toMatch(/rgba?\(/);
-    }
+    expect(material).toMatchObject({blur:"none",bg:"rgb(0, 0, 0)",shadow:"none"});
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
     if (route === "today") await page.screenshot({ path: "test-results/black-line-today-mobile.png", fullPage: true });
     if (route === "nutrition") await page.screenshot({ path: "test-results/glass-v5-nutrition-mobile.png", fullPage: true });
@@ -160,21 +154,14 @@ test("Today stays pure black under dark-mode preference", async ({ page }) => {
   await expect(page.locator(".app.jfs3-shell")).toHaveCSS("background-color","rgb(0, 0, 0)");
 });
 
-test("White crystal Nutrition: black canvas titles and readable glass tabs", async ({page}) => {
+test("Nutrition uses black line tabs with readable inactive and selected states", async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto("/nutrition/");
   await expect(page.locator(".nutrition-v3b")).toBeVisible();
-  const title = await page.locator(".daily-page>.simple-heading h1").evaluate(el => getComputedStyle(el).color);
-  expect(title).toBe("rgb(248, 248, 250)");
-  const tab = page.locator(".nutrition-v3-tabs");
-  const styles = await tab.evaluate(el=>({
-    background:getComputedStyle(el).backgroundColor,
-    blur:getComputedStyle(el).backdropFilter,
-  }));
-  expect(styles.background).toMatch(/rgba?\(255,\s*255,\s*255/);
-  expect(styles.blur).toContain("blur(");
-  const inactive = await tab.getByRole("link",{name:"Meals"}).evaluate(el=>getComputedStyle(el).color);
-  expect(inactive).toBe("rgb(50, 51, 59)");
+  await expect(page.locator(".daily-page>.simple-heading h1")).toHaveCSS("color","rgb(255, 255, 255)");
+  const tab=page.locator(".nutrition-v3-tabs");
+  await expect(tab).toHaveCSS("background-color","rgb(0, 0, 0)");
+  await expect(tab).toHaveCSS("backdrop-filter","none");
   await expect(page.locator(".nutrition-v3-meal-icons>button")).toHaveCount(4);
-  await page.screenshot({path:"test-results/glass-v5-nutrition-readable-mobile.png",fullPage:true});
+  await page.screenshot({path:"test-results/blackline-nutrition-readable-mobile.png",fullPage:true});
 });
