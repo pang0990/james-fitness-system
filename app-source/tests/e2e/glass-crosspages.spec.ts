@@ -1,7 +1,7 @@
 import {test,expect} from "./authenticated";
 
 for(const width of [390,1440]) {
-  test(`Nutrition shared glass: real macros, meal cards, add entry at ${width}px`, async ({page})=>{
+  test(`Nutrition shared black-line: real macros, meal cards, add entry at ${width}px`, async ({page})=>{
     await page.setViewportSize({width,height:900});
     await page.goto("/nutrition/");
     await expect(page.getByTestId("nutrition-v3b")).toHaveClass(/jfs-glass-card/);
@@ -17,18 +17,18 @@ for(const width of [390,1440]) {
     await page.screenshot({path:`test-results/glass-v3-nutrition-${width}.png`,fullPage:true});
   });
 
-  test(`Training shared glass: preserved plan and actions at ${width}px`, async ({page})=>{
+  test(`Training shared black-line: preserved plan and actions at ${width}px`, async ({page})=>{
     await page.setViewportSize({width,height:900});
     await page.goto("/training/");
     await expect(page.locator(".training-home .training-today.jfs-glass-card")).toBeVisible();
     await expect(page.locator(".training-v3-segments")).toBeVisible();
     expect(await page.locator(".training-today.jfs-glass-card").evaluate(el => getComputedStyle(el).backdropFilter))
-      .toContain("blur(");
+      .toBe("none");
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
     await page.screenshot({path:`test-results/glass-v3-training-${width}.png`,fullPage:true});
   });
 
-  test(`Progress shared glass: real period choices and no fabricated trends at ${width}px`, async ({page})=>{
+  test(`Progress shared black-line: real period choices and no fabricated trends at ${width}px`, async ({page})=>{
     await page.setViewportSize({width,height:900});
     await page.goto("/progress/");
     await expect(page.locator(".progress-direction .jfs-glass-card")).toHaveCount(6);
@@ -41,7 +41,7 @@ for(const width of [390,1440]) {
     await page.screenshot({path:`test-results/glass-v3-progress-${width}.png`,fullPage:true});
   });
 }
-test("shared glass material stays visibly white on black and respects reduced transparency",async ({page})=>{
+test("shared black-line material stays visibly white on black and respects reduced transparency",async ({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto("/nutrition/");
   const glass=page.getByTestId("nutrition-v3b");
@@ -49,13 +49,13 @@ test("shared glass material stays visibly white on black and respects reduced tr
     color:getComputedStyle(el).backgroundColor,
     backdrop:getComputedStyle(el).backdropFilter,
   }));
-  expect(before.color).toMatch(/rgba?\(255,\s*255,\s*255/);
-  expect(before.backdrop).toContain("blur(");
+  expect(before.color).toBe("rgb(0, 0, 0)");
+  expect(before.backdrop).toBe("none");
   await page.evaluate(()=>{document.documentElement.dataset.reduceTransparency="true"});
   const after=await glass.evaluate(el => ({
     color:getComputedStyle(el).backgroundColor,
     backdrop:getComputedStyle(el).backdropFilter,
   }));
   expect(after.backdrop).toBe("none");
-  expect(after.color).toBe("rgb(255, 255, 255)");
+  expect(after.color).toBe("rgb(0, 0, 0)");
 });
