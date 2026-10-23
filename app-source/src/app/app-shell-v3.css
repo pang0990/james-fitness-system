@@ -4,12 +4,13 @@
  * Applied to four primary workspaces; do not duplicate the page-specific layout.
  */
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) {
-  --jfs3-shell-paper:var(--jfs3-paper,#fff);
-  --jfs3-shell-canvas:var(--jfs3-canvas,#f5f5f7);
-  --jfs3-shell-ink:var(--jfs3-ink,#1d1d1f);
-  --jfs3-shell-muted:var(--jfs3-ink-secondary,#6e6e73);
-  --jfs3-shell-line:var(--jfs3-line,rgba(29,29,31,.09));
-  --jfs3-shell-inset:var(--jfs3-inset,#f1f1f3);
+  --jfs3-shell-paper:var(--jfs3-paper);
+  --jfs3-shell-canvas:var(--jfs3-canvas);
+  --jfs3-shell-ink:var(--jfs3-ink);
+  --jfs3-shell-muted:var(--jfs3-ink-secondary);
+  --jfs3-shell-line:var(--jfs3-line);
+  --jfs3-shell-inset:var(--jfs3-inset);
+  background:#000000!important;color:#ffffff!important;
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main {
   background:transparent!important;
@@ -18,12 +19,13 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.main {
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar {
   height:64px!important;min-height:64px!important;
-  margin:0 0 24px!important;
+  margin:0 0 12px!important;
   padding:0 clamp(18px,3vw,32px)!important;
   display:flex!important;align-items:center!important;
   border:0!important;border-bottom:1px solid var(--jfs3-shell-line)!important;
-  background:var(--jfs4-glass-navigation)!important;
+  background:#000000!important;
   box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar .breadcrumb {
   display:flex;align-items:center;gap:9px;
@@ -39,10 +41,10 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .topbar .
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(.today-header-bell,.account-menu>summary) {
   color:var(--jfs3-shell-ink)!important;
-  background:var(--jfs4-glass-navigation)!important;
+  background:#000000!important;
   border:1px solid var(--jfs3-shell-line)!important;
   box-shadow:none!important;
-  border-radius:50%!important;
+  border-radius:2px!important;
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foot {
   color:var(--jfs3-shell-muted)!important;
@@ -84,7 +86,7 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foo
     position:fixed!important;inset:0 auto 0 0!important;
     width:206px!important;min-height:100dvh!important;
     padding:29px 15px!important;gap:0!important;
-    background:var(--jfs4-glass-navigation)!important;
+    background:#000000!important;
     border-right:1px solid var(--jfs3-shell-line)!important;
     box-shadow:none!important;
   }
@@ -113,12 +115,12 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foo
   html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .nav-item {
     display:flex!important;justify-content:flex-start!important;align-items:center!important;
     min-height:46px!important;gap:12px!important;padding:10px 13px!important;
-    border:0!important;border-radius:12px!important;
+    border:1px solid transparent!important;border-radius:2px!important;
     color:var(--jfs3-shell-muted)!important;
   }
   html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .nav-item.active {
     color:var(--jfs3-shell-ink)!important;
-    background:var(--jfs3-shell-inset)!important;
+    background:#000000!important;border:1px solid #888888!important;
   }
   html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active)>.sidebar .nav-item .rail-label {
     display:block!important;position:static!important;

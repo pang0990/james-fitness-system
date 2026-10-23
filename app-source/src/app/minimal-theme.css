@@ -1,37 +1,4 @@
-/*
- * JFS / Minimal — independent theme, never modifies the Cinematic/2077 source.
- * White-first, Apple-inspired visual language, SF system font, iOS-like surfaces.
- * All overrides are opt-in via data-visual-style="minimal".
- */
-html[data-visual-style="minimal"] {
-  --neutral-950:#f5f5f7;--neutral-900:#f5f5f7;--neutral-850:#fff;
-  --neutral-800:#fff;--neutral-750:#f9fafb;
-  --color-bg-primary:#f5f5f7;--color-bg-secondary:#fff;
-  --color-surface-primary:#fff;--color-surface-elevated:#f9fafb;
-  --color-brand-primary:#007aff;--color-brand-bright:#0066d6;
-  --color-text-primary:#1d1d1f;--color-text-secondary:#62636a;
-  --color-text-tertiary:#747780;--color-text-muted:#82858d;
-  --color-border-default:#e5e5ea;--color-border-active:#007aff;
-  --color-calories:#007aff;--color-protein:#30a46c;--color-carbs:#5f7df3;
-  --color-fat:#f5a623;--color-water:#36a9e1;--color-recovery:#8a70d6;
-  --glass-bg:rgba(255,255,255,.84);--glass-border:rgba(255,255,255,.75);
-  --shadow:0 8px 26px rgba(25,33,48,.045);--glow:none;
-  --font-body:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",
-    "PingFang TC","Noto Sans TC","Helvetica Neue",sans-serif;
-  color-scheme:light;
-}
-html[data-visual-style="minimal"][data-theme="dark"] {
-  --neutral-950:#111216;--neutral-900:#111216;--neutral-850:#191a20;
-  --neutral-800:#202127;--neutral-750:#292a31;
-  --color-bg-primary:#111216;--color-bg-secondary:#191a20;
-  --color-surface-primary:#202127;--color-surface-elevated:#292a31;
-  --color-text-primary:#f5f5f7;--color-text-secondary:#b0b3bd;
-  --color-text-tertiary:#979aa4;--color-text-muted:#838691;
-  --color-border-default:#35363d;--glass-bg:rgba(32,33,39,.9);
-  --glass-border:rgba(255,255,255,.09);
-  --shadow:0 10px 32px rgba(0,0,0,.17);
-  color-scheme:dark;
-}
+/* Minimal / Black Line layout. Palette lives only in tokens-v3.css. */
 html[data-visual-style="minimal"] body,
 html[data-visual-style="minimal"] body:has(.page-nutrition),
 html[data-visual-style="minimal"] body:has(.page-training),
@@ -55,7 +22,7 @@ html[data-visual-style="minimal"] :is(.sidebar,.topbar){
 }
 html[data-visual-style="minimal"] .topbar{
   height:64px;min-height:64px;align-items:center;
-  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:none;backdrop-filter:none;
 }
 html[data-visual-style="minimal"] :is(.brand,.breadcrumb,.wordmark,.current-section,.rail-label) {
   color:var(--color-text-primary)!important;letter-spacing:-.02em!important;
@@ -66,12 +33,12 @@ html[data-visual-style="minimal"] .today-header-subtitle{display:none}
 html[data-visual-style="minimal"] :is(.account-menu summary,.today-header-bell){
   background:var(--color-surface-primary)!important;color:var(--color-text-primary)!important;
   border:1px solid var(--color-border-default)!important;
-  box-shadow:none!important;border-radius:999px!important;
+  box-shadow:none!important;border-radius:2px!important;
 }
 html[data-visual-style="minimal"] .account-menu>div{
   background:var(--color-surface-primary)!important;color:var(--color-text-primary);
   border:1px solid var(--color-border-default)!important;
-  border-radius:18px!important;box-shadow:var(--shadow)!important;
+  border-radius:2px!important;box-shadow:none;
 }
 html[data-visual-style="minimal"] .account-menu>div a{border-color:var(--color-border-default)}
 html[data-visual-style="minimal"] :is(.daily-page,.onboarding-wizard){
@@ -83,8 +50,8 @@ html[data-visual-style="minimal"] :is(.card,.meal-section,.training-today,.sheet
   .today-reference-page>.daily-activity) {
   background:var(--color-surface-primary)!important;
   border:1px solid var(--color-border-default)!important;
-  border-radius:22px!important;
-  box-shadow:var(--shadow)!important;
+  border-radius:2px!important;
+  box-shadow:none;
   color:var(--color-text-primary);
 }
 html[data-visual-style="minimal"] :is(.card h2,.card-title,.page-heading h1,
@@ -98,17 +65,17 @@ html[data-visual-style="minimal"] :is(.muted,.eyebrow,.card p,.card small,
 }
 html[data-visual-style="minimal"] :is(.button,.button:not(.secondary),
   .today-ref-small-action,.today-ref-inline-add){
-  background:#007aff!important;color:white!important;border:1px solid #007aff!important;
-  border-radius:14px!important;box-shadow:none!important;
+  background:#ffffff!important;color:#000000!important;border:1px solid #ffffff!important;
+  border-radius:2px!important;box-shadow:none!important;
   font-family:var(--font-body)!important;font-weight:600!important;letter-spacing:0!important;
 }
 html[data-visual-style="minimal"] :is(.button.secondary,.button.tertiary){
-  background:var(--color-surface-elevated)!important;
-  color:var(--color-text-primary)!important;border:1px solid var(--color-border-default)!important;
+  background:#000000!important;
+  color:#ffffff!important;border:1px solid var(--color-border-default)!important;
 }
 html[data-visual-style="minimal"] :is(input,select,textarea){
   background:var(--color-surface-elevated);color:var(--color-text-primary);
-  border-color:var(--color-border-default);border-radius:12px;
+  border-color:var(--color-border-default);border-radius:2px;
 }
 html[data-visual-style="minimal"] :is(.field,.check,.simple-row,.notice-carousel) {
   color:var(--color-text-primary);
@@ -116,7 +83,7 @@ html[data-visual-style="minimal"] :is(.field,.check,.simple-row,.notice-carousel
 html[data-visual-style="minimal"] :is(.track,.progressbar,.macro-track,
   .nutrition-v3-track){background:var(--color-border-default)!important}
 html[data-visual-style="minimal"] :is(.track>span,.progressbar>span){
-  background:#007aff!important;box-shadow:none!important;
+  background:#ffffff!important;box-shadow:none!important;
 }
 html[data-visual-style="minimal"] .bottom-nav,
 html[data-visual-style="minimal"] .page-today .bottom-nav{
@@ -126,20 +93,20 @@ html[data-visual-style="minimal"] .page-today .bottom-nav{
   left:50%!important;right:auto!important;top:auto!important;
   transform:translateX(-50%)!important;
   width:min(470px,calc(100vw - 28px))!important;max-width:none!important;
-  height:70px!important;padding:7px!important;border-radius:24px!important;
+  height:70px!important;padding:7px!important;border-radius:2px!important;
   border:1px solid var(--color-border-default)!important;
   background:var(--glass-bg)!important;
-  box-shadow:0 12px 32px rgba(17,24,39,.12)!important;
-  -webkit-backdrop-filter:blur(22px)!important;backdrop-filter:blur(22px)!important;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
 }
 html[data-visual-style="minimal"] .bottom-nav>a,
 html[data-visual-style="minimal"] .page-today .bottom-nav>a{
   color:var(--color-text-secondary)!important;font-family:var(--font-body)!important;
-  border-radius:17px!important;font-size:11px!important;
+  border-radius:2px!important;font-size:11px!important;
 }
 html[data-visual-style="minimal"] .bottom-nav>a.active,
 html[data-visual-style="minimal"] .page-today .bottom-nav>a.active{
-  color:#007aff!important;background:rgba(0,122,255,.09)!important;
+  color:#ffffff!important;background:#000000!important;
   box-shadow:none!important;
 }
 html[data-visual-style="minimal"] .bottom-nav>a.active::after{display:none!important}
@@ -162,26 +129,26 @@ html[data-visual-style="minimal"] .page-today .today-reference-page {
   margin:auto!important;gap:18px!important;isolation:auto!important;
   color:var(--color-text-primary)!important;
   --today-text:var(--color-text-primary);--today-muted:var(--color-text-secondary);
-  --today-gold:#007aff;
+  --today-gold:#ffffff;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-scene {
   position:relative!important;width:100%!important;height:auto!important;
   min-height:198px!important;max-height:none!important;
   margin:0!important;padding:28px clamp(22px,4vw,42px)!important;
-  background:linear-gradient(125deg,#fff 0%,#f4f8ff 65%,#eaf2ff 100%)!important;
-  background-image:linear-gradient(125deg,#fff 0%,#f4f8ff 65%,#eaf2ff 100%)!important;
-  border:1px solid #e6ebf2!important;border-radius:28px!important;
-  overflow:hidden!important;box-shadow:0 10px 30px rgba(25,40,73,.045)!important;
+  background:#000000!important;
+  background-image:none;
+  border:1px solid #e6ebf2!important;border-radius:2px!important;
+  overflow:hidden!important;box-shadow:none;
 }
 html[data-visual-style="minimal"][data-theme="dark"] .page-today .today-ref-scene{
-  background:linear-gradient(125deg,#20232c,#191b23 70%,#172338)!important;
-  background-image:linear-gradient(125deg,#20232c,#191b23 70%,#172338)!important;
+  background:#000000!important;
+  background-image:none;
   border-color:var(--color-border-default)!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-scene::before{
   content:"";position:absolute;inset:auto -65px -155px auto;
   width:330px;height:330px;border-radius:50%;background:none!important;
-  border:32px solid rgba(0,122,255,.045);opacity:1!important;mix-blend-mode:normal!important;
+  border:32px solid rgba(255,255,255,.07);opacity:1!important;mix-blend-mode:normal!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-scene::after {display:none!important}
 html[data-visual-style="minimal"] .page-today .today-ref-scene
@@ -225,7 +192,7 @@ html[data-visual-style="minimal"] .page-today .today-ref-cycle-count span{
   color:var(--color-text-secondary)!important;font-size:10px!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-cycle-count strong{
-  color:#007aff!important;font:700 24px var(--font-body)!important;
+  color:#ffffff!important;font:700 24px var(--font-body)!important;
   border:0!important;padding:0!important;min-width:0!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-action-panel,
@@ -234,27 +201,27 @@ html[data-visual-style="minimal"] .page-today .today-ref-quick-panel,
 html[data-visual-style="minimal"] .page-today .today-reference-page>.daily-activity{
   background:var(--color-surface-primary)!important;
   border:1px solid var(--color-border-default)!important;
-  border-radius:24px!important;box-shadow:var(--shadow)!important;
+  border-radius:2px!important;box-shadow:none;
   color:var(--color-text-primary)!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-action-panel{
-  padding:22px!important;gap:14px!important;
+  padding:14px!important;gap:14px!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-section-heading h2{
   color:var(--color-text-primary)!important;font:700 14px var(--font-body)!important;
   letter-spacing:-.015em!important;
 }
-html[data-visual-style="minimal"] .page-today .today-ref-section-heading h2 svg{color:#007aff}
+html[data-visual-style="minimal"] .page-today .today-ref-section-heading h2 svg{color:#ffffff}
 html[data-visual-style="minimal"] .page-today .today-ref-action-count{color:var(--color-text-muted)!important}
 html[data-visual-style="minimal"] .page-today .today-ref-action-row{
   background:var(--color-surface-elevated)!important;
   border:1px solid var(--color-border-default)!important;
   border-left:1px solid var(--color-border-default)!important;
-  min-height:68px!important;border-radius:16px!important;
+  min-height:68px!important;border-radius:2px!important;
   box-shadow:none!important;color:var(--color-text-primary)!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-action-row>svg,
-html[data-visual-style="minimal"] .page-today .today-ref-nutrition-row>svg{color:#007aff!important}
+html[data-visual-style="minimal"] .page-today .today-ref-nutrition-row>svg{color:#ffffff!important}
 html[data-visual-style="minimal"] .page-today .today-ref-action-copy>strong{
   color:var(--color-text-primary)!important;font-size:14px!important;letter-spacing:-.01em;
 }
@@ -262,8 +229,8 @@ html[data-visual-style="minimal"] .page-today .today-ref-action-copy>span{
   color:var(--color-text-secondary)!important;font-size:12px!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-action-pill{
-  background:#007aff!important;color:#fff!important;border:0!important;
-  box-shadow:none!important;border-radius:12px!important;font-size:12px!important;
+  background:#ffffff!important;color:#000000!important;border:1px solid #ffffff!important;
+  box-shadow:none!important;border-radius:2px!important;font-size:12px!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-alert .notice-carousel,
 html[data-visual-style="minimal"] .page-today .today-ref-notice{
@@ -284,12 +251,12 @@ html[data-visual-style="minimal"] .page-today .today-ref-food{
   grid-column:1/-1;grid-row:1;min-height:230px!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-card{
-  min-height:172px!important;padding:22px!important;gap:14px!important;
+  min-height:172px!important;padding:14px!important;gap:14px!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-card-label{
   color:var(--color-text-secondary)!important;font-size:14px!important;font-weight:650;
 }
-html[data-visual-style="minimal"] .page-today .today-ref-card-label svg{color:#007aff!important}
+html[data-visual-style="minimal"] .page-today .today-ref-card-label svg{color:#ffffff!important}
 html[data-visual-style="minimal"] .page-today .today-ref-training-name,
 html[data-visual-style="minimal"] .page-today .today-ref-water-number{
   color:var(--color-text-primary)!important;
@@ -301,7 +268,7 @@ html[data-visual-style="minimal"] .page-today .today-ref-water-number small{
   color:var(--color-text-secondary)!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-energy-ring {
-  background:conic-gradient(#007aff 0 var(--today-ring-fill),
+  background:conic-gradient(#ffffff 0 var(--today-ring-fill),
     var(--color-border-default) var(--today-ring-fill) 100%)!important;
   box-shadow:none!important;
 }
@@ -331,7 +298,7 @@ html[data-visual-style="minimal"] .page-today .today-ref-quick-grid button{
   background:var(--color-surface-elevated)!important;
   color:var(--color-text-primary)!important;
   border:1px solid var(--color-border-default)!important;
-  box-shadow:none!important;border-radius:14px!important;
+  box-shadow:none!important;border-radius:2px!important;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-quick-grid button svg{
   color:var(--color-text-secondary)!important;
@@ -353,30 +320,30 @@ html[data-visual-style="minimal"] .jfs-style-options legend{
 }
 html[data-visual-style="minimal"] .jfs-style-option {
   display:grid;position:relative;gap:7px;padding:12px;min-width:0;
-  border:1.5px solid var(--color-border-default);border-radius:18px;
+  border:1.5px solid var(--color-border-default);border-radius:2px;
   background:var(--color-surface-elevated);cursor:pointer;
 }
-html[data-visual-style="minimal"] .jfs-style-option.selected{border-color:#007aff;box-shadow:0 0 0 3px rgba(0,122,255,.1)}
-html[data-visual-style="minimal"] .jfs-style-option>input{position:absolute;right:12px;top:12px;accent-color:#007aff}
+html[data-visual-style="minimal"] .jfs-style-option.selected{border-color:#ffffff;box-shadow:0 0 0 3px rgba(255,255,255,.07)}
+html[data-visual-style="minimal"] .jfs-style-option>input{position:absolute;right:12px;top:12px;accent-color:#ffffff}
 html[data-visual-style="minimal"] .jfs-style-option strong{font-size:14px}
 html[data-visual-style="minimal"] .jfs-style-option small{font-size:11px;color:var(--color-text-secondary);line-height:1.5}
 html[data-visual-style="minimal"] .jfs-style-swatch{
-  display:grid;gap:5px;height:75px;padding:12px;border-radius:11px;
+  display:grid;gap:5px;height:75px;padding:12px;border-radius:2px;
 }
-html[data-visual-style="minimal"] .jfs-style-swatch i{display:block;border-radius:5px}
+html[data-visual-style="minimal"] .jfs-style-swatch i{display:block;border-radius:2px}
 html[data-visual-style="minimal"] .jfs-style-swatch-minimal{background:#f2f2f7}
 html[data-visual-style="minimal"] .jfs-style-swatch-minimal i{background:white;border:1px solid #e5e5ea}
 html[data-visual-style="minimal"] .jfs-style-swatch-cinematic{background:linear-gradient(125deg,#060813,#242141)}
-html[data-visual-style="minimal"] .jfs-style-swatch-cinematic i{background:linear-gradient(90deg,#30273c,#9560c14d);border:1px solid #a877b555}
+html[data-visual-style="minimal"] .jfs-style-swatch-cinematic i{background:#000000!important;border:1px solid #a877b555}
 html[data-visual-style="minimal"] :is(a,button,input,select,textarea):focus-visible{
-  outline:3px solid #007aff!important;outline-offset:3px!important;
+  outline:3px solid #ffffff!important;outline-offset:3px!important;
 }
 @media(max-width:600px) {
   html[data-visual-style="minimal"] .page-today .today-reference-page {
     padding-top:15px!important;gap:14px!important;
   }
   html[data-visual-style="minimal"] .page-today .today-ref-scene{
-    min-height:166px!important;padding:23px 19px!important;border-radius:22px!important;
+    min-height:166px!important;padding:23px 19px!important;border-radius:2px!important;
   }
   html[data-visual-style="minimal"] .page-today .today-ref-intro{max-width:68%!important}
   html[data-visual-style="minimal"] .page-today .today-ref-intro h1{font-size:clamp(26px,8vw,36px)!important}
@@ -394,10 +361,10 @@ html[data-visual-style="minimal"] :is(a,button,input,select,textarea):focus-visi
   html[data-visual-style="minimal"] .page-today .today-ref-macros>div{grid-template-columns:11px minmax(0,1fr) 58px!important}
   html[data-visual-style="minimal"] .jfs-style-options{grid-template-columns:1fr}
 }
-html[data-visual-style="minimal"][data-theme="dark"] .page-today .today-ref-scene::before{border-color:rgba(0,122,255,.08)}
+html[data-visual-style="minimal"][data-theme="dark"] .page-today .today-ref-scene::before{border-color:rgba(255,255,255,.07)}
 html[data-visual-style="minimal"] .page-today .today-ref-scene .jfs-city-atmosphere{display:none!important}
 html[data-visual-style="minimal"][data-reduce-transparency="true"] .bottom-nav{
-  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
   background:var(--color-surface-primary)!important;
 }
 @media(prefers-reduced-motion:reduce){
@@ -411,37 +378,35 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"] .bottom-nav{
  * Every rule remains scoped to Minimal; 2077 assets/styles are unchanged.
  * ======================================================================= */
 html[data-visual-style="minimal"]{
-  --minimal-glass:rgba(255,255,255,.76);
-  --minimal-glass-raised:rgba(255,255,255,.86);
-  --minimal-glass-soft:rgba(249,250,253,.75);
-  --minimal-glass-stroke:rgba(213,219,229,.78);
-  --minimal-glass-shadow:0 12px 34px rgba(40,49,66,.065),inset 0 1px 0 rgba(255,255,255,.88);
-  --jfs-ring-track:#e6eaf0;
-  --jfs-ring-track-calorie:#e6eaf0;
-  --minimal-accent:#007aff;
+  --minimal-glass:#000000;
+  --minimal-glass-raised:#000000;
+  --minimal-glass-soft:#000000;
+  --minimal-glass-stroke:#626262;
+  --minimal-glass-shadow:none;
+  --jfs-ring-track:#383838;
+  --jfs-ring-track-calorie:#383838;
+  --minimal-accent:#ffffff;
 }
 html[data-visual-style="minimal"][data-theme="dark"]{
-  --minimal-glass:rgba(35,37,44,.76);
-  --minimal-glass-raised:rgba(39,41,49,.86);
-  --minimal-glass-soft:rgba(30,32,40,.79);
-  --minimal-glass-stroke:rgba(111,116,130,.29);
-  --minimal-glass-shadow:0 12px 36px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.07);
-  --jfs-ring-track:#383d48;--jfs-ring-track-calorie:#383d48;
+  --minimal-glass:#000000;
+  --minimal-glass-raised:#000000;
+  --minimal-glass-soft:#000000;
+  --minimal-glass-stroke:#626262;
+  --minimal-glass-shadow:none;
+  --jfs-ring-track:#383838;--jfs-ring-track-calorie:#383838;
 }
 /* Backdrop gradients provide depth to make glass transparency perceptible. */
 html[data-visual-style="minimal"] body,
 html[data-visual-style="minimal"] body:has(.page-nutrition),
 html[data-visual-style="minimal"] body:has(.page-training),
 html[data-visual-style="minimal"] body:has(.page-progress){
-  background:radial-gradient(ellipse at 85% 0%,rgba(130,180,252,.10),transparent 43%),
-             radial-gradient(ellipse at 0% 70%,rgba(167,183,220,.07),transparent 40%),
-             var(--color-bg-primary)!important;
+  background:#000000!important;
 }
 html[data-visual-style="minimal"] .app,
 html[data-visual-style="minimal"] .main,
 html[data-visual-style="minimal"] body :is(.page-nutrition,.page-training,.page-progress) .main,
 html[data-visual-style="minimal"] .page-today .main{
-  background:transparent!important;
+  background:#000000!important;
 }
 html[data-visual-style="minimal"] .topbar,
 html[data-visual-style="minimal"] .page-today .topbar,
@@ -451,32 +416,32 @@ html[data-visual-style="minimal"] :is(.card,.sheet,.simple-row,.date-type,.meal-
   .training-today,.today-ref-action-panel,.today-ref-card,.today-ref-quick-panel),
 html[data-visual-style="minimal"] .page-today :is(.today-ref-action-panel,.today-ref-card,
   .today-ref-quick-panel,.today-reference-page>.daily-activity){
-  background:var(--minimal-glass)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  box-shadow:var(--minimal-glass-shadow)!important;
-  -webkit-backdrop-filter:blur(22px) saturate(1.25);
-  backdrop-filter:blur(22px) saturate(1.25);
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
 }
 html[data-visual-style="minimal"] .page-today .today-ref-scene{
   border-color:var(--minimal-glass-stroke)!important;
-  background:linear-gradient(115deg,rgba(255,255,255,.88),rgba(241,246,255,.78))!important;
-  box-shadow:var(--minimal-glass-shadow)!important;
-  -webkit-backdrop-filter:blur(22px) saturate(1.2);
-  backdrop-filter:blur(22px) saturate(1.2);
+  background:#000000!important;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
 }
 html[data-visual-style="minimal"][data-theme="dark"] .page-today .today-ref-scene{
-  background:linear-gradient(115deg,rgba(37,41,49,.86),rgba(29,39,56,.8))!important;
+  background:#000000!important;
 }
 html[data-visual-style="minimal"] :is(.card,.sheet,.simple-row,.date-type,.meal-section,
   .nutrition-v3-dashboard,.direction-hero,.progress-v3-photos,.progress-v3-stats,
   .training-today){color:var(--color-text-primary)!important}
 html[data-visual-style="minimal"] .bottom-nav,
 html[data-visual-style="minimal"] .page-today .bottom-nav{
-  background:var(--minimal-glass-raised)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  box-shadow:var(--minimal-glass-shadow)!important;
-  -webkit-backdrop-filter:blur(28px) saturate(1.5)!important;
-  backdrop-filter:blur(28px) saturate(1.5)!important;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
 }
 html[data-visual-style="minimal"] .bottom-nav>a.active svg{
   color:var(--minimal-accent)!important;filter:none!important;
@@ -497,15 +462,15 @@ html[data-visual-style="minimal"] .page-today .today-ref-interaction{display:non
 html[data-visual-style="minimal"] .page-today .today-reference-page>.daily-activity {
   box-sizing:border-box!important;min-width:0!important;width:100%!important;
   max-width:100%!important;margin:0!important;
-  padding:22px!important;justify-self:stretch;
+  padding:14px!important;justify-self:stretch;
 }
 html[data-visual-style="minimal"] .page-today .daily-activity :is(.activity-heading h2,
   .activity-metric strong){color:var(--color-text-primary)!important}
 html[data-visual-style="minimal"] .page-today .daily-activity :is(.activity-metric,
   .activity-trend-stats>div,.activity-review-metrics>div){
-  background:var(--minimal-glass-soft)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  border-radius:16px!important;color:var(--color-text-primary)!important;
+  border-radius:2px!important;color:var(--color-text-primary)!important;
 }
 html[data-visual-style="minimal"] .page-today .daily-activity :is(.activity-metric small,
   .activity-metric span,.activity-log-head>span){
@@ -526,22 +491,22 @@ html[data-visual-style="minimal"] body .page-nutrition .nutrition-v3-tabs,
 html[data-visual-style="minimal"] body .page-training .training-v3-segments,
 html[data-visual-style="minimal"] body .page-progress .progress-v3-segments,
 html[data-visual-style="minimal"] body .page-progress .direction-hero .range-control{
-  background:rgba(125,130,146,.10)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  border-radius:16px!important;box-shadow:none!important;
+  border-radius:2px!important;box-shadow:none!important;
   padding:4px!important;gap:4px!important;
 }
 html[data-visual-style="minimal"] body :is(.nutrition-v3-tabs,.training-v3-segments,
   .progress-v3-segments)>:is(a,span){
   border:0!important;background:transparent!important;
-  color:var(--color-text-secondary)!important;border-radius:12px!important;
+  color:var(--color-text-secondary)!important;border-radius:2px!important;
   box-shadow:none!important;
 }
 html[data-visual-style="minimal"] body :is(.nutrition-v3-tabs,.training-v3-segments,
   .progress-v3-segments)>.active,
 html[data-visual-style="minimal"] body .page-progress .direction-hero .range-control>button[aria-pressed="true"]{
-  color:var(--minimal-accent)!important;background:var(--minimal-glass-raised)!important;
-  box-shadow:0 2px 9px rgba(38,50,68,.075)!important;
+  color:var(--minimal-accent)!important;background:#000000!important;
+  box-shadow:none;
   border:1px solid var(--minimal-glass-stroke)!important;
   font-weight:650!important;
 }
@@ -550,7 +515,7 @@ html[data-visual-style="minimal"] body .page-progress .direction-hero .range-con
   background:transparent!important;box-shadow:none!important;
 }
 html[data-visual-style="minimal"] body .page-nutrition .nutrition-v3-dashboard{
-  padding:22px!important;
+  padding:14px!important;
 }
 html[data-visual-style="minimal"] body .nutrition-v3-section-label{
   color:var(--color-text-secondary)!important;
@@ -587,9 +552,9 @@ html[data-visual-style="minimal"] body .nutrition-v3-meal-icons>button{
   color:var(--color-text-primary)!important;
 }
 html[data-visual-style="minimal"] body .nutrition-v3-meal-icons>button>span{
-  background:var(--minimal-glass-soft)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  border-radius:16px!important;
+  border-radius:2px!important;
   box-shadow:none!important;color:var(--minimal-accent)!important;
 }
 html[data-visual-style="minimal"] body .nutrition-v3-meal-icons strong{
@@ -606,7 +571,7 @@ html[data-visual-style="minimal"] body .page-nutrition :is(.meal-entry,
   .training-v3-exercise){border-color:var(--minimal-glass-stroke)!important}
 html[data-visual-style="minimal"] body .page-nutrition :is(.nutrition-v3-food-thumb,
   .meal-head .icon-button){
-  background:var(--minimal-glass-soft)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
   color:var(--minimal-accent)!important;box-shadow:none!important;
 }
@@ -617,8 +582,8 @@ html[data-visual-style="minimal"] body .page-nutrition .meal-entry .text-link{
 
 /* Training — use the same soft surfaces and typography as Today. */
 html[data-visual-style="minimal"] body .page-training .training-v3>.training-today.card{
-  background:var(--minimal-glass)!important;border:1px solid var(--minimal-glass-stroke)!important;
-  box-shadow:var(--minimal-glass-shadow)!important;
+  background:#000000!important;border:1px solid var(--minimal-glass-stroke)!important;
+  box-shadow:none;
 }
 html[data-visual-style="minimal"] body .training-v3-heading h2,
 html[data-visual-style="minimal"] body .training-v3-exercise-info>strong{
@@ -631,9 +596,9 @@ html[data-visual-style="minimal"] body :is(.training-v3-caption,
 }
 html[data-visual-style="minimal"] body .training-v3-exercise-art,
 html[data-visual-style="minimal"] body .training-v3-edit{
-  background:var(--minimal-glass-soft)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  color:var(--minimal-accent)!important;border-radius:13px!important;
+  color:var(--minimal-accent)!important;border-radius:2px!important;
 }
 html[data-visual-style="minimal"] body .training-v3-number{
   color:var(--minimal-accent)!important;
@@ -641,22 +606,36 @@ html[data-visual-style="minimal"] body .training-v3-number{
 html[data-visual-style="minimal"] body .training-v3 .training-plan-summary,
 html[data-visual-style="minimal"] body .training-v3 .training-home-links>a,
 html[data-visual-style="minimal"] body .training-v3 .training-home-tools{
-  background:var(--minimal-glass)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
   color:var(--color-text-primary)!important;
-  box-shadow:none!important;border-radius:16px!important;
+  box-shadow:none!important;border-radius:2px!important;
 }
 html[data-visual-style="minimal"] body .training-v3 .training-today>.button{
-  background:var(--minimal-accent)!important;color:#fff!important;
+  background:#ffffff!important;color:#000000!important;
   border:1px solid var(--minimal-accent)!important;box-shadow:none!important;
-  border-radius:14px!important;
+  border-radius:2px!important;
 }
 
-/* Progress — real stats, neutral tiles and blue chart accent. */
+/* Main Nutrition title must remain white on the pure-black workspace. */
+html[data-visual-style="minimal"] .app.page-nutrition .daily-page>.simple-heading h1 {
+  color:#ffffff!important;
+}
+
+/* Progress — real stats, flat neutral tiles and white chart accent. */
+html[data-visual-style="minimal"] .page-progress .progress-empty-action {
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  min-height:44px;width:100%;padding:10px 12px;
+  border:1px solid #ffffff;border-radius:2px;
+  background:#ffffff;color:#000000;text-decoration:none;
+  font-size:13px;font-weight:650;box-shadow:none;
+}
+html[data-visual-style="minimal"] .page-progress .progress-empty-action svg {color:#000000;}
+
 html[data-visual-style="minimal"] body .page-progress .direction-hero{
-  background:var(--minimal-glass)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  box-shadow:var(--minimal-glass-shadow)!important;
+  box-shadow:none;
 }
 html[data-visual-style="minimal"] body .page-progress .direction-hero :is(h2,
   .direction-evidence strong,.progress-v3-section-header h2){
@@ -684,8 +663,8 @@ html[data-visual-style="minimal"] body :is(.progress-v3-stat-row span,
   color:var(--color-text-secondary)!important;
 }
 html[data-visual-style="minimal"] body .progress-v3-photo-empty{
-  background:var(--minimal-glass-soft)!important;border:1px dashed var(--minimal-glass-stroke)!important;
-  border-radius:15px!important;
+  background:#000000!important;border:1px dashed var(--minimal-glass-stroke)!important;
+  border-radius:2px!important;
 }
 html[data-visual-style="minimal"] body .progress-v3-photo-empty :is(span,p){
   color:var(--color-text-secondary)!important;
@@ -702,7 +681,7 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"]
       .training-today,.today-ref-action-panel,.today-ref-card,.today-ref-quick-panel,
       .daily-activity){
   background:var(--color-surface-primary)!important;
-  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
 }
 @supports not (backdrop-filter:blur(1px)){
   html[data-visual-style="minimal"] :is(.topbar,.bottom-nav,.card,.sheet,
@@ -740,7 +719,7 @@ html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progr
   width:100%;margin-inline:auto;
   padding-left:clamp(16px,3vw,28px)!important;
   padding-right:clamp(16px,3vw,28px)!important;
-  padding-bottom:calc(145px + env(safe-area-inset-bottom))!important;
+  padding-bottom:calc(108px + env(safe-area-inset-bottom))!important;
 }
 html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress,.page-settings) .simple-heading{
   color:var(--color-text-primary)!important;
@@ -751,7 +730,7 @@ html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progr
 }
 html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress,.page-settings)
  :is(.card,.meal-section,.sheet,.date-type){
-  border-radius:20px!important;
+  border-radius:2px!important;
 }
 html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progress,.page-settings)
  :is(.card, .meal-section, .daily-page) :is(p,small,span){
@@ -762,7 +741,7 @@ html[data-visual-style="minimal"] :is(.page-nutrition,.page-training,.page-progr
   color:var(--color-text-primary)!important;
   caret-color:var(--minimal-accent);
   border:1px solid var(--minimal-glass-stroke)!important;
-  background:var(--minimal-glass-soft)!important;
+  background:#000000!important;
   box-shadow:none!important;
 }
 html[data-visual-style="minimal"] select>option{
@@ -773,7 +752,7 @@ html[data-visual-style="minimal"] :is(input,select,textarea)::placeholder{
   color:var(--color-text-tertiary)!important;opacity:1;
 }
 html[data-visual-style="minimal"] .page-nutrition .date-type{
-  background:var(--minimal-glass)!important;
+  background:#000000!important;
   border-color:var(--minimal-glass-stroke)!important;box-shadow:none!important;
 }
 html[data-visual-style="minimal"] .page-nutrition .date-type :is(input,select){
@@ -786,7 +765,7 @@ html[data-visual-style="minimal"] .page-nutrition .date-type :is(input,select):f
   outline:2px solid var(--minimal-accent)!important;
 }
 html[data-visual-style="minimal"][data-theme="light"] .page-nutrition .date-type :is(input,select){
-  color-scheme:light;
+  color-scheme:dark;
 }
 html[data-visual-style="minimal"][data-theme="dark"] .page-nutrition .date-type :is(input,select){
   color-scheme:dark;
@@ -800,14 +779,14 @@ html[data-visual-style="minimal"] .nutrition-cookbook-section-title,
 html[data-visual-style="minimal"] .nutrition-cookbook-categories,
 html[data-visual-style="minimal"] .nutrition-meal-manage-link{display:none!important}
 html[data-visual-style="minimal"] .nutrition-cookbook-card{
-  min-height:122px!important;padding:20px 22px!important;
+  min-height:122px!important;padding:14px!important;
   display:flex!important;flex-direction:column!important;gap:8px!important;
-  border-radius:22px!important;color:var(--color-text-primary)!important;
+  border-radius:2px!important;color:var(--color-text-primary)!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  background:var(--minimal-glass)!important;
-  box-shadow:var(--minimal-glass-shadow)!important;
-  -webkit-backdrop-filter:blur(22px) saturate(1.25);
-  backdrop-filter:blur(22px) saturate(1.25);
+  background:#000000!important;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
 }
 html[data-visual-style="minimal"] .nutrition-cookbook-card::before,
 html[data-visual-style="minimal"] .nutrition-cookbook-card::after,
@@ -835,9 +814,9 @@ html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-count 
   color:var(--color-text-primary)!important;font:650 15px var(--font-body)!important;
 }
 html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-cta{
-  background:rgba(0,122,255,.09)!important;border:0!important;
+  background:#000000!important;border:0!important;
   color:var(--minimal-accent)!important;box-shadow:none!important;
-  border-radius:12px!important;min-height:34px!important;
+  border-radius:2px!important;min-height:34px!important;
   font:650 12px var(--font-body)!important;
 }
 
@@ -846,12 +825,12 @@ html[data-visual-style="minimal"] .nutrition-cookbook-card .cookbook-card-cta{
 html[data-visual-style="minimal"] .page-nutrition .cookbook-destination-hero,
 html[data-visual-style="minimal"] .cookbook-destination-hero{
   isolation:auto!important;min-height:140px!important;
-  padding:22px!important;gap:8px!important;border-radius:22px!important;
-  background:var(--minimal-glass)!important;color:var(--color-text-primary)!important;
+  padding:14px!important;gap:8px!important;border-radius:2px!important;
+  background:#000000!important;color:var(--color-text-primary)!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  box-shadow:var(--minimal-glass-shadow)!important;
-  -webkit-backdrop-filter:blur(22px) saturate(1.25);
-  backdrop-filter:blur(22px) saturate(1.25);
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
 }
 html[data-visual-style="minimal"] .cookbook-destination-hero::after,
 html[data-visual-style="minimal"] .cookbook-destination-art,
@@ -881,8 +860,8 @@ html[data-visual-style="minimal"] .recipe-filter-tabs{
   gap:7px!important;padding-block:4px 9px!important;
 }
 html[data-visual-style="minimal"] .recipe-filter-tabs button{
-  min-height:38px!important;border-radius:999px!important;
-  background:var(--minimal-glass-soft)!important;
+  min-height:38px!important;border-radius:2px!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
   box-shadow:none!important;
   color:var(--color-text-secondary)!important;
@@ -890,8 +869,8 @@ html[data-visual-style="minimal"] .recipe-filter-tabs button{
 }
 html[data-visual-style="minimal"] .recipe-filter-tabs button.selected{
   color:var(--minimal-accent)!important;
-  background:rgba(0,122,255,.09)!important;
-  border-color:rgba(0,122,255,.25)!important;
+  background:#000000!important;
+  border-color:rgba(255,255,255,.07)!important;
   font-weight:680!important;
 }
 html[data-visual-style="minimal"] .recipe-filter-tabs button small{
@@ -905,13 +884,13 @@ html[data-visual-style="minimal"] .recipe-results-head :is(span,strong){
   font-size:12px!important;font-weight:580!important;
 }
 html[data-visual-style="minimal"] .recipe-card.recipe-v5-card{
-  border:1px solid var(--minimal-glass-stroke)!important;border-radius:18px!important;
-  background:var(--minimal-glass)!important;
-  box-shadow:var(--minimal-glass-shadow)!important;
+  border:1px solid var(--minimal-glass-stroke)!important;border-radius:2px!important;
+  background:#000000!important;
+  box-shadow:none;
   color:var(--color-text-primary)!important;
   padding:17px!important;
-  -webkit-backdrop-filter:blur(18px) saturate(1.2);
-  backdrop-filter:blur(18px) saturate(1.2);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
 }
 html[data-visual-style="minimal"] .recipe-card.recipe-v5-card h2{
   color:var(--color-text-primary)!important;
@@ -948,10 +927,10 @@ html[data-visual-style="minimal"] .settings-index{
 }
 html[data-visual-style="minimal"] .settings-index-group{
   display:grid;gap:0;border:1px solid var(--minimal-glass-stroke);
-  background:var(--minimal-glass)!important;border-radius:21px;
-  box-shadow:var(--minimal-glass-shadow)!important;overflow:hidden;
-  -webkit-backdrop-filter:blur(22px) saturate(1.25);
-  backdrop-filter:blur(22px) saturate(1.25);
+  background:#000000!important;border-radius:2px;
+  box-shadow:none;overflow:hidden;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
 }
 html[data-visual-style="minimal"] .settings-index-group h2{
   margin:0;padding:17px 18px 7px!important;
@@ -982,25 +961,25 @@ html[data-visual-style="minimal"] .settings-index-footer{
   position:fixed!important;inset:0!important;
   width:min(360px,calc(100vw - 36px))!important;height:auto!important;
   max-width:none!important;max-height:min(420px,calc(100dvh - 50px))!important;
-  margin:auto!important;padding:22px!important;
+  margin:auto!important;padding:14px!important;
   overflow:visible!important;box-sizing:border-box!important;
-  border-radius:22px!important;border:1px solid rgba(218,183,126,.42)!important;
+  border-radius:2px!important;border:1px solid rgba(218,183,126,.42)!important;
   background:#17191f!important;color:#f3f0eb!important;
-  box-shadow:0 24px 70px rgba(0,0,0,.36)!important;
+  box-shadow:none;
   font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif!important;
 }
-.meal-name-quick-dialog::backdrop{background:rgba(10,12,17,.38)!important;backdrop-filter:blur(4px)}
+.meal-name-quick-dialog::backdrop{background:#000000!important;backdrop-filter:blur(4px)}
 .meal-name-quick-dialog form{display:grid;gap:13px;margin:0}
 .meal-name-quick-dialog label{font-weight:670;font-size:14px}
 .meal-name-quick-dialog input{
   display:block;width:100%;box-sizing:border-box;min-height:44px;
-  padding:10px 13px;border-radius:12px;
+  padding:10px 13px;border-radius:2px;
   background:#22242b;color:#f3f0eb;border:1px solid #454650;
   font:500 16px -apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;
 }
 .meal-name-quick-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:5px}
 .meal-name-quick-actions button{
-  min-height:39px;min-width:65px;padding:8px 14px;border-radius:11px;
+  min-height:39px;min-width:65px;padding:8px 14px;border-radius:2px;
   font:600 14px -apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;
   background:#2b2e36;color:#f1ede4;border:0;cursor:pointer;
 }
@@ -1009,7 +988,7 @@ html[data-visual-style="minimal"] .meal-name-quick-dialog{
   background:var(--color-surface-primary)!important;
   color:var(--color-text-primary)!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  box-shadow:0 22px 66px rgba(20,26,39,.20)!important;
+  box-shadow:none;
 }
 html[data-visual-style="minimal"] .meal-name-quick-dialog input{
   background:var(--color-bg-primary)!important;
@@ -1021,7 +1000,7 @@ html[data-visual-style="minimal"] .meal-name-quick-actions button{
   color:var(--color-text-primary)!important;
 }
 html[data-visual-style="minimal"] .meal-name-quick-actions button[type="submit"]{
-  background:var(--minimal-accent)!important;color:#fff!important;
+  background:#ffffff!important;color:#000000!important;
 }
 @media(max-width:430px){
   html[data-visual-style="minimal"] .nutrition-cookbook-card{padding:17px!important}
@@ -1036,24 +1015,24 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"] :is(
   .settings-index-group,.nutrition-cookbook-card,.cookbook-destination-hero,
   .recipe-card.recipe-v5-card){
   background:var(--color-surface-primary)!important;
-  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  backdrop-filter:none;-webkit-backdrop-filter:none;
 }
 
 /* Multiple workout sessions: optional custom-plan second workout and daily history */
 html[data-visual-style="minimal"] .plan-second-session{
   padding:17px;gap:13px;
-  background:var(--minimal-glass-soft)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  border-radius:18px!important;
+  border-radius:2px!important;
 }
 html[data-visual-style="minimal"] .plan-second-session>.check{
   font-weight:650;color:var(--color-text-primary);
 }
 html[data-visual-style="minimal"] .training-daily-sessions{
   display:grid;gap:12px;
-  background:var(--minimal-glass)!important;
+  background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
-  border-radius:22px!important;
+  border-radius:2px!important;
 }
 html[data-visual-style="minimal"] .training-daily-sessions-heading{
   display:flex;align-items:center;justify-content:space-between;
@@ -1070,20 +1049,20 @@ html[data-visual-style="minimal"] .training-daily-session small{
 html[data-visual-style="minimal"] .training-daily-session{
   display:flex;justify-content:space-between;align-items:center;min-height:55px;
   gap:12px;padding:11px 14px;text-decoration:none;
-  background:var(--minimal-glass-soft);border:1px solid var(--minimal-glass-stroke);
-  border-radius:14px;color:var(--color-text-primary)!important;
+  background:#000000;border:1px solid var(--minimal-glass-stroke);
+  border-radius:2px;color:var(--color-text-primary)!important;
 }
 html[data-visual-style="minimal"] .training-daily-session>span{
   display:grid;gap:4px;min-width:0;
 }
 html[data-visual-style="minimal"] .training-add-session{
-  width:100%;min-height:49px;background:var(--minimal-glass-soft)!important;
+  width:100%;min-height:49px;background:#000000!important;
   color:var(--minimal-accent)!important;border:1px solid var(--minimal-glass-stroke)!important;
-  border-radius:15px!important;box-shadow:none!important;
+  border-radius:2px!important;box-shadow:none!important;
 }
 html[data-visual-style="minimal"] .training-calendar-session{
-  display:grid;gap:4px;padding:11px 13px;border-radius:13px;
-  background:var(--minimal-glass-soft);border:1px solid var(--minimal-glass-stroke);
+  display:grid;gap:4px;padding:11px 13px;border-radius:2px;
+  background:#000000;border:1px solid var(--minimal-glass-stroke);
   color:var(--color-text-primary);
 }
 html[data-visual-style="minimal"] .training-calendar-session small{
@@ -1107,18 +1086,18 @@ html[data-visual-style="minimal"] .set-group{display:grid;gap:4px;margin-bottom:
 html[data-visual-style="minimal"] .set-group .session-set{
   display:grid!important;grid-template-columns:minmax(85px,1fr) minmax(120px,1.2fr) auto;
   gap:8px;align-items:center;padding:12px!important;
-  background:var(--minimal-glass-soft)!important;border:1px solid var(--minimal-glass-stroke)!important;
-  border-radius:14px!important;color:var(--color-text-primary)!important;
+  background:#000000!important;border:1px solid var(--minimal-glass-stroke)!important;
+  border-radius:2px!important;color:var(--color-text-primary)!important;
 }
 html[data-visual-style="minimal"] .set-group .session-set-child{
-  margin-left:16px;background:rgba(0,122,255,.045)!important;
+  margin-left:16px;background:#000000!important;
 }
 html[data-visual-style="minimal"] .set-row-controls{display:flex;gap:7px;flex-wrap:wrap}
 html[data-visual-style="minimal"] .set-row-controls button{font-size:12px!important;min-height:38px;padding:5px}
 html[data-visual-style="minimal"] .set-undo-banner{
   display:flex;align-items:center;justify-content:space-between;
-  background:var(--minimal-glass-soft);border:1px solid var(--minimal-glass-stroke);
-  color:var(--color-text-primary);border-radius:13px;padding:9px 14px;
+  background:#000000;border:1px solid var(--minimal-glass-stroke);
+  color:var(--color-text-primary);border-radius:2px;padding:9px 14px;
 }
 html[data-visual-style="minimal"] .rest-dock-dual{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 html[data-visual-style="minimal"] .rest-dock-dual .rest-times{
@@ -1135,19 +1114,19 @@ html[data-visual-style="minimal"] .exercise-search-results{
 }
 html[data-visual-style="minimal"] .exercise-result{
   display:flex;align-items:center;justify-content:space-between;text-align:left;min-height:56px;
-  padding:10px 13px!important;border-radius:13px!important;
-  background:var(--minimal-glass-soft)!important;
+  padding:10px 13px!important;border-radius:2px!important;
+  background:#000000!important;
 }
 html[data-visual-style="minimal"] .exercise-result>span{display:grid;gap:3px}
 html[data-visual-style="minimal"] .exercise-result small{color:var(--color-text-secondary);font-size:12px}
 html[data-visual-style="minimal"] .exercise-video-placeholder{
   display:grid;place-items:center;gap:12px;padding:27px 16px;
-  border-radius:16px;background:var(--minimal-glass-soft);
+  border-radius:2px;background:#000000;
   border:1px dashed var(--minimal-glass-stroke);color:var(--color-text-secondary);
 }
 html[data-visual-style="minimal"] .exercise-video-angles{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
 html[data-visual-style="minimal"] .exercise-video-angles span{
-  padding:6px 9px;background:var(--minimal-glass);border-radius:9px;
+  padding:6px 9px;background:#000000;border-radius:2px;
 }
 @media(max-width:430px){
   html[data-visual-style="minimal"] .set-group .session-set{

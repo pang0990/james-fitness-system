@@ -1,16 +1,16 @@
-/* Today 3.0 layout and motion. Core design tokens are in tokens-v3.css. */
+/* Today 3.0 compact layout. All materials are canonical tokens-v3.css / shared UI. */
 /* App shell - mobile bottom dock, desktop true navigation rail. */
 html[data-visual-style="minimal"] .page-today .topbar {
   height:64px!important;min-height:64px!important;align-items:center!important;
   padding:0 24px!important;margin:0!important;
   border-bottom:1px solid var(--jfs3-line)!important;
-  background:var(--jfs4-glass-navigation)!important;
+  background:#000000!important;
   box-shadow:none!important;
 }
 html[data-visual-style="minimal"] .page-today .today-header-bell,
 html[data-visual-style="minimal"] .page-today .account-menu>summary {
   width:40px;height:40px;border:1px solid var(--jfs3-line-strong)!important;
-  box-shadow:none!important;background:var(--jfs4-glass-navigation)!important;
+  box-shadow:none!important;background:#000000!important;
   color:var(--jfs3-ink)!important;
 }
 html[data-visual-style="minimal"] .page-today .main {
@@ -19,13 +19,13 @@ html[data-visual-style="minimal"] .page-today .main {
 html[data-visual-style="minimal"] .page-today .today-v3 {
   display:block!important;max-width:1120px!important;
   width:min(100%,1120px)!important;margin-inline:auto!important;
-  padding:28px 24px calc(142px + env(safe-area-inset-bottom))!important;
+  padding:18px 16px calc(96px + env(safe-area-inset-bottom))!important;
   gap:0!important;color:var(--jfs3-ink)!important;
 }
 .today-v3 * {box-sizing:border-box}
 .today-v3 :is(h1,h2,h3,p) {margin:0;text-shadow:none!important}
 .today-v3 .today-v3-heading {
-  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:21px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px;
 }
 .today-v3-heading time {
   color:var(--jfs3-ink-secondary);font-size:12px;font-weight:600;letter-spacing:.01em;
@@ -38,17 +38,17 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 .today-v3-heading p {margin-top:7px!important;color:var(--jfs3-ink-secondary);font-size:13px}
 .today-v3-cycle {
   display:inline-flex;align-items:center;justify-content:center;min-height:33px;
-  padding:5px 11px;border-radius:11px;
+  padding:5px 11px;border-radius:2px;
   border:1px solid var(--jfs3-line);background:var(--jfs3-paper);
   color:var(--jfs3-ink-secondary);font-size:12px;font-weight:650;white-space:nowrap;
 }
 /* Notification is distinct from the actionable card hierarchy. */
 .today-v3 .today-v3-notice {
   display:flex;align-items:center;min-height:46px;gap:10px;
-  padding:9px 15px;margin:0 0 16px!important;
-  border:1px solid var(--jfs3-line);border-radius:15px;
-  background:var(--jfs3-inset);
-  color:var(--jfs3-ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.32);
+  padding:9px 12px;margin:0 0 12px!important;
+  border:1px solid var(--jfs3-line);border-radius:2px;
+  background:#000000;
+  color:var(--jfs3-ink);box-shadow:none;
 }
 .today-v3 .today-v3-notice-marker {flex:none;display:grid;place-items:center}
 .today-v3 .today-v3-notice-content {flex:1;min-width:0;color:var(--jfs3-ink)}
@@ -71,18 +71,18 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 .today-v3 .today-v3-grid {
   display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);
   grid-template-areas:"focus nutrition" "training wellness" "quick activity";
-  gap:16px;align-items:stretch;
+  gap:12px;align-items:start;
 }
 .today-v3 .jfs3-surface {
   min-width:0;margin:0!important;
-  background:var(--jfs4-glass-surface);border:1px solid var(--jfs4-glass-edge);
-  border-radius:20px;padding:21px 22px;
-  box-shadow:var(--jfs4-glass-shadow-soft);
+  background:var(--jfs3-paper);border:1px solid var(--jfs3-line);
+  border-radius:2px;padding:14px;
+  box-shadow:none;
   color:var(--jfs3-ink);
 }
 .today-v3 .jfs3-section-heading {
   display:flex;align-items:center;justify-content:space-between;gap:12px;
-  min-height:24px;margin-bottom:18px;
+  min-height:24px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #414141;
 }
 .today-v3 .jfs3-section-heading h2,
 .today-v3 .jfs3-heading-label {
@@ -92,36 +92,36 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 }
 .today-v3 .jfs3-section-heading svg {flex:none}
 .today-v3 .jfs3-icon-link {
-  display:grid;place-items:center;min-width:36px;min-height:36px;
+  display:grid;place-items:center;min-width:36px;min-height:44px;
   border:0;background:transparent;color:var(--jfs3-ink-secondary);
-  cursor:pointer;text-decoration:none;border-radius:12px;
+  cursor:pointer;text-decoration:none;border-radius:2px;
 }
 .today-v3 .jfs3-primary, .today-v3 .jfs3-secondary {
   display:flex;align-items:center;justify-content:center;gap:10px;
-  min-height:46px;padding:11px 14px;border-radius:13px;
+  min-height:44px;padding:10px 14px;border-radius:2px;
   font-size:13px;font-weight:660;line-height:1.3;
   font-family:inherit;text-decoration:none;cursor:pointer;
 }
 .today-v3 .jfs3-primary {
   background:var(--jfs3-action)!important;color:var(--jfs3-action-text)!important;
   border:1px solid transparent!important;
-  box-shadow:0 2px 4px rgba(0,0,0,.075),inset 0 1px 0 rgba(255,255,255,.11)!important;
+  box-shadow:none!important;
 }
 .today-v3 .jfs3-secondary {
   color:var(--jfs3-ink)!important;background:var(--jfs4-glass-control)!important;
   border:1px solid var(--jfs3-line-strong)!important;
-  box-shadow:0 1px 2px rgba(0,0,0,.018)!important;
+  box-shadow:none!important;
 }
 /* A single priority CTA; supporting cards have no competing full-bleed button. */
-.today-v3 .today-v3-focus {grid-area:focus;display:flex;flex-direction:column;min-height:239px}
+.today-v3 .today-v3-focus {grid-area:focus;display:flex;flex-direction:column;min-height:0}
 .today-v3 .today-v3-focus .jfs3-section-heading {margin-bottom:12px}
 .today-v3 .today-v3-focus-state {
   color:var(--jfs3-ink-secondary);font-size:11px;
-  padding:4px 9px;background:var(--jfs3-inset);border-radius:8px;white-space:nowrap;
+  padding:4px 9px;background:#000000;border-radius:8px;white-space:nowrap;
 }
 .today-v3 .today-v3-focus-content {
   display:flex;justify-content:space-between;gap:14px;align-items:center;flex:1;
-  min-height:92px;
+  min-height:0;
 }
 .today-v3 .today-v3-focus-content h2 {
   font-size:clamp(23px,3vw,30px)!important;line-height:1.12!important;
@@ -133,13 +133,13 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 }
 .today-v3 .today-v3-focus-glyph {
   flex:none;display:grid;place-items:center;width:90px;height:90px;
-  border-radius:24px;color:var(--jfs3-ink);
-  background:linear-gradient(150deg,var(--jfs3-paper),var(--jfs3-inset));
+  border-radius:2px;color:var(--jfs3-ink);
+  background:#000000;
   border:1px solid var(--jfs3-line);
-  box-shadow:5px 9px 19px rgba(0,0,0,.045),inset 1px 1px 1px rgba(255,255,255,.55);
-  transform:rotate(-8deg);
+  box-shadow:none;
+  transform:none;
 }
-.today-v3 .today-v3-focus-glyph svg {filter:drop-shadow(1px 3px 2px rgba(0,0,0,.1))}
+.today-v3 .today-v3-focus-glyph svg {filter:none}
 
 .today-v3 .today-v3-focus-glyph.equipment {
   flex:0 0 150px;width:150px;height:105px;
@@ -150,10 +150,10 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
   width:100%;height:100%;display:block;filter:none;overflow:visible;
 }
 
-.today-v3 .today-v3-focus-action {width:100%;margin-top:17px}
+.today-v3 .today-v3-focus-action {width:100%;margin-top:12px}
 /* Numerical data is dense, without putting all information in separate cards. */
 .today-v3 .today-v3-nutrition {
-  grid-area:nutrition;display:flex;flex-direction:column;min-height:239px;
+  grid-area:nutrition;display:flex;flex-direction:column;min-height:0;
 }
 .today-v3 .today-v3-nutrition .jfs3-section-heading {margin-bottom:7px}
 .today-v3 .today-v3-nutrition-body {
@@ -174,7 +174,7 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 .today-v3 .jfs3-ring-center small {
   margin-top:5px;font-size:10px;color:var(--jfs3-ink-secondary);
 }
-.today-v3 .today-v3-macros {min-width:0;display:grid;gap:15px}
+.today-v3 .today-v3-macros {min-width:0;display:grid;gap:10px}
 .today-v3 .today-v3-macro {
   display:grid;grid-template-columns:15px minmax(0,1fr);
   gap:5px 9px;align-items:center;color:var(--jfs3-ink-secondary);
@@ -185,8 +185,8 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
   white-space:nowrap;
 }
 .today-v3 .jfs3-track {
-  background:var(--jfs3-track);height:7px;border-radius:20px;
-  overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.025);
+  background:var(--jfs3-track);height:4px;border-radius:0;
+  overflow:hidden;box-shadow:none;
 }
 .today-v3 .jfs3-track>i {
   display:block;height:100%;width:0;border-radius:inherit;
@@ -194,9 +194,9 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 }
 .today-v3 .today-v3-macro:nth-child(2) .jfs3-track>i {opacity:.72}
 .today-v3 .today-v3-macro:nth-child(3) .jfs3-track>i {opacity:.50}
-.today-v3 .today-v3-food-add {margin-top:16px;width:100%}
+.today-v3 .today-v3-food-add {margin-top:10px;width:100%}
 /* Training summary intentionally has no second primary CTA. */
-.today-v3 .today-v3-training {grid-area:training;min-height:152px}
+.today-v3 .today-v3-training {grid-area:training;min-height:0}
 .today-v3 .today-v3-training .jfs3-section-heading {margin-bottom:14px}
 .today-v3 .today-v3-training>strong {
   display:block;font-size:22px;letter-spacing:-.035em;font-weight:720;
@@ -206,9 +206,9 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
   margin-top:8px!important;color:var(--jfs3-ink-secondary);font-size:12px;
 }
 .today-v3 .today-v3-wellness {
-  grid-area:wellness;display:grid;grid-template-columns:1fr 1fr;gap:14px;min-width:0;
+  grid-area:wellness;display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:0;
 }
-.today-v3 .today-v3-wellness>.jfs3-surface {padding:17px 18px;min-width:0}
+.today-v3 .today-v3-wellness>.jfs3-surface {padding:12px;min-width:0}
 .today-v3 .today-v3-wellness .jfs3-section-heading {margin-bottom:10px}
 .today-v3 .today-v3-water-total {display:flex;align-items:baseline;gap:4px;white-space:nowrap}
 .today-v3 .today-v3-water-total strong {font-size:25px;font-weight:720;font-variant-numeric:tabular-nums}
@@ -216,9 +216,9 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
 .today-v3 .today-v3-water-track {margin-top:8px}
 .today-v3 .today-v3-water-actions {display:flex;gap:8px;margin-top:13px}
 .today-v3 .today-v3-water-actions button {
-  flex:1;min-width:0;min-height:42px;border-radius:12px;
-  background:var(--jfs4-glass-control);color:var(--jfs3-ink);
-  border:1px solid var(--jfs3-line-strong);box-shadow:0 1px 2px rgba(0,0,0,.018);
+  flex:1;min-width:0;min-height:42px;border-radius:2px;
+  background:#000000;color:#ffffff;
+  border:1px solid var(--jfs3-line-strong);box-shadow:none;
   cursor:pointer;font:600 12px/1.2 inherit;
 }
 .today-v3 .today-v3-water-feedback {
@@ -229,28 +229,28 @@ html[data-visual-style="minimal"] .page-today .today-v3 {
   margin-top:6px!important;color:var(--jfs3-ink-secondary);font-size:12px;line-height:1.4;
 }
 .today-v3 .today-v3-recovery-add {min-height:40px;margin-top:12px;width:100%;font-size:12px}
-.today-v3 .today-v3-quick {grid-area:quick;min-height:158px}
+.today-v3 .today-v3-quick {grid-area:quick;min-height:0}
 .today-v3 .today-v3-quick .jfs3-section-heading {margin-bottom:12px}
 .today-v3 .jfs3-see-all {
-  display:flex;align-items:center;gap:4px;min-height:36px;
+  display:flex;align-items:center;gap:4px;min-height:44px;
   font-size:12px;color:var(--jfs3-ink-secondary);text-decoration:none;
 }
 .today-v3 .today-v3-quick-grid {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
 .today-v3 .today-v3-quick-item {
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-width:0;min-height:83px;gap:5px;padding:10px 5px;
-  border:1px solid var(--jfs3-line);border-radius:13px;
-  background:var(--jfs4-glass-control);color:var(--jfs3-ink);
-  cursor:pointer;box-shadow:0 1px 1px rgba(0,0,0,.025);
+  min-width:0;min-height:77px;gap:5px;padding:10px 5px;
+  border:1px solid var(--jfs3-line);border-radius:2px;
+  background:#000000;color:#ffffff;
+  cursor:pointer;box-shadow:none;
   font-size:12px;
 }
 .today-v3 .today-v3-quick-item>svg:last-child {width:13px;height:13px;color:var(--jfs3-ink-secondary)}
 .today-v3 .today-v3-activity {grid-area:activity;min-width:0}
 html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.daily-activity {
-  display:block;margin:0!important;min-height:158px;
-  height:100%;padding:20px!important;background:var(--jfs4-glass-navigation)!important;
-  border:1px solid var(--jfs3-line)!important;box-shadow:var(--jfs3-surface-shadow)!important;
-  border-radius:20px!important;
+  display:block;margin:0!important;min-height:0;
+  height:auto;padding:14px!important;background:#000000!important;
+  border:1px solid var(--jfs3-line)!important;box-shadow:none!important;
+  border-radius:2px!important;
 }
 .today-v3 .today-v3-activity .daily-activity h2 {font-size:15px!important}
 /* Material response: 2D/3D cues, not perpetual movement. */
@@ -279,18 +279,18 @@ html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.dail
 /* Compact phone composition with a single primary action. */
 @media(max-width:767px) {
   html[data-visual-style="minimal"] .page-today .today-v3 {
-    padding:22px 18px calc(147px + env(safe-area-inset-bottom))!important;
+    padding:18px 16px calc(96px + env(safe-area-inset-bottom))!important;
   }
-  .today-v3 .today-v3-heading {margin-bottom:17px}
+  .today-v3 .today-v3-heading {margin-bottom:12px}
   .today-v3 .today-v3-grid {
     grid-template-columns:minmax(0,1fr);
     grid-template-areas:"focus" "nutrition" "training" "wellness" "quick" "activity";
     gap:12px;
   }
-  .today-v3 .jfs3-surface {padding:18px;border-radius:18px}
-  .today-v3 .today-v3-focus {min-height:182px}
-  .today-v3 .today-v3-focus-content {min-height:75px}
-  .today-v3 .today-v3-focus-content h2 {font-size:24px!important}
+  .today-v3 .jfs3-surface {padding:14px;border-radius:2px}
+  .today-v3 .today-v3-focus {min-height:0}
+  .today-v3 .today-v3-focus-content {min-height:0}
+  .today-v3 .today-v3-focus-content h2 {font-size:21px!important}
   .today-v3 .today-v3-focus-glyph {width:69px;height:69px;border-radius:20px}
   .today-v3 .today-v3-focus-glyph svg {width:36px;height:36px}
 
@@ -311,7 +311,7 @@ html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.dail
   .today-v3 .today-v3-macros {gap:10px}
   .today-v3 .today-v3-macro {gap:3px 7px}
   .today-v3 .today-v3-food-add {margin-top:14px}
-  .today-v3 .today-v3-training {min-height:104px}
+  .today-v3 .today-v3-training {min-height:0}
   .today-v3 .today-v3-training .jfs3-section-heading {margin-bottom:7px}
   .today-v3 .today-v3-training>strong {font-size:19px}
   .today-v3 .today-v3-wellness {grid-template-columns:1fr 1fr;gap:10px}
@@ -324,7 +324,7 @@ html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.dail
   .today-v3 .today-v3-quick-grid {gap:6px}
   .today-v3 .today-v3-quick-item {min-height:77px;padding:8px 1px;font-size:11px}
   html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.daily-activity {
-    padding:18px!important;
+    padding:14px!important;
   }
 }
 @media(max-width:374px) {
@@ -333,64 +333,14 @@ html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.dail
   .today-v3 .today-v3-quick-grid {grid-template-columns:repeat(3,minmax(0,1fr))}
   .today-v3 .today-v3-quick-item {min-height:66px}
 }
-/* Real desktop sidebar. Previously the floating phone dock displayed at 1440px. */
+/* App-shell owns the desktop rail; Today only controls content spacing. */
 @media(min-width:1024px) {
-  html[data-visual-style="minimal"] .page-today .sidebar {
-    display:flex!important;flex-direction:column;
-    width:206px!important;min-height:100dvh;
-    padding:29px 15px!important;gap:0!important;
-    background:var(--jfs4-glass-navigation)!important;border-right:1px solid var(--jfs3-line)!important;
-    box-shadow:none!important;
-  }
-  html[data-visual-style="minimal"] .page-today .sidebar .brand {
-    justify-content:flex-start!important;margin:0 0 46px!important;
-    padding:0 11px;gap:0;
-    text-decoration:none;
-  }
-  html[data-visual-style="minimal"] .page-today .sidebar .brand-mark {display:none!important}
-  html[data-visual-style="minimal"] .page-today .sidebar .brand>div:last-child {display:block!important}
-  html[data-visual-style="minimal"] .page-today .sidebar .brand strong {
-    font-size:17px!important;letter-spacing:-.045em!important;color:var(--jfs3-ink)!important;
-  }
-  html[data-visual-style="minimal"] .page-today .sidebar .brand small {
-    margin-top:4px;font-size:9px!important;letter-spacing:.12em!important;color:var(--jfs3-ink-secondary)!important;
-  }
-  html[data-visual-style="minimal"] .page-today .sidebar nav {display:grid;gap:5px!important}
-  html[data-visual-style="minimal"] .page-today .sidebar .nav-item {
-    display:flex!important;justify-content:flex-start!important;
-    min-height:44px!important;gap:12px!important;padding:11px 13px!important;
-    border-radius:12px!important;
-    color:var(--jfs3-ink-secondary)!important;
-    text-decoration:none!important;
-  }
-  html[data-visual-style="minimal"] .page-today .sidebar .nav-item .rail-label {
-    display:block!important;position:static!important;
-    padding:0!important;border:0!important;box-shadow:none!important;
-    background:transparent!important;color:inherit!important;font-size:13px!important;
-    font-weight:560!important;
-  }
-  html[data-visual-style="minimal"] .page-today .sidebar .nav-item.active {
-    background:var(--jfs3-inset)!important;color:var(--jfs3-ink)!important;
-  }
-  html[data-visual-style="minimal"] .page-today .main {
-    margin-left:206px!important;width:calc(100% - 206px)!important;
-    max-width:none!important;padding:0!important;
-  }
-  html[data-visual-style="minimal"] .page-today .topbar {
-    padding-inline:32px!important;
-  }
-  html[data-visual-style="minimal"] .page-today .bottom-nav {display:none!important}
   html[data-visual-style="minimal"] .page-today .today-v3 {
-    padding:32px 34px 50px!important;
-  }
-  html[data-visual-style="minimal"] .page-today .page-foot {padding-inline:34px}
-}
-@media(min-width:768px) and (max-width:1023px){
-  html[data-visual-style="minimal"] .page-today .sidebar {display:none!important}
-  html[data-visual-style="minimal"] .page-today .main {
-    margin-left:0!important;width:100%!important;max-width:none!important;padding:0!important;
+    padding:24px 24px 32px!important;
   }
 }
+
+
 /* Quiet mode: no page entry/hover animation and no glass. */
 @media(prefers-reduced-motion:reduce) {
   .today-v3 :is(.today-v3-focus,.today-v3-nutrition,.today-v3-training,.today-v3-wellness,.today-v3-quick,.today-v3-activity) {
