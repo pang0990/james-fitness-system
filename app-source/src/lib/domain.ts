@@ -335,6 +335,10 @@ export type AppState = {
     type: string;
     minutes: number;
     calories: number | null;
+    /** Optional, user-entered cardio measurements; not inferred. */
+    distanceKm?: number;
+    avgHeartRate?: number;
+    caloriesSource?: "manual" | "machine";
     /** Original activity duration when a historical kcal estimate was recorded. */
     calorieEstimateAppliesToMinutes?: number;
     calorieEstimateOriginalType?: string;
@@ -683,6 +687,13 @@ export function validateState(value: unknown): AppState {
       )
     )
       throw Error("飲食資料無效");
+  if(s.cardio.some(c=>!c.id||!/^\d{4}-\d{2}-\d{2}$/.test(c.date)||
+    !numeric(c.minutes)||c.minutes<=0||c.minutes>1440||
+    (c.calories!==null&&(!numeric(c.calories)||c.calories<0||c.calories>10000))||
+    (c.distanceKm!==undefined&&(!numeric(c.distanceKm)||c.distanceKm<0||c.distanceKm>1000))||
+    (c.avgHeartRate!==undefined&&(!numeric(c.avgHeartRate)||c.avgHeartRate<30||c.avgHeartRate>250))||
+    (c.caloriesSource!==undefined&&!["manual","machine"].includes(c.caloriesSource))))
+    throw Error("Cardio 紀錄格式無效");
   validateTrainingSessions(s.sessions);
   validateCycleIntegrity(s.cycles, s.cycleEvents);
   if (s.sessions.filter((x) => x.status === "in_progress").length > 1)
