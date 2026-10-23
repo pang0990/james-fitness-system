@@ -5,14 +5,14 @@ test("Today black-line page remains legible inside the current PWA chrome", asyn
   await page.goto("/today/");
   await expect(page.locator(".today-v3-focus")).toBeVisible();
   await expect.poll(async () => page.locator('meta[name="theme-color"]').getAttribute("content"))
-    .toBe("#030304");
+    .toBe("#000000");
   expect(await page.locator(".app.jfs3-shell").evaluate(el => getComputedStyle(el).backgroundColor))
     .toBe("rgb(0, 0, 0)");
   const manifest = await page.request.get("/manifest.webmanifest");
   expect(manifest.ok()).toBe(true);
   const data = await manifest.json();
-  expect(data.theme_color).toBe("#030304");
-  expect(data.background_color).toBe("#030304");
+  expect(data.theme_color).toBe("#000000");
+  expect(data.background_color).toBe("#000000");
   await page.screenshot({ path: "test-results/glass-v3-browser-chrome-mobile.png", fullPage: false });
 });
 
