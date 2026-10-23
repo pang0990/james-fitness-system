@@ -6,7 +6,7 @@ import {
 /** This flag is compile-time OFF in all normal and production builds. */
 export const REVIEW_PREVIEW = process.env.NEXT_PUBLIC_JFS_REVIEW_PREVIEW === "1";
 export const REVIEW_USER_ID = "00000000-0000-4000-8000-000000000099";
-export const REVIEW_STORAGE_KEY = "jfs-isolated-review-v1:" + REVIEW_USER_ID;
+export const REVIEW_STORAGE_KEY = "jfs-isolated-review-v1:" + REVIEW_USER_ID + ":" + (process.env.NEXT_PUBLIC_JFS_REVIEW_ID || "default");
 
 /**
  * Entirely synthetic records. Never fetch, import, clone or link real user data.
