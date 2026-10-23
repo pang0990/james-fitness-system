@@ -617,6 +617,11 @@ html[data-visual-style="minimal"] body .training-v3 .training-today>.button{
   border-radius:2px!important;
 }
 
+/* Main Nutrition title must remain white on the pure-black workspace. */
+html[data-visual-style="minimal"] .app.page-nutrition .daily-page>.simple-heading h1 {
+  color:#ffffff!important;
+}
+
 /* Progress — real stats, flat neutral tiles and white chart accent. */
 html[data-visual-style="minimal"] .page-progress .progress-empty-action {
   display:flex;align-items:center;justify-content:space-between;gap:10px;
