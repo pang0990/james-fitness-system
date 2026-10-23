@@ -1059,7 +1059,7 @@ function Training({
       <Heading
         eyebrow="TRAIN WITH INTENTION"
         title="Cardio"
-        description="保留真實的重量、次數與感受，讓每次訓練都有跡可循。"
+        description="有氧運動以手動輸入的實際數值保存，不自動將消耗加回可吃熱量。"
       />
       <Link href="/training" className="text-link">
         ← Training
@@ -1078,11 +1078,12 @@ function Training({
                       date: String(d.get("date")),
                       type: String(d.get("type")),
                       minutes: Number(d.get("minutes")),
-                      calories:
-                        d.get("calories") === ""
-                          ? null
-                          : Number(d.get("calories")),
-                      createdAt: now(),
+                      calories:d.get("calories")===""?null:Number(d.get("calories")),
+                       caloriesSource:String(d.get("caloriesSource"))==="machine"?"machine":"manual",
+                       distanceKm:d.get("distanceKm")===""?undefined:Number(d.get("distanceKm")),
+                       avgHeartRate:d.get("avgHeartRate")===""?undefined:Number(d.get("avgHeartRate")),
+                       source:"manual",
+                       createdAt: now(),
                     }),
                   )
                 ) {
@@ -1116,11 +1117,13 @@ function Training({
                   max={1440}
                   step="1"
                 />
-                <NumberField
-                  name="calories"
-                  label="器材／手動熱量 kcal（選填）"
-                  required={false}
-                />
+                <NumberField name="distanceKm" label="距離 km（選填）" min={0} max={1000} step="0.01" required={false}/>
+                 <NumberField name="avgHeartRate" label="平均心率 bpm（選填）" min={30} max={250} step="1" required={false}/>
+                 <NumberField name="calories" label="消耗 kcal（選填）" min={0} max={10000} required={false}/>
+                 <Field label="消耗數值來源"><select name="caloriesSource" defaultValue="manual">
+                   <option value="manual">自行填入</option>
+                   <option value="machine">器材數值</option>
+                 </select></Field>
               </div>
               <div className="form-actions">
                 <button className="button">保存紀錄</button>
@@ -1142,7 +1145,9 @@ function Training({
                         {c.type} · {c.minutes} 分鐘
                       </h3>
                       <p>
-                        {c.date} · {c.calories ?? "未填"} kcal（手動）
+                        {c.date} · {c.calories ?? "未填"} kcal（{c.caloriesSource==="machine"?"器材":c.caloriesSource==="manual"?"手動":"舊紀錄未標示"}）
+                         {c.distanceKm!==undefined?` · ${c.distanceKm} km`:""}
+                         {c.avgHeartRate!==undefined?` · ${c.avgHeartRate} bpm`:""}
                       </p>
                     </div>
                   </div>

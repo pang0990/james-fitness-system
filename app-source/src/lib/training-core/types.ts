@@ -13,7 +13,7 @@ export type Segment = {
   createdAt: string;
 };
 export type SetDraft = {
-  id:string; weight:string; reps:string; type:Segment["type"]; parentId:string; updatedAt:string;
+  id:string; weight:string; reps:string; rir?:string; type:Segment["type"]; parentId:string; updatedAt:string;
 };
 export type Session = {
   setDrafts?: Record<string, SetDraft>;
@@ -64,6 +64,7 @@ export type Session = {
     plannedSets?: number;
     reps?: string;
     rir?: number;
+    targetRir?: number;
     muscle?: string;
     allowRestPause?: boolean;
     allowDropSet?: boolean;

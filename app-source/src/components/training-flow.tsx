@@ -605,7 +605,7 @@ export function TrainingFlow({
                   {ex.plannedSets && (
                     <p className="muted">
                       計畫 {ex.plannedSets} 組 × {ex.reps} · 休息{" "}
-                      {ex.restSeconds} 秒
+                      {ex.restSeconds} 秒{ex.targetRir !== undefined ? ` · 目標 RIR ${ex.targetRir}` : ""}
                     </p>
                   )}
                   <p className="muted">
@@ -748,7 +748,7 @@ export function TrainingFlow({
               </div>}
                             <div className="rest-dock rest-dock-dual">
                 <Timer size={19}/>
-                <span>組間休息 {state.preferences?.autoRest===true ? "· 自動" : "· 手動"}</span>
+                <span>組間休息 {state.preferences?.autoRest!==false ? "· 自動" : "· 手動"}</span>
                 <div className="rest-times">
                   <span>已休息 <strong>{Math.floor(restElapsed/60)}:{String(restElapsed%60).padStart(2,"0")}</strong></span>
                   <span>{restStart===null ? "預設目標" : restElapsed>restTarget ? "超時" : "剩餘"}
@@ -900,6 +900,8 @@ export function TrainingFlow({
           <div className="training-home-links">
             <Link href="/training/calendar">訓練日曆 <ChevronRight size={17}/></Link>
             <Link href="/training/history">訓練歷史 <ChevronRight size={17}/></Link>
+             <Link href="/training/activity">Cardio 有氧紀錄 <ChevronRight size={17}/></Link>
+             <Link href="/progress/weekly">恢復與 Deload Check <ChevronRight size={17}/></Link>
           </div>
           <details className="training-home-tools">
             <summary>其他訓練工具</summary>

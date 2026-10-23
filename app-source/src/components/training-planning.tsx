@@ -20,6 +20,10 @@ export function TrainingCalendar({ date }: { date: string }) {
   const { state, save } = useStore();
   const [month,setMonth]=useState(date.slice(0,7));
   const [selected,setSelected]=useState<string|null>(null);
+  const [batchStart,setBatchStart]=useState(date);
+  const [batchTrainingDays,setBatchTrainingDays]=useState<number[]>([1,3,5]);
+  const [repeatWeekly,setRepeatWeekly]=useState(false);
+  const [batchMessage,setBatchMessage]=useState("");
   const plan = activeCycle(state),
     next = plan ? plan.days[nextDayIndex(state, plan)]?.name : "尚未設定";
   const first = month + "-01",
@@ -60,8 +64,39 @@ export function TrainingCalendar({ date }: { date: string }) {
     )
       setSelected(null);
   }
+  function applyBatch() {
+    if (batchStart < date) {setBatchMessage("批次排程只能修改今天及未來日期。");return;}
+    const plannedDays=Array.from({length:7},(_,i)=>addDays(batchStart,i));
+    if(!window.confirm("更新所選日期開始的七天排程？既有單日更改與歷史訓練都會保留。"))return;
+    if(save("批次訓練排程",draft=>{
+      draft.schedule=(draft.schedule??[]).filter(e=>e.source!=="batch"||!plannedDays.includes(e.date));
+      for(const d of plannedDays) {
+        const dow=new Date(d+"T12:00:00Z").getUTCDay();
+        draft.schedule.push({id:uid(),date:d,kind:batchTrainingDays.includes(dow)?"train":"rest",source:"batch",createdAt:stamp()});
+      }
+      if(repeatWeekly) draft.weeklySchedule=[...batchTrainingDays];
+      // Nutrition Day Types and existing Session snapshots are never changed here.
+    }))setBatchMessage("已保存七天安排。單日更改優先；選取重複時也更新未來的每週預設曜日。");
+  }
   return (
     <section className="calendar-section">
+      <details className="card stack training-batch-planning">
+        <summary>批次排程 · Plan Schedule</summary>
+        <p className="muted">選擇訓練與休息日。訓練日預設跟隨 Pending Queue；單日更改與歷史不會被覆寫。</p>
+        <Field label="排程開始日期"><input type="date" min={date} value={batchStart} onChange={e=>setBatchStart(e.target.value)}/></Field>
+        <fieldset className="training-batch-weekdays">
+          <legend>每週訓練日（未勾選即休息）</legend>
+          {(["日","一","二","三","四","五","六"] as const).map((name,day)=>(
+            <label className="check" key={day}><input type="checkbox"
+              checked={batchTrainingDays.includes(day)} onChange={e=>setBatchTrainingDays(list=>e.target.checked?[...list,day]:list.filter(x=>x!==day))}/>
+              週{name}
+            </label>
+          ))}
+        </fieldset>
+        <label className="check"><input type="checkbox" checked={repeatWeekly} onChange={e=>setRepeatWeekly(e.target.checked)}/>以相同星期重複後續週次</label>
+        <button type="button" className="button secondary" onClick={applyBatch}>儲存七天排程</button>
+        {batchMessage && <p role="status" className="muted">{batchMessage}</p>}
+      </details>
       <div className="card-head">
         <h2>{month}</h2>
         <div>
@@ -90,8 +125,7 @@ export function TrainingCalendar({ date }: { date: string }) {
         ))}
         {Array.from({ length }, (_, i) => {
           const d = addDays(first, i),
-            explicit = state.schedule?.filter(item=>item.date===d && item.source==="single").at(-1),
-            entry = explicit && !explicit.cleared ? explicit : null,
+            entry = scheduleEntry(state,d),
             done = state.sessions.filter(
               (s) =>
                 (s.workoutDate ?? s.date) === d && s.status === "completed",
@@ -106,8 +140,7 @@ export function TrainingCalendar({ date }: { date: string }) {
               <small>
                 {done.length
                   ? `✓ ${done.length} 場`
-                  : !entry ? "未安排"
-                  : entry.kind === "rest" ? "Rest"
+                  : entry.kind === "rest" || entry.kind === "temporary_rest" ? "Rest"
                   : entry.trainingDayId
                     ? (plan?.days.find((x,j)=>dayId(plan,j)===entry.trainingDayId)?.name??"已移除")
                     : next}
@@ -117,9 +150,9 @@ export function TrainingCalendar({ date }: { date: string }) {
         })}
       </div>
       <p className="muted">
-        日曆只呈現手動安排與已完成的紀錄；修改訓練日不會刪除歷史資料。
+        日曆顯示單日安排、批次／重複排程與已完成紀錄；訓練日依 Pending Queue 決定。
       </p>
-      <p className="muted">直接點選日曆中的日期，為那一天安排訓練、休息或清除安排。不提供批次套用，不會覆寫既有歷史訓練。</p>
+      <p className="muted">點選日期可單獨更改；任何排程都不會覆寫已完成的 Session。</p>
       {selected && (
         <Sheet title={selected} onClose={() => setSelected(null)}>
           <div className="action-list">
@@ -134,7 +167,8 @@ export function TrainingCalendar({ date }: { date: string }) {
               </div>
             ))}
             <p>調整這天的後續安排（不會刪除已完成紀錄）</p>
-            <button type="button" onClick={() => put("rest")}>休息日</button>
+            <button type="button" onClick={() => put("train")}>照 Pending Queue 安排訓練</button>
+             <button type="button" onClick={() => put("rest")}>休息日</button>
             {plan?.days.map((d, i) => (
               <button
                 key={dayId(plan, i)}

@@ -104,7 +104,8 @@ export function WorkoutHistoryDetail() {
 }
 
 export function ExerciseGuideDetail() {
-  const {state}=useStore();
+  const {state,save}=useStore();
+  const [mediaMessage,setMediaMessage]=useState("");
   const [angle,setAngle]=useState<"front"|"side"|"angle45"|"rear">("front");
   const [id, setId] = useState<string | null>(null);
   useEffect(() => setId(new URLSearchParams(window.location.search).get("id")), []);
@@ -143,7 +144,29 @@ export function ExerciseGuideDetail() {
               ))}
             </div>
           </div>
-          <p className="muted">未附正式影片與審核說明前不顯示未經確認的動作教學。</p>
+          <p className="muted">未附已授權的正式影片與審核說明前，不顯示未經確認的教學。私人動作的影片只儲存在本機個人動作資料。</p>
+          {exercise.source==="personal" && (
+            <form className="stack" onSubmit={e=>{
+              e.preventDefault();
+              if(!id)return;
+              const fd=new FormData(e.currentTarget),value=String(fd.get("videoUrl")??"").trim();
+              if(value && (!value.startsWith("https://") || !/^https:\/\/[^\s]+\.(mp4|webm)(\?[^\s]*)?$/i.test(value))) {
+                setMediaMessage("僅接受 HTTPS MP4 或 WebM 直連網址，不支援未核實的嵌入頁面。");return;
+              }
+              if(save("更新個人動作影片",draft=>{
+                const target=draft.customExercises?.find(x=>x.id===id);
+                if(!target)throw Error("找不到個人動作");
+                target.videoAngles={...(target.videoAngles??{}),[angle]:value};
+              }))setMediaMessage(value?"已儲存此角度的影片來源。":"已清除這個角度的來源。");
+            }}>
+              <Field label="這個角度的私人示範影片 HTTPS 網址（MP4／WebM）">
+                <input key={exercise.id+angle} name="videoUrl" type="url" placeholder="https://…/demo.mp4"
+                  defaultValue={exercise.videoAngles?.[angle]??""}/>
+              </Field>
+              <button type="submit" className="button secondary">儲存這個角度的影片</button>
+              {mediaMessage&&<p role="status">{mediaMessage}</p>}
+            </form>
+          )}
           {original?.sourceUrl && <a href={original.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-link">器材來源 ↗</a>}
           <Link href="/training/plan" className="button secondary">開啟課表，加入／編輯動作</Link>
           <Link href={`/progress/training/exercises?name=${encodeURIComponent(exercise.name)}`} className="text-link">查看訓練紀錄 →</Link>

@@ -64,9 +64,10 @@ const fields: Record<string, Definition[]> = {
     ["sessionMinutes", "通常訓練分鐘", "number", "60"],
     ["restSeconds", "預設休息秒數", "number", "120"],
     ["rpRestSeconds", "RP 短休息秒數（預設 20）", "number", "20"],
-    ["autoRest", "完成工作組後自動開始休息（可關閉）", "checkbox", "false"],
+    ["autoRest", "完成工作組後自動開始休息（可關閉）", "checkbox", "true"],
     ["keepAwake", "訓練時保持螢幕開啟", "checkbox", "true"],
     ["showPrevious", "顯示前次表現", "checkbox", "true"],
+    ["showRir", "訓練時顯示 RIR 輸入（不影響既有歷史）", "checkbox", "true"],
     ["warmupDefault", "暖身預設", "ask:開始時詢問|skip:直接進入訓練"],
     ["allowRestPause", "可使用 Rest-Pause", "checkbox", "true"],
     ["allowDropSet", "可使用 Drop Set", "checkbox", "true"],
@@ -76,6 +77,7 @@ const fields: Record<string, Definition[]> = {
     ["trackFatigue", "疲勞", "checkbox", "true"],
     ["trackStress", "壓力", "checkbox", "true"],
     ["trackSoreness", "痠痛", "checkbox", "true"],
+    ["trackPain", "疼痛與安全提醒", "checkbox", "true"],
   ],
   notifications: [
     ["missingLogReminder", "站內缺漏紀錄提醒", "checkbox", "true"],
@@ -114,6 +116,7 @@ export function SettingsHub({
           <h2>健身偏好</h2>
           <Link className="simple-row" href="/settings/nutrition">營養與飲水 <span>›</span></Link>
           <Link className="simple-row" href="/settings/training">訓練 <span>›</span></Link>
+           <Link className="simple-row" href="/settings/recovery">恢復與疼痛紀錄偏好 <span>›</span></Link>
           <Link className="simple-row" href="/settings/notifications">站內提醒 <span>›</span></Link>
         </section>
         <div className="settings-index-footer">
@@ -248,7 +251,7 @@ export function SettingsHub({
               if (key === "notifications") {
                 prefs.reminders = prefs.missingLogReminder !== false;
               }
-              for (const name of ["restSeconds", "waterQuick1", "waterQuick2"])
+              for (const name of ["restSeconds", "rpRestSeconds", "waterQuick1", "waterQuick2"])
                 if (
                   prefs[name] !== undefined &&
                   (!Number.isFinite(Number(prefs[name])) ||
@@ -316,6 +319,11 @@ export function SettingsHub({
             );
           })
         )}
+        {key === "training" && <div className="stack">
+          <p className="muted">這裡只管理長期訓練偏好。訓練日、模板、動作與個別 Session 請在 Training 工作區編輯；模板不是必填限制。</p>
+          <Link href="/training/plan" className="button secondary">編輯訓練課表 →</Link>
+          <Link href="/training/calendar" className="text-link">管理訓練日曆 →</Link>
+        </div>}
         {key === "notifications" && (
           <p className="muted">目前僅支援 App 內提醒，尚未提供系統推播。</p>
         )}

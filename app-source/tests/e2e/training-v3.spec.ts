@@ -419,3 +419,81 @@ test("Training home: missing muscle targets are transparent, no invented volume"
   await expect(overview.getByRole("heading",{name:"Muscle Volume"})).toHaveCount(0);
   await expect(overview).toContainText("已處理包含完成及明確略過");
 });
+
+// Training expansion regression tests use synthetic fixtures, never live user records.
+test("performance engine: stable exercise ID, optional RIR, e1RM and weekly working volume", async () => {
+  const {trainingProgressEvidence,weeklyWorkingVolume,estimatedOneRepMax,currentCycleWorkingVolume}=
+    await import("../../src/lib/training-performance");
+  const state:AppState=trainingFixture();
+  const recent=state.sessions[1];
+  recent.status="completed";recent.date="2026-10-23";recent.workoutDate="2026-10-23";
+  recent.completedAt="2026-10-23T12:00:00.000Z";
+  recent.exercises[0].muscle="Chest";
+  recent.exercises[0].sets=[{...segment("new-working"),weight:61,rir:2},
+    {...segment("rp-ignored"),type:"rp",weight:50,parentId:"new-working"}];
+  const evidence=trainingProgressEvidence(state);
+  expect(evidence).toHaveLength(1);
+  expect(evidence[0].key).toBe("id:stable-a");
+  expect(evidence[0].outcome).toBe("improved");
+  expect(evidence[0].e1rmChangePercent).toBeGreaterThanOrEqual(1);
+  expect(evidence[0].after.rir).toBe(2);
+  expect(estimatedOneRepMax(60,13)).toBeNull();
+  const week=weeklyWorkingVolume(state,"2026-10-23");
+  expect(week.totalWorkingSets).toBe(2);
+  expect(week.unassigned).toBe(1);
+  expect(currentCycleWorkingVolume(state,"test-cycle").workingSets).toBe(1);
+  recent.exercises[0].exerciseLibraryId="some-other-stable-id";
+  expect(trainingProgressEvidence(state)).toHaveLength(0);
+});
+test("safety engine: high-severity pain overrides performance-based changes", async () => {
+  const {trainingSafetyReview}=await import("../../src/lib/training-review-evidence");
+  const state:AppState=trainingFixture();
+  expect(trainingSafetyReview(state,"2026-10-23").status).toBe("insufficient");
+  state.recoveryEntries=[{id:"pain-safety",date:"2026-10-23",type:"pain",value:7,
+    area:"肩膀",side:"Left",flags:["worsening"],createdAt:"2026-10-23T08:00:00Z"}];
+  const review=trainingSafetyReview(state,"2026-10-23");
+  expect(review.status).toBe("safety-first");
+  expect(review.painDescription).toContain("停止");
+  expect(state.cycles![0].stage).toBeUndefined();
+});
+test("settings: Training preferences remain separate from editable Training Plan",async({page})=>{
+  await seed(page);
+  await page.goto("/settings/training/");
+  await expect(page.getByRole("link",{name:/編輯訓練課表/})).toHaveAttribute("href",/training\/plan/);
+  await expect(page.locator('input[name="showRir"]')).toBeChecked();
+  await page.locator('input[name="showRir"]').uncheck();
+  await page.getByRole("button",{name:"儲存設定"}).click();
+  await expect.poll(async()=>(await stored(page)).preferences?.showRir).toBe(false);
+  await page.goto("/training/session/");
+  await expect(page.locator('input[name="rir"]')).toHaveCount(0);
+});
+test("calendar: seven-day Batch saves without rewriting completed sessions",async({page})=>{
+  await seed(page);
+  const before=await stored(page);
+  await page.goto("/training/calendar/");
+  await page.locator(".training-batch-planning summary").click();
+  await expect(page.getByRole("button",{name:"儲存七天排程"})).toBeVisible();
+  page.on("dialog",dialog=>void dialog.accept());
+  await page.getByRole("button",{name:"儲存七天排程"}).click();
+  await expect.poll(async()=>((await stored(page)).schedule??[]).filter(x=>x.source==="batch").length).toBe(7);
+  const after=await stored(page);
+  expect(after.sessions).toEqual(before.sessions);
+  expect(after.cycles).toEqual(before.cycles);
+});
+test("Cardio: optional distance, heart rate and source persist without nutrition credit",async({page})=>{
+  await seed(page);
+  await page.goto("/training/activity/");
+  await expect(page.getByRole("heading",{name:"Cardio"})).toBeVisible();
+  await page.locator('input[name="minutes"]').fill("35");
+  await page.locator('input[name="distanceKm"]').fill("4.25");
+  await page.locator('input[name="avgHeartRate"]').fill("128");
+  await page.locator('input[name="calories"]').fill("210");
+  await page.locator('select[name="caloriesSource"]').selectOption("machine");
+  await page.getByRole("button",{name:"保存紀錄"}).click();
+  await expect.poll(async()=>(await stored(page)).cardio.length).toBe(1);
+  const saved=(await stored(page)).cardio[0];
+  expect(saved.distanceKm).toBe(4.25);
+  expect(saved.avgHeartRate).toBe(128);
+  expect(saved.caloriesSource).toBe("machine");
+  await expect(page.getByText(/不加回可吃熱量/)).toBeVisible();
+});
