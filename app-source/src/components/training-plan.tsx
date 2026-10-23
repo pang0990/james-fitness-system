@@ -115,6 +115,8 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
               }
             />
           </Field>
+          <Field label="訓練日備註（選填）"><textarea maxLength={500} value={day.notes ?? ""}
+            onChange={e=>setDays(days.map((d,j)=>i===j?{...d,notes:e.target.value}:d))}/></Field>
           {planSource === "custom" && (
             <div className="plan-second-session stack">
               <label className="check">
@@ -327,6 +329,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
         </section>
       ))}
 
+      <p className="muted">模板只是快速起點。訓練日與動作可自由增刪、排序；新計畫版本不會覆寫已保存的 Session。</p>
       <button
         className="button"
         disabled={
