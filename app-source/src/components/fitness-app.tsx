@@ -1059,7 +1059,7 @@ function Training({
       <Heading
         eyebrow="TRAIN WITH INTENTION"
         title="Cardio"
-        description="保留真實的重量、次數與感受，讓每次訓練都有跡可循。"
+        description="有氧運動以手動輸入的實際數值保存，不自動將消耗加回可吃熱量。"
       />
       <Link href="/training" className="text-link">
         ← Training
@@ -1142,7 +1142,9 @@ function Training({
                         {c.type} · {c.minutes} 分鐘
                       </h3>
                       <p>
-                        {c.date} · {c.calories ?? "未填"} kcal（手動）
+                        {c.date} · {c.calories ?? "未填"} kcal（{c.caloriesSource==="machine"?"器材":c.caloriesSource==="manual"?"手動":"舊紀錄未標示"}）
+                         {c.distanceKm!==undefined?` · ${c.distanceKm} km`:""}
+                         {c.avgHeartRate!==undefined?` · ${c.avgHeartRate} bpm`:""}
                       </p>
                     </div>
                   </div>
