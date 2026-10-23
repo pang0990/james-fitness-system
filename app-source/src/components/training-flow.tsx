@@ -748,7 +748,7 @@ export function TrainingFlow({
               </div>}
                             <div className="rest-dock rest-dock-dual">
                 <Timer size={19}/>
-                <span>組間休息 {state.preferences?.autoRest===true ? "· 自動" : "· 手動"}</span>
+                <span>組間休息 {state.preferences?.autoRest!==false ? "· 自動" : "· 手動"}</span>
                 <div className="rest-times">
                   <span>已休息 <strong>{Math.floor(restElapsed/60)}:{String(restElapsed%60).padStart(2,"0")}</strong></span>
                   <span>{restStart===null ? "預設目標" : restElapsed>restTarget ? "超時" : "剩餘"}
