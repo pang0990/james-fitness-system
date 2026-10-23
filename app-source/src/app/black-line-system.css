@@ -5,7 +5,8 @@
  * Interaction, accessibility and domain state stay in their existing components.
  * Retire legacy Glass CSS progressively after visual-regression acceptance.
  */
-html[data-visual-style="minimal"] {
+html[data-visual-style="minimal"] .app,
+html[data-visual-style="minimal"] body:has(.app) {
   color-scheme:dark;
   --neutral-950:#000000;--neutral-900:#000000;
   --neutral-850:#000000;--neutral-800:#000000;--neutral-750:#000000;
@@ -230,6 +231,26 @@ html[data-visual-style="minimal"] .app.workout-active :is(
 html[data-visual-style="minimal"] .app.workout-active :is(
   .training-v3 .rest-dock span,.training-v3 .rest-dock strong,.training-v3 .card h2
 ) {color:#ffffff!important;}
+/* Workout-specific legacy declarations carry greater specificity. */
+html[data-visual-style="minimal"] .app.workout-active .training-v3 .card .button:not(.secondary) {
+  background:#ffffff!important;color:#000000!important;border:1px solid #ffffff!important;
+  box-shadow:none!important;border-radius:2px!important;
+}
+html[data-visual-style="minimal"] .app.workout-active .training-v3 .card .button.secondary {
+  background:#000000!important;color:#ffffff!important;border:1px solid #626262!important;
+  box-shadow:none!important;border-radius:2px!important;
+}
+html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.set-inputs input,.workout-set-entry input) {
+  background:#000000!important;color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;border:1px solid #777777!important;
+  box-shadow:none!important;border-radius:2px!important;
+}
+html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.icon-button,.text-link) {
+  color:#ffffff!important;background:#000000!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.rest-dock,.workout-draft-status) :is(span,strong) {
+  color:#ffffff!important;
+}
 /* Portal dialogs are mounted under body, outside the app DOM. */
 html[data-visual-style="minimal"] body:has(.app) :is(.sheet,.jfs-glass-sheet) {
   color:#ffffff!important;background:#000000!important;background-image:none!important;
@@ -249,7 +270,8 @@ html[data-visual-style="minimal"] body:has(.app) :is(.jfs-glass-sheet .jfs-glass
   background-image:none!important;border:1px solid #ffffff!important;
   border-radius:2px!important;box-shadow:none!important;
 }
-html[data-visual-style="minimal"] body:has(.app) :is(.jfs-glass-sheet-backdrop,.sheet::backdrop) {
+html[data-visual-style="minimal"] body:has(.app) .jfs-glass-sheet-backdrop,
+html[data-visual-style="minimal"] .sheet::backdrop {
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
 html[data-visual-style="minimal"] body:has(.app) .jfs-glass-sheet-handle {background:#777777!important;}
