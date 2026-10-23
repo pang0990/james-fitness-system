@@ -411,6 +411,7 @@ html[data-reduce-transparency="true"] .page-today .today-v3 :is(.jfs3-surface,.t
  * keyboard interactions, links and five quick-log actions remain unchanged.
  * Once the remaining pages migrate, retire the former Glass material rules.
  */
+html[data-visual-style="minimal"] body:has(.app.page-today.jfs3-shell) {background:#000000!important;}
 html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active) {
   --jfs3-canvas:#000000;
   --jfs3-paper:#000000;
