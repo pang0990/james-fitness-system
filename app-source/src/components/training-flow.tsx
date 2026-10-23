@@ -605,7 +605,7 @@ export function TrainingFlow({
                   {ex.plannedSets && (
                     <p className="muted">
                       計畫 {ex.plannedSets} 組 × {ex.reps} · 休息{" "}
-                      {ex.restSeconds} 秒
+                      {ex.restSeconds} 秒{ex.targetRir !== undefined ? ` · 目標 RIR ${ex.targetRir}` : ""}
                     </p>
                   )}
                   <p className="muted">
