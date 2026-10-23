@@ -405,3 +405,260 @@ html[data-reduce-motion="true"] .today-v3 :is(
 html[data-reduce-transparency="true"] .page-today .today-v3 :is(.jfs3-surface,.today-v3-notice) {
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
+/*
+ * Today Black Line / compact layout v1 — 2026-10-23.
+ * This scope is intentionally limited to Minimal Today. The existing data,
+ * keyboard interactions, links and five quick-log actions remain unchanged.
+ * Once the remaining pages migrate, retire the former Glass material rules.
+ */
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active) {
+  --jfs3-canvas:#000000;
+  --jfs3-paper:#000000;
+  --jfs3-paper-soft:#000000;
+  --jfs3-inset:#000000;
+  --jfs3-ink:#ffffff;
+  --jfs3-ink-secondary:#a0a0a0;
+  --jfs3-line:#5b5b5b;
+  --jfs3-line-strong:#898989;
+  --jfs3-action:#ffffff;
+  --jfs3-action-text:#000000;
+  --jfs3-track:#3b3b3b;
+  --jfs4-glass-surface:#000000;
+  --jfs4-glass-raised:#000000;
+  --jfs4-glass-control:#000000;
+  --jfs4-glass-navigation:#000000;
+  --jfs4-glass-edge:#626262;
+  --jfs4-glass-border:#626262;
+  --jfs4-glass-shadow:none;
+  --jfs4-glass-shadow-soft:none;
+  --jfs4-glass-blur:none;
+  --jfs4-glass-blur-strong:none;
+  --jfs4-glass-ambient:none;
+  --jfs3-shell-ink:#ffffff;
+  --jfs3-shell-muted:#a0a0a0;
+  --jfs3-shell-line:#626262;
+  --jfs3-shell-inset:#000000;
+  background:#000000!important;
+  background-image:none!important;
+  color:#ffffff!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  :is(.main,.today-v3) {
+  background-color:#000000!important;
+  background-image:none!important;
+  color:#ffffff!important;
+}
+/* One line defines each section; panels must never become white glass. */
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  :is(.today-v3 .jfs3-surface,.today-v3 .jfs-glass-card,
+      .today-v3-activity>.daily-activity,.today-v3-activity>.card,
+      .today-v3 .today-v3-notice,.today-v3 .today-v3-cycle,
+      .today-v3 .today-v3-focus-state) {
+  background:#000000!important;
+  background-color:#000000!important;
+  background-image:none!important;
+  color:#ffffff!important;
+  border:1px solid #626262!important;
+  border-radius:2px!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
+/* Utility controls and Activity rows are subordinate to the main outline. */
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  :is(.today-v3 .jfs3-secondary,.today-v3 .jfs-glass-button--secondary,
+      .today-v3 .today-v3-quick-item,.today-v3 .today-v3-water-actions button,
+      .today-v3 .activity-metric,.today-v3 .activity-log-row,
+      .today-v3 .jfs3-icon-link,.today-v3 .today-v3-recovery-add) {
+  background:#000000!important;
+  background-image:none!important;
+  color:#ffffff!important;
+  border:1px solid #626262!important;
+  border-radius:2px!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .jfs3-icon-link {
+  border-color:transparent!important;
+  min-width:44px;
+  min-height:44px;
+}
+/* Preserve a unique, unmistakable white primary action. */
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 :is(.jfs3-primary,.jfs-ui-action--primary,.today-v3-focus-action) {
+  color:#000000!important;
+  background:#ffffff!important;
+  background-image:none!important;
+  border:1px solid #ffffff!important;
+  border-radius:2px!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  box-shadow:none!important;
+  min-height:44px;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 :is(.jfs3-primary,.jfs-ui-action--primary,.today-v3-focus-action)
+  :is(span,svg) {color:#000000!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 :is(.jfs3-surface,.daily-activity,.jfs-glass-card)
+  :is(h2,h3,strong) {color:#ffffff!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 :is(.jfs3-section-heading,.today-v3-heading,.today-v3-focus-content) :is(h1,h2,h3) {
+  color:#ffffff!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 :is(.jfs3-surface,.daily-activity) :is(
+    .muted,small,.today-v3-macro,.today-v3-water-feedback,.today-v3-focus-content p,
+    .today-v3-training>p,.today-v3-recovery>p) {color:#a0a0a0!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .jfs3-track {background:#383838!important;box-shadow:none!important;border-radius:0!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .jfs3-track>i {background:#ffffff!important;border-radius:0!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .jfs-glass-progress .jfs-ui-progress {
+  height:4px;background:#383838!important;border-radius:0!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .jfs-glass-progress .jfs-ui-progress>span {
+  background:#ffffff!important;border-radius:0!important;box-shadow:none!important;
+}
+/* Remove raised decorative surfaces without removing the actual artwork/icon. */
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-focus-glyph:not(.equipment) {
+  background:#000000!important;
+  background-image:none!important;
+  border:1px solid #626262!important;
+  border-radius:2px!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-focus-glyph svg {filter:none!important;}
+/* Compact spacing; remove rigid panel heights but retain full-size touch targets. */
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 {
+  padding-top:18px!important;
+  padding-inline:16px!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-heading {margin-bottom:12px!important;gap:10px;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-heading h1 {font-size:27px!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-grid {gap:12px!important;align-items:start;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .jfs3-surface {padding:14px!important;min-height:0!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 :is(.jfs3-section-heading,.today-v3-quick .jfs3-section-heading,
+                 .today-v3-training .jfs3-section-heading) {margin-bottom:10px!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 :is(.today-v3-focus-content,.today-v3-nutrition-body) {
+  min-height:0!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-focus-content h2 {font-size:clamp(21px,2.5vw,27px)!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-focus-action {margin-top:12px!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-food-add {margin-top:10px!important;min-height:44px;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-notice {
+  padding:9px 12px!important;min-height:44px;margin-bottom:12px!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-wellness {gap:10px!important;align-items:start;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-wellness>.jfs3-surface {padding:12px!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-quick-grid {gap:6px!important;}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-quick-item {
+  min-height:77px!important;padding:8px 2px!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-activity>.daily-activity {
+  padding:14px!important;height:auto!important;min-height:0!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  .today-v3 .today-v3-water-actions button {min-height:44px!important;}
+/* Minimal line-based sidebar, account chrome and bottom dock. */
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  :is(.topbar,.sidebar,.bottom-nav) {
+  color:#ffffff!important;
+  background:#000000!important;
+  background-image:none!important;
+  border-color:#626262!important;
+  border-radius:2px!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  :is(.topbar .today-header-bell,.topbar .account-menu>summary) {
+  color:#ffffff!important;
+  background:#000000!important;
+  border:1px solid #626262!important;
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  :is(.bottom-nav a,.sidebar .nav-item) {
+  background:#000000!important;
+  background-image:none!important;
+  color:#a0a0a0!important;
+  border:1px solid transparent!important;
+  border-radius:2px!important;
+  box-shadow:none!important;
+}
+html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+  :is(.bottom-nav a.active,.sidebar .nav-item.active) {
+  background:#000000!important;
+  color:#ffffff!important;
+  border:1px solid #878787!important;
+  box-shadow:none!important;
+}
+/* Portaled water editor must follow Today, not inherit white Glass defaults. */
+html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
+  :is(.jfs-glass-sheet,.sheet) {
+  color:#ffffff!important;background:#000000!important;background-image:none!important;
+  border:1px solid #777777!important;border-radius:2px!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
+  :is(.jfs-glass-sheet-heading h2,.jfs-glass-field>label) {color:#ffffff!important;}
+html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
+  :is(.jfs-glass-sheet-close,.jfs-glass-input) {
+  color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;
+  background:#000000!important;background-image:none!important;
+  border:1px solid #777777!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
+  .jfs-glass-sheet-content .jfs-glass-button--primary {
+  color:#000000!important;background:#ffffff!important;
+  background-image:none!important;border:1px solid #ffffff!important;
+  border-radius:2px!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
+  .jfs-glass-sheet-backdrop {-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}
+html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
+  .jfs-glass-sheet-handle {background:#777777!important;}
+@media(max-width:767px) {
+  html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+    .today-v3 .today-v3-grid {grid-template-columns:minmax(0,1fr);align-items:start;}
+  html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+    .today-v3 .today-v3-wellness {grid-template-columns:repeat(2,minmax(0,1fr));}
+  html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+    .today-v3 .today-v3-nutrition-body {gap:10px;}
+  html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell) .jfs-glass-sheet {
+    border-radius:2px 2px 0 0!important;
+  }
+}
+@media(max-width:374px) {
+  html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+    .today-v3 .today-v3-wellness {grid-template-columns:minmax(0,1fr);}
+  html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
+    .today-v3 .today-v3-quick-grid {grid-template-columns:repeat(3,minmax(0,1fr));}
+}
