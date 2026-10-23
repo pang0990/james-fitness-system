@@ -27,6 +27,8 @@ import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
 import { ReviewPreviewBanner } from "@/components/review-preview-banner";
 import "./training-v3.css";
+// Today is migrated first; load its scoped black-line overrides after legacy Glass CSS.
+import "./today-v3.css";
 
 export const metadata: Metadata = {
   title: "James · Fitness System",
@@ -63,4 +65,3 @@ export default function RootLayout({
     </html>
   );
 }
-import "./today-v3.css";
