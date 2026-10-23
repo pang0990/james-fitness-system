@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { StoreProvider } from "@/lib/store";
 import { AuthProvider } from "@/lib/auth-context";
+/* Legacy route structure and original Cinematic presentation. */
 import "./globals.css";
 import "./cinematic.css";
 import "./blueprint.css";
@@ -13,23 +14,21 @@ import "./today-reference.css";
 import "./today-motion.css";
 import "./today-fullbleed.css";
 import "./auth.css";
+/* Minimal production: tokens -> shell -> common components -> page layouts. */
 import "./minimal-theme.css";
-import "./monochrome-experience-v2.css";
 import "./tokens-v3.css";
 import "./app-shell-v3.css";
 import "./components-v3.css";
-import "./nutrition-v3b.css";
-import "./glass-experience-v4.css";
-import "./glass-black-crystal-v5.css";
 import "./glass-system-v2.css";
+import "./nutrition-v3b.css";
+import "./training-v3.css";
+import "./today-v3.css";
+/* Dev-only material lab; selectors are restricted to .jfs-showcase. */
+import "./glass-experience-v4.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
 import { ReviewPreviewBanner } from "@/components/review-preview-banner";
-import "./training-v3.css";
-// Today is migrated first; load its scoped black-line overrides after legacy Glass CSS.
-import "./today-v3.css";
-import "./black-line-system.css";
 
 export const metadata: Metadata = {
   title: "James · Fitness System",
