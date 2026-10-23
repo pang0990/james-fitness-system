@@ -80,3 +80,14 @@ test("Black Line: Progress create-first-record action is black type on solid whi
   await expect(action).toHaveCSS("background-color","rgb(255, 255, 255)");
   await expect(action).toHaveCSS("color","rgb(0, 0, 0)");
 });
+
+test("Black Line: Progress recovery quick log is no longer white raised tiles",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/progress/");
+  const choices=page.locator(".recovery-entry-grid>button");
+  await expect(choices).toHaveCount(4);
+  for(const choice of await choices.all()) {
+    await expect(choice).toHaveCSS("background-color","rgb(0, 0, 0)");
+    await expect(choice).toHaveCSS("color","rgb(255, 255, 255)");
+  }
+});
