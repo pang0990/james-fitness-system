@@ -392,7 +392,7 @@ test("revision conflict reloads newer records, retains draft and safely retries"
 
 test("Training home: real Cycle day progress and muscle target totals are visible", async ({page}) => {
   await page.setViewportSize({width:390,height:844});
-  const fixture=trainingFixture();
+  const fixture: AppState=trainingFixture();
   fixture.cycles![0].muscleTargets=[
     {muscle:"Chest",target:8,frequency:1,priority:true,allocation:[0]},
   ];
