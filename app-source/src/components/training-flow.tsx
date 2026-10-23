@@ -863,6 +863,40 @@ export function TrainingFlow({
             <span><small>目前課表</small><strong>{cycle.name}</strong><small>{cycle.days.length} 個訓練日 · 本輪尚有 {pendingIds(state,cycle).length} 天</small></span>
             <ChevronRight size={19}/>
           </Link>}
+          {cycle && (
+            <section className="card training-cycle-overview" aria-label="本輪訓練進度">
+              <div className="card-head">
+                <h2>本輪訓練進度</h2>
+                <Link className="text-link" href="/training/plan">調整課表 →</Link>
+              </div>
+              <div className="training-cycle-overview-metrics">
+                <div>
+                  <small>目前 Cycle</small>
+                  <strong>第 {cycle.round ?? 1} 輪</strong>
+                </div>
+                <div>
+                  <small>本輪已處理訓練日</small>
+                  <strong>
+                    {cycle.days.length - pendingIds(state, cycle).length} / {cycle.days.length}
+                  </strong>
+                </div>
+              </div>
+              <p className="muted training-cycle-overview-note">
+                已處理包含完成及明確略過的訓練日，不能視為全部已完成訓練。
+              </p>
+              {cycle.muscleTargets?.length ? (
+                <div className="training-cycle-overview-volume">
+                  <MuscleProgress cycle={cycle} />
+                </div>
+              ) : (
+                <p className="muted">尚未設定肌群目標組數。可至訓練計畫設定各肌群的 Cycle 目標。</p>
+              )}
+              <div className="training-home-links training-cycle-overview-links">
+                <Link href="/progress/training">訓練成效 <ChevronRight size={17}/></Link>
+                <Link href="/progress/weekly">週期檢視 <ChevronRight size={17}/></Link>
+              </div>
+            </section>
+          )}
           <div className="training-home-links">
             <Link href="/training/calendar">訓練日曆 <ChevronRight size={17}/></Link>
             <Link href="/training/history">訓練歷史 <ChevronRight size={17}/></Link>
