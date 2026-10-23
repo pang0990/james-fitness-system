@@ -97,3 +97,6 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"] {
   --jfs4-glass-control:var(--jfs3-paper-soft);
   --jfs4-glass-navigation:var(--jfs3-paper);
 }
+
+/* Production Minimal token overrides: Black Line v1. */
+html[data-visual-style="minimal"] .app,
