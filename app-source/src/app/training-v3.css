@@ -382,3 +382,67 @@ html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.icon-but
 html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.rest-dock,.workout-draft-status) :is(span,strong) {
   color:#ffffff!important;
 }
+
+/* Training home: real Cycle/muscle evidence, no synthetic progress. */
+html[data-visual-style="minimal"] .training-home .training-cycle-overview {
+  display:grid;
+  gap:12px;
+  min-width:0;
+}
+html[data-visual-style="minimal"] .training-home .training-cycle-overview .card-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:0;
+}
+html[data-visual-style="minimal"] .training-home .training-cycle-overview .card-head h2 {
+  margin:0;
+  font-size:16px;
+}
+html[data-visual-style="minimal"] .training-cycle-overview-metrics {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+html[data-visual-style="minimal"] .training-cycle-overview-metrics>div {
+  display:grid;
+  gap:7px;
+  min-width:0;
+  padding:11px 12px;
+  border:1px solid #626262;
+}
+html[data-visual-style="minimal"] .training-cycle-overview-metrics small {
+  color:#a0a0a0;
+  font-size:11px;
+}
+html[data-visual-style="minimal"] .training-cycle-overview-metrics strong {
+  color:#ffffff;
+  font-variant-numeric:tabular-nums;
+  font-size:20px;
+  line-height:1.2;
+}
+html[data-visual-style="minimal"] .training-cycle-overview-note {
+  margin:0;
+  font-size:12px;
+}
+html[data-visual-style="minimal"] .training-cycle-overview-volume {
+  border-top:1px solid #494949;
+  padding-top:12px;
+  min-width:0;
+}
+html[data-visual-style="minimal"] .training-cycle-overview-volume .muscle-row {
+  padding-block:9px;
+  border-bottom:1px solid #383838;
+}
+html[data-visual-style="minimal"] .training-cycle-overview-links {
+  margin-top:2px;
+}
+@media(max-width:390px) {
+  html[data-visual-style="minimal"] .training-cycle-overview-metrics>div {
+    padding:10px 8px;
+  }
+  html[data-visual-style="minimal"] .training-cycle-overview .card-head h2 {
+    font-size:15px;
+  }
+}
