@@ -219,6 +219,8 @@ export type CycleExercise = {
   reps: string;
   /** Legacy RIR retained only for reading historical plans. */
   rir?: number;
+  /** New, opt-in planned effort target; never interpreted as a recorded RIR. */
+  targetRir?: number;
   restSeconds: number;
   allowRestPause: boolean;
   allowDropSet: boolean;
@@ -226,6 +228,7 @@ export type CycleExercise = {
 export type CycleDay = {
   name: string;
   id?: string;
+  notes?: string;
   exercises?: CycleExercise[];
   /** Custom plans may optionally repeat a second workout within a Cycle day. */
   secondSession?: { name: string; exercises?: CycleExercise[] };
