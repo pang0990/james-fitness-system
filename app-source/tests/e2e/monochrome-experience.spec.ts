@@ -24,9 +24,9 @@ test("minimal mobile: tactile Today, monochrome dock, accessible progress entry"
     };
   });
   expect(style.primary).toBe("#19191b");
-  expect(style.activeColor).toBe("rgb(21, 21, 25)"); // crystal-glass active label: high-contrast dark ink
-  expect(style.dockShadow).not.toBe("none");
-  expect(style.cardShadow).not.toBe("none");
+  expect(style.activeColor).toBe("rgb(255, 255, 255)"); // black-line selected navigation
+  expect(style.dockShadow).toBe("none");
+  expect(style.cardShadow).toBe("none");
   expect(style.overflow).toBeLessThanOrEqual(1);
   await page.screenshot({ path: "test-results/monochrome-today-mobile.png", fullPage: true });
   await page.goto("/progress/");
