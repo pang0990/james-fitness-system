@@ -74,6 +74,19 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"] {
  * resolves that older palette to the same canonical Black Line ink/surfaces.
  */
 html[data-visual-style="minimal"][data-theme="light"] {
+  /* Match legacy :root[data-theme="light"] specificity from globals/polish. */
+  color-scheme:dark;
+  --neutral-950:#000000;--neutral-900:#000000;--neutral-850:#000000;
+  --neutral-800:#000000;--neutral-750:#000000;
+  --color-bg-primary:#000000;--color-bg-secondary:#000000;
+  --color-surface-primary:#000000;--color-surface-elevated:#000000;
+  --color-text-primary:#ffffff;--color-text-secondary:#a0a0a0;
+  --color-text-tertiary:#929292;--color-text-muted:#929292;
+  --color-border-default:#626262;--color-border-active:#ffffff;
+  --color-brand-primary:#ffffff;--color-brand-bright:#ffffff;
+  --color-calories:#ffffff;--color-protein:#eeeeee;--color-carbs:#c7c7c7;
+  --color-fat:#999999;--color-water:#d7d7d7;--color-recovery:#bbbbbb;
+  --glass-bg:#000000;--glass-border:#626262;--shadow:none;
   --ui-canvas:var(--jfs3-canvas);--ui-surface:var(--jfs3-paper);
   --ui-surface-raised:var(--jfs3-paper);--ui-overlay:var(--jfs3-paper);
   --ui-primary:var(--jfs3-ink);--ui-secondary:var(--jfs3-ink-secondary);
