@@ -618,6 +618,15 @@ html[data-visual-style="minimal"] body .training-v3 .training-today>.button{
 }
 
 /* Progress — real stats, flat neutral tiles and white chart accent. */
+html[data-visual-style="minimal"] .page-progress .progress-empty-action {
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  min-height:44px;width:100%;padding:10px 12px;
+  border:1px solid #ffffff;border-radius:2px;
+  background:#ffffff;color:#000000;text-decoration:none;
+  font-size:13px;font-weight:650;box-shadow:none;
+}
+html[data-visual-style="minimal"] .page-progress .progress-empty-action svg {color:#000000;}
+
 html[data-visual-style="minimal"] body .page-progress .direction-hero{
   background:#000000!important;
   border:1px solid var(--minimal-glass-stroke)!important;
