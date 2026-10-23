@@ -389,3 +389,33 @@ test("revision conflict reloads newer records, retains draft and safely retries"
   await expect(page.locator(".set-history .session-set")).toHaveCount(1);
   expect((await stored(page)).waters[0].id).toBe("other-tab-water");
 });
+
+test("Training home: real Cycle day progress and muscle target totals are visible", async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  const fixture=trainingFixture();
+  fixture.cycles![0].muscleTargets=[
+    {muscle:"Chest",target:8,frequency:1,priority:true,allocation:[0]},
+  ];
+  await seed(page,fixture);
+  await page.goto("/training/");
+  const overview=page.getByRole("region",{name:"本輪訓練進度"});
+  await expect(overview).toBeVisible();
+  await expect(overview).toContainText("第 1 輪");
+  await expect(overview).toContainText("0 / 2");
+  await expect(overview.getByRole("heading",{name:"Muscle Volume"})).toBeVisible();
+  await expect(overview).toContainText("0 / 8");
+  await expect(overview.getByRole("link",{name:/訓練成效/})).toHaveAttribute("href",/progress\/training/);
+  await expect(overview.getByRole("link",{name:/週期檢視/})).toHaveAttribute("href",/progress\/weekly/);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(1);
+});
+
+test("Training home: missing muscle targets are transparent, no invented volume", async ({page}) => {
+  await page.setViewportSize({width:390,height:844});
+  await seed(page);
+  await page.goto("/training/");
+  const overview=page.getByRole("region",{name:"本輪訓練進度"});
+  await expect(overview).toBeVisible();
+  await expect(overview).toContainText("尚未設定肌群目標組數");
+  await expect(overview.getByRole("heading",{name:"Muscle Volume"})).toHaveCount(0);
+  await expect(overview).toContainText("已處理包含完成及明確略過");
+});
