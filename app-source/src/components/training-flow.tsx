@@ -1121,8 +1121,8 @@ function ExerciseCatalog() {
         </div>
       </div>
       <Link className="text-link"
-        href={`/training/exercises/detail?id=${encodeURIComponent(item.id)}`}>
-        查看示範與動作詳情 →
+        href={item.usage==="warmup"?"/training/warmups":`/training/exercises/detail?id=${encodeURIComponent(item.id)}`}>
+        {item.usage==="warmup"?"至暖身管理加入 →":"查看示範與動作詳情 →"}
       </Link>
     </details>)}
     {create && <Sheet title="建立我的動作" onClose={()=>setCreate(false)}>
