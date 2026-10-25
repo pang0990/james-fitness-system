@@ -54,3 +54,37 @@ test("Black Line: primary CTA remains legible; data input and navigation retain 
   await expect(dock).toHaveCSS("background-color","rgb(0, 0, 0)");
   await expect(dock.getByRole("link",{name:"Training"})).toHaveAttribute("href",/training/);
 });
+
+
+test("Today: drink water updates totals silently across quick add and correction",async({page})=>{
+  await page.goto("/today/");
+  const number=page.locator(".today-v3-water-total strong");
+  await expect(number).toBeVisible();
+  const original=Number((await number.innerText()).replaceAll(",",""));
+  await page.locator(".today-v3-water-actions").getByRole("button",{name:/\+250 ml/}).click();
+  await expect(number).toHaveText((original+250).toLocaleString("en-US"));
+  await expect(page.locator(".today-v3-water-feedback")).toHaveCount(0);
+  await expect(page.locator(".toast")).toHaveCount(0);
+  await page.getByRole("button",{name:"修正今日飲水量"}).click();
+  const correction=page.locator('input[name="ml"]');
+  await expect(correction).toBeVisible();
+  await correction.fill(String(original+400));
+  await page.getByRole("button",{name:"儲存飲水量"}).click();
+  await expect(number).toHaveText((original+400).toLocaleString("en-US"));
+  await expect(page.locator(".toast")).toHaveCount(0);
+});
+
+test("Today and Settings: routine activity/setting save has no toast",async({page})=>{
+  await page.goto("/today/");
+  const section=page.locator(".daily-activity");
+  await section.getByRole("button",{name:/記錄/}).last().click();
+  const duration=page.getByLabel("時間（分鐘）");
+  await expect(duration).toBeVisible();
+  await duration.fill("20");
+  await page.getByRole("button",{name:"儲存活動"}).click();
+  await expect(section.locator(".activity-log-list")).toContainText("20 分鐘");
+  await expect(page.locator(".toast")).toHaveCount(0);
+  await page.goto("/settings/notifications/");
+  await page.getByRole("button",{name:"儲存設定"}).click();
+  await expect(page.locator(".toast")).toHaveCount(0);
+});
