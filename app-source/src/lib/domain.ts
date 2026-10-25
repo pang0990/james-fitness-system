@@ -661,7 +661,10 @@ export function validateState(value: unknown): AppState {
   )
     throw Error("外觀設定格式無效");
   if (s.customWarmups && (!Array.isArray(s.customWarmups) ||
-      s.customWarmups.some(w => !w.id || !w.name || !Number.isFinite(w.minutes) || w.minutes <= 0 || w.minutes > 120)))
+      s.customWarmups.some(w => !w.id || !w.name || !Number.isFinite(w.minutes) ||
+      (w.reps === undefined
+        ? (w.minutes <= 0 || w.minutes > 120)
+        : (w.minutes !== 0 || !Number.isInteger(w.reps) || w.reps < 1 || w.reps > 500)))))
     throw Error("自訂熱身資料無效");
   if (s.dailySteps && (!Array.isArray(s.dailySteps) ||
     s.dailySteps.some(r => !r.id || !/^\d{4}-\d{2}-\d{2}$/.test(r.date) ||
