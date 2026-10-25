@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import Link from "next/link";
 import {
   Activity, ArrowRight, Check, ChevronRight, Droplet, Dumbbell, HeartPulse,
@@ -33,14 +33,6 @@ export function TodayMinimalV3({ date, notify }: Props) {
   const [quick, setQuick] = useState<{ date: string; kind: QuickKind } | null>(null);
   const [foodOpen, setFoodOpen] = useState(false);
   const [waterEdit, setWaterEdit] = useState(false);
-  const [waterFeedback, setWaterFeedback] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (waterFeedback === null) return;
-    const timeout = window.setTimeout(() => setWaterFeedback(null), 1800);
-    return () => window.clearTimeout(timeout);
-  }, [waterFeedback]);
-
   const current = state.sessions.find((session) => session.status === "in_progress");
   const completedToday = state.sessions.filter((session) =>
     session.status === "completed" && (session.workoutDate ?? session.date) === date
@@ -89,12 +81,10 @@ export function TodayMinimalV3({ date, notify }: Props) {
 
   function addWater(ml: number) {
     if (!Number.isFinite(ml) || ml <= 0) return;
-    if (save("新增飲水", (s) => {
+    // The updated total and progress bar provide feedback; no save pop-up.
+    save("新增飲水", (s) => {
       s.waters.push({ id: uid(), date, ml, createdAt: stamp() });
-    })) {
-      setWaterFeedback(ml);
-      notify("飲水已儲存");
-    }
+    });
   }
 
   return (
@@ -201,9 +191,6 @@ export function TodayMinimalV3({ date, notify }: Props) {
                 +{state.preferences?.waterQuick2 ?? 500} ml
               </GlassButton>
             </div>
-            <span className="today-v3-water-feedback" role="status" aria-live="polite">
-              {waterFeedback !== null ? "+" + waterFeedback + " ml 已儲存" : ""}
-            </span>
           </GlassCard>
 
           <GlassCard className="today-v3-recovery jfs3-surface" aria-labelledby="today-v3-recovery-title">
@@ -264,7 +251,6 @@ export function TodayMinimalV3({ date, notify }: Props) {
             if (save("修正飲水總量", (s) => s.waters.push({
               id: uid(), date, ml: value - waterTotal(s, date), createdAt: stamp(),
             }))) {
-              notify("已更新飲水");
               setWaterEdit(false);
             }
           }}>
