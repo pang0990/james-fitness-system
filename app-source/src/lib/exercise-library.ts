@@ -34,10 +34,19 @@ export function exerciseLibrary(state:AppState):ExerciseLibraryEntry[]{
     muscle:"Warm-up",usage:"warmup",
     allowRestPause:false,allowDropSet:false,source:"jfs",visibility:"public",
   }));
+  // Ad-hoc warm-ups created in the warm-up editor are also searchable.
+  // Linked warm-ups already resolve to their original library entry.
+  const personalWarmups:ExerciseLibraryEntry[]=(state.customWarmups??[])
+    .filter(w=>!w.archived&&!w.exerciseLibraryId)
+    .map(w=>({
+      id:"personal-warmup:"+w.id,name:w.name,nameZh:w.name,brand:"我的暖身",
+      equipment:w.reps?"計次":"計時",muscle:"Warm-up",usage:"warmup",
+      allowRestPause:false,allowDropSet:false,source:"personal",visibility:"private",
+    }));
   const personal:ExerciseLibraryEntry[]=(state.customExercises??[]).map(x=>({
     ...x,nameZh:x.name,source:"personal",visibility:"private",
   }));
-  return [...personal,...builtInWarmups,...builtIn];
+  return [...personal,...personalWarmups,...builtInWarmups,...builtIn];
 }
 
 export function searchExercises(items:ExerciseLibraryEntry[],query:string,muscle="",usage:"all"|"training"|"warmup"="all"){
