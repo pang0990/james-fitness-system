@@ -6,4 +6,4 @@
 :HL["/james-fitness-system/pr-preview/pr-62/_next/static/css/b4a7b7f044b8b3da.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"settings/companion","s":["_not-found","_global-error","ui-showcase"]},"h":65632,"c":"$Q2"}]]
-0:{"b":"_lvl3y2AtCwPLBdkeIybG","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"hBOPZ1u3D4FF7o_VH9djp","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
