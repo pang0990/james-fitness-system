@@ -321,7 +321,12 @@ export function FitnessApp({ path }: { path: string }) {
     const t = setTimeout(() => setToast(""), 2600);
     return () => clearTimeout(t);
   }, [toast]);
-  const notify = (message = "已儲存") => setToast(message);
+  // Saving is silent by default. Keep explicit feedback for errors, undo,
+  // navigation and other actions that need the user's attention.
+  const notify = (message?: string) => {
+    if (!message || message === "已儲存") return;
+    setToast(message);
+  };
   const date = dateInZone(state.profile?.timezone);
   if (path === "auth/callback") return <GoogleCallback />;
   if (!authReady) return <main className="jfs-auth-screen" role="status">正在確認帳號…</main>;
