@@ -132,7 +132,7 @@ test("rest survives pause/reload; edit, delete and restore; partial Cycle confir
   expect(state.sessions[1].status).toBe("completed");
   expect(state.cycles![0].pending).toEqual(["day-a", "day-b"]);
   expect(state.cycleEvents).toHaveLength(0);
-  await expect(page.getByRole("link",{name:"查看下一個訓練日 →",exact:true})).toHaveCSS("color","rgb(36, 37, 43)");
+  await expect(page.getByRole("link",{name:"查看下一個訓練日 →",exact:true})).toHaveCSS("color","rgb(255, 255, 255)");
   await shot(page, "training-v3-complete-summary", info);
 });
 
@@ -510,7 +510,7 @@ test("Black Line: workout text labels retain readable contrast on black cards",a
     const el=page.locator(selector).first();
     await expect(el).toBeVisible();
     const actual=await el.evaluate(element=>getComputedStyle(element).color);
-    const channels=actual.match(/[\\d.]+/g)?.slice(0,3).map(Number)??[];
+    const channels=actual.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
     expect(channels.length,selector).toBe(3);
     expect(Math.min(...channels),selector+" readable RGB").toBeGreaterThanOrEqual(150);
   }
@@ -543,7 +543,7 @@ test("warm-up: labels are readable when Active Workout starts in warm-up phase",
   await seed(page,fixture);
   await expect(page.getByLabel("從動作庫加入暖身")).toBeVisible();
   const color=await page.locator(".warmup-editor .muted").first().evaluate(el=>getComputedStyle(el).color);
-  const rgb=color.match(/[\\d.]+/g)?.slice(0,3).map(Number)??[];
+  const rgb=color.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
   expect(rgb).toHaveLength(3);
   expect(Math.min(...rgb)).toBeGreaterThanOrEqual(150);
 });
