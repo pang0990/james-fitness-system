@@ -127,7 +127,9 @@ test("Today 3: main action stays unique and water quick log persists", async ({ 
   await expect(page.getByTestId("today-v3")).toBeVisible();
   await expect(page.getByTestId("today-v3").locator(".jfs3-primary")).toHaveCount(1);
   await page.getByRole("button", {name:"+250 ml", exact:true}).click();
-  await expect(page.locator(".today-v3-water-feedback")).toContainText("+250 ml 已儲存");
+  await expect(page.locator(".today-v3-water-feedback")).toHaveCount(0);
+  await expect(page.locator(".today-v3-water-total strong")).toContainText("250");
+  await expect(page.locator(".toast")).toHaveCount(0);
   await page.reload();
   await expect(page.locator(".today-v3-water-total strong")).toContainText("250");
   await page.getByRole("button", {name:"加入飲食"}).click();
