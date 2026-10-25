@@ -497,3 +497,53 @@ test("Cardio: optional distance, heart rate and source persist without nutrition
   expect(saved.caloriesSource).toBe("machine");
   await expect(page.getByText(/不加回可吃熱量/)).toBeVisible();
 });
+
+test("Black Line: workout text labels retain readable contrast on black cards",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await seed(page);
+  const targets=[
+    ".workout-set-entry .field > span",
+    ".exercise-focus > .muted",
+    ".workout-heading > span",
+  ];
+  for(const selector of targets) {
+    const el=page.locator(selector).first();
+    await expect(el).toBeVisible();
+    const actual=await el.evaluate(element=>getComputedStyle(element).color);
+    const channels=actual.match(/[\\d.]+/g)?.slice(0,3).map(Number)??[];
+    expect(channels.length,selector).toBe(3);
+    expect(Math.min(...channels),selector+" readable RGB").toBeGreaterThanOrEqual(150);
+  }
+  await expect(page.locator(".workout-set-entry .field > span").first()).toContainText("組型");
+});
+
+test("warm-up: original presets appear in exercise library and can be added without a hidden form",async({page})=>{
+  await seed(page);
+  await page.goto("/training/exercises/");
+  await page.getByRole("combobox",{name:"動作用途"}).selectOption("warmup");
+  await expect(page.locator(".history-list").filter({hasText:"肩部繞環"})).toBeVisible();
+  await expect(page.locator(".history-list").filter({hasText:"髖關節活動"})).toBeVisible();
+  await expect(page.locator(".history-list").filter({hasText:"徒手深蹲"})).toBeVisible();
+  await page.goto("/training/warmups/");
+  const fromLibrary=page.getByLabel("從動作庫加入暖身");
+  await expect(fromLibrary).toBeVisible();
+  await fromLibrary.selectOption("jfs-warmup:shoulder");
+  await expect.poll(async()=> (await stored(page)).customWarmups?.find(x=>x.exerciseLibraryId==="jfs-warmup:shoulder")?.name).toBe("肩部繞環");
+  await expect(page.locator(".warmup-row").filter({hasText:"肩部繞環"})).toBeVisible();
+  expect((await stored(page)).warmupPreset).toContainEqual(expect.any(String));
+  // Do not add warm-up-only entries into the regular Working Set exercise picker.
+  await page.goto("/training/session/");
+  await page.getByRole("button",{name:/加入動作/}).click();
+  await expect(page.getByRole("dialog")).not.toContainText("肩部繞環");
+});
+
+test("warm-up: labels are readable when Active Workout starts in warm-up phase",async({page})=>{
+  const fixture=trainingFixture();
+  fixture.sessions[1].phase="warmup";
+  await seed(page,fixture);
+  await expect(page.getByLabel("從動作庫加入暖身")).toBeVisible();
+  const color=await page.locator(".warmup-editor .muted").first().evaluate(el=>getComputedStyle(el).color);
+  const rgb=color.match(/[\\d.]+/g)?.slice(0,3).map(Number)??[];
+  expect(rgb).toHaveLength(3);
+  expect(Math.min(...rgb)).toBeGreaterThanOrEqual(150);
+});
