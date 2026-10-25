@@ -56,9 +56,14 @@ test("mobile: drafts recover across exercises and reload, stable history, duplic
   await seed(page);
   await expect(page.locator(".exercise-focus")).toContainText("60 kg × 8");
   await enter(page);
+  // Draft still persists; routine save confirmations stay invisible.
   await expect(
     page.getByText("草稿已保存 · 可切換動作或重新開啟", { exact: true }),
-  ).toBeVisible();
+  ).toHaveCount(0);
+  await expect(page.locator(".workout-draft-status")).toHaveCount(0);
+  await expect(page.locator(".training-v3-status")).not.toContainText("本機保存");
+  await expect(page.locator(".toast")).toHaveCount(0);
+  await expect.poll(async()=> (await stored(page)).sessions[1].setDrafts?.["ex-a"]?.weight).toBe("65");
   await page.getByRole("button", { name: "下一個動作", exact: true }).click();
   await enter(page, "40", "12");
   await page.getByRole("button", { name: "上一個動作", exact: true }).click();
@@ -546,4 +551,17 @@ test("warm-up: labels are readable when Active Workout starts in warm-up phase",
   const rgb=color.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
   expect(rgb).toHaveLength(3);
   expect(Math.min(...rgb)).toBeGreaterThanOrEqual(150);
+});
+
+test("Training autosave is silent but failed saves stay visible", async ({page}) => {
+  await seed(page);
+  await expect(page.locator(".training-v3-status")).not.toContainText("本機保存");
+  await enter(page, "55", "9");
+  await expect.poll(async()=>(await stored(page)).sessions[1].setDrafts?.["ex-a"]?.reps).toBe("9");
+  await expect(page.getByText("草稿已保存 · 可切換動作或重新開啟")).toHaveCount(0);
+  await expect(page.locator(".workout-draft-status")).toHaveCount(0);
+  await expect(page.locator(".toast")).toHaveCount(0);
+  await page.reload();
+  await expect(page.locator('.workout-set-entry input[name="weight"]')).toHaveValue("55");
+  await expect(page.locator('.workout-set-entry input[name="reps"]')).toHaveValue("9");
 });
