@@ -10,7 +10,7 @@ import templates from "@/content/training-templates.json";
 import {exerciseLibrary} from "@/lib/exercise-library";
 export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: string) => void; startBlank?: boolean }) {
   const { state, save } = useStore();
-  const library=exerciseLibrary(state);
+  const library=exerciseLibrary(state).filter(x=>x.usage==="training"||x.usage==="both");
   const router = useRouter();
   const current = activeCycle(state);
   const [name, setName] = useState(startBlank ? "My New Plan" : current?.name ?? "My Training Plan");
