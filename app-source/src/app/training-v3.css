@@ -1,4 +1,4 @@
-/* Active Workout only. Reuse GlassCard material; never recolor other pages. */
+/* Active Workout Black Line layout. Do not bring back obsolete white-glass dark-ink selectors. */
 html[data-visual-style="minimal"] .training-v3 {
   max-width: 1040px;
   margin-inline: auto;
@@ -95,23 +95,6 @@ html[data-visual-style="minimal"] .training-v3 {
   border-radius: 22px;
   padding: 20px;
 }
-html[data-visual-style="minimal"] .training-v3 .rest-dock {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.94),
-    rgba(240, 241, 246, 0.78)
-  ) !important;
-  color: #17181c !important;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow:
-    inset 0 1px 0 #fff,
-    0 12px 36px #0004;
-  backdrop-filter: blur(24px);
-}
-html[data-visual-style="minimal"] .training-v3 .rest-dock span,
-html[data-visual-style="minimal"] .training-v3 .rest-dock strong {
-  color: #17181c !important;
-}
 .training-v3 .rest-times {
   display: flex;
   gap: 20px;
@@ -132,10 +115,6 @@ html[data-visual-style="minimal"] .training-v3 .rest-dock strong {
   opacity: 0.45;
   cursor: not-allowed;
 }
-html[data-reduce-transparency="true"] .training-v3 .rest-dock {
-  background: #f1f1f4 !important;
-  backdrop-filter: none !important;
-}
 @media (max-width: 600px) {
   .training-v3 .exercise-focus {
     padding: 18px;
@@ -154,66 +133,6 @@ html[data-reduce-transparency="true"] .training-v3 .rest-dock {
     width: 100%;
     font-size: 14px;
   }
-}
-/* The legacy workout theme uses high-specificity dark cards. Opt this flow into
-   the existing white-glass tokens explicitly, without changing that theme. */
-html[data-visual-style="minimal"] .workout-active {
-  background: #030304 !important;
-}
-html[data-visual-style="minimal"] .training-v3 .card,
-html[data-visual-style="minimal"] .training-v3 .exercise-focus.jfs-glass-card {
-  background-color: var(
-    --jfs4-glass-surface,
-    rgba(255, 255, 255, 0.94)
-  ) !important;
-  background-image: linear-gradient(
-    150deg,
-    #ffffff55,
-    transparent 44%,
-    #ffffff22
-  ) !important;
-  border: 1px solid var(--jfs4-glass-edge, #fff) !important;
-  color: #17181c !important;
-  box-shadow:
-    inset 0 1px 0 #fff,
-    var(--jfs4-glass-shadow-soft) !important;
-  -webkit-backdrop-filter: var(--jfs4-glass-blur);
-  backdrop-filter: var(--jfs4-glass-blur);
-}
-html[data-visual-style="minimal"]
-  .training-v3
-  .card
-  :is(h2, p, span, strong, summary, legend, label, .text-link, .exercise-nav) {
-  color: #24252b !important;
-}
-html[data-visual-style="minimal"]
-  .training-v3
-  .card
-  :is(input, select, textarea) {
-  background: rgba(255, 255, 255, 0.72) !important;
-  color: #18191d !important;
-  -webkit-text-fill-color: #18191d !important;
-  border: 1px solid #ffffffdd !important;
-}
-html[data-visual-style="minimal"]
-  .training-v3
-  .card
-  :is(.session-set, .set-undo-banner) {
-  background: #ffffff44 !important;
-  border-color: #20212722 !important;
-}
-html[data-visual-style="minimal"] .training-v3 .card .button {
-  background: #202127 !important;
-  color: #fff !important;
-}
-html[data-visual-style="minimal"] .training-v3 .icon-button {
-  color: #202127 !important;
-  background: #ffffff66 !important;
-  min-height: 44px;
-  min-width: 44px;
-}
-html[data-visual-style="minimal"] .training-v3 .icon-button svg {
-  color: inherit !important;
 }
 .training-v3 .exercise-focus > .muted {
   margin: 8px 0 !important;
@@ -292,13 +211,6 @@ html[data-visual-style="minimal"] .training-v3 .icon-button svg {
     min-height: 66px;
   }
 }
-html[data-visual-style="minimal"][data-reduce-transparency="true"]
-  .training-v3
-  .card {
-  background: #f1f1f4 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
 /* Keep the submit action in flow: a bottom-sticky button can cover number inputs
    while the mobile keyboard shrinks the visual viewport. */
 .training-v3 .workout-submit {
@@ -334,18 +246,10 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"]
   gap: 18px;
   padding: 36px 24px;
 }
-html[data-visual-style="minimal"]
-  .training-v3-summary
-  :is(h1, h2, p, svg, .text-link) {
-  color: #17181c !important;
-  margin: 0;
-}
 .training-v3-summary h2 {
   font-size: 16px;
   font-weight: 500;
 }
-html[data-visual-style="minimal"] .workout-active .training-v3 .training-v3-summary a.text-link {color:#24252b!important;}
-
 /* Active Workout Minimal black-line material. */
 /* Full-screen training remains distinct structurally; visual material is identical. */
 html[data-visual-style="minimal"] .app.workout-active {
@@ -381,6 +285,53 @@ html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.icon-but
 }
 html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.rest-dock,.workout-draft-status) :is(span,strong) {
   color:#ffffff!important;
+}
+
+/* Active Workout: legible secondary text and real form labels on pure black.
+ * Legacy dark-on-white rules were removed above; these are native Black Line
+ * component colors, not a secondary global override sheet. */
+html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(
+  .muted,.eyebrow,.training-v3-status>p,.workout-heading>span,
+  .exercise-nav,.workout-draft-status,.set-history small,
+  .warmup-editor small,.warmup-editor .muted
+) {
+  color:#bcbcbc!important;
+  opacity:1;
+}
+html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(
+  .field label,.field>span,.workout-set-entry label,
+  .exercise-focus>h2,.training-v3-summary h1,.training-v3-summary h2,
+  .training-v3-summary p,.warmup-editor label,.warmup-editor legend
+) {
+  color:#ffffff!important;
+  opacity:1;
+}
+html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(
+  input,select,textarea
+)::placeholder {
+  color:#bcbcbc!important;
+  opacity:1;
+}
+html[data-visual-style="minimal"] .app.workout-active .training-v3 .workout-draft-status {
+  color:#ffffff!important;
+}
+html[data-visual-style="minimal"] .app :is(.warmup-editor,.training-v3)
+  :is(.field label,.field>span,.warmup-row label) {
+  color:#ffffff;
+}
+html[data-visual-style="minimal"] .app .warmup-editor :is(.muted,small) {
+  color:#bcbcbc;
+  opacity:1;
+}
+html[data-visual-style="minimal"] .app .warmup-library-picker {
+  display:grid;
+  gap:10px;
+  padding:14px;
+  border:1px solid #626262;
+  background:#000000;
+}
+html[data-visual-style="minimal"] .app .warmup-library-picker :is(label,strong) {
+  color:#ffffff;
 }
 
 /* Training home: real Cycle/muscle evidence, no synthetic progress. */
