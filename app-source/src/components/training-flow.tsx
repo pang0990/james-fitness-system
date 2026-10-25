@@ -89,7 +89,7 @@ export function TrainingFlow({
     return () => clearInterval(t);
   }, []);
   const libraryItems=exerciseLibrary(state);
-  const addResults=searchExercises(libraryItems,exerciseQuery);
+  const addResults=searchExercises(libraryItems,exerciseQuery,"","training");
   const cycle = activeCycle(state);
   const count = cycle ? cycleProgressEvents(state,cycle.id).length : 0;
   const planned = scheduleEntry(state, date);
@@ -1088,16 +1088,24 @@ function ExerciseCatalog() {
   const {state,save}=useStore();
   const [query,setQuery]=useState("");
   const [muscle,setMuscle]=useState("");
+  const [usage,setUsage]=useState<"all"|"training"|"warmup">("all");
   const [create,setCreate]=useState(false);
-  const list=searchExercises(exerciseLibrary(state),query,muscle);
+  const list=searchExercises(exerciseLibrary(state),query,muscle,usage);
   return <div className="stack">
     <Field label="搜尋名稱、器材或品牌">
       <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Newtech · 平胸推"/>
     </Field>
+    <Field label="動作用途">
+      <select aria-label="動作用途" value={usage} onChange={e=>setUsage(e.target.value as "all"|"training"|"warmup")}>
+        <option value="all">全部動作</option>
+        <option value="training">正式訓練</option>
+        <option value="warmup">暖身動作</option>
+      </select>
+    </Field>
     <Field label="肌群">
       <select value={muscle} onChange={e=>setMuscle(e.target.value)}>
         <option value="">全部</option>
-        {["Chest","Back","Shoulders","Quads","Hamstrings","Glutes","Biceps","Triceps","Calves","Core"]
+        {["Warm-up","Chest","Back","Shoulders","Quads","Hamstrings","Glutes","Biceps","Triceps","Calves","Core"]
           .map(m=><option key={m} value={m}>{m}</option>)}
       </select>
     </Field>
@@ -1105,7 +1113,7 @@ function ExerciseCatalog() {
     <p className="muted">JFS 動作與我的動作一起搜尋 · {list.length} 個結果</p>
     {list.map(item=><details className="history-list" key={item.id}>
       <summary>{item.nameZh} · {item.brand}</summary>
-      <p>{item.muscle} · {item.equipment} · {item.source==="personal"?"我的動作":"JFS"}</p>
+      <p>{item.muscle} · {item.equipment} · {item.usage==="warmup"?"專用暖身":item.usage==="both"?"暖身與訓練":"正式訓練"} · {item.source==="personal"?"我的動作":"JFS"}</p>
       <div className="exercise-video-placeholder">
         <strong>示範影片待補上</strong>
         <div className="exercise-video-angles">
