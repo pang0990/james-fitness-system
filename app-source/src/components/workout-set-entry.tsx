@@ -137,18 +137,18 @@ export function WorkoutSetEntry({
         }
       }}
     >
-      <div className="workout-draft-status" role="status">
-        {draftFailed
-          ? "保存失敗 · 輸入仍保留，請先重試再切換畫面"
-          : hasDraft
-            ? "草稿已保存 · 可切換動作或重新開啟"
+      {(draftFailed || !hasDraft) && (
+        <div className="workout-draft-status" role={draftFailed ? "alert" : "status"}>
+          {draftFailed
+            ? "保存失敗 · 輸入仍保留，請先重試再切換畫面"
             : "下一組 · 請輸入重量與次數"}
-        {draftFailed && (
-          <button type="button" onClick={() => persist(draft)}>
-            重試保存草稿
-          </button>
-        )}
-      </div>
+          {draftFailed && (
+            <button type="button" onClick={() => persist(draft)}>
+              重試保存草稿
+            </button>
+          )}
+        </div>
+      )}
       {draftFailed && (
         <>
           <p role="alert">{error}</p>
