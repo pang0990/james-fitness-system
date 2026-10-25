@@ -416,7 +416,9 @@ export function TrainingFlow({
           <GlassCard className="training-v3-status" aria-label="訓練狀態">
             <div><p className="eyebrow">TRAINING 3.0</p><strong>{current.pausedAt?"已暫停":review?"完成確認":restStart!==null||rpStart!==null?"休息中":"訓練中"}</strong></div>
             <span>{completedWorking} / {plannedWorking || "—"} 工作組</span>
-            <p role="status">{!online?"離線 · 紀錄仍保存於此裝置":saving?"正在保存…":"本機保存 · 尚未雲端同步"}</p>
+            {(!online || saving) && (
+              <p role="status">{!online ? "離線 · 紀錄仍保存於此裝置" : "正在保存…"}</p>
+            )}
             {error && <p role="alert">保存失敗：{error}</p>}
           </GlassCard>
           <div className="workout-heading">
