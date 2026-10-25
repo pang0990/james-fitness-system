@@ -321,10 +321,11 @@ export function FitnessApp({ path }: { path: string }) {
     const t = setTimeout(() => setToast(""), 2600);
     return () => clearTimeout(t);
   }, [toast]);
-  // Saving is silent by default. Keep explicit feedback for errors, undo,
-  // navigation and other actions that need the user's attention.
+  // Routine success notices are silent across Today, Water, Nutrition,
+  // Training, Progress and Settings. Store writes and visible totals remain
+  // unchanged. Explicit validation, failure and confirmation messages remain.
   const notify = (message?: string) => {
-    if (!message || message === "已儲存") return;
+    if (!message || /已(?:儲存|保存|更新|更名|新增|加入|建立|記錄|完成|刪除|移除|撤回|撤銷|套用|產生|保留|移到|安排|放棄|修改)|(?:儲存|保存)成功/.test(message)) return;
     setToast(message);
   };
   const date = dateInZone(state.profile?.timezone);
