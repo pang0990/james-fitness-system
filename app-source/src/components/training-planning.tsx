@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { addDays, setDayType, type Cycle } from "@/lib/domain";
@@ -321,7 +322,7 @@ export function WarmupPicker({sessionId}:{sessionId?:string}){
   const [adding,setAdding]=useState(false);
   const [error,setError]=useState("");
   const custom=state.customWarmups??[];
-  const availableExercises=exerciseLibrary(state).filter(x=>x.source==="jfs"||x.usage==="warmup"||x.usage==="both");
+  const availableExercises=exerciseLibrary(state).filter(x=>x.usage==="warmup"||x.usage==="both");
   // Legacy warm-up identifiers are retained only for existing saved sessions.
   const historical=warmups.filter(w=>selected.includes(w.id)).map(w=>({id:w.id,name:w.name,minutes:w.minutes,reps:undefined as number|undefined,archived:true}));
   const available=[...custom.filter(w=>!w.archived), ...custom.filter(w=>w.archived&&selected.includes(w.id)),...historical];
@@ -388,7 +389,7 @@ export function WarmupPicker({sessionId}:{sessionId?:string}){
       onClick={()=>{setAdding(!adding);setEditing(null);setName("");setMinutes("");}}>
       {adding?"收起新增表單":"＋ 新增暖身"}
     </button>
-    {adding && !editing && !!availableExercises.length && <div className="card stack">
+    {!editing && !!availableExercises.length && <div className="warmup-library-picker">
       <Field label="從動作庫加入暖身">
         <select defaultValue="" onChange={e=>{
           const entry=availableExercises.find(x=>x.id===e.target.value);
@@ -398,7 +399,7 @@ export function WarmupPicker({sessionId}:{sessionId?:string}){
           save("從動作庫加入暖身",draft=>{
             const id=uid();
             (draft.customWarmups??=[]).push({
-              id,name:entry.nameZh,minutes:3,exerciseLibraryId:entry.id,
+              id,name:entry.nameZh,minutes:warmups.find(w=>"jfs-warmup:"+w.id===entry.id)?.minutes??3,exerciseLibraryId:entry.id,
             });
             const session=draft.sessions.find(s=>s.id===sessionId);
             if(session)session.warmupIds=[...(session.warmupIds??[]),id];
@@ -409,7 +410,8 @@ export function WarmupPicker({sessionId}:{sessionId?:string}){
           {availableExercises.map(e=><option key={e.id} value={e.id}>{e.nameZh} · {e.brand}</option>)}
         </select>
       </Field>
-      <small className="muted">加入後預設 3 分鐘，可點「修改」調整。</small>
+      <small className="muted">從統一動作庫選取，加入後可修改時間或次數。原有暖身也可直接找到。</small>
+      <Link className="text-link" href="/training/exercises">查看完整動作庫 →</Link>
     </div>}
     {(adding || editing) && <form onSubmit={submit} className="card stack">
       <h3>{editing?"編輯熱身項目":"新增熱身項目"}</h3>
