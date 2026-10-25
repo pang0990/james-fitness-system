@@ -354,7 +354,7 @@ export function WarmupPicker({sessionId}:{sessionId?:string}){
   }
   return <div className="warmup-editor">
     <h2>我的熱身</h2>
-    <p className="muted">已選 {selected.length} 項 · 約 {duration} 分鐘</p>
+    <p className="muted">已選 {selected.length} 項 · 計時項目約 {duration} 分鐘（計次項目不計入）</p>
     <div className="stack">{available.map((w,index)=><section key={w.id} className="card warmup-row">
       <label className="check">
         <input type="checkbox" checked={selected.includes(w.id)} onChange={e=>setSelected(w.id,e.target.checked)}/>
@@ -394,6 +394,10 @@ export function WarmupPicker({sessionId}:{sessionId?:string}){
         <select defaultValue="" onChange={e=>{
           const entry=availableExercises.find(x=>x.id===e.target.value);
           if(!entry)return;
+          if(entry.id.startsWith("personal-warmup:")) {
+            setSelected(entry.id.slice("personal-warmup:".length),true);
+            return;
+          }
           const existed=(state.customWarmups??[]).find(w=>w.exerciseLibraryId===entry.id&&!w.archived);
           if(existed){setSelected(existed.id,true);return;}
           save("從動作庫加入暖身",draft=>{
