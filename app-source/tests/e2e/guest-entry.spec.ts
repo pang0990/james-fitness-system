@@ -19,9 +19,11 @@ publicTest("Welcome: guest entry is optional and uses a separate local data key"
     account:localStorage.getItem("james-fitness-user-v1:00000000-0000-4000-8000-000000000042"),
   }));
   expect(before.flag).toBe("active");
-  await expect.poll(async()=>page.evaluate(key=>localStorage.getItem(key),GUEST_DATA_KEY)).toBeTruthy();
+  // Guest state is created on first actual write, not merely on entry.
+  expect(before.guest).toBeNull();
   expect(before.account).toBeNull();
   await page.locator(".today-v3-water-actions").getByRole("button",{name:/\+250 ml/}).click();
+  await expect.poll(async()=>page.evaluate(key=>localStorage.getItem(key),GUEST_DATA_KEY)).toBeTruthy();
   const stored=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!),GUEST_DATA_KEY);
   expect(stored.waters).toHaveLength(1);
   await page.reload();
