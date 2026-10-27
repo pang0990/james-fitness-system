@@ -11,6 +11,7 @@ import {
 import { initialState, validateState, type AppState } from "./domain";
 import { useAuth } from "./auth-context";
 import { REVIEW_PREVIEW, REVIEW_STORAGE_KEY, makeReviewSeed } from "./review-preview";
+import { GUEST_USER_ID, GUEST_DATA_KEY, GUEST_IMPORT_SKIPPED } from "./guest-mode";
 
 /** Original version is preserved until user confirms a manual import. */
 export const STORAGE_KEY = "james-fitness-v1";
@@ -26,6 +27,9 @@ type Store = {
   save: (action: string, change: (s: AppState) => void) => boolean;
   reset: () => void;
   legacyAvailable: boolean;
+  guestAvailable: boolean;
+  importGuest: () => boolean;
+  dismissGuest: () => void;
   importLegacy: () => boolean;
   dismissLegacy: () => void;
   storageKey: string | null;
@@ -43,6 +47,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [legacyAvailable, setLegacyAvailable] = useState(false);
+  const [guestAvailable, setGuestAvailable] = useState(false);
   const blocked = useRef(false);
   const loadedFor = useRef<string | null>(null);
 
@@ -53,6 +58,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setReady(false);
     setError("");
     setLegacyAvailable(false);
+    setGuestAvailable(false);
     blocked.current = false;
     if (!authReady || !userId || !key) return;
 
@@ -63,6 +69,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (!raw && REVIEW_PREVIEW) localStorage.setItem(key, JSON.stringify(restored));
       ref.current = restored;
       setState(restored);
+      const guest=!REVIEW_PREVIEW && userId!==GUEST_USER_ID && !raw &&
+        !!localStorage.getItem(GUEST_DATA_KEY) &&
+        localStorage.getItem(GUEST_IMPORT_SKIPPED+userId)!=="true";
+      setGuestAvailable(guest);
       const legacy = REVIEW_PREVIEW ? null : localStorage.getItem(STORAGE_KEY);
       setLegacyAvailable(
         !raw && legacy !== null && localStorage.getItem(skippedKey(userId)) !== "true",
@@ -139,9 +149,35 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       blocked.current = false;
       setError("");
       setLegacyAvailable(false);
+      setGuestAvailable(false);
     } catch {
       setError("無法刪除本機資料");
     }
+  }
+
+  function importGuest(): boolean {
+    if(REVIEW_PREVIEW || !key || !userId || userId===GUEST_USER_ID ||
+      loadedFor.current!==userId || localStorage.getItem(key))return false;
+    try {
+      const raw=localStorage.getItem(GUEST_DATA_KEY);
+      if(!raw)return false;
+      const guestData=validateState(JSON.parse(raw));
+      localStorage.setItem(key,JSON.stringify(guestData));
+      ref.current=guestData;
+      setState(guestData);
+      setGuestAvailable(false);
+      setError("");
+      return true;
+    } catch {
+      setError("訪客資料無法匯入。原始資料仍保存在本機，請先匯出備份。");
+      return false;
+    }
+  }
+
+  function dismissGuest() {
+    if(!userId)return;
+    try {localStorage.setItem(GUEST_IMPORT_SKIPPED+userId,"true");}catch{}
+    setGuestAvailable(false);
   }
 
   function importLegacy(): boolean {
@@ -173,7 +209,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider value={{
       state, ready, error, saving, save, reset,
-      legacyAvailable, importLegacy, dismissLegacy, storageKey: key,
+      legacyAvailable, guestAvailable, importGuest, dismissGuest, importLegacy, dismissLegacy, storageKey: key,
     }}>
       {children}
     </Context.Provider>
@@ -184,6 +220,11 @@ export function useStore() {
   const value = useContext(Context);
   if (!value) throw Error("Missing StoreProvider");
   return value;
+}
+
+export function useGuestData() {
+  const {guestAvailable,importGuest,dismissGuest}=useStore();
+  return {guestAvailable,importGuest,dismissGuest};
 }
 
 export function useLegacyData() {
