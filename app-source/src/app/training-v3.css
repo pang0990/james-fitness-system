@@ -422,3 +422,21 @@ html[data-visual-style="minimal"] .training-review-evidence small {display:block
   html[data-visual-style="minimal"] .training-batch-weekdays .check {font-size:11px;padding:7px 1px;}
 }
 
+
+/* Overview navigation and workout helpers reuse the existing depth surfaces. */
+.training-week-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px; }
+.training-week-days a { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:94px; min-width:0; padding:8px 2px; border:1px solid #666; border-radius:8px; color:#f5f5f5; text-decoration:none; background:#0c0c0c; }
+.training-week-days a[aria-current=date] { border-color:#fff; background:#262626; }
+.training-week-days small,.training-week-days span { color:#c7c7c7; font-size:11px; }
+.training-week-days strong { font-size:21px; }
+.training-quick-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-block:20px; }
+.training-quick-links a { display:flex; justify-content:space-between; gap:8px; align-items:center; min-height:56px; padding:14px; border:1px solid #666; border-radius:var(--jfs-depth-control-radius,8px); background:var(--jfs-depth-surface,#0c0c0c); color:#f5f5f5; text-decoration:none; }
+.training-resume-progress { color:#fff; border-left:2px solid white; padding-left:12px; }
+.workout-previous-preview { display:grid; gap:10px; margin-block:14px; }
+.rest-adjustments { display:flex; gap:8px; flex-wrap:wrap; }
+.rest-adjustments .button { min-height:44px; }
+.set-previous { flex-basis:100%; color:#c7c7c7; }
+.training-week a:focus-visible,.training-quick-links a:focus-visible { outline:2px solid white; outline-offset:3px; }
+@media(min-width:900px){.training-quick-links{grid-template-columns:repeat(3,minmax(0,1fr))}}
+html[data-visual-style="minimal"] .app.jfs3-shell .training-home .training-today .training-v3-heading h2 { color:#f5f5f5!important; -webkit-text-fill-color:#f5f5f5!important; }
+html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .training-home :is(.training-today,.training-week,.training-pending) { background:var(--jfs-depth-gradient)!important; border-radius:var(--jfs-depth-panel-radius,14px)!important; box-shadow:var(--jfs-depth-shadow)!important; }

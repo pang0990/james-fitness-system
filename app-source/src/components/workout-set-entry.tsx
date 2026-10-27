@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Session, SetDraft } from "@/lib/domain";
 import { useStore } from "@/lib/store";
+import { previousWorkingSets } from "@/lib/workout-sets";
 import { appendWorkoutSet } from "@/lib/workout-sets";
 import { startRestInterval, endRestInterval } from "@/lib/rest-intervals";
 import { Field } from "./daily";
@@ -52,6 +53,8 @@ export function WorkoutSetEntry({
       document.removeEventListener("click", navigate, true);
     };
   }, [draftFailed]);
+  const lastWorking=exercise.sets.filter(s=>s.type==="working").at(-1);
+  const previous=previousWorkingSets(state.sessions,exercise)?.[exercise.sets.filter(s=>s.type==="working").length];
   const hasDraft = !!(
     draft.weight ||
     draft.reps ||
@@ -170,6 +173,14 @@ export function WorkoutSetEntry({
           </button>
         </>
       )}
+      <div className="workout-previous-preview">
+        {state.preferences?.showPrevious!==false&&<p>上次同序工作組：{previous?`${previous.weight} kg × ${previous.reps}`:"尚無紀錄"}</p>}
+        {lastWorking&&<button type="button" className="button secondary" disabled={!!session.pausedAt} onClick={()=>{
+          if(hasDraft&&!window.confirm("以本次上一個工作組覆蓋未提交的數值？尚不會記為完成。"))return;
+          change({weight:String(lastWorking.weight),reps:String(lastWorking.reps),rir:lastWorking.rir==null?"":String(lastWorking.rir),type:"working",parentId:""});
+        }}>複製上一個工作組</button>}
+        {lastWorking&&<small className="muted">只帶入草稿；確認實際表現後再按「完成這一組」。</small>}
+      </div>
       <Field label="組型">
         <select
           value={draft.type}

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -21,6 +21,10 @@ export function TrainingCalendar({ date }: { date: string }) {
   const { state, save } = useStore();
   const [month,setMonth]=useState(date.slice(0,7));
   const [selected,setSelected]=useState<string|null>(null);
+  useEffect(()=>{
+    const requested=new URLSearchParams(window.location.search).get("date");
+    if(requested&&/^\d{4}-\d{2}-\d{2}$/.test(requested)&&Number.isFinite(Date.parse(requested))&&new Date(requested+"T12:00:00Z").toISOString().slice(0,10)===requested){setMonth(requested.slice(0,7));setSelected(requested);}
+  },[]);
   const [batchStart,setBatchStart]=useState(date);
   const [batchTrainingDays,setBatchTrainingDays]=useState<number[]>([1,3,5]);
   const [repeatWeekly,setRepeatWeekly]=useState(false);
