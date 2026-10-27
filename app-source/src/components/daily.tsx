@@ -1,4 +1,5 @@
 "use client";
+import { FoodLogger, NutritionWeek } from "./food-logger";
 import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
 import { validateNewMealInput } from "@/lib/nutrition-input";
 import { GlassCard, GlassButton } from "./ui/glass-system";
@@ -85,7 +86,7 @@ export function Sheet({
     <dialog
       ref={ref}
       className="sheet"
-      onCancel={onClose}
+      onCancel={(e)=>{e.preventDefault();onClose();}}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
@@ -490,9 +491,11 @@ export type LibraryFood = Food & {
 };
 export function FoodPicker({
   onSelect,
+  addToPlate = false,
   mine = false,
 }: {
   mine?: boolean;
+  addToPlate?: boolean;
   onSelect: (f: LibraryFood) => void;
 }) {
   const { state, save } = useStore();
@@ -505,10 +508,10 @@ export function FoodPicker({
   ) as LibraryFood[];
   const counts = new Map<string, number>(),
     recent = new Map<string, string>();
-  for (const m of state.meals) {
+  for (const m of visibleMeals(state)) {
     if (m.foodId) {
       counts.set(m.foodId, (counts.get(m.foodId) ?? 0) + 1);
-      recent.set(m.foodId, m.createdAt);
+      recent.set(m.foodId, (recent.get(m.foodId)??"") > m.createdAt ? recent.get(m.foodId)! : m.createdAt);
     }
   }
   const filtered = foods.filter(
@@ -577,7 +580,7 @@ export function FoodPicker({
                       {f.base} {f.unit} · {f.kcal} kcal
                     </span>
                   </div>
-                  <ChevronRight size={18} />
+                  {addToPlate ? <Plus size={18} aria-label="加入清單" /> : <ChevronRight size={18} />}
                 </button>
                 <button
                   className="favorite-food"
@@ -664,6 +667,8 @@ export function NutritionV2({
 }) {
   const { state, save } = useStore();
   const [selectedDate, setDate] = useState(date);
+  const [loggerDirty,setLoggerDirty] = useState(false);
+  const [loggerTab,setLoggerTab] = useState("food");
   const [sheet, setSheet] = useState<
     | "meal"
     | "rename"
@@ -685,6 +690,9 @@ export function NutritionV2({
   const meals = visibleMeals(state, selectedDate);
   const isLibrary = path === "nutrition/foods";
   function close() {
+    if(loggerDirty && !window.confirm("離開並放棄待確認食物？已儲存的紀錄不受影響。")) return;
+    setLoggerDirty(false);
+    setLoggerTab("food");
     inlineClose?.();
     setSheet(null);
     setEdit(null);
@@ -806,6 +814,7 @@ export function NutritionV2({
               ))}
             </select>
           </div>
+          <NutritionWeek date={selectedDate} onChange={setDate} />
           <nav className="nutrition-v3-tabs" aria-label="營養頁面區塊">
             <a href="#nutrition-calories" className="active">Calories</a>
             <a href="#nutrition-meals">Meals</a>
@@ -840,6 +849,8 @@ export function NutritionV2({
                       onClick={() => {setRenameSlot(name);setSheet("rename");}}>{name}</button>
                   ) : name}</h2>
                   <div className="cinematic-meal-actions">
+                    <button type="button" className="text-link" aria-label={`複製餐點至${name}`}
+                      onClick={()=>{setSlot(name);setLoggerTab("copy");setSheet("add");}}>複製餐點</button>
                     <button
                       type="button"
                       className="icon-button"
@@ -990,37 +1001,8 @@ export function NutritionV2({
               ))}
             </div>
           ) : sheet === "add" ? (
-            <div className="cinematic-quick-add">
-              <Field label="加入哪一餐">
-                <select aria-label="加入哪一餐" value={slot} onChange={(e) => setSlot(e.target.value)}>
-                  {state.mealSlots.map(n => <option key={n} value={n}>{n}</option>)}
-                </select>
-              </Field>
-              <div className="action-list">
-              <button onClick={() => setSheet("food")}>
-                <Utensils />
-                Food
-                <ChevronRight />
-              </button>
-              <button
-                onClick={() => {
-                  setFood(null);
-                  setSheet("manual");
-                }}
-              >
-                <Plus />
-                Quick Macro
-                <ChevronRight />
-              </button>
-              <Link
-                href={`/nutrition/recipes?meal=${encodeURIComponent(slot)}&date=${selectedDate}`}
-              >
-                <BookOpen />
-                食譜
-                <ChevronRight />
-              </Link>
-              </div>
-            </div>
+            <FoodLogger date={selectedDate} slot={slot} onSlot={setSlot} initialTab={loggerTab}
+              onDirty={setLoggerDirty} onDone={()=>{setLoggerDirty(false);setLoggerTab("food");setSheet(null);inlineClose?.();notify("已加入飲食紀錄");}} />
           ) : sheet === "food" || sheet === "myfood" ? (
             <>
               <button className="text-link" onClick={() => setSheet("add")}>

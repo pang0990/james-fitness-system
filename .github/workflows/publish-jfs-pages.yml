@@ -1,50 +1,71 @@
 name: Build and publish JFS Pages
 
-# Publication is deliberately paused during single-main consolidation.
-# Re-enabling deployment requires a separate, explicit release decision.
+# A release requires an explicit manual confirmation on main.
 on:
   workflow_dispatch:
     inputs:
       confirm_release:
-        description: "Explicitly authorize publishing the validated site"
+        description: "Publish the validated main revision to the live website"
         type: boolean
         default: false
         required: true
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: jfs-pages-main
   cancel-in-progress: false
 
 jobs:
-  publish:
-    if: ${{ inputs.confirm_release == true }}
+  build:
+    if: ${{ inputs.confirm_release == true && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: app-source
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: true
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: app-source/package-lock.json
       - run: npm ci
+      - run: npm audit --audit-level=high
       - run: npm run typecheck
       - run: npm test
-      - run: npm run pages:prepare
-      - name: Commit built GitHub Pages files
-        working-directory: .
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify daily nutrition and guest persistence
+        run: npm run test:e2e -- tests/e2e/nutrition-logger.spec.ts tests/e2e/app.spec.ts tests/e2e/ds3-showcase-nutrition.spec.ts tests/e2e/guest-entry.spec.ts --workers=1
+        env:
+          CI: "true"
+      - name: Build production base path
+        run: npm run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: /james-fitness-system
+      - name: Exclude development pages and identify the release
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if ! git diff --cached --quiet; then
-            git commit -m "Build JFS Pages from validated cinematic app source"
-            git push origin HEAD:main
-          fi
+          rm -rf out/ui-showcase out/dev
+          node -e 'require("fs").writeFileSync("out/release.json", JSON.stringify({sha:process.env.GITHUB_SHA,run:process.env.GITHUB_RUN_ID}))'
+          test -s out/nutrition/index.html
+          test -s out/training/index.html
+          test -s out/sw.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app-source/out
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

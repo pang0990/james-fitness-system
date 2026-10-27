@@ -30,7 +30,8 @@ test("mobile: water and meal records persist for the account across reload", asy
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("20");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("30");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("10");
-  await page.getByRole("button", { name: "加入紀錄", exact: true }).click();
+  await page.getByRole("button", { name: "加入 Quick Macro 至清單", exact: true }).click();
+  await page.getByRole("button", { name: "確認加入 1 項食物", exact: true }).click();
   await expect(page.getByTestId("nutrition-v3b")).toContainText("290");
   await page.reload();
   await expect(page.getByTestId("nutrition-v3b")).toContainText("290");
@@ -100,7 +101,8 @@ test("meal templates can be edited and the new slot persists with a real meal", 
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("30");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("0");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("3.5");
-  await page.getByRole("button", { name: "加入紀錄", exact: true }).click();
+  await page.getByRole("button", { name: "加入 Quick Macro 至清單", exact: true }).click();
+  await page.getByRole("button", { name: "確認加入 1 項食物", exact: true }).click();
 
   await expect.poll(() => page.evaluate(key => {
     const s = JSON.parse(localStorage.getItem(key) || "{}");

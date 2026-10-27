@@ -2,7 +2,7 @@
 
 本 Repository 以 **main 為唯一開發主線**。網站原始碼以 PR #63 為基礎，包含 #62 訓練功能，並整合獨立的離線同步與 Expo PoC。整理日期：2026-10-27。
 
-**目前未發布新版網站。** main 的原始碼與既有 GitHub Pages 靜態成品是不同版本；根目錄已發布檔案保留。自動發布已暫停，後續部署需要另行授權。
+網站以 `app-source/` 建置並經 GitHub Actions 手動發布。根目錄舊靜態成品保留作歷史參考；正式線上版本以網站 `release.json` 的 SHA 與成功的 Pages deployment 為準。推送 main 不會自動部署。
 
 ## 程式位置
 
@@ -38,7 +38,7 @@ npm run test:e2e -- --workers=1
 
 GitHub Pages 現有網站：https://pang0990.github.io/james-fitness-system/
 
-單一 main 整理期間，Pages 改為 Actions 發布模式，沒有自動部署工作。`publish-jfs-pages.yml` 僅能在明確手動確認後更新根目錄建置檔案；它不是部署授權，也不會自動發布 Pages。正式發布需另外建立／確認發布流程並取得授權。
+`publish-jfs-pages.yml` 只接受 main 上的手動 `confirm_release=true`。流程執行套件安全檢查、TypeScript、單元測試與 Nutrition/Guest 操作測試，再以 `/james-fitness-system` base path 建置、移除開發頁、上傳 Pages artifact 並部署。正式發布需等待 deploy 成功，再核對線上 `release.json`；合併或建置成功本身不等於已發布。
 
 不要把舊 PR 描述中的測試數量當成整合後的測試結果。不要直接執行舊雲端 Migration，或以舊版資料格式覆寫目前帳戶資料。
 
@@ -50,5 +50,5 @@ GitHub Pages 現有網站：https://pang0990.github.io/james-fitness-system/
 - 全庫 Chromium：104 通過、3 失敗、6 依模式跳過；原樣重跑失敗項目後 2 通過、1 仍失敗。不是全綠。
 - 未解：1024px 四工作區測試停在「正在確認帳號」。另外兩項逾時重跑通過，保留首次失敗證據。
 - Review Preview / Offline Lab 專用測試在一般建置中跳過，未算作通過。
-- npm audit：Next.js critical、Zod high；本次不變更依賴版本，正式發布前需獨立處理。
-- 真實 OAuth、Supabase DEV 整合、iOS/Android 真機與新版正式部署未執行。
+- Nutrition Batch 1 發布準備：Next.js 更新至 16.4.3、Zod 至 4.6.6；重新執行套件安全檢查與回歸測試。
+- 真實 OAuth、Supabase DEV 整合與 iOS/Android 真機未完成本次驗收；不可將本機保存視為雲端同步。
