@@ -41,3 +41,14 @@ GitHub Pages 現有網站：https://pang0990.github.io/james-fitness-system/
 單一 main 整理期間，Pages 改為 Actions 發布模式，沒有自動部署工作。`publish-jfs-pages.yml` 僅能在明確手動確認後更新根目錄建置檔案；它不是部署授權，也不會自動發布 Pages。正式發布需另外建立／確認發布流程並取得授權。
 
 不要把舊 PR 描述中的測試數量當成整合後的測試結果。不要直接執行舊雲端 Migration，或以舊版資料格式覆寫目前帳戶資料。
+
+## 整理時驗證（2026-10-27）
+
+- TypeScript：通過。
+- Domain / SQLite / Offline protocol 單元測試：132/132 通過。
+- Next.js 靜態建置：通過；首次建置因依賴安全提示中止，原樣重跑成功。
+- 全庫 Chromium：104 通過、3 失敗、6 依模式跳過；原樣重跑失敗項目後 2 通過、1 仍失敗。不是全綠。
+- 未解：1024px 四工作區測試停在「正在確認帳號」。另外兩項逾時重跑通過，保留首次失敗證據。
+- Review Preview / Offline Lab 專用測試在一般建置中跳過，未算作通過。
+- npm audit：Next.js critical、Zod high；本次不變更依賴版本，正式發布前需獨立處理。
+- 真實 OAuth、Supabase DEV 整合、iOS/Android 真機與新版正式部署未執行。
