@@ -256,3 +256,25 @@ html[data-visual-style="minimal"][data-reduce-transparency="true"]
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
   box-shadow:none!important;
 }
+
+/* Daily logger uses the existing Black Line depth tokens. */
+.nutrition-week { margin-block: 20px; }
+.nutrition-week-days { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 4px; }
+.nutrition-week-days button { display: grid; gap: 5px; padding: 10px 2px; min-height: 88px; min-width: 0; border: 1px solid #666; border-radius: 8px; background: #101010; color: #f5f5f5; }
+.nutrition-week-days button small { color: #b8b8b8; font-size: 11px; }
+.nutrition-week-days button[aria-pressed=true] { border-color: #fff; background: #292929; }
+.logger-tabs { display:flex; flex-wrap:wrap; gap:8px; }
+.food-logger .logger-tabs .button { width:auto; flex: 0 1 auto; min-height:44px; }
+.food-logger button[aria-pressed=true] { border-color: #fff; background:#292929; color:#fff; }
+.food-logger .food-list { max-height: 300px; overflow:auto; }
+.food-logger .food-list button { min-height:44px; }
+.food-logger .plate-row { border-top:1px solid #666; padding-block:16px; }
+.food-logger .plate-row small { color:#d0d0d0; }
+.food-plate-confirm { position:sticky; bottom:0; z-index:2; background:#101010; color:#f5f5f5; border:1px solid #777; border-radius:8px; padding:12px; padding-bottom:max(12px,env(safe-area-inset-bottom)); }
+.food-logger .simple-row { flex-wrap:wrap; gap:12px; }
+.food-logger input, .food-logger select { min-width:0; }
+.nutrition-week button:focus-visible, .food-logger button:focus-visible { outline:2px solid white; outline-offset:3px; }
+.app.jfs3-shell .food-logger .food-plate-confirm > button.button { width:100%; min-height:44px; }
+html[data-visual-style="minimal"] .app.jfs3-shell .sheet .food-logger .food-plate-confirm > button.button:not(:disabled) { background:#f5f5f5!important; color:#0a0a0a!important; opacity:1; }
+.app.jfs3-shell .food-logger .food-plate-confirm > button.button:disabled { background:#292929; color:#b8b8b8; opacity:1; }
+.food-logger .text-link { min-height:44px; }

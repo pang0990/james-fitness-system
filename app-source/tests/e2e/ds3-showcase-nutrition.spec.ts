@@ -35,7 +35,8 @@ test("Nutrition 3.0: reads true account totals and opens the existing meal entry
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("20");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("30");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("10");
-  await page.getByRole("button", { name: "加入紀錄" }).click();
+  await page.getByRole("button", { name: "加入 Quick Macro 至清單", exact: true }).click();
+  await page.getByRole("button", { name: "確認加入 1 項食物", exact: true }).click();
   await expect(page.getByTestId("nutrition-v3b")).toContainText("今日 1 筆飲食紀錄");
   await expect(page.getByTestId("nutrition-v3b")).toContainText("290");
   await page.reload();

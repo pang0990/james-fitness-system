@@ -267,6 +267,8 @@ export type RecoveryEntry = {
   createdAt: string;
 };
 export type AppState = {
+  /** Optional additive v1 extension; old backups remain valid. Snapshot meals, not recipes. */
+  savedMeals?: { id: string; name: string; createdAt: string; items: import("./food-plate").MealSnapshot[] }[];
   mealSlotSnapshots?: Record<string, string[]>;
   skippedMealSlots?: { date: string; slot: string; createdAt: string }[];
   favoriteFoods?: string[];
@@ -673,6 +675,18 @@ export function validateState(value: unknown): AppState {
       !r.updatedAt || (r.externalId != null && typeof r.externalId !== "string")) ||
     new Set(s.dailySteps.map(r => r.date)).size !== s.dailySteps.length))
     throw Error("每日步數資料格式無效或日期重複");
+  if (s.savedMeals !== undefined) {
+    if (!Array.isArray(s.savedMeals) || s.savedMeals.some(t =>
+      !t || typeof t.id !== "string" || !t.id || typeof t.name !== "string" || !t.name.trim() || t.name.length>80 ||
+      typeof t.createdAt !== "string" || !Number.isFinite(Date.parse(t.createdAt)) ||
+      !Array.isArray(t.items) || !t.items.length || t.items.some(m =>
+        !m || typeof m.name !== "string" || !m.name.trim() || typeof m.unit !== "string" || !m.unit ||
+        !Number.isFinite(m.quantity) || m.quantity<=0 ||
+        ![m.p,m.c,m.f,m.kcal].every(n=>typeof n==="number"&&Number.isFinite(n)&&n>=0) ||
+        (m.foodId!==undefined && typeof m.foodId!=="string") ||
+        (m.foodVersion!==undefined && (!Number.isInteger(m.foodVersion)||m.foodVersion<1))
+      )) || new Set(s.savedMeals.map(t=>t.id)).size !== s.savedMeals.length) throw Error("常吃套餐資料無效");
+  }
   if (s.profile) profileSchema.parse(s.profile);
   if (s.mealSlotSnapshots &&
       (typeof s.mealSlotSnapshots !== "object" ||
