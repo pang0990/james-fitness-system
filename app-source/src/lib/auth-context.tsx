@@ -11,12 +11,15 @@ import {
 import type { User } from "@supabase/supabase-js";
 import { appHref, supabase } from "./supabase-browser";
 import { REVIEW_PREVIEW, REVIEW_USER_ID } from "./review-preview";
+import { GUEST_MODE_KEY, GUEST_USER_ID, guestIdentity } from "./guest-mode";
 
 type Auth = {
   user: User | null;
   ready: boolean;
   error: string;
   signInGoogle: () => Promise<void>;
+  continueAsGuest: () => void;
+  isGuest: boolean;
   signOut: () => Promise<void>;
 };
 
@@ -42,7 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (!active) return;
-        setUser(session?.user ?? null);
+        if(session?.user) localStorage.removeItem(GUEST_MODE_KEY);
+        setUser(session?.user ?? (localStorage.getItem(GUEST_MODE_KEY)==="active"?guestIdentity():null));
         setReady(true);
       },
     );
@@ -51,7 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // A cached session permits offline local use but is not a cloud permission.
     void supabase.auth.getSession().then(({ data, error: err }) => {
       if (!active) return;
-      setUser(data.session?.user ?? null);
+      if(data.session?.user) localStorage.removeItem(GUEST_MODE_KEY);
+      setUser(data.session?.user ?? (localStorage.getItem(GUEST_MODE_KEY)==="active"?guestIdentity():null));
       if (err) setError("無法讀取帳號狀態，請重新登入。");
       setReady(true);
     }).catch(() => {
@@ -65,6 +70,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       active = false;
       subscription.unsubscribe();
     };
+  }, []);
+
+  const continueAsGuest = useCallback(() => {
+    setError("");
+    if(REVIEW_PREVIEW){window.location.assign(appHref("today"));return;}
+    try {
+      localStorage.setItem(GUEST_MODE_KEY,"active");
+      setUser(guestIdentity());
+      window.location.assign(appHref("today"));
+    } catch {
+      setError("這個瀏覽器無法儲存訪客資料，請先允許本機儲存。");
+    }
   }, []);
 
   const signInGoogle = useCallback(async () => {
@@ -87,6 +104,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     setError("");
     if (REVIEW_PREVIEW) { setError("此為本機測試版；可使用上方按鈕重設虛構資料。"); return; }
+    if (user?.id===GUEST_USER_ID) {
+      try{localStorage.removeItem(GUEST_MODE_KEY);}catch{}
+      setUser(null);
+      window.location.assign(appHref("login"));
+      return;
+    }
     // Offline sign-out is not a confirmed server-side revocation.
     if (!navigator.onLine) {
       setError("目前離線，請連線後再登出。");
@@ -99,10 +122,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setUser(null);
     window.location.assign(appHref("login"));
-  }, []);
+  }, [user]);
 
   return (
-    <Context.Provider value={{ user, ready, error, signInGoogle, signOut }}>
+    <Context.Provider value={{ user, ready, error, signInGoogle, continueAsGuest, isGuest:user?.id===GUEST_USER_ID, signOut }}>
       {children}
     </Context.Provider>
   );
