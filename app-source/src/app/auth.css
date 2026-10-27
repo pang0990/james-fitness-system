@@ -29,7 +29,7 @@
   display:flex;align-items:center;justify-content:space-between;gap:14px;
   min-height:54px;margin:0;padding:13px 18px;width:100%;
   border:1px solid #ffffff;border-radius:14px;background:#ffffff;
-  color:#000000;font:600 14px/1.5 inherit;letter-spacing:0;text-decoration:none;
+  color:#000000;font-family:inherit;font-weight:600;font-size:14px;line-height:1.5;letter-spacing:0;text-decoration:none;
   transition:background 200ms cubic-bezier(.2,.8,.2,1),color 200ms cubic-bezier(.2,.8,.2,1),
     transform 200ms cubic-bezier(.2,.8,.2,1);
 }
