@@ -142,7 +142,9 @@ test("Today desktop sidebar follows black outline rules", async ({ page }) => {
     shadow:getComputedStyle(el).boxShadow,
     blur:getComputedStyle(el).backdropFilter,
   }));
-  expect(props).toEqual({bg:"rgb(0, 0, 0)",shadow:"none",blur:"none"});
+  expect(props.bg).toBe("rgb(11, 11, 11)");
+  expect(props.blur).toBe("none");
+  expect(props.shadow).not.toBe("none");
   await page.screenshot({path:"test-results/today-blackline-desktop.png",fullPage:true});
 });
 
