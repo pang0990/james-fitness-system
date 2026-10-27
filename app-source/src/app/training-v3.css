@@ -259,9 +259,9 @@ html[data-visual-style="minimal"] .app.workout-active :is(
   .training-v3-status,.training-v3 .card,.training-v3 .jfs-glass-card,
   .training-v3 .rest-dock,.training-v3 .exercise-focus,.training-v3 .workout-draft-status
 ) {
-  color:#ffffff!important;background:#000000!important;background-image:none!important;
-  border:1px solid #626262!important;border-radius:2px!important;
-  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  color:#ffffff!important;background:var(--jfs-depth-surface)!important;background-image:var(--jfs-depth-gradient)!important;
+  border:1px solid #626262!important;border-radius:var(--jfs-depth-radius)!important;
+  box-shadow:var(--jfs-depth-shadow)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
 html[data-visual-style="minimal"] .app.workout-active :is(
   .training-v3 .rest-dock span,.training-v3 .rest-dock strong,.training-v3 .card h2
@@ -269,16 +269,16 @@ html[data-visual-style="minimal"] .app.workout-active :is(
 /* Workout-specific legacy declarations carry greater specificity. */
 html[data-visual-style="minimal"] .app.workout-active .training-v3 .card .button:not(.secondary) {
   background:#ffffff!important;color:#000000!important;border:1px solid #ffffff!important;
-  box-shadow:none!important;border-radius:2px!important;
+  box-shadow:none!important;border-radius:var(--jfs-depth-control-radius)!important;
 }
 html[data-visual-style="minimal"] .app.workout-active .training-v3 .card .button.secondary {
   background:#000000!important;color:#ffffff!important;border:1px solid #626262!important;
-  box-shadow:none!important;border-radius:2px!important;
+  box-shadow:none!important;border-radius:var(--jfs-depth-control-radius)!important;
 }
 html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.set-inputs input,.workout-set-entry input) {
   background:#000000!important;color:#ffffff!important;
   -webkit-text-fill-color:#ffffff!important;border:1px solid #777777!important;
-  box-shadow:none!important;border-radius:2px!important;
+  box-shadow:none!important;border-radius:var(--jfs-depth-control-radius)!important;
 }
 html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.icon-button,.text-link) {
   color:#ffffff!important;background:#000000!important;box-shadow:none!important;
