@@ -26,11 +26,12 @@ jobs:
       - run: npm run build
       - name: Prepare standalone IndexedDB test adapter
         run: ./node_modules/.bin/esbuild tests/fixtures/offline-browser-harness.ts --bundle --format=iife --platform=browser --target=es2022 --outfile=test-output/jfs-offline-harness.js
-      - run: npx playwright install --with-deps chromium
+      - run: google-chrome --version
       - name: Browser regression including IndexedDB and four Web pages
         run: npm run test:e2e -- --workers=1 --trace=retain-on-failure
         env:
           CI: "true"
+          PLAYWRIGHT_CHANNEL: chrome
   postgres-dev-protocol:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -104,8 +105,9 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: google-chrome --version
       - name: Verify Web Training Set + IndexedDB Outbox survives reload
         run: npm run test:e2e -- tests/e2e/training-offline-lab.spec.ts --workers=1 --trace=retain-on-failure
         env:
           CI: "true"
+          PLAYWRIGHT_CHANNEL: chrome

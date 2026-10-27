@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { validateMealDate, validateNewMealInput } from "@/lib/nutrition-input";
 import { useStore } from "@/lib/store";
 import { pinDay, round, syncMealCompletion } from "@/lib/domain";
 import { PageTitle, Field, Sheet, uid, stamp } from "./daily";
@@ -58,6 +59,8 @@ export function Recipes({ date, notify, path = "nutrition/recipes" }: {
   function addToMeal() {
     if (!recipe || !complete(recipe) || !canLog) return;
     if (save("食譜加入飲食", s => {
+      validateMealDate(logDate, s.profile?.timezone);
+      validateNewMealInput({name:recipe.name, slot, quantity:servings, p:round(recipe.p*servings), c:round(recipe.c*servings), f:round(recipe.f*servings), kcal:round(recipe.kcal*servings)});
       pinDay(s, logDate);
       s.meals.push({
         id: uid(), date: logDate, slot, name: recipe.name,

@@ -453,15 +453,15 @@ html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active
       .today-v3-activity>.daily-activity,.today-v3-activity>.card,
       .today-v3 .today-v3-notice,.today-v3 .today-v3-cycle,
       .today-v3 .today-v3-focus-state) {
-  background:var(--jfs-depth-surface)!important;
-  background-color:var(--jfs-depth-surface)!important;
-  background-image:var(--jfs-depth-gradient)!important;
+  background:var(--jfs-panel-surface)!important;
+  background-color:var(--jfs-panel-surface)!important;
+  background-image:var(--jfs-panel-gradient)!important;
   color:#ffffff!important;
   border:1px solid #626262!important;
-  border-radius:var(--jfs-depth-radius)!important;
+  border-radius:var(--jfs-panel-radius)!important;
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
-  box-shadow:var(--jfs-depth-shadow)!important;
+  box-shadow:var(--jfs-panel-shadow)!important;
   text-shadow:none!important;
 }
 /* Utility controls and Activity rows are subordinate to the main outline. */
@@ -474,7 +474,7 @@ html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active
   background-image:none!important;
   color:#ffffff!important;
   border:1px solid #626262!important;
-  border-radius:var(--jfs-depth-control-radius)!important;
+  border-radius:var(--jfs-panel-control-radius)!important;
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
   box-shadow:none!important;
@@ -492,7 +492,7 @@ html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active
   background:#ffffff!important;
   background-image:none!important;
   border:1px solid #ffffff!important;
-  border-radius:var(--jfs-depth-control-radius)!important;
+  border-radius:var(--jfs-panel-control-radius)!important;
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
   box-shadow:none!important;
@@ -530,7 +530,7 @@ html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active
   background:#000000!important;
   background-image:none!important;
   border:1px solid #626262!important;
-  border-radius:var(--jfs-depth-control-radius)!important;
+  border-radius:var(--jfs-panel-control-radius)!important;
   box-shadow:none!important;
   transform:none!important;
 }
@@ -605,7 +605,7 @@ html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active
   :is(.account-menu>div,.toast) {
   background:#000000!important;background-image:none!important;
   color:#ffffff!important;border:1px solid #626262!important;
-  border-radius:var(--jfs-depth-control-radius)!important;box-shadow:none!important;
+  border-radius:var(--jfs-panel-control-radius)!important;box-shadow:none!important;
 }
 /* The floating rail/dock are owned by app-shell-v3.css; Today keeps only
  * its own account and notification controls. Avoid route-specific nav resets. */
@@ -618,7 +618,7 @@ html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active
 html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
   :is(.jfs-glass-sheet,.sheet) {
   color:#ffffff!important;background:#000000!important;background-image:none!important;
-  border:1px solid #777777!important;border-radius:var(--jfs-depth-control-radius)!important;
+  border:1px solid #777777!important;border-radius:var(--jfs-panel-control-radius)!important;
   box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
 html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
@@ -627,13 +627,13 @@ html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
   :is(.jfs-glass-sheet-close,.jfs-glass-input) {
   color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;
   background:#000000!important;background-image:none!important;
-  border:1px solid #777777!important;border-radius:var(--jfs-depth-control-radius)!important;box-shadow:none!important;
+  border:1px solid #777777!important;border-radius:var(--jfs-panel-control-radius)!important;box-shadow:none!important;
 }
 html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
   .jfs-glass-sheet-content .jfs-glass-button--primary {
   color:#000000!important;background:#ffffff!important;
   background-image:none!important;border:1px solid #ffffff!important;
-  border-radius:var(--jfs-depth-control-radius)!important;box-shadow:none!important;
+  border-radius:var(--jfs-panel-control-radius)!important;box-shadow:none!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
 html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)

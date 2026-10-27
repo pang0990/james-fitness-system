@@ -133,7 +133,7 @@ test("Today 3: main action stays unique and water quick log persists", async ({ 
   await page.reload();
   await expect(page.locator(".today-v3-water-total strong")).toContainText("250");
   await page.getByRole("button", {name:"加入飲食"}).click();
-  await expect(page.locator(".inline-nutrition")).toBeVisible();
+  await expect(page.locator(".food-logger")).toBeVisible();
 });
 
 test("Today 3: small-screen layout has no horizontal overflow", async ({ page }) => {

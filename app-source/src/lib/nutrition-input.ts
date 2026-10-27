@@ -1,3 +1,5 @@
+import { dateInZone } from "./domain";
+
 /**
  * Validate one newly submitted meal without rewriting historical backups.
  * Limits are input safety bounds, not nutrition targets or CUT/GAIN rules.
@@ -27,4 +29,13 @@ export function validateNewMealInput(input: NewMealInput): NewMealInput {
   if (!Number.isFinite(input.kcal) || input.kcal < 0 || input.kcal > 10000)
     throw Error("熱量數值無效，請確認食物份量");
   return { ...input, name, slot };
+}
+
+/** Validate new actual intake only; importing or viewing history is unchanged. */
+export function validateMealDate(date: string, timezone?: string, now = new Date()) {
+  const parsed = new Date(date + "T12:00:00Z");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0,10) !== date)
+    throw Error("日期無效");
+  if (date > dateInZone(timezone, now)) throw Error("未來日期僅供檢視，不可新增已吃過的紀錄");
+  return date;
 }

@@ -1,4 +1,5 @@
 "use client";
+import { resolveTrainingToday } from "@/lib/training-overview";
 import Link from "next/link";
 import {TrainingOverviewDetails} from "./training-overview";
 import {workoutProgress} from "@/lib/training-overview";
@@ -94,21 +95,12 @@ export function TrainingFlow({
   const addResults=searchExercises(libraryItems,exerciseQuery,"","training");
   const cycle = activeCycle(state);
   const count = cycle ? cycleProgressEvents(state,cycle.id).length : 0;
+  const trainingStatus = resolveTrainingToday(state, date);
   const planned = scheduleEntry(state, date);
-  const selectedIndex =
-    cycle?.days.findIndex(
-      (d, i) => dayId(cycle, i) === planned.trainingDayId,
-    ) ?? -1;
-  const dayIndex = cycle
-    ? selectedIndex >= 0
-      ? selectedIndex
-      : Math.max(0, nextDayIndex(state, cycle))
-    : 0;
-  const day = cycle?.days[dayIndex];
-  const current = state.sessions.find((s) => s.status === "in_progress");
-  const completedToday = state.sessions
-    .filter(s => s.status === "completed" && (s.workoutDate ?? s.date) === date)
-    .slice().sort((a,b) => (a.completedAt ?? a.createdAt).localeCompare(b.completedAt ?? b.createdAt));
+  const dayIndex = trainingStatus.index;
+  const day = trainingStatus.day;
+  const current = trainingStatus.current;
+  const completedToday = trainingStatus.completed.slice().sort((a,b) => (a.completedAt ?? a.createdAt).localeCompare(b.completedAt ?? b.createdAt));
   // A custom Cycle day can have an optional second session, without consuming another day.
   const plannedSecondFor = completedToday.find(session => {
     if (!session.cycleId || !session.trainingDayId || session.isExtra || session.cycleCounted===false) return false;
@@ -794,12 +786,13 @@ export function TrainingFlow({
             <Link href="/training/history">History</Link>
           </div>
           <GlassCard className="training-today card" aria-label="今日訓練計畫">
-            <span className="eyebrow">{current?"RESUME WORKOUT":isRest?"REST DAY":"TODAY’S WORKOUT"}</span>
+            <span className="eyebrow">{current?"RESUME WORKOUT":trainingStatus.kind==="rest"?"REST DAY":trainingStatus.kind==="completed"?"COMPLETED":trainingStatus.kind==="pending"?"PENDING WORKOUT":"TODAY’S WORKOUT"}</span>
             <p className="muted">{current?.cycleId?state.cycles?.find(c=>c.id===current.cycleId)?.name??"當次訓練計畫":cycle?.name??"建立你的訓練節奏"}{cycle&&!current?` · 第 ${cycle.round??1} 輪`:""}</p>
+            {!current && trainingStatus.kind === "pending" && <p>待練課表：{day?.name}。尚未指定日期，可先安排日期或自行開始訓練。</p>}
             {!current&&isRest&&<p>今天排定休息。你仍可自行選擇開始下方待練課表。</p>}
             {current&&<p className="training-resume-progress" role="status">{current.pausedAt?"已暫停":current.phase==="warmup"?"暖身中":"訓練中"} · 已完成 {completedWorking} / {plannedWorking||"未設定"} 工作組</p>}
             <div className="training-v3-heading">
-              <div><h2>{current?.name ?? (day ? day.name : "尚未建立訓練計畫")}</h2>
+              <div><h2>{trainingStatus.title}</h2>
                 <span className="training-v3-caption">{current||day ? `${heroExercises.length} 個動作 · ${heroExercises.reduce((n,e)=>n+(e.sets??0),0)} 個計畫工作組` : "先建立自己的訓練計畫"}</span>
               </div>
               <Link href="/training/plan" className="training-v3-edit" aria-label="編輯課表"><ChevronRight size={17}/></Link>
@@ -839,7 +832,8 @@ export function TrainingFlow({
               </>
             ) : day ? (
               <>
-                <GlassButton kind="primary" className="training-v3-start" onClick={start}>{isRest?"仍要開始訓練":"開始訓練"} <ArrowRight size={16}/></GlassButton>
+                {trainingStatus.kind !== "scheduled" && <Link className="jfs-glass-nav-link training-v3-start" href={trainingStatus.kind === "rest" ? "/training/plan" : trainingStatus.href}>{trainingStatus.label}</Link>}
+                <GlassButton kind={trainingStatus.kind === "scheduled" ? "primary" : "secondary"} className="training-v3-start" onClick={start}>{trainingStatus.kind === "completed" ? "額外訓練" : isRest?"仍要開始訓練":"開始訓練"} <ArrowRight size={16}/></GlassButton>
                 <details className="training-other-actions">
                   <summary>其他操作</summary>
                   <div className="stack">

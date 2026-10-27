@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "test:e2e": "playwright test",
+    "pretest:e2e": "esbuild tests/fixtures/offline-browser-harness.ts --bundle --format=iife --platform=browser --target=es2022 --outfile=test-output/jfs-offline-harness.js",
     "pages:prepare": "node scripts/prepare-pages.mjs"
   },
   "dependencies": {

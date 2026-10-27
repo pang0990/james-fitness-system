@@ -27,11 +27,12 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: google-chrome --version
       - name: Full four-workspace and Training/Glass browser regression
         run: npm run test:e2e -- --workers=1 --timeout=20000 --trace=retain-on-failure
         env:
           CI: "true"
+          PLAYWRIGHT_CHANNEL: chrome
       - name: Upload failure traces and screenshots
         if: always()
         uses: actions/upload-artifact@v4

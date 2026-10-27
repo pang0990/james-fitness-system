@@ -346,13 +346,9 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(.bott
   color:inherit!important;stroke:currentColor;
 }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .daily-page :is(.page-heading,.simple-heading) {
-  color:var(--jfs-depth-text)!important;
+  color:var(--jfs-panel-text)!important;
 }
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) :is(.plan-day-navigation,.plan-day-editor,.card,.nutrition-v3b,.meal-section,.training-today,.training-plan-summary,.direction-hero,.progress-v3-stats,.progress-v3-photos) {
-  background:var(--jfs-depth-gradient)!important;color:#f5f5f5!important;
-  border:1px solid var(--jfs-depth-edge)!important;border-radius:var(--jfs-depth-radius)!important;
-  box-shadow:var(--jfs-depth-shadow)!important;
-}
+
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .plan-day-navigation :is(.muted,.plan-day-add,.plan-day-arrow) {
   color:#d0d0d0!important;
 }
