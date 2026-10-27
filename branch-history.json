@@ -1,0 +1,337 @@
+{
+  "date": "2026-10-27",
+  "web_baseline": "138381ba92ee5dfa6bc94dba305ff139d08977f6",
+  "sync_poc": "3550dec1d909f39451fc97a3d74f6df6984cd4c5",
+  "branches": [
+    {
+      "branch": "audit/mobile-browser-baseline-20261019",
+      "sha": "c75c0656b024c9261068b6987a4c3281180ef468",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "auth/google-supabase-first-login-20261014",
+      "sha": "06a94b18d8f493530ea73103a5b9b573ca8686b6",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "backup/pre-cinematic-ui-20261013",
+      "sha": "c74069f1b0a5b6cbd71289b5c386d3eec0fedc90",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "codex/v0.4-platform-content",
+      "sha": "0ec90ac24a8c7fcff2f6fd1c76646d1651a9be05",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/all-pages-blackline-20261023",
+      "sha": "ae393f2b80aad57fb6ecea7d6ea3e667fc66e76b",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "design/app-shell-components-v3-20261019",
+      "sha": "8934d2313ce6577698bb1d4fd54f896ff49f66bc",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/apple-monochrome-experience-v2-20261019",
+      "sha": "90a2e4c5adf89a7141fe59f3c9c31616f0101053",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/black-line-floating-nav-20261027",
+      "sha": "138381ba92ee5dfa6bc94dba305ff139d08977f6",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "design/cinematic-ui-preview-20261013",
+      "sha": "4f3266d413104fad3b38db7941d0e42f712e8a4d",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/ds3-showcase-nutrition-v3-20261019",
+      "sha": "a3340d146b28ff503a11e56e75cd64259b524c43",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/glass-experience-v4-20261020",
+      "sha": "0b98eb7f78d257bc9987316a4bc8376e86f4fe33",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/glass-system-crosspages-20261020",
+      "sha": "5fed1660d45b132399c18fe7dd20e43ca2feb27e",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/glass-system-v2-today-20261020",
+      "sha": "a332c0c91f811e0a44dbe620d501ec2fe31bbd34",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/minimal-gold-foundations-20261019",
+      "sha": "b90bd611a2aac8980c24d8b575ea4663d3834a2b",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/minimal-polish-ui-v1-20261013",
+      "sha": "f506a0e168fbd279f32a5646eb0a94650320de64",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/today-3-first-prototype-20261019",
+      "sha": "212e9daf2cb0fb533ec9dd4c458780ac198014b6",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "design/today-blackline-compact-20261023",
+      "sha": "2224643d7f3e21df9e7dd4f1cbe005e972b9cc57",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "feat/jfs-three-platform-sync-poc-20261022",
+      "sha": "3550dec1d909f39451fc97a3d74f6df6984cd4c5",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "feat/training-core-cycle-portability-20261022",
+      "sha": "00438e64b5842ec9a5a6c93a87c89251b95f1141",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "feat/training-first-shared-core-v2-20261021",
+      "sha": "dd57f8cc4cfe6edfdf1c32af81d6d085341a474e",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "feat/training-five-workstreams-20261023",
+      "sha": "e1f935310569bf0a1eabe6211b2480b724c2ac9b",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "feat/training-home-cycle-evidence-20261023",
+      "sha": "96fd74de2661097b52926c2e8c486a4024d134cb",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "feat/training-offline-web-outbox-v1-20261022",
+      "sha": "39f6a1260268ab12a724fdf75f768782cd0a186c",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "feat/training-sync-dev-schema-v1-20261022",
+      "sha": "152274ed4f7a5ebf30e182224360d4b2f143dfe8",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "feature/activity-steps-trends-v1-20261013",
+      "sha": "0674f708f6b5d7dbc9a1fd839a9a4755e361016c",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/activity-v1-1-v1-2-20261013",
+      "sha": "62bd00d6f9121ef9846ae1f7a8995b929fe77efe",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/apple-inspired-minimal-style",
+      "sha": "0d57b2b1312b3239cbbc76e19d247cb883df8e85",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/blueprint-onboarding-flows-20261013",
+      "sha": "2680ac0a2d22b05b8f4c183abf3d9a121963af95",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/cinematic-animated-city-20261013",
+      "sha": "24ee46f4f652710e791cca86e394cc443a840adb",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/import-knowledge-recipes-20261013",
+      "sha": "4b2f62fcdf579619e40bb07ab88ec80be8f14155",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/multiple-workouts-per-day",
+      "sha": "fbb3f1d543fcd4320696fdaad575e1b58b6557d7",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/real-detail-routes-20261013",
+      "sha": "7f8b6e00cfe6024cd8f586803b9db330e7475187",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/settings-and-routes-v1-20261013",
+      "sha": "6bca2d0e55c0a0a47747131b91e2124d68190aa4",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/workout-approved-decisions-20261017",
+      "sha": "f140aefeb7b60c97ca946edd8f8724ba0ccccc18",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "feature/workout-p0-safe-controls-20261017",
+      "sha": "180b75403d5d349746193bb471d518d7e5455d84",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "fix/cooked-chicken-search-name-20261015",
+      "sha": "c66cb782d3ce58ad5a3b32fc4624ec4839770bc8",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "fix/four-workspaces-consistency-20261021",
+      "sha": "1a17f57533441d0a6ca243fa29d99a9e8c7684e9",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "fix/minimal-settings-recipes-20261014",
+      "sha": "b50347a317ad6e98a09222ed1ea5cdd577cfb475",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "fix/minimal-theme-visual-consistency-20261014",
+      "sha": "e41367ff56782977c70e7a6906caadcfe7952e7d",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "fix/mobile-workflows-20261013",
+      "sha": "353b71e673c63f4b1d8c6eff7636a6f183a597e5",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "fix/p0-auth-cache-safety-20261019",
+      "sha": "f5c7935502b6ec06753e0b84dbbd4cf22b68ca49",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "fix/simplify-product-flows-20261013",
+      "sha": "d6b24f91b5383ae2436edf4e1fd0479383632da4",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "fix/today-bottom-empty-space-20261022",
+      "sha": "1018d207cced337132add45488d053bb17eefe60",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "integration/glass-training-v3-20261021",
+      "sha": "a7251d16d62edeeceb753861caf71efd4b23ce71",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "main",
+      "sha": "e165dce81ee734b2e2737401858205d922545768",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "preview/isolated-four-workspaces-20261021",
+      "sha": "5048c9938c5b726f0a0ce6cea9fc23436e1fb50d",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "preview/pr62-publish",
+      "sha": "e165dce81ee734b2e2737401858205d922545768",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "preview/pr63-publish",
+      "sha": "27fffd2be47513cd439b9ebe4ad675a9f47b54c7",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "qa/training-v3-release-gate-20261021",
+      "sha": "6811caf8cc2392b16369b28868630e41b08dcff3",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "qa/web-four-workspaces-release-gate-20261022",
+      "sha": "8737dfef953f2b7f2a862068d31f377178d7c8f6",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "quality/glass-v3-foundations-20261020",
+      "sha": "1c7d6b9728cd721e906eea349d660786c29cdd83",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "refactor/blackline-native-consolidation-20261023",
+      "sha": "d4ab3f2114aee8b6fad187f5a5fdfeaf58568659",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "refactor/blackline-original-sources-20261023",
+      "sha": "6709071fca329730df95406a224dd93c3c1b712f",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "release/apple-monochrome-safety-20261019",
+      "sha": "e26d55599c9976e8477a60ea830448c5de9f1480",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "training/active-workout-v3-20261021",
+      "sha": "fcce5cb22bf40af9784fd9136cb4d5ed299927a8",
+      "disposition": "integrated"
+    },
+    {
+      "branch": "ui/cinematic-reference-v3-20261013",
+      "sha": "453125967290bdcecee7065b5a415debfc4e44c9",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "ui/recipes-city-background-20261013",
+      "sha": "e270c25e436ff08200421accd74c4b0b3690a81c",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "ui/restore-cinematic-hero-recipes-20261013",
+      "sha": "3457a1f25f2c0cc41e4271ce6dce063141d190e8",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "ui/today-cinematic-motion-v1-20261013",
+      "sha": "a283b0b3d337f0bfcc67ae05cf1cb8d40f144361",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "ui/today-exact-background-upload-20261013",
+      "sha": "8e79367028db0c4c1611b22dc4171a13968ca2c9",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "ui/today-fullbleed-neon-motion-20261013",
+      "sha": "abd18a414cd3905d0728466f61d5acb5440a85e9",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "ui/today-new-cyberpunk-background-20261013",
+      "sha": "ac6d86e990d6e8585c3963d25ef5f5a418f02b62",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "ui/today-reference-layout-20261013",
+      "sha": "f59f7d54ba657eba26ae24289091f28c5775a3a0",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "ui/today-spacious-cinematic-20261013",
+      "sha": "3b5ef2b4935ade61c82501e3bc76eb312049ced9",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "upgrade/jfs-p0-mobile-audit-20261019",
+      "sha": "574000679aef095f3cc958ce5088de6fd442ff44",
+      "disposition": "superseded-history-preserved"
+    },
+    {
+      "branch": "ux/training-plan-one-day-at-a-time-20261013",
+      "sha": "37e6961c0f0408b024f335b563317f78a70ba198",
+      "disposition": "superseded-history-preserved"
+    }
+  ]
+}

@@ -1,12 +1,15 @@
 name: Build and publish JFS Pages
 
+# Publication is deliberately paused during single-main consolidation.
+# Re-enabling deployment requires a separate, explicit release decision.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "app-source/**"
-      - ".github/workflows/publish-jfs-pages.yml"
   workflow_dispatch:
+    inputs:
+      confirm_release:
+        description: "Explicitly authorize publishing the validated site"
+        type: boolean
+        default: false
+        required: true
 
 permissions:
   contents: write
@@ -17,6 +20,7 @@ concurrency:
 
 jobs:
   publish:
+    if: ${{ inputs.confirm_release == true }}
     runs-on: ubuntu-latest
     defaults:
       run:

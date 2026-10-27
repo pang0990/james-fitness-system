@@ -1,9 +1,7 @@
 name: JFS Training Sync Dev DB Isolation
 on:
   pull_request:
-    branches:
-      - feat/training-core-cycle-portability-20261022
-      - feat/training-sync-dev-schema-v1-20261022
+    branches: [main]
     paths:
       - "app-source/supabase/**"
       - "app-source/src/lib/training-core/**"

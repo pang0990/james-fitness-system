@@ -1,8 +1,7 @@
 name: JFS Web iOS Android Sync POC QA
 on:
   pull_request:
-    branches:
-      - feat/training-offline-web-outbox-v1-20261022
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read

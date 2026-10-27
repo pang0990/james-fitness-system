@@ -1,9 +1,7 @@
 name: JFS Training-first Shared Core QA
 on:
   pull_request:
-    branches:
-      - integration/glass-training-v3-20261021
-      - feat/training-first-shared-core-v2-20261021
+    branches: [main]
     paths:
       - "app-source/**"
       - ".github/workflows/jfs-training-first-core.yml"

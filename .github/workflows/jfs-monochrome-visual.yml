@@ -1,7 +1,7 @@
 name: JFS Monochrome UI visual QA
 on:
   pull_request:
-    branches: [main, qa/web-four-workspaces-release-gate-20261022, design/all-pages-blackline-20261023, refactor/blackline-native-consolidation-20261023, feat/training-home-cycle-evidence-20261023, feat/training-five-workstreams-20261023]
+    branches: [main]
     paths:
       - "app-source/**"
       - ".github/workflows/jfs-monochrome-visual.yml"
@@ -41,58 +41,3 @@ jobs:
             app-source/playwright-report/
           if-no-files-found: ignore
           retention-days: 7
-
-  refined-preview-export:
-    name: Build isolated PR63 review preview to staging branch
-    needs: monochrome-browser
-    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 63 && github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    permissions:
-      contents: write
-    steps:
-      - name: Read PR63 source
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: app-source/package-lock.json
-      - run: npm ci
-        working-directory: app-source
-      - name: Build separate safe review site (fake data, no Supabase)
-        working-directory: app-source
-        run: npm run build
-        env:
-          NEXT_PUBLIC_BASE_PATH: /james-fitness-system/pr-preview/pr-63
-          NEXT_PUBLIC_JFS_REVIEW_PREVIEW: "1"
-          NEXT_PUBLIC_JFS_REVIEW_ID: "pr63"
-      - name: Assert preview base URL exists in generated HTML
-        run: |
-          test -s app-source/out/index.html
-          grep -q '/james-fitness-system/pr-preview/pr-63/' app-source/out/index.html
-          test -s app-source/out/training/index.html
-          test -s app-source/out/training/activity/index.html
-      - name: Checkout staging branch (based on existing main, separate from app source)
-        uses: actions/checkout@v4
-        with:
-          ref: preview/pr63-publish
-          path: preview-publish
-          persist-credentials: true
-      - name: Prepare preview files without touching production root content
-        run: |
-          set -euo pipefail
-          mkdir -p preview-publish/pr-preview/pr-63
-          find preview-publish/pr-preview/pr-63 -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-          cp -a app-source/out/. preview-publish/pr-preview/pr-63/
-          cd preview-publish
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A pr-preview/pr-63
-          if ! git diff --cached --quiet; then
-            git commit -m "stage: isolated PR63 preview build (synthetic user data)"
-            git push origin HEAD:preview/pr63-publish
-          fi
-          git rev-parse HEAD

@@ -1,3 +1,5 @@
+> 2026-10-27：以下為歷史版本說明；目前唯一開發主線與功能邊界以 [Repository README](../README.md) 為準。已整合 #63 / #62 及獨立 Sync PoC，尚未部署。
+
 # James Fitness System
 
 Mobile-first fitness Web App. Next.js + TypeScript + Tailwind. Installable PWA with responsive black / white / gold interface.
