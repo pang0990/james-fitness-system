@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { REVIEW_PREVIEW } from "@/lib/review-preview";
 import { GUEST_DATA_KEY, GUEST_MODE_KEY } from "@/lib/guest-mode";
 import { appHref, supabase } from "@/lib/supabase-browser";
-import { scopedStorageKey, STORAGE_KEY, useLegacyData } from "@/lib/store";
+import { scopedStorageKey, STORAGE_KEY, useLegacyData, useGuestData } from "@/lib/store";
 
 export function GoogleLogin() {
   const { user, ready, error, signInGoogle, continueAsGuest, isGuest } = useAuth();
@@ -118,6 +118,26 @@ export function LegacyDataOffer() {
             importLegacy();
         }}>使用舊版紀錄</button>
         <button onClick={dismissLegacy}>稍後再說</button>
+      </div>
+    </aside>
+  );
+}
+
+
+/** Explicit, lossless guest-to-account copy; never overwrites an existing account. */
+export function GuestDataOffer() {
+  const {guestAvailable,importGuest,dismissGuest}=useGuestData();
+  if(!guestAvailable)return null;
+  return (
+    <aside className="jfs-legacy-notice" aria-label="訪客訓練紀錄轉移">
+      <p>這台裝置有訪客訓練紀錄，要複製到目前登入的帳號嗎？</p>
+      <small>只複製到此裝置的帳號資料。訪客原始紀錄不刪除，也不會自動上傳雲端或覆蓋已有帳號資料。</small>
+      <div>
+        <button type="button" onClick={()=>{
+          if(window.confirm("確認複製訪客紀錄到這個空白帳號的本機資料？原訪客紀錄將完整保留。"))
+            importGuest();
+        }}>複製訪客紀錄</button>
+        <button type="button" onClick={dismissGuest}>暫不轉移</button>
       </div>
     </aside>
   );
