@@ -51,7 +51,7 @@ test("Black Line: primary CTA remains legible; data input and navigation retain 
   await expect(button).toHaveCSS("color","rgb(0, 0, 0)");
   const dock=page.getByRole("navigation",{name:"手機主導覽"});
   await expect(dock).toBeVisible();
-  await expect(dock).toHaveCSS("background-color","rgb(0, 0, 0)");
+  await expect(dock).toHaveCSS("background-color","rgb(11, 11, 11)");
   await expect(dock.getByRole("link",{name:"Training"})).toHaveAttribute("href",/training/);
 });
 
