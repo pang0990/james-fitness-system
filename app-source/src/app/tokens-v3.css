@@ -130,4 +130,14 @@ html[data-visual-style="minimal"] body:has(.app) {
   --jfs4-glass-blur:none;--jfs4-glass-blur-strong:none;
   --jfs4-glass-ambient:none;
   --jfs-glass-radius:2px;--jfs-glass-sheet-radius:2px;
+  /* Black Line Refined: genuine depth only on navigational chrome. */
+  --jfs-nav-surface:#0b0b0b;
+  --jfs-nav-hover:#161616;
+  --jfs-nav-selected:#202020;
+  --jfs-nav-edge:#535353;
+  --jfs-nav-highlight:rgba(255,255,255,.075);
+  --jfs-nav-elevation:0 16px 40px rgba(0,0,0,.68), inset 0 1px 0 rgba(255,255,255,.07);
+  --jfs-nav-radius:22px;
+  --jfs-nav-duration:220ms;
+  --jfs-nav-motion:cubic-bezier(.2,.8,.2,1);
 }
