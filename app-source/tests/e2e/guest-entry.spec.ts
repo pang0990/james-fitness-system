@@ -28,7 +28,7 @@ publicTest("Welcome: guest entry is optional and uses a separate local data key"
   expect(stored.waters).toHaveLength(1);
   await page.reload();
   await expect(page.locator(".today-v3-water-total")).toContainText("250");
-  await page.getByRole("button",{name:"帳戶選單"}).click();
+  await page.locator(".account-menu > summary").click();
   await page.getByRole("button",{name:"退出訪客模式"}).click();
   await expect(page).toHaveURL(/\/login\/?$/);
   expect(await page.evaluate(key=>localStorage.getItem(key),GUEST_DATA_KEY)).toBeTruthy();
