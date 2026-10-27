@@ -69,11 +69,12 @@ test("Nutrition rejects out-of-range single meal without writing a record", asyn
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("1001");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("30");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("10");
-  await page.getByRole("button", { name: "加入紀錄" }).click();
+  await page.getByRole("button", { name: "加入 Quick Macro 至清單" }).click();
   expect(await page.getByRole("spinbutton", { name: "蛋白質 g" }).evaluate(input => (input as HTMLInputElement).validity.rangeOverflow)).toBe(true);
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key) || "{}").meals.length, DATA_KEY)).toBe(0);
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("20");
-  await page.getByRole("button", { name: "加入紀錄" }).click();
+  await page.getByRole("button", { name: "加入 Quick Macro 至清單" }).click();
+  await page.getByRole("button", {name: /確認加入 1 項食物/}).click();
   await expect(page.getByTestId("nutrition-v3b")).toContainText("290");
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key) || "{}").meals.length, DATA_KEY)).toBe(1);
 });

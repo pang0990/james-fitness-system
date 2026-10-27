@@ -4,6 +4,7 @@ import { FoodPicker, Field, uid, stamp } from "./daily";
 import { useStore } from "@/lib/store";
 import {
   addDays,
+  dateInZone,
   dayNames,
   resolveDay,
   visibleMeals,
@@ -18,7 +19,7 @@ import {
   type PlateItem,
   type MealSnapshot,
 } from "@/lib/food-plate";
-import { validateNewMealInput } from "@/lib/nutrition-input";
+import { validateNewMealInput, validateMealDate } from "@/lib/nutrition-input";
 import master from "@/content/foods.json";
 import cooked from "@/content/cooked-foods.json";
 import official from "@/content/fda-foods.json";
@@ -137,6 +138,8 @@ export function FoodLogger({
     ]);
     setMessage("已加入待確認清單，可調整份量或移除");
   }
+  let dateError = "";
+  try { validateMealDate(targetDate, state.profile?.timezone); } catch (e) { dateError = (e as Error).message; }
   let valid = true;
   const totals = { p: 0, c: 0, f: 0, kcal: 0 };
   for (const item of plate) {
@@ -169,6 +172,7 @@ export function FoodLogger({
           <input
             type="date"
             value={targetDate}
+            max={dateInZone(state.profile?.timezone)}
             onChange={(e) => setTargetDate(e.target.value)}
           />
         </Field>
@@ -532,6 +536,7 @@ export function FoodLogger({
         )}
       </section>
       <div className="food-plate-confirm">
+        {dateError && <p role="alert">{dateError}</p>}
         <small>
           {targetDate} · {slot}
         </small>
@@ -543,7 +548,7 @@ export function FoodLogger({
         <button
           type="button"
           className="button"
-          disabled={!plate.length || !valid || !targetDate}
+          disabled={!plate.length || !valid || !!dateError}
           onClick={() => {
             if (lock.current) return;
             lock.current = true;

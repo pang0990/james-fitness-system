@@ -259,9 +259,9 @@ html[data-visual-style="minimal"] .app.workout-active :is(
   .training-v3-status,.training-v3 .card,.training-v3 .jfs-glass-card,
   .training-v3 .rest-dock,.training-v3 .exercise-focus,.training-v3 .workout-draft-status
 ) {
-  color:#ffffff!important;background:var(--jfs-depth-surface)!important;background-image:var(--jfs-depth-gradient)!important;
-  border:1px solid #626262!important;border-radius:var(--jfs-depth-radius)!important;
-  box-shadow:var(--jfs-depth-shadow)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  color:#ffffff!important;background:var(--jfs-panel-surface)!important;background-image:var(--jfs-panel-gradient)!important;
+  border:1px solid #626262!important;border-radius:var(--jfs-panel-radius)!important;
+  box-shadow:var(--jfs-panel-shadow)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
 html[data-visual-style="minimal"] .app.workout-active :is(
   .training-v3 .rest-dock span,.training-v3 .rest-dock strong,.training-v3 .card h2
@@ -269,16 +269,16 @@ html[data-visual-style="minimal"] .app.workout-active :is(
 /* Workout-specific legacy declarations carry greater specificity. */
 html[data-visual-style="minimal"] .app.workout-active .training-v3 .card .button:not(.secondary) {
   background:#ffffff!important;color:#000000!important;border:1px solid #ffffff!important;
-  box-shadow:none!important;border-radius:var(--jfs-depth-control-radius)!important;
+  box-shadow:none!important;border-radius:var(--jfs-panel-control-radius)!important;
 }
 html[data-visual-style="minimal"] .app.workout-active .training-v3 .card .button.secondary {
   background:#000000!important;color:#ffffff!important;border:1px solid #626262!important;
-  box-shadow:none!important;border-radius:var(--jfs-depth-control-radius)!important;
+  box-shadow:none!important;border-radius:var(--jfs-panel-control-radius)!important;
 }
 html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.set-inputs input,.workout-set-entry input) {
   background:#000000!important;color:#ffffff!important;
   -webkit-text-fill-color:#ffffff!important;border:1px solid #777777!important;
-  box-shadow:none!important;border-radius:var(--jfs-depth-control-radius)!important;
+  box-shadow:none!important;border-radius:var(--jfs-panel-control-radius)!important;
 }
 html[data-visual-style="minimal"] .app.workout-active .training-v3 :is(.icon-button,.text-link) {
   color:#ffffff!important;background:#000000!important;box-shadow:none!important;
@@ -430,7 +430,7 @@ html[data-visual-style="minimal"] .training-review-evidence small {display:block
 .training-week-days small,.training-week-days span { color:#c7c7c7; font-size:11px; }
 .training-week-days strong { font-size:21px; }
 .training-quick-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-block:20px; }
-.training-quick-links a { display:flex; justify-content:space-between; gap:8px; align-items:center; min-height:56px; padding:14px; border:1px solid #666; border-radius:var(--jfs-depth-control-radius,8px); background:var(--jfs-depth-surface,#0c0c0c); color:#f5f5f5; text-decoration:none; }
+.training-quick-links a { display:flex; justify-content:space-between; gap:8px; align-items:center; min-height:56px; padding:14px; border:1px solid #666; border-radius:var(--jfs-panel-control-radius,8px); background:var(--jfs-panel-surface,#0c0c0c); color:#f5f5f5; text-decoration:none; }
 .training-resume-progress { color:#fff; border-left:2px solid white; padding-left:12px; }
 .workout-previous-preview { display:grid; gap:10px; margin-block:14px; }
 .rest-adjustments { display:flex; gap:8px; flex-wrap:wrap; }
@@ -439,4 +439,3 @@ html[data-visual-style="minimal"] .training-review-evidence small {display:block
 .training-week a:focus-visible,.training-quick-links a:focus-visible { outline:2px solid white; outline-offset:3px; }
 @media(min-width:900px){.training-quick-links{grid-template-columns:repeat(3,minmax(0,1fr))}}
 html[data-visual-style="minimal"] .app.jfs3-shell .training-home .training-today .training-v3-heading h2 { color:#f5f5f5!important; -webkit-text-fill-color:#f5f5f5!important; }
-html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .training-home :is(.training-today,.training-week,.training-pending) { background:var(--jfs-depth-gradient)!important; border-radius:var(--jfs-depth-panel-radius,14px)!important; box-shadow:var(--jfs-depth-shadow)!important; }

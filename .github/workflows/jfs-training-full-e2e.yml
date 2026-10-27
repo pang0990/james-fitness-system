@@ -30,11 +30,12 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: google-chrome --version
       - name: Run every E2E test in a serial, isolated browser suite
         run: npm run test:e2e -- --workers=1 --timeout=15000 --trace=retain-on-failure
         env:
           CI: "true"
+          PLAYWRIGHT_CHANNEL: chrome
       - name: Preserve screenshots, test traces, and failure evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -64,9 +65,10 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps webkit
       - name: Exercise Training and Glass flows in WebKit
-        run: npm run test:e2e -- tests/e2e/training-v3.spec.ts tests/e2e/glass-v3-hardening.spec.ts --browser=webkit --workers=1 --timeout=20000 --trace=retain-on-failure
+        run: PLAYWRIGHT_CHANNEL= npm run test:e2e -- tests/e2e/training-v3.spec.ts tests/e2e/glass-v3-hardening.spec.ts --browser=webkit --workers=1 --timeout=20000 --trace=retain-on-failure
         env:
           CI: "true"
+          PLAYWRIGHT_CHANNEL: chrome
       - name: Preserve WebKit traces
         if: always()
         uses: actions/upload-artifact@v4

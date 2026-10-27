@@ -120,7 +120,8 @@ test("Today recovery quick-log and Nutrition macro persist without leaving stale
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("30");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("40");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("10");
-  await page.getByRole("button", { name: "加入紀錄" }).click();
+  await page.getByRole("button", { name: "加入 Quick Macro 至清單" }).click();
+  await page.getByRole("button", { name: /確認加入 1 項食物/ }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.reload();
   expect((await stored(page)).meals).toHaveLength(1);

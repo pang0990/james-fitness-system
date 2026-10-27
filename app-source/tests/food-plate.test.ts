@@ -103,3 +103,11 @@ test("unchanged snapshot preserves precision rather than rounding historical val
  const original=item();original.quantity=original.snapshot.quantity;original.snapshot.p=2.12345;original.snapshot.kcal=137.12345;
  assert.deepEqual(portion(original),original.snapshot);
 });
+
+test("future actual intake is rejected atomically; history and past copies remain unchanged", () => {
+ const s=initialState(), before=JSON.stringify(s);
+ assert.throws(()=>commitPlate(s,[item()],"2026-10-29","早餐",at),/未來日期/);
+ assert.equal(JSON.stringify(s),before);
+ commitPlate(s,[item()],"2026-10-26","早餐",at);
+ assert.equal(s.meals[0].date,"2026-10-26");
+});

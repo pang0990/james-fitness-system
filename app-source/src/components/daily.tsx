@@ -1,7 +1,7 @@
 "use client";
 import { FoodLogger, NutritionWeek } from "./food-logger";
 import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
-import { validateNewMealInput } from "@/lib/nutrition-input";
+import { validateNewMealInput, validateMealDate } from "@/lib/nutrition-input";
 import { GlassCard, GlassButton } from "./ui/glass-system";
 import Link from "next/link";
 import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
@@ -75,8 +75,8 @@ export function Sheet({
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const el = ref.current;
-    el?.showModal();
     const prev = document.activeElement as HTMLElement;
+    el?.showModal();
     return () => {
       el?.close();
       prev?.focus();
@@ -86,6 +86,7 @@ export function Sheet({
     <dialog
       ref={ref}
       className="sheet"
+      aria-label={title}
       onCancel={(e)=>{e.preventDefault();onClose();}}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
@@ -709,6 +710,7 @@ export function NutritionV2({
     const f = round(food ? food.f * factor : Number(d.get("f")));
     let meal;
     try {
+      validateMealDate(selectedDate, state.profile?.timezone);
       meal = validateNewMealInput({
         name: food?.name ?? String(d.get("name") ?? ""),
         slot: String(d.get("slot") ?? ""),
@@ -790,7 +792,6 @@ export function NutritionV2({
               aria-label="紀錄日期"
               type="date"
               value={selectedDate}
-              max={date}
               onChange={(e) => {
                 if (e.target.value) setDate(e.target.value);
               }}

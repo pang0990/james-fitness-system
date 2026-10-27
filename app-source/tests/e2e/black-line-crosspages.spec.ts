@@ -7,7 +7,7 @@ const majorSurfaces={
   progress:".direction-hero",
 } as const;
 
-for(const width of [390,1440] as const) {
+for(const width of [390,768,1024,1440] as const) {
   test(`Black Line: all four workspaces stay monochrome at ${width}px`,async({page})=>{
     await page.setViewportSize({width,height:width===390?844:900});
     for(const [route,selector] of Object.entries(majorSurfaces)) {
@@ -21,6 +21,7 @@ for(const width of [390,1440] as const) {
       await expect(surface).toBeVisible();
       await expect(surface).toHaveCSS("background-color","rgb(0, 0, 0)");
       await expect(surface).toHaveCSS("box-shadow","none");
+      await expect(surface).toHaveCSS("background-image","none");
       await expect(surface).toHaveCSS("backdrop-filter","none");
       await expect(surface).toHaveCSS("border-top-width","1px");
       expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),

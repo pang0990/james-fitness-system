@@ -42,7 +42,7 @@ jobs:
       - name: Verify runner Chrome
         run: google-chrome --version
       - name: Verify nutrition, training and guest persistence
-        run: npm run test:e2e -- tests/e2e/nutrition-logger.spec.ts tests/e2e/app.spec.ts tests/e2e/ds3-showcase-nutrition.spec.ts tests/e2e/guest-entry.spec.ts tests/e2e/training-overview.spec.ts tests/e2e/training-v3.spec.ts --workers=1
+        run: npm run test:e2e -- --workers=1
         env:
           CI: "true"
           PLAYWRIGHT_CHANNEL: chrome

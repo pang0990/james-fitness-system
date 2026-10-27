@@ -7,8 +7,7 @@ import {
   Moon, Plus, Scale, Sparkles, Utensils, Zap,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { activeCycle } from "@/lib/training-model";
-import { nextDayIndex } from "@/lib/training-queue";
+import { resolveTrainingToday } from "@/lib/training-overview";
 import { latestRecovery } from "@/lib/recovery";
 import {
   mealTotals, resolveDay, round, waterTotal, type RecoveryEntry,
@@ -19,7 +18,9 @@ import { DailyActivity } from "./daily-activity";
 import { FitnessEquipmentVisual } from "./ui/fitness-equipment-visual";
 import { UiActionLink } from "./ui/design-system";
 import { GlassCard, GlassButton, GlassInput, GlassProgress, GlassSheet } from "./ui/glass-system";
-import { NutritionV2, stamp, uid } from "./daily";
+import { Sheet, stamp, uid } from "./daily";
+
+import { FoodLogger } from "./food-logger";
 
 type QuickKind = RecoveryEntry["type"] | "weight";
 type Props = { date: string; notify: (message?: string) => void };
@@ -32,32 +33,27 @@ export function TodayMinimalV3({ date, notify }: Props) {
   const { state, save } = useStore();
   const [quick, setQuick] = useState<{ date: string; kind: QuickKind } | null>(null);
   const [foodOpen, setFoodOpen] = useState(false);
+  const [foodDirty, setFoodDirty] = useState(false);
+  const [foodSlot, setFoodSlot] = useState(() => state.meals.filter(m => !m.deleted).at(-1)?.slot ?? state.mealSlots[0] ?? "早餐");
   const [waterEdit, setWaterEdit] = useState(false);
-  const current = state.sessions.find((session) => session.status === "in_progress");
-  const completedToday = state.sessions.filter((session) =>
-    session.status === "completed" && (session.workoutDate ?? session.date) === date
-  );
+  const training = resolveTrainingToday(state,date);
+  const {current, completed:completedToday, cycle, day} = training;
   const completedMinutes = Math.round(completedToday.reduce((sum, session) =>
     sum + (session.activeDuration ?? Math.max(
       0,
       Date.parse(session.completedAt ?? session.createdAt) - Date.parse(session.createdAt),
     )) / 60000, 0,
   ));
-  const cycle = activeCycle(state);
   // Round is distinct from the number of completed Cycle Days.
   const cycleRound = cycle?.round ?? 1;
-  const day = cycle?.days[Math.max(0, nextDayIndex(state, cycle))];
 
   const isDone = !current && completedToday.length > 0;
-  const focusName = current?.name ||
-    (isDone ? "今日訓練已完成" : day?.name || "建立你的訓練計畫");
-  const focusMeta = isDone
-    ? String(completedToday.length) + " 場訓練 · " + completedMinutes + " 分鐘"
-    : String(current?.exercises?.length ?? day?.exercises?.length ?? 0) +
-      " 個動作" + (current ? " · 進行中" : day ? " · 準備開始" : "");
-  const trainingHref = current ? "/training/session" : isDone ? "/training/history" : day ? "/training" : "/training/plan";
-  const actionLabel = current
-    ? "繼續訓練" : isDone ? "查看訓練紀錄" : day ? "開始訓練" : "建立課表";
+  const focusName = training.title;
+  const focusMeta = isDone ? `${completedToday.length} 場訓練 · ${completedMinutes} 分鐘`
+    : training.kind === "rest" ? "依行事曆安排休息" : training.kind === "pending" ? `待練：${day?.name ?? ""} · 尚未指定日期`
+    : `${current?.exercises.length ?? day?.exercises?.length ?? 0} 個動作${current ? " · 進行中" : ""}`;
+  const trainingHref = training.href;
+  const actionLabel = training.label;
 
   const target = resolveDay(state, date).target;
   const nutrition = mealTotals(state, date);
@@ -166,9 +162,8 @@ export function TodayMinimalV3({ date, notify }: Props) {
             <h2 id="today-v3-training-title"><Dumbbell size={17} aria-hidden="true" /> 今日訓練</h2>
             <Link href="/training" className="jfs3-icon-link" aria-label="查看訓練課表"><ChevronRight size={18}/></Link>
           </div>
-          <strong>{isDone ? "訓練完成" : current?.name || day?.name || "尚未安排課表"}</strong>
-          <p>{isDone ? focusMeta : current ? "訓練進行中" : day ?
-            String(day.exercises?.length ?? 0) + " 個動作" : "前往 Training 建立訓練計畫"}</p>
+          <strong>{focusName}</strong>
+          <p>{focusMeta}</p>
         </GlassCard>
 
         <div className="today-v3-wellness">
@@ -238,9 +233,13 @@ export function TodayMinimalV3({ date, notify }: Props) {
         />
       )}
       {foodOpen && (
-        <NutritionV2 path="nutrition/log" date={date} notify={notify}
-          inlineClose={() => setFoodOpen(false)}
-        />
+        <Sheet title="加入飲食" onClose={() => {
+          if (foodDirty && !window.confirm("離開並放棄待確認食物？已儲存的紀錄不受影響。")) return;
+          setFoodDirty(false); setFoodOpen(false);
+        }}>
+          <FoodLogger date={date} slot={foodSlot} onSlot={setFoodSlot} onDirty={setFoodDirty}
+            onDone={() => {setFoodDirty(false);setFoodOpen(false);notify("已加入飲食紀錄");}} />
+        </Sheet>
       )}
       {waterEdit && (
         <GlassSheet title="修正今日飲水" onClose={() => setWaterEdit(false)}>

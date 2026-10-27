@@ -206,3 +206,26 @@ for (const width of [390, 1440])
     await expect(page.getByTestId("nutrition-v3b")).toContainText("290");
     expect(errors).toEqual([]);
   });
+
+test("future dates remain viewable but actual food cannot be saved", async ({page}) => {
+ const future=addDays(today,1);
+ await page.getByLabel("紀錄日期",{exact:true}).fill(future);
+ await open(page);await addFood(page,"驗收米飯");
+ await expect(page.getByText("未來日期僅供檢視，不可新增已吃過的紀錄",{exact:true})).toBeVisible();
+ await expect(page.getByRole("button",{name:/確認加入 1 項/})).toBeDisabled();
+ expect((await stored(page)).meals).toHaveLength(1);
+ await page.getByLabel("記錄日期",{exact:true}).fill(today);
+ await page.getByRole("button",{name:/確認加入 1 項/}).click();
+ expect((await stored(page)).meals).toHaveLength(2);
+});
+test("Today opens shared logger directly and keeps pending food on cancelled close",async({page})=>{
+ await page.goto('/today/');await page.getByRole('button',{name:'加入飲食',exact:true}).click();
+ await expect(page.getByRole('dialog',{name:'加入飲食'})).toBeVisible();
+ await addFood(page,'驗收米飯');
+ page.once('dialog',d=>d.dismiss());await page.keyboard.press('Escape');
+ await expect(page.getByRole('button',{name:/確認加入 1 項/})).toBeVisible();
+ await page.getByRole('button',{name:/確認加入 1 項/}).click();
+ await expect(page.getByRole('dialog')).toBeHidden();
+ expect((await stored(page)).meals).toHaveLength(2);
+ await page.goto('/nutrition/');await expect(page.getByText('驗收米飯',{exact:true})).toBeVisible();
+});

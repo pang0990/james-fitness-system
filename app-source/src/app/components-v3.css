@@ -101,12 +101,12 @@ html[data-reduce-motion="true"] :is(.jfs-ui-action,.jfs-ui-progress>span) {
 }
 
 /* Shared production Minimal component material. */
-/* Shared surfaces: restrained graphite depth with a crisp neutral edge. */
+/* Shared flat content panels. Page styles own layout, not material. */
 html[data-visual-style="minimal"] .app :is(
   .card,.jfs-glass-card,.jfs-ui-surface,.jfs3-surface,
   .meal-section,.meal-entry,.meal-empty,.nutrition-v3b,.nutrition-v3-panel,
   .nutrition-v3-dashboard,.nutrition-cookbook-card,
-  .training-today,.training-daily-sessions,.training-daily-session,
+  .training-today,.training-week,.training-pending,.training-daily-sessions,.training-daily-session,
   .training-plan-summary,.training-v3-exercise,.exercise-focus,.rest-dock,
   .direction-hero,.progress-v3-stats,.progress-v3-photos,.review-glass,
   .progress-v3-stat-row,.progress-v3-photo-empty,.performance-row,
@@ -115,10 +115,10 @@ html[data-visual-style="minimal"] .app :is(
   .simple-row,.date-type,.notice,.daily-status,.sheet,
   .plan-day-navigation,.plan-day-editor,.plan-second-session,.plan-exercise
 ) {
-  background:var(--jfs-depth-surface)!important;background-image:var(--jfs-depth-gradient)!important;
-  background-color:var(--jfs-depth-surface)!important;background-blend-mode:normal!important;
-  color:#ffffff!important;border:1px solid var(--jfs-depth-edge)!important;
-  border-radius:var(--jfs-depth-radius)!important;box-shadow:var(--jfs-depth-shadow)!important;
+  background:var(--jfs-panel-surface)!important;background-image:var(--jfs-panel-gradient)!important;
+  background-color:var(--jfs-panel-surface)!important;background-blend-mode:normal!important;
+  color:#ffffff!important;border:1px solid var(--jfs-panel-edge)!important;
+  border-radius:var(--jfs-panel-radius)!important;box-shadow:var(--jfs-panel-shadow)!important;
   text-shadow:none!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
@@ -160,13 +160,13 @@ html[data-visual-style="minimal"] .app :is(
 ) {
   color:#ffffff!important;background:#000000!important;
   background-image:none!important;border:1px solid #626262!important;
-  border-radius:var(--jfs-depth-control-radius)!important;box-shadow:none!important;
+  border-radius:var(--jfs-panel-control-radius)!important;box-shadow:none!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
 html[data-visual-style="minimal"] .app :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments,.jfs-glass-segments)
   :is(a,button,span) {
   background:transparent!important;color:#a0a0a0!important;
-  box-shadow:none!important;border-radius:var(--jfs-depth-control-radius)!important;
+  box-shadow:none!important;border-radius:var(--jfs-panel-control-radius)!important;
 }
 html[data-visual-style="minimal"] .app :is(.nutrition-v3-tabs,.training-v3-segments,.progress-v3-segments,.jfs-glass-segments)
   :is(.active,.selected,[aria-pressed="true"]) {
@@ -179,7 +179,7 @@ html[data-visual-style="minimal"] .app :is(
   .today-v3-quick-item,.training-v3-segments button
 ) {
   min-height:44px;
-  border-radius:var(--jfs-depth-control-radius)!important;
+  border-radius:var(--jfs-panel-control-radius)!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
   background-image:none!important;box-shadow:none!important;
 }
@@ -198,7 +198,7 @@ html[data-visual-style="minimal"] .app :is(
 ) {
   background:#ffffff!important;background-image:none!important;
   color:#000000!important;border:1px solid #ffffff!important;
-  border-radius:var(--jfs-depth-control-radius)!important;box-shadow:none!important;
+  border-radius:var(--jfs-panel-control-radius)!important;box-shadow:none!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
 html[data-visual-style="minimal"] .app :is(
@@ -211,7 +211,7 @@ html[data-visual-style="minimal"] .app :is(
 ) {
   color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;
   background:#000000!important;background-image:none!important;
-  border:1px solid #777777!important;border-radius:var(--jfs-depth-control-radius)!important;
+  border:1px solid #777777!important;border-radius:var(--jfs-panel-control-radius)!important;
   box-shadow:none!important;min-height:44px;
 }
 html[data-visual-style="minimal"] .app :is(.jfs-glass-field>label,.field>span) {color:#ffffff!important;}
@@ -219,7 +219,7 @@ html[data-visual-style="minimal"] .app :is(.text-link,.jfs3-icon-link,.jfs3-see-
 html[data-visual-style="minimal"] .app :is(.icon-button,.jfs3-icon-link) {
   min-width:44px;min-height:44px;
   color:#ffffff!important;background:#000000!important;
-  box-shadow:none!important;border-radius:var(--jfs-depth-control-radius)!important;
+  box-shadow:none!important;border-radius:var(--jfs-panel-control-radius)!important;
 }
 /* Numeric data and graphs: actual data remains; tracks are only 1D marks. */
 html[data-visual-style="minimal"] .app :is(
@@ -245,10 +245,10 @@ html[data-visual-style="minimal"] .app :is(.nutrition-v3b-energy-ring,.jfs3-ring
 
 /* Legibility is independent of decorative depth and of legacy theme colors. */
 html[data-visual-style="minimal"] .app :is(.daily-page,.plan-day-navigation,.plan-day-editor,.training-home,.progress-direction) {
-  color:var(--jfs-depth-text);
+  color:var(--jfs-panel-text);
 }
 html[data-visual-style="minimal"] .app :is(.muted,.metric-note,.eyebrow,.section-kicker,.field>span,.plan-day-navigation p) {
-  color:var(--jfs-depth-muted)!important;
+  color:var(--jfs-panel-muted)!important;
 }
 html[data-visual-style="minimal"] .app :is(.plan-day-add,.plan-day-arrow,.plan-day-navigation button,.text-link) {
   color:#f5f5f5!important;
@@ -266,10 +266,10 @@ html[data-visual-style="minimal"] .app :is(.button:not(.secondary):not(.tertiary
 @keyframes jfs-depth-arrive {from {opacity:.65;transform:translateY(5px)}to {opacity:1;transform:none}}
 @media(prefers-reduced-motion:no-preference) {
   html[data-visual-style="minimal"]:not([data-reduce-motion="true"]) .app:not(.workout-active) :is(.today-v3-grid>.jfs-glass-card,.plan-day-navigation,.training-today,.direction-hero) {
-    animation:jfs-depth-arrive 280ms var(--jfs-depth-ease) both;
+    animation:jfs-depth-arrive 280ms var(--jfs-panel-ease) both;
   }
   html[data-visual-style="minimal"]:not([data-reduce-motion="true"]) .app :is(.button,.jfs-ui-action,.jfs-glass-button,.plan-day-add,.today-v3-quick-item) {
-    transition:transform 160ms var(--jfs-depth-ease),border-color 160ms ease,box-shadow 160ms ease;
+    transition:transform 160ms var(--jfs-panel-ease),border-color 160ms ease,box-shadow 160ms ease;
   }
   html[data-visual-style="minimal"]:not([data-reduce-motion="true"]) .app :is(.button,.jfs-ui-action,.jfs-glass-button,.plan-day-add):not(:disabled):active {
     transform:translateY(1px) scale(.99);

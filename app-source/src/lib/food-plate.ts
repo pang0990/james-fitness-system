@@ -7,7 +7,7 @@ import {
   syncMealCompletion,
   visibleMeals,
 } from "./domain";
-import { validateNewMealInput } from "./nutrition-input";
+import { validateNewMealInput, validateMealDate } from "./nutrition-input";
 
 export type MealSnapshot = Pick<
   Meal,
@@ -67,11 +67,7 @@ export function commitPlate(
 ) {
   if (!items.length || new Set(items.map((x) => x.id)).size !== items.length)
     throw Error("請確認待加入食物");
-  if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
-    new Date(date + "T12:00:00Z").toISOString().slice(0, 10) !== date
-  )
-    throw Error("日期無效");
+  validateMealDate(date, state.profile?.timezone, new Date(at));
   const rows = items.map((item) => {
     if (!item.id) throw Error("食物識別無效");
     const snapshot = portion(item);

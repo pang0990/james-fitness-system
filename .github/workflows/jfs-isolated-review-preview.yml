@@ -27,11 +27,12 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: google-chrome --version
       - name: Real login gate and workspace browser regressions
         run: npm run test:e2e -- --workers=1 --trace=retain-on-failure
         env:
           CI: "true"
+          PLAYWRIGHT_CHANNEL: chrome
       - name: Dry-run actual GitHub Pages publish transform (no commit, no deploy)
         run: |
           npm run pages:prepare
@@ -69,11 +70,12 @@ jobs:
       - run: npm test
       - name: Compile preview-only static site (no real OAuth or cloud API)
         run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: google-chrome --version
       - name: Review all four actual pages in two viewport sizes
         run: npm run test:e2e -- tests/e2e/review-preview.spec.ts tests/e2e/review-user-journey.spec.ts --workers=1 --trace=retain-on-failure
         env:
           CI: "true"
+          PLAYWRIGHT_CHANNEL: chrome
       - name: Assemble downloadable mobile/desktop review kit
         run: node scripts/build-review-kit.mjs
       - name: Validate ready-to-upload static preview root
