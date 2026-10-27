@@ -3,42 +3,51 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { REVIEW_PREVIEW } from "@/lib/review-preview";
+import { GUEST_DATA_KEY, GUEST_MODE_KEY } from "@/lib/guest-mode";
 import { appHref, supabase } from "@/lib/supabase-browser";
 import { scopedStorageKey, STORAGE_KEY, useLegacyData } from "@/lib/store";
 
 export function GoogleLogin() {
-  const { user, ready, error, signInGoogle } = useAuth();
+  const { user, ready, error, signInGoogle, continueAsGuest, isGuest } = useAuth();
   const [busy, setBusy] = useState(false);
+  const signedIn = !!user && !isGuest && !REVIEW_PREVIEW;
 
   return (
     <main className="jfs-auth-screen">
       <div className="jfs-auth-backdrop" aria-hidden="true" />
-      <section className="jfs-auth-panel">
-        <p className="jfs-auth-kicker">JAMES FITNESS SYSTEM</p>
-        <span className="jfs-auth-mark" aria-hidden="true">J</span>
-        <h1>{user ? "WELCOME BACK" : "THE JOURNEY STARTS HERE"}</h1>
-        {ready && user ? (
-          <>
-            <p className="jfs-auth-support">{user.email ?? "Google 帳號已連接"}</p>
-            <Link className="jfs-auth-button" href="/today">CONTINUE TO TODAY →</Link>
-          </>
+      <section className="jfs-auth-panel" aria-label="開始使用 James Fitness System">
+        <div className="jfs-auth-mark" aria-hidden="true">J</div>
+        <h1>{signedIn ? "歡迎回來。" : "訓練，由你開始。"}</h1>
+        <p className="jfs-auth-support">
+          {signedIn ? user?.email : "保持專注。記錄每一次訓練與日常進步。"}
+        </p>
+        {signedIn ? (
+          <Link className="jfs-auth-button" href="/today">繼續使用 <span aria-hidden="true">→</span></Link>
         ) : (
-          <>
-            <p className="jfs-auth-support">以 Google 帳號繼續</p>
-            <button className="jfs-auth-button" disabled={!ready || busy}
-              onClick={async () => {
-                setBusy(true);
-                try { await signInGoogle(); }
-                finally { setBusy(false); }
-              }}>
-              <span className="jfs-google-g" aria-hidden="true">G</span>
-              {busy ? "CONNECTING…" : "CONTINUE WITH GOOGLE"}
+          <div className="jfs-auth-actions">
+            <button className="jfs-auth-button" type="button" disabled={!ready}
+              onClick={continueAsGuest}>
+              {REVIEW_PREVIEW ? "開始測試體驗" : isGuest ? "繼續訪客模式" : "不登入，直接開始"}
+              <span aria-hidden="true">→</span>
             </button>
-          </>
+            {!REVIEW_PREVIEW && (
+              <button className="jfs-auth-button jfs-auth-button-secondary" disabled={!ready || busy}
+                onClick={async () => {
+                  setBusy(true);
+                  try { await signInGoogle(); }
+                  finally { setBusy(false); }
+                }}>
+                {busy ? "正在連線…" : "使用 Google 帳號登入"}
+              </button>
+            )}
+          </div>
         )}
         {error && <p className="jfs-auth-error" role="alert">{error}</p>}
         <p className="jfs-auth-footnote">
-          目前先開通安全登入。健身紀錄仍保存在本機，尚未跨裝置同步。
+          {REVIEW_PREVIEW
+            ? "測試版本使用虛構資料，不連接正式帳戶。"
+            : "訪客資料只保存在這台裝置，不會自動上傳。登入後可自行選擇是否轉移，原始紀錄不會自動覆寫。"}
         </p>
       </section>
     </main>
@@ -72,8 +81,10 @@ export function GoogleCallback() {
       const key = scopedStorageKey(data.user.id);
       const hasAccountData = Boolean(localStorage.getItem(key));
       const hasLegacyData = Boolean(localStorage.getItem(STORAGE_KEY));
+      const hasGuestData = Boolean(localStorage.getItem(GUEST_DATA_KEY));
+      localStorage.removeItem(GUEST_MODE_KEY);
       // Never automatically assign old browser records to a new Google user.
-      window.location.replace(appHref(hasAccountData || hasLegacyData ? "today" : "onboarding"));
+      window.location.replace(appHref(hasAccountData || hasLegacyData || hasGuestData ? "today" : "onboarding"));
     }).catch(() => setError("登入驗證時網路中斷，請重試。"));
   }, []);
 
