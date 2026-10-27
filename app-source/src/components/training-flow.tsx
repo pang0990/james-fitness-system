@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import {TrainingOverviewDetails} from "./training-overview";
+import {workoutProgress} from "@/lib/training-overview";
 import { WorkoutSetEntry } from "./workout-set-entry";
 import { TrainingPlan } from "./training-plan";
 import {
@@ -176,6 +178,18 @@ export function TrainingFlow({
   const rpRemaining=Math.max(0,rpTarget-rpElapsed);
   const plannedWorking=current?.exercises.reduce((n,e)=>n+(e.plannedSets??0),0)??0;
   const completedWorking=current?.exercises.reduce((n,e)=>n+e.sets.filter(s=>s.type==="working").length,0)??0;
+  const progress=current?workoutProgress(current):null;
+  const heroExercises=current?current.exercises.map(e=>({...e,sets:e.plannedSets})):(day?.exercises??[]);
+  const isRest=planned.kind==="rest"||planned.kind==="temporary_rest";
+  function extendRest(seconds:15|30){
+    if(!current?.restStartedAt||current.pausedAt)return;
+    save("延長一般休息",draft=>{
+      const session=draft.sessions.find(s=>s.id===current.id)!;
+      if(session.status!=="in_progress"||session.pausedAt||!session.restStartedAt)throw Error("休息狀態已變更，請重新確認");
+      session.restTargetSeconds=Math.min(3600,(session.restTargetSeconds??restTarget)+seconds);
+    });
+  }
+
   const partialCycle=!!current?.cycleId && !current.isExtra &&
     plannedWorking>0 && completedWorking<plannedWorking;
     const restStart=current?.restStartedAt ? Date.parse(current.restStartedAt) : null;
@@ -416,6 +430,7 @@ export function TrainingFlow({
           <GlassCard className="training-v3-status" aria-label="訓練狀態">
             <div><p className="eyebrow">TRAINING 3.0</p><strong>{current.pausedAt?"已暫停":review?"完成確認":restStart!==null||rpStart!==null?"休息中":"訓練中"}</strong></div>
             <span>{completedWorking} / {plannedWorking || "—"} 工作組</span>
+            <span>{progress?.completedExercises} / {current.exercises.length} 動作達到計畫組數</span>
             {(!online || saving) && (
               <p role="status">{!online ? "離線 · 紀錄仍保存於此裝置" : "正在保存…"}</p>
             )}
@@ -604,6 +619,8 @@ export function TrainingFlow({
                   </div>
                   <Dumbbell className="exercise-symbol" size={40} />
                   <h2>{ex.name}</h2>
+                  <p className="muted">{ex.muscle||"肌群尚未設定"}</p>
+                  {ex.exerciseLibraryId&&<Link href={`/training/exercises/detail?id=${encodeURIComponent(ex.exerciseLibraryId)}`} className="text-link">動作詳情與示範 →</Link>}
                   {ex.plannedSets && (
                     <p className="muted">
                       計畫 {ex.plannedSets} 組 × {ex.reps} · 休息{" "}
@@ -648,7 +665,8 @@ export function TrainingFlow({
                       <div className="set-group" key={set.id}>
                         <div className="session-set">
                           <span>{i+1} · {set.type.toUpperCase()}</span>
-                          <strong>{set.weight} kg × {set.reps}</strong>
+                          <strong>{set.weight} kg × {set.reps}{set.rir!==null ? ` · RIR ${set.rir}` : ""}</strong>
+                          {set.type==="working"&&state.preferences?.showPrevious!==false&&<small className="set-previous">上次同序工作組：{(()=>{const previous=previousSets?.[ex.sets.filter(s=>s.type==="working").findIndex(s=>s.id===set.id)];return previous?`${previous.weight} kg × ${previous.reps}`:"尚無紀錄";})()}</small>}
                           <div className="set-row-controls">
                             <button type="button" className="text-link" onClick={()=>setEditingSetId(set.id)}>編輯</button>
                             <button type="button" className="text-link" onClick={()=>deleteRecordedSet(set.id)}>刪除</button>
@@ -751,6 +769,7 @@ export function TrainingFlow({
                             <div className="rest-dock rest-dock-dual">
                 <Timer size={19}/>
                 <span>組間休息 {state.preferences?.autoRest!==false ? "· 自動" : "· 手動"}</span>
+                {restStart!==null&&<div className="rest-adjustments" aria-label="調整休息時間">{([15,30] as const).map(seconds=><button type="button" className="button secondary" key={seconds} disabled={!!current.pausedAt||restTarget>=3600} onClick={()=>extendRest(seconds)}>+{seconds} 秒</button>)}</div>}
                 <div className="rest-times">
                   <span>已休息 <strong>{Math.floor(restElapsed/60)}:{String(restElapsed%60).padStart(2,"0")}</strong></span>
                   <span>{restStart===null ? "預設目標" : restElapsed>restTarget ? "超時" : "剩餘"}
@@ -775,20 +794,23 @@ export function TrainingFlow({
             <Link href="/training/history">History</Link>
           </div>
           <GlassCard className="training-today card" aria-label="今日訓練計畫">
-            <span className="eyebrow">CURRENT PLAN</span>
+            <span className="eyebrow">{current?"RESUME WORKOUT":isRest?"REST DAY":"TODAY’S WORKOUT"}</span>
+            <p className="muted">{current?.cycleId?state.cycles?.find(c=>c.id===current.cycleId)?.name??"當次訓練計畫":cycle?.name??"建立你的訓練節奏"}{cycle&&!current?` · 第 ${cycle.round??1} 輪`:""}</p>
+            {!current&&isRest&&<p>今天排定休息。你仍可自行選擇開始下方待練課表。</p>}
+            {current&&<p className="training-resume-progress" role="status">{current.pausedAt?"已暫停":current.phase==="warmup"?"暖身中":"訓練中"} · 已完成 {completedWorking} / {plannedWorking||"未設定"} 工作組</p>}
             <div className="training-v3-heading">
               <div><h2>{current?.name ?? (day ? day.name : "尚未建立訓練計畫")}</h2>
-                <span className="training-v3-caption">{day ? `${day.exercises?.length ?? 0} 個動作` : "先建立自己的訓練計畫"}</span>
+                <span className="training-v3-caption">{current||day ? `${heroExercises.length} 個動作 · ${heroExercises.reduce((n,e)=>n+(e.sets??0),0)} 個計畫工作組` : "先建立自己的訓練計畫"}</span>
               </div>
               <Link href="/training/plan" className="training-v3-edit" aria-label="編輯課表"><ChevronRight size={17}/></Link>
             </div>
-            {day && (day.exercises?.length ?? 0)>0 && <div className="training-v3-exercises">
-              {(day.exercises ?? []).map((item,index)=><Link href={item.exerciseLibraryId ? `/training/exercises/detail?id=${encodeURIComponent(item.exerciseLibraryId)}` : "/training/plan"} className="training-v3-exercise" key={item.exerciseLibraryId ?? `${item.name}-${index}`} aria-label={item.exerciseLibraryId ? `查看${item.name}動作詳情` : `編輯${item.name}課表`}>
+            {heroExercises.length>0 && <div className="training-v3-exercises">
+              {heroExercises.map((item,index)=><Link href={item.exerciseLibraryId ? `/training/exercises/detail?id=${encodeURIComponent(item.exerciseLibraryId)}` : "/training/plan"} className="training-v3-exercise" key={item.exerciseLibraryId ?? `${item.name}-${index}`} aria-label={item.exerciseLibraryId ? `查看${item.name}動作詳情` : `編輯${item.name}課表`}>
                 <span className="training-v3-exercise-art" aria-hidden="true"><Dumbbell size={20} strokeWidth={1.3}/></span>
                 <span className="training-v3-number">{index+1}</span>
                 <span className="training-v3-exercise-info">
                   <strong>{item.name}</strong>
-                  <small>{item.sets} × {item.reps}</small>
+                  <small>{item.sets??"—"} × {item.reps??"未設定"}</small>
                 </span>
                 <ChevronRight size={14} aria-hidden="true"/>
               </Link>)}
@@ -817,7 +839,7 @@ export function TrainingFlow({
               </>
             ) : day ? (
               <>
-                <GlassButton kind="primary" className="training-v3-start" onClick={start}>開始訓練 <ArrowRight size={16}/></GlassButton>
+                <GlassButton kind="primary" className="training-v3-start" onClick={start}>{isRest?"仍要開始訓練":"開始訓練"} <ArrowRight size={16}/></GlassButton>
                 <details className="training-other-actions">
                   <summary>其他操作</summary>
                   <div className="stack">
@@ -834,6 +856,7 @@ export function TrainingFlow({
               <Link className="jfs-glass-nav-link training-v3-start" href="/training/plan">建立訓練課表 <ArrowRight size={16}/></Link>
             )}
           </GlassCard>
+          <TrainingOverviewDetails date={date} />
           {(completedToday.length > 0 || !!plannedSecond) && (
             <GlassCard className="card stack training-daily-sessions" aria-label="今天完成的訓練">
               <div className="training-daily-sessions-heading">
@@ -899,17 +922,11 @@ export function TrainingFlow({
               </div>
             </section>
           )}
-          <div className="training-home-links">
-            <Link href="/training/calendar">訓練日曆 <ChevronRight size={17}/></Link>
-            <Link href="/training/history">訓練歷史 <ChevronRight size={17}/></Link>
-             <Link href="/training/activity">Cardio 有氧紀錄 <ChevronRight size={17}/></Link>
-             <Link href="/progress/weekly">恢復與 Deload Check <ChevronRight size={17}/></Link>
-          </div>
           <details className="training-home-tools">
             <summary>其他訓練工具</summary>
             <div className="training-home-links">
               <Link href="/training/warmups">熱身管理 <ChevronRight size={17}/></Link>
-              <Link href="/training/exercises">動作指南 <ChevronRight size={17}/></Link>
+              <Link href="/training/activity">Cardio 有氧紀錄 <ChevronRight size={17}/></Link>
             </div>
           </details>
         </div>
