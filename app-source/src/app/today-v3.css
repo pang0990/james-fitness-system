@@ -337,10 +337,8 @@ html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.dail
 @media(min-width:1024px) {
   html[data-visual-style="minimal"] .page-today .sidebar {
     display:flex!important;flex-direction:column;
-    width:206px!important;min-height:100dvh;
-    padding:29px 15px!important;gap:0!important;
-    background:var(--jfs4-glass-navigation)!important;border-right:1px solid var(--jfs3-line)!important;
-    box-shadow:none!important;
+    /* Inset geometry and material are supplied by the shared app shell. */
+    gap:0!important;
   }
   html[data-visual-style="minimal"] .page-today .sidebar .brand {
     justify-content:flex-start!important;margin:0 0 46px!important;
@@ -373,7 +371,7 @@ html[data-visual-style="minimal"] .page-today .today-v3 .today-v3-activity>.dail
     background:var(--jfs3-inset)!important;color:var(--jfs3-ink)!important;
   }
   html[data-visual-style="minimal"] .page-today .main {
-    margin-left:206px!important;width:calc(100% - 206px)!important;
+    margin-left:236px!important;width:calc(100% - 236px)!important;
     max-width:none!important;padding:0!important;
   }
   html[data-visual-style="minimal"] .page-today .topbar {
@@ -609,40 +607,12 @@ html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active
   color:#ffffff!important;border:1px solid #626262!important;
   border-radius:2px!important;box-shadow:none!important;
 }
-/* Minimal line-based sidebar, account chrome and bottom dock. */
-html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
-  :is(.topbar,.sidebar,.bottom-nav) {
-  color:#ffffff!important;
-  background:#000000!important;
-  background-image:none!important;
-  border-color:#626262!important;
-  border-radius:2px!important;
-  -webkit-backdrop-filter:none!important;
-  backdrop-filter:none!important;
-  box-shadow:none!important;
-}
+/* The floating rail/dock are owned by app-shell-v3.css; Today keeps only
+ * its own account and notification controls. Avoid route-specific nav resets. */
 html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
   :is(.topbar .today-header-bell,.topbar .account-menu>summary) {
-  color:#ffffff!important;
-  background:#000000!important;
-  border:1px solid #626262!important;
-  box-shadow:none!important;
-}
-html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
-  :is(.bottom-nav a,.sidebar .nav-item) {
-  background:#000000!important;
-  background-image:none!important;
-  color:#a0a0a0!important;
-  border:1px solid transparent!important;
-  border-radius:2px!important;
-  box-shadow:none!important;
-}
-html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
-  :is(.bottom-nav a.active,.sidebar .nav-item.active) {
-  background:#000000!important;
-  color:#ffffff!important;
-  border:1px solid #878787!important;
-  box-shadow:none!important;
+  color:#ffffff!important;background:#000000!important;
+  border:1px solid #626262!important;box-shadow:none!important;
 }
 /* Portaled water editor must follow Today, not inherit white Glass defaults. */
 html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
