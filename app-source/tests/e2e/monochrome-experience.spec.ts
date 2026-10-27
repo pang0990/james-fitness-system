@@ -25,7 +25,7 @@ test("minimal mobile: tactile Today, monochrome dock, accessible progress entry"
   });
   expect(style.primary).toBe("#19191b");
   expect(style.activeColor).toBe("rgb(255, 255, 255)"); // black-line selected navigation
-  expect(style.dockShadow).toBe("none");
+  expect(style.dockShadow).not.toBe("none"); // subtle depth belongs to floating navigation only
   expect(style.cardShadow).toBe("none");
   expect(style.overflow).toBeLessThanOrEqual(1);
   await page.screenshot({ path: "test-results/monochrome-today-mobile.png", fullPage: true });
@@ -141,4 +141,34 @@ test("Today 3: small-screen layout has no horizontal overflow", async ({ page })
   await page.goto("/today/");
   await expect(page.getByTestId("today-v3")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+});
+
+test("Black Line Refined: floating navigation remains inset and accessible at mobile/desktop widths",async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto("/today/");
+  const mobile=page.locator(".bottom-nav");
+  await expect(mobile).toBeVisible();
+  const dock=await mobile.evaluate(el=>{
+    const b=el.getBoundingClientRect(),s=getComputedStyle(el);
+    return {left:b.left,right:innerWidth-b.right,bottom:innerHeight-b.bottom,radius:parseFloat(s.borderRadius),shadow:s.boxShadow,height:b.height};
+  });
+  expect(dock.left).toBeGreaterThanOrEqual(10);
+  expect(dock.right).toBeGreaterThanOrEqual(10);
+  expect(dock.bottom).toBeGreaterThanOrEqual(8);
+  expect(dock.radius).toBeGreaterThanOrEqual(16);
+  expect(dock.shadow).not.toBe("none");
+  expect(dock.height).toBeGreaterThanOrEqual(60);
+  await page.setViewportSize({width:1440,height:900});
+  await page.reload();
+  const desktop=page.locator(".sidebar");
+  await expect(desktop).toBeVisible();
+  const rail=await desktop.evaluate(el=>{
+    const b=el.getBoundingClientRect(),s=getComputedStyle(el);
+    return {left:b.left,top:b.top,bottom:innerHeight-b.bottom,radius:parseFloat(s.borderRadius),shadow:s.boxShadow};
+  });
+  expect(rail.left).toBeGreaterThanOrEqual(12);
+  expect(rail.top).toBeGreaterThanOrEqual(12);
+  expect(rail.bottom).toBeGreaterThanOrEqual(12);
+  expect(rail.radius).toBeGreaterThanOrEqual(16);
+  expect(rail.shadow).not.toBe("none");
 });
