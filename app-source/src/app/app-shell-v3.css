@@ -63,6 +63,7 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .page-foo
     bottom:calc(15px + env(safe-area-inset-bottom))!important;
     left:16px!important;right:16px!important;inset-inline:16px!important;
     width:auto!important;max-width:520px!important;margin-inline:auto!important;
+    transform:none!important;top:auto!important;
     min-height:68px!important;padding:7px!important;gap:4px!important;
     border:1px solid var(--jfs-nav-edge)!important;border-radius:var(--jfs-nav-radius)!important;
     background:var(--jfs-nav-surface)!important;box-shadow:var(--jfs-nav-elevation)!important;
