@@ -17,7 +17,6 @@ import "./minimal-theme.css";
 import "./monochrome-experience-v2.css";
 import "./glass-system-v2.css";
 import "./tokens-v3.css";
-import "./app-shell-v3.css";
 import "./components-v3.css";
 import "./nutrition-v3b.css";
 import "./glass-experience-v4.css";
@@ -28,6 +27,8 @@ import { ReviewPreviewBanner } from "@/components/review-preview-banner";
 import "./training-v3.css";
 // Today is migrated first; load its scoped black-line overrides after legacy Glass CSS.
 import "./today-v3.css";
+// The shared navigation owns final chrome geometry after legacy showcase styles.
+import "./app-shell-v3.css";
 
 export const metadata: Metadata = {
   title: "James · Fitness System",
