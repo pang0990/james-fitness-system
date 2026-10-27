@@ -18,7 +18,7 @@ import { NutritionV2 } from "./daily";
 import { TodayReference } from "./today-reference";
 import { TodayMinimalV3 } from "./today-minimal-v3";
 import { AppSidebar, AppBottomNavigation } from "./ui/app-navigation";
-import { GoogleLogin, GoogleCallback, LegacyDataOffer } from "./auth-pages";
+import { GoogleLogin, GoogleCallback, LegacyDataOffer, GuestDataOffer } from "./auth-pages";
 import { useAuth } from "@/lib/auth-context";
 import { TrainingFlow } from "./training-flow";
 import { Trends } from "./trends";
@@ -313,7 +313,7 @@ function ProgressLinks({ path }: { path: string }) {
 
 export function FitnessApp({ path }: { path: string }) {
   const { state, ready, error, saving } = useStore();
-  const { user, ready: authReady, signOut } = useAuth();
+  const { user, ready: authReady, signOut, isGuest } = useAuth();
   const section = path.split("/")[0];
   const [toast, setToast] = useState("");
   useEffect(() => {
@@ -373,12 +373,14 @@ export function FitnessApp({ path }: { path: string }) {
               <Link href="/knowledge">Knowledge · 知識庫</Link>
               <Link href="/data">Data & Backup · 資料管理</Link>
               <Link href="/settings">Settings · 系統設定</Link>
-              <button className="jfs-account-logout" type="button" onClick={() => void signOut()}>Sign out · 登出</button>
+              {isGuest && <Link href="/login">登入 Google 帳號（訪客資料保留）</Link>}
+              <button className="jfs-account-logout" type="button" onClick={() => void signOut()}>{isGuest ? "退出訪客模式" : "Sign out · 登出"}</button>
             </div>
           </details>
           </div>
         </header>
         <LegacyDataOffer />
+        <GuestDataOffer />
         {saving && (
           <div className="save-indicator" role="status">
             儲存中…
