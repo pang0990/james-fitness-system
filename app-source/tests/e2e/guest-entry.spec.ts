@@ -1,5 +1,5 @@
 import {test as publicTest,expect} from "@playwright/test";
-import {test as accountTest,DATA_KEY} from "./authenticated";
+import {DATA_KEY,TEST_USER_ID} from "./authenticated";
 import {initialState} from "../../src/lib/domain";
 
 const GUEST_DATA_KEY="james-fitness-user-v1:jfs-local-guest-v1";
@@ -19,7 +19,7 @@ publicTest("Welcome: guest entry is optional and uses a separate local data key"
     account:localStorage.getItem("james-fitness-user-v1:00000000-0000-4000-8000-000000000042"),
   }));
   expect(before.flag).toBe("active");
-  expect(before.guest).toBeTruthy();
+  await expect.poll(async()=>page.evaluate(key=>localStorage.getItem(key),GUEST_DATA_KEY)).toBeTruthy();
   expect(before.account).toBeNull();
   await page.locator(".today-v3-water-actions").getByRole("button",{name:/\+250 ml/}).click();
   const stored=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!),GUEST_DATA_KEY);
@@ -33,16 +33,29 @@ publicTest("Welcome: guest entry is optional and uses a separate local data key"
   expect(await page.evaluate(key=>localStorage.getItem(key),GUEST_MODE_KEY)).toBeNull();
 });
 
-accountTest("Guest import: explicit consent copies only into empty account, leaves guest backup",async({page})=>{
+publicTest("Guest import: explicit consent copies only into empty account, leaves guest backup",async({page})=>{
+  await page.route("https://*.supabase.co/**",route=>route.abort());
+  const enc=(value:object)=>Buffer.from(JSON.stringify(value)).toString("base64url");
+  const exp=Math.floor(Date.now()/1000)+7*24*60*60;
+  const token=[enc({alg:"none",typ:"JWT"}),enc({
+    sub:TEST_USER_ID,aud:"authenticated",role:"authenticated",exp,
+  }),"test-only-unsigned"].join(".");
+  const created=new Date().toISOString();
+  const session={
+    access_token:token,token_type:"bearer",expires_in:7*24*60*60,expires_at:exp,
+    refresh_token:"invalid-browser-test-only-refresh",
+    user:{id:TEST_USER_ID,aud:"authenticated",role:"authenticated",
+      email:"test@example.invalid",app_metadata:{provider:"google",providers:["google"]},
+      user_metadata:{},created_at:created,updated_at:created},
+  };
+  const guestData={...initialState(),
+    waters:[{id:"guest-water",date:"2026-10-27",ml:370,createdAt:"2026-10-27T05:00:00Z"}],
+  };
+  await page.addInitScript(({cachedSession,guestKey,data})=>{
+    localStorage.setItem("jfs-google-session-v1",JSON.stringify(cachedSession));
+    localStorage.setItem(guestKey,JSON.stringify(data));
+  },{cachedSession:session,guestKey:GUEST_DATA_KEY,data:guestData});
   await page.goto("/today/");
-  await page.evaluate(({accountKey,guestKey,guestData})=>{
-    localStorage.removeItem(accountKey);
-    localStorage.setItem(guestKey,JSON.stringify(guestData));
-  },{accountKey:DATA_KEY,guestKey:GUEST_DATA_KEY,guestData:{
-      ...initialState(),
-      waters:[{id:"guest-water",date:"2026-10-27",ml:370,createdAt:"2026-10-27T05:00:00Z"}],
-  }});
-  await page.reload();
   const offer=page.getByRole("complementary",{name:"訪客訓練紀錄轉移"});
   await expect(offer).toBeVisible();
   const guestBefore=await page.evaluate(key=>localStorage.getItem(key),GUEST_DATA_KEY);
