@@ -680,6 +680,9 @@ export function NutritionV2({
 }) {
   const { state, save } = useStore();
   const [selectedDate, setDate] = useState(date);
+  const [expandedMeals, setExpandedMeals] = useState<string[]>([]);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [customFoodEdit, setCustomFoodEdit] = useState<Food | null>(null);
   const [loggerDirty,setLoggerDirty] = useState(false);
   const [loggerTab,setLoggerTab] = useState("food");
   const [sheet, setSheet] = useState<
@@ -710,6 +713,7 @@ export function NutritionV2({
     setSheet(null);
     setEdit(null);
     setFood(null);
+    setCustomFoodEdit(null);
     setMealError("");
   }
   function log(e: FormEvent<HTMLFormElement>) {
@@ -798,41 +802,31 @@ export function NutritionV2({
         </>
       ) : (
         <>
-          <div className="date-type">
-            <input
-              aria-label="紀錄日期"
-              type="date"
-              value={selectedDate}
-              max={date}
+          <div className="nutrition-datebar" aria-label="紀錄日期與日型">
+            <div className="nutrition-datebar-controls">
+              <button type="button" className="nutrition-date-arrow" aria-label="前一天"
+                onClick={() => { setDate(addDays(selectedDate, -1)); setExpandedMeals([]); }}>‹</button>
+              <button type="button" className="nutrition-date-open"
+                aria-expanded={datePickerOpen} aria-label="選擇紀錄日期"
+                onClick={() => setDatePickerOpen(v => !v)}>
+                <CalendarDays size={18} aria-hidden="true" />
+                {new Intl.DateTimeFormat("zh-TW", { month:"long", day:"numeric", weekday:"short" }).format(new Date(selectedDate + "T12:00:00"))}
+              </button>
+              <button type="button" className="nutrition-date-arrow" aria-label="後一天"
+                disabled={selectedDate >= date}
+                onClick={() => { setDate(addDays(selectedDate, 1)); setExpandedMeals([]); }}>›</button>
+            </div>
+            <select aria-label="日型" className="nutrition-daytype" value={day.dayType}
               onChange={(e) => {
-                if (e.target.value) setDate(e.target.value);
-              }}
-            />
-            <select
-              aria-label="日型"
-              value={day.dayType}
-              onChange={(e) => {
-                if (
-                  save("設定日型", (s) =>
-                    setDayType(s, selectedDate, e.target.value as DayType),
-                  )
-                )
-                  notify();
-              }}
-            >
-              {Object.entries(dayNames).map(([k, n]) => (
-                <option key={k} value={k}>
-                  {n}
-                </option>
-              ))}
+                if(save("設定日型", (draft) => setDayType(draft, selectedDate, e.target.value as DayType))) notify();
+              }}>
+              {Object.entries(dayNames).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
             </select>
+            {datePickerOpen && <input className="nutrition-date-picker" aria-label="跳至日期" type="date"
+              value={selectedDate} max={date}
+              onChange={(e) => { if(e.target.value) {setDate(e.target.value);setExpandedMeals([]);setDatePickerOpen(false);} }}/>}
           </div>
           <NutritionWeek date={selectedDate} onChange={setDate} />
-          <nav className="nutrition-v3-tabs" aria-label="營養頁面區塊">
-            <a href="#nutrition-calories" className="active">Calories</a>
-            <a href="#nutrition-meals">Meals</a>
-            <Link href="/nutrition/recipes">Recipes</Link>
-          </nav>
           {state.appearance?.visualStyle !== "cinematic" && !inlineClose ? (
             <NutritionDashboardV3 date={selectedDate}
               onAddMeal={() => { setSlot(state.mealSlots[0]); setSheet("add"); }} />
@@ -841,109 +835,79 @@ export function NutritionV2({
               <NutritionSummary date={selectedDate} variant="full" />
             </section>
           )}
-          <div className="nutrition-v3-meal-icons" aria-label="快速選擇餐次">
-            {state.mealSlots.slice(0,4).map((name,index)=><GlassButton type="button" kind="secondary" className="nutrition-v3-meal-shortcut" key={name}
-              onClick={()=>{setSlot(name);setSheet("add");}}>
-              <span aria-hidden="true">{index===0?<Coffee size={20} strokeWidth={1.4}/>:
-                index===1?<Utensils size={20} strokeWidth={1.4}/>:
-                index===2?<Soup size={20} strokeWidth={1.4}/>:<Cookie size={20} strokeWidth={1.4}/>}</span>
-              <strong>{name}</strong>
-            </GlassButton>)}
-          </div>
-
-          <section className="meal-list" id="nutrition-meals">
-            {Array.from(
-              new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map((m) => m.slot)]),
-            ).map((name) => (
-              <GlassCard key={name} className="meal-section" aria-label={`${name}飲食紀錄`}>
-                <div className="meal-head">
-                  <h2>{state.mealSlots.includes(name) ? (
-                    <button type="button" className="meal-name-edit" title="點擊修改餐次名稱" aria-label={`修改餐次名稱：${name}`}
-                      onClick={() => {setRenameSlot(name);setSheet("rename");}}>{name}</button>
-                  ) : name}</h2>
-                  <div className="cinematic-meal-actions">
-                    <button type="button" className="text-link" aria-label={`複製餐點至${name}`}
-                      onClick={()=>{setSlot(name);setLoggerTab("copy");setSheet("add");}}>複製餐點</button>
-                    <button
-                      type="button"
-                      className="icon-button"
-                      aria-label={`新增食物至${name}`}
-                      onClick={() => { setSlot(name); setSheet("add"); }}
-                    >
-                      <Plus size={20} />
+          <section className="meal-list meal-list--b2" id="nutrition-meals">
+            <div className="meal-list-toolbar">
+              <h2>每日餐次</h2>
+              <button type="button" className="text-link"
+                onClick={() => setExpandedMeals(expandedMeals.length ===
+                  new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map(m => m.slot)]).size ?
+                  [] : Array.from(new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map(m => m.slot)])))}>
+                {expandedMeals.length === new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map(m => m.slot)]).size ? "全部收合" : "全部展開"}
+              </button>
+            </div>
+            {Array.from(new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map(m => m.slot)])).map((name) => {
+              const entries = meals.filter(m => m.slot === name);
+              const expanded = expandedMeals.includes(name);
+              const kcal = round(entries.reduce((sum,m) => sum + m.kcal, 0));
+              return (
+                <section key={name} className="meal-section meal-section--b2" aria-label={name + "飲食紀錄"}>
+                  <div className="meal-head meal-head--b2">
+                    <button type="button" className="meal-toggle" aria-expanded={expanded}
+                      aria-controls={"meal-details-" + selectedDate + "-" + encodeURIComponent(name)}
+                      onClick={() => setExpandedMeals(old => old.includes(name) ? old.filter(n => n !== name) : [...old, name])}>
+                      <span className="meal-heading-text"><strong>{name}</strong>
+                        <small>{entries.length ? entries.length + " 項食物 · " + kcal + " kcal" : "尚無紀錄"}</small>
+                      </span>
+                      {expanded ? <ChevronUp size={20} aria-hidden="true"/> : <ChevronDown size={20} aria-hidden="true"/>}
+                    </button>
+                    <button className="meal-add-button" type="button" aria-label={"新增食物至" + name}
+                      onClick={() => {setSlot(name);setLoggerTab("food");setSheet("add");}}>
+                      <Plus size={21} aria-hidden="true" />
                     </button>
                   </div>
-                </div>
-                {meals.filter((m) => m.slot === name).length ? (
-                  meals
-                    .filter((m) => m.slot === name)
-                    .map((m) => (
-                      <div className="meal-entry" key={m.id}>
-                        <span className="nutrition-v3-food-thumb" aria-hidden="true"><Utensils size={20} strokeWidth={1.25}/></span>
-                        <div>
-                          <h3>{m.name}</h3>
-                          <p>
-                            {m.quantity} {m.unit} · {m.kcal} kcal
-                          </p>
-                          <small>
-                            P {m.p} C {m.c} F {m.f}
-                          </small>
+                  {expanded && <div id={"meal-details-" + selectedDate + "-" + encodeURIComponent(name)}
+                    className="meal-details">
+                    {entries.length ? entries.map(m => (
+                      <div className="meal-entry meal-entry--b2" key={m.id}>
+                        <div className="meal-entry-information">
+                          <strong>{m.name}</strong>
+                          <span>{m.quantity} {m.unit} · {m.kcal} kcal</span>
                         </div>
-                        <button
-                          className="text-link"
-                          onClick={() => {
-                            setEdit(m);
-                            setFood(null);
-                            setSheet("manual");
-                          }}
-                        >
-                          修正
-                        </button>
+                        <details className="meal-entry-menu">
+                          <summary aria-label={"管理 " + m.name + " 紀錄"}><Ellipsis size={20} aria-hidden="true"/></summary>
+                          <div className="meal-entry-actions">
+                            <button type="button" onClick={() => {setEdit(m);setFood(null);setSheet("manual");}}>編輯／移動餐次</button>
+                            <button type="button" onClick={() => {
+                              if (!window.confirm("刪除此筆飲食紀錄？其他紀錄不受影響。")) return;
+                              if(save("刪除飲食", draft => {
+                                draft.meals.push({...m,id:uid(),supersedes:m.id,deleted:true,createdAt:stamp()});
+                                syncMealCompletion(draft,selectedDate);
+                              })) notify("飲食紀錄已刪除");
+                            }}>刪除此筆紀錄</button>
+                          </div>
+                        </details>
                       </div>
-                    ))
-                ) : (
-                  <div className="meal-empty"><span className="muted">尚無紀錄</span></div>
-                )}
-              </GlassCard>
-            ))}
+                    )) : <p className="meal-empty">這一餐尚未記錄食物</p>}
+                    <div className="meal-details-actions">
+                      <button type="button" className="button secondary"
+                        onClick={()=>{setSlot(name);setLoggerTab("food");setSheet("add");}}>
+                        <Plus size={16}/> 新增食物
+                      </button>
+                      <button type="button" className="button secondary" aria-label={"複製餐點至" + name}
+                        onClick={()=>{setSlot(name);setLoggerTab("copy");setSheet("add");}}>複製餐點</button>
+                      {state.mealSlots.includes(name) && <button type="button" className="text-link"
+                        onClick={()=>{setRenameSlot(name);setSheet("rename");}}>修改餐次名稱</button>}
+                    </div>
+                  </div>}
+                </section>
+              );
+            })}
           </section>
           {(state.appearance?.visualStyle === "cinematic" || inlineClose) && (
             <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
               <Plus size={18} /> 新增飲食
             </button>
           )}
-          <section className="nutrition-cookbook-section" aria-labelledby="nutrition-cookbook-heading">
-            <div className="nutrition-cookbook-section-title">
-              <span>DISCOVER</span>
-              <small>EXPLORE YOUR RECIPES</small>
-            </div>
-            <Link className="nutrition-cookbook-card" href="/nutrition/recipes" aria-label={`開啟我的食譜菜單，共 ${builtInRecipes.length} 道內建食譜`}>
-              <span className="cookbook-card-illumination" aria-hidden="true" />
-              <span className="cookbook-card-art" aria-hidden="true">
-                <span className="cookbook-card-halo" />
-                <span className="cookbook-card-plate"><span className="cookbook-card-food" /></span>
-              </span>
-              <span className="cookbook-card-topline">
-                <span className="cookbook-card-overline">JFS · PERSONAL COOKBOOK</span>
-                <BookOpen size={19} strokeWidth={1.35} aria-hidden="true" />
-              </span>
-              <span className="cookbook-card-content">
-                <strong id="nutrition-cookbook-heading">我的食譜菜單</strong>
-                <span className="cookbook-card-english">MY RECIPES</span>
-                <span className="cookbook-card-description">從收藏靈感到每日餐桌，挑選適合今天的料理。</span>
-              </span>
-              <span className="cookbook-card-bottom">
-                <span className="cookbook-card-count"><b>{builtInRecipes.length}</b> 道內建食譜</span>
-                <span className="cookbook-card-cta">探索食譜 <ArrowRight size={17} strokeWidth={1.6} /></span>
-              </span>
-            </Link>
-            <nav className="nutrition-cookbook-categories" aria-label="依食譜類型探索">
-              <Link href="/nutrition/recipes?category=Breakfast"><span>早餐</span><b>{builtInRecipes.filter(r=>r.category==="Breakfast").length}</b><ChevronRight size={13}/></Link>
-              <Link href="/nutrition/recipes?category=Main%20Meals"><span>正餐</span><b>{builtInRecipes.filter(r=>r.category==="Main Meals").length}</b><ChevronRight size={13}/></Link>
-              <Link href="/nutrition/recipes?category=Snacks"><span>點心</span><b>{builtInRecipes.filter(r=>r.category==="Snacks").length}</b><ChevronRight size={13}/></Link>
-            </nav>
-          </section>
-
         </>
       )}
       {sheet === "rename" && (
@@ -997,6 +961,7 @@ export function NutritionV2({
             }[sheet]
           }
           onClose={close}
+          mode={sheet === "add" ? "nutrition-logger" : "standard"}
         >
           {sheet === "meal" ? (
             <div className="action-list">
@@ -1015,7 +980,7 @@ export function NutritionV2({
             </div>
           ) : sheet === "add" ? (
             <FoodLogger date={selectedDate} slot={slot} onSlot={setSlot} initialTab={loggerTab}
-              onDirty={setLoggerDirty} onDone={()=>{setLoggerDirty(false);setLoggerTab("food");setSheet(null);inlineClose?.();notify("已加入飲食紀錄");}} />
+              onDirty={setLoggerDirty} onDone={()=>{setLoggerDirty(false);setLoggerTab("food");setSheet(null);setExpandedMeals(old=>old.includes(slot)?old:[...old,slot]);inlineClose?.();notify("已加入飲食紀錄");}} />
           ) : sheet === "food" || sheet === "myfood" ? (
             <>
               <button className="text-link" onClick={() => setSheet("add")}>
