@@ -681,6 +681,7 @@ export function NutritionV2({
   const [expandedMeals, setExpandedMeals] = useState<string[]>([]);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [customFoodEdit, setCustomFoodEdit] = useState<Food | null>(null);
+  const [editAmountText, setEditAmountText] = useState("");
   const [loggerDirty,setLoggerDirty] = useState(false);
   const [loggerTab,setLoggerTab] = useState("food");
   const [sheet, setSheet] = useState<
@@ -718,18 +719,19 @@ export function NutritionV2({
     e.preventDefault();
     setMealError("");
     const d = new FormData(e.currentTarget);
-    const factor = food ? quantity / food.base : 1;
-    const p = round(food ? food.p * factor : Number(d.get("p")));
-    const c = round(food ? food.c * factor : Number(d.get("c")));
-    const f = round(food ? food.f * factor : Number(d.get("f")));
+    const editQuantity = edit ? Number(editAmountText) : 1;
+    const factor = food ? quantity / food.base : edit && edit.quantity > 0 ? editQuantity / edit.quantity : 1;
+    const p = round(food ? food.p * factor : edit ? edit.p * factor : Number(d.get("p")));
+    const c = round(food ? food.c * factor : edit ? edit.c * factor : Number(d.get("c")));
+    const f = round(food ? food.f * factor : edit ? edit.f * factor : Number(d.get("f")));
     let meal;
     try {
       meal = validateNewMealInput({
         name: food?.name ?? String(d.get("name") ?? ""),
         slot: String(d.get("slot") ?? ""),
-        quantity: food ? quantity : 1,
+        quantity: food ? quantity : edit ? editQuantity : 1,
         p, c, f,
-        kcal: round(food ? food.kcal * factor : p * 4 + c * 4 + f * 9),
+        kcal: round(food ? food.kcal * factor : edit ? edit.kcal * factor : p * 4 + c * 4 + f * 9),
       });
     } catch (error) {
       setMealError(error instanceof Error ? error.message : "飲食數值無效");
@@ -741,9 +743,9 @@ export function NutritionV2({
         id: uid(),
         date: selectedDate,
         ...meal,
-        unit: food?.unit ?? "份",
-        foodId: food?.id,
-        foodVersion: food?.version,
+        unit: food?.unit ?? edit?.unit ?? "份",
+        foodId: food?.id ?? edit?.foodId,
+        foodVersion: food?.version ?? edit?.foodVersion,
         createdAt: stamp(),
         ...(edit ? { supersedes: edit.id } : {}),
       });
@@ -768,6 +770,29 @@ export function NutritionV2({
       </PageTitle>
       {isLibrary ? (
         <>
+          <section className="my-food-manager" aria-label="我的食物管理">
+            <div className="my-food-manager-header">
+              <h2>我的食物</h2>
+              <button type="button" className="button secondary" onClick={() => {
+                setCustomFoodEdit(null);setSheet("custom");
+              }}><Plus size={16}/> 新增食物</button>
+            </div>
+            {state.foods.length ? state.foods.map(item => (
+              <div className="my-food-row" key={item.id}>
+                <div><strong>{item.name}</strong><small>每 {item.base} {item.unit} · {item.kcal} kcal</small></div>
+                <button type="button" onClick={() => {
+                  setCustomFoodEdit(item);setSheet("custom");
+                }}>編輯</button>
+                <button type="button" onClick={() => {
+                  if(!window.confirm("從我的食物庫移除「" + item.name + "」？歷史飲食紀錄仍然保留。")) return;
+                  if(save("移除自訂食物",draft => {
+                    draft.foods = draft.foods.filter(food => food.id !== item.id);
+                    draft.favoriteFoods = draft.favoriteFoods?.filter(id => id !== item.id);
+                  })) notify("食物已從我的食物庫移除");
+                }}>移除</button>
+              </div>
+            )) : <p className="muted">尚未建立自訂食物。</p>}
+          </section>
           <FoodPicker
             onSelect={(f) => {
               setFood(f);
@@ -777,7 +802,7 @@ export function NutritionV2({
           />
           <button
             className="button secondary"
-            onClick={() => setSheet("custom")}
+            onClick={() => {setCustomFoodEdit(null);setSheet("custom");}}
           >
             <Plus size={16} />
             新增自訂食物
@@ -874,7 +899,7 @@ export function NutritionV2({
                         <details className="meal-entry-menu">
                           <summary aria-label={"管理 " + m.name + " 紀錄"}><Ellipsis size={20} aria-hidden="true"/></summary>
                           <div className="meal-entry-actions">
-                            <button type="button" onClick={() => {setEdit(m);setFood(null);setSheet("manual");}}>編輯／移動餐次</button>
+                            <button type="button" onClick={() => {setEdit(m);setEditAmountText(String(m.quantity));setFood(null);setSheet("manual");}}>編輯／移動餐次</button>
                             <button type="button" onClick={() => {
                               if (!window.confirm("刪除此筆飲食紀錄？其他紀錄不受影響。")) return;
                               if(save("刪除飲食", draft => {
@@ -901,6 +926,7 @@ export function NutritionV2({
               );
             })}
           </section>
+          <Link className="nutrition-manage-link" href="/nutrition/foods">管理我的食物</Link>
           {(state.appearance?.visualStyle === "cinematic" || inlineClose) && (
             <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
               <Plus size={18} /> 新增飲食
@@ -955,7 +981,7 @@ export function NutritionV2({
               manual: edit ? "修正飲食" : "Quick Macro",
               food: "選擇食物",
               portion: food?.name ?? "食用份量",
-              custom: "新增自訂食物",
+              custom: customFoodEdit ? "編輯我的食物" : "新增自訂食物",
             }[sheet]
           }
           onClose={close}
@@ -1009,37 +1035,40 @@ export function NutritionV2({
                 const p = Number(d.get("p")),
                   c = Number(d.get("c")),
                   f = Number(d.get("f"));
-                if (
-                  save("新增自訂食物", (s) =>
-                    s.foods.push({
-                      id: uid(),
-                      name: String(d.get("name")),
-                      nameEn: String(d.get("nameEn")),
-                      category: String(d.get("category")),
-                      base: 100,
-                      unit: "g",
-                      p,
-                      c,
-                      f,
-                      kcal: round(p * 4 + c * 4 + f * 9),
-                      source: "User",
-                      version: 1,
-                    }),
-                  )
-                ) {
+                const input = {
+                  name: String(d.get("name")).trim(),
+                  nameEn: String(d.get("nameEn")).trim(),
+                  category: String(d.get("category")),
+                  base: 100,
+                  unit: "g",
+                  p, c, f, kcal: round(p * 4 + c * 4 + f * 9),
+                  source: "User",
+                };
+                if(!input.name || [p,c,f].some(value => !Number.isFinite(value) || value < 0 || value > 100)) {
+                  notify("請輸入有效的食物名稱與每 100 g 營養素");
+                  return;
+                }
+                if (save(customFoodEdit ? "修改自訂食物" : "新增自訂食物", (draft) => {
+                  if(customFoodEdit) {
+                    draft.foods = draft.foods.map(item => item.id === customFoodEdit.id ?
+                      {...item, ...input, version:item.version + 1} : item);
+                  } else {
+                    draft.foods.push({...input,id:uid(),version:1});
+                  }
+                })) {
                   notify();
                   close();
                 }
               }}
             >
               <Field label="中文名稱">
-                <input name="name" required maxLength={80} />
+                <input name="name" required maxLength={80} defaultValue={customFoodEdit?.name} />
               </Field>
               <Field label="English name（選填）">
-                <input name="nameEn" maxLength={100} />
+                <input name="nameEn" maxLength={100} defaultValue={customFoodEdit?.nameEn} />
               </Field>
               <Field label="分類">
-                <select name="category">
+                <select name="category" defaultValue={customFoodEdit?.category ?? categories[0]}>
                   {categories.map((c) => (
                     <option key={c}>{c}</option>
                   ))}
@@ -1047,11 +1076,11 @@ export function NutritionV2({
               </Field>
               <p>每 100 g</p>
               <div className="form-grid">
-                <Num label="蛋白質 g" name="p" max={100} />
-                <Num label="碳水 g" name="c" max={100} />
-                <Num label="脂肪 g" name="f" max={100} />
+                <Num label="蛋白質 g" name="p" value={customFoodEdit?.p} max={100} />
+                <Num label="碳水 g" name="c" value={customFoodEdit?.c} max={100} />
+                <Num label="脂肪 g" name="f" value={customFoodEdit?.f} max={100} />
               </div>
-              <button className="button">保存食物</button>
+              <button className="button">{customFoodEdit ? "保存修改" : "保存食物"}</button>
             </form>
           ) : (
             <form onSubmit={log}>
@@ -1112,20 +1141,33 @@ export function NutritionV2({
                   </div>}
 
                 </>
+              ) : edit ? (
+                <div className="stack">
+                  <Field label={"食用重量（" + edit.unit + "）"}>
+                    <input type="number" min="0.1" max="10000" step="any"
+                      aria-label="修改食用重量" value={editAmountText}
+                      onChange={event => setEditAmountText(event.target.value)}/>
+                  </Field>
+                  <Field label="食物名稱">
+                    <input name="name" required maxLength={80} defaultValue={edit.name}/>
+                  </Field>
+                  <div className="logger-edit-summary">
+                    <strong>{Number(editAmountText) > 0 ?
+                      round(edit.kcal * Number(editAmountText) / edit.quantity) : "—"} kcal</strong>
+                    <span>蛋白質 {Number(editAmountText) > 0 ? round(edit.p * Number(editAmountText) / edit.quantity) : "—"} g</span>
+                    <span>碳水 {Number(editAmountText) > 0 ? round(edit.c * Number(editAmountText) / edit.quantity) : "—"} g</span>
+                    <span>脂肪 {Number(editAmountText) > 0 ? round(edit.f * Number(editAmountText) / edit.quantity) : "—"} g</span>
+                  </div>
+                </div>
               ) : (
                 <>
                   <Field label="這餐吃了什麼">
-                    <input
-                      name="name"
-                      required
-                      maxLength={80}
-                      defaultValue={edit?.name}
-                    />
+                    <input name="name" required maxLength={80}/>
                   </Field>
                   <div className="form-grid">
-                    <Num label="蛋白質 g" name="p" value={edit?.p} max={1000} />
-                    <Num label="碳水 g" name="c" value={edit?.c} max={1000} />
-                    <Num label="脂肪 g" name="f" value={edit?.f} max={1000} />
+                    <Num label="蛋白質 g" name="p" max={1000} />
+                    <Num label="碳水 g" name="c" max={1000} />
+                    <Num label="脂肪 g" name="f" max={1000} />
                   </div>
                 </>
               )}
