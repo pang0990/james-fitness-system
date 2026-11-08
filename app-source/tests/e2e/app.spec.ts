@@ -24,13 +24,13 @@ test("mobile: water and meal records persist for the account across reload", asy
   await page.goto("/nutrition/");
   await expect(page.getByTestId("nutrition-v3b")).toBeVisible();
   await page.getByRole("button", { name: "加入飲食", exact: true }).click();
-  await expect(page.getByLabel("加入哪一餐")).toBeVisible();
+  await expect(page.getByRole("dialog").locator(".logger-context-button")).toBeVisible();
   await page.getByRole("button", { name: /Quick Macro/ }).click();
   await page.getByRole("textbox", { name: "這餐吃了什麼" }).fill("測試便當");
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("20");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("30");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("10");
-  await page.getByRole("button", { name: "加入 Quick Macro 至清單", exact: true }).click();
+  await page.getByRole("button", { name: "加入待確認清單", exact: true }).click();
   await page.getByRole("button", { name: "確認加入 1 項食物", exact: true }).click();
   await expect(page.getByTestId("nutrition-v3b")).toContainText("290");
   await page.reload();
@@ -95,13 +95,14 @@ test("meal templates can be edited and the new slot persists with a real meal", 
 
   await page.goto("/nutrition/");
   await page.getByRole("button", { name: "加入飲食", exact: true }).click();
+  await page.getByRole("dialog").locator(".logger-context-button").click();
   await page.getByLabel("加入哪一餐").selectOption("午-加餐");
   await page.getByRole("button", { name: /Quick Macro/ }).click();
   await page.getByRole("textbox", { name: "這餐吃了什麼" }).fill("訓練後餐");
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("30");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("0");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("3.5");
-  await page.getByRole("button", { name: "加入 Quick Macro 至清單", exact: true }).click();
+  await page.getByRole("button", { name: "加入待確認清單", exact: true }).click();
   await page.getByRole("button", { name: "確認加入 1 項食物", exact: true }).click();
 
   await expect.poll(() => page.evaluate(key => {
