@@ -143,6 +143,7 @@ test("copy snapshot, remove selection, choose destination, weekly navigation", a
   await page
     .getByRole("button", { name: new RegExp(addDays(today, -1) + " 有紀錄") })
     .click();
+  await page.locator(".meal-section--b2").first().locator(".meal-toggle").click();
   await expect(page.locator(".meal-list")).toContainText("昨日快照");
 });
 test("failed write retains plate, offline retry saves once; escape cannot discard silently", async ({
