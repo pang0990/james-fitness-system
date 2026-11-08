@@ -38,7 +38,7 @@ jobs:
       - run: npm run build
       - name: Verify runner Chrome
         run: google-chrome --version
-      - name: Release smoke tests: Nutrition B2 and existing workflows
+      - name: Release smoke tests for Nutrition B2 and existing workflows
         run: npm run test:e2e -- tests/e2e/nutrition-logger.spec.ts tests/e2e/app.spec.ts tests/e2e/ds3-showcase-nutrition.spec.ts tests/e2e/guest-entry.spec.ts tests/e2e/training-overview.spec.ts tests/e2e/training-v3.spec.ts --workers=1
         env:
           CI: "true"
