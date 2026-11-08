@@ -74,13 +74,16 @@ async function open(page: import("@playwright/test").Page) {
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
 }
-async function addFood(page: import("@playwright/test").Page, name: string) {
-  await page.getByRole("dialog").getByLabel("搜尋食物").fill(name);
-  await page
-    .getByRole("dialog")
-    .locator(".food-list li > button")
-    .first()
-    .click();
+async function addFood(page: import("@playwright/test").Page, name: string, grams = "100") {
+  const dialog = page.getByRole("dialog");
+  const backToSearch = dialog.getByRole("button", {name:/繼續新增/});
+  if (await backToSearch.count()) await backToSearch.click();
+  await dialog.getByLabel("搜尋食物").fill(name);
+  await dialog.locator(".food-list li > button").first().click();
+  await expect(dialog.getByLabel("食用重量")).toBeVisible();
+  await dialog.getByLabel("食用重量").fill(grams);
+  await dialog.getByRole("button", {name:"加入待確認清單"}).click();
+  await expect(dialog.getByRole("heading", {name:/待確認清單/})).toBeVisible();
 }
 async function stored(page: import("@playwright/test").Page) {
   return page.evaluate((key) => JSON.parse(localStorage.getItem(key)!), key);
@@ -89,12 +92,11 @@ test("multi-add, source-unit conversion, saved meal and no duplicate writes", as
   page,
 }) => {
   await open(page);
-  await addFood(page, "驗收米飯");
+  await addFood(page, "驗收米飯", "150");
   await addFood(page, "驗收雞肉");
-  await page.getByLabel("單位 驗收米飯").selectOption("kg");
-  await page.getByLabel("份量 驗收米飯 (kg)").fill("0.15");
   await expect(page.locator(".food-plate-confirm")).toContainText("324 kcal");
-  await page.getByLabel("套餐名稱（選填）").fill("測試套餐");
+  await page.getByText("另存為常吃套餐（選填）").click();
+  await page.getByLabel("套餐名稱").fill("測試套餐");
   await page.getByRole("button", { name: "儲存清單為套餐" }).click();
   const before = await stored(page);
   expect(before.meals).toHaveLength(1);
@@ -122,8 +124,11 @@ test("copy snapshot, remove selection, choose destination, weekly navigation", a
     .first()
     .click();
   await page.getByRole("button", { name: "選取整餐至清單" }).click();
-  await page.getByLabel("份量 昨日快照 (份)").fill("1");
-  await page.getByLabel("加入哪一餐", { exact: true }).selectOption("午餐");
+  await page.getByRole("button", {name:/昨日快照/}).click();
+  await page.getByLabel("食用重量").fill("1");
+  await page.getByRole("button", {name:"更新份量"}).click();
+  await page.getByRole("button", {name:/2026-.*早餐/}).click();
+  await page.getByLabel("加入哪一餐", {exact:true}).selectOption("午餐");
   await page.getByRole("button", { name: "確認加入 1 項食物" }).click();
   const s = await stored(page);
   expect(s.meals[1]).toMatchObject({
@@ -206,3 +211,20 @@ for (const width of [390, 1440])
     await expect(page.getByTestId("nutrition-v3b")).toContainText("290");
     expect(errors).toEqual([]);
   });
+
+test("B2 expands several meals independently, and logger keeps a compact search-first flow", async ({page}) => {
+  const rows = page.locator(".meal-section--b2");
+  await expect(rows).toHaveCount(4);
+  await rows.nth(0).locator(".meal-toggle").click();
+  await rows.nth(1).locator(".meal-toggle").click();
+  await expect(rows.nth(0).locator(".meal-details")).toBeVisible();
+  await expect(rows.nth(1).locator(".meal-details")).toBeVisible();
+  await rows.nth(1).locator(".meal-toggle").click();
+  await expect(rows.nth(0).locator(".meal-details")).toBeVisible();
+  await expect(rows.nth(1).locator(".meal-details")).toHaveCount(0);
+  await open(page);
+  await expect(page.getByRole("dialog").getByLabel("搜尋食物")).toBeVisible();
+  await expect(page.getByRole("dialog").getByText("50 g")).toHaveCount(0);
+  await addFood(page, "驗收米飯", "175");
+  await expect(page.locator(".logger-plate-item")).toContainText("175 g");
+});
