@@ -209,3 +209,19 @@ html[data-visual-style="minimal"] body:has(.app) .sheet--nutrition-logger .logge
 @media(prefers-reduced-motion:reduce) {
   .sheet--nutrition-logger,.food-logger--v2 * {animation:none!important;transition:none!important;}
 }
+
+/* Separate user-owned food management from historical meal actions. */
+.my-food-manager {display:grid;gap:8px;padding:14px;border:1px solid #626262;border-radius:4px;}
+.my-food-manager-header {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;}
+.my-food-manager-header h2 {font-size:17px;font-weight:700;margin:0;}
+.my-food-manager-header .button {min-height:42px;font-size:13px;padding:8px 11px;}
+.my-food-row {display:flex;align-items:center;gap:10px;min-width:0;border-top:1px solid #383838;padding:11px 0;}
+.my-food-row > div {display:grid;gap:4px;min-width:0;flex:1;}
+.my-food-row strong {font-size:14px;overflow-wrap:anywhere;}
+.my-food-row small {font-size:12px;color:#a0a0a0;}
+.my-food-row button {flex:none;min-height:44px;padding:7px 4px;font-size:13px;color:#fff;}
+.my-food-row button:last-child {color:#ffc4c4;}
+.nutrition-manage-link {font-size:13px;text-decoration:underline;text-underline-offset:4px;align-self:flex-start;padding:8px 0;color:#fff;}
+.logger-edit-summary {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid #626262;padding:16px 0;}
+.logger-edit-summary strong {grid-column:1/-1;font-size:28px;}
+.logger-edit-summary span {font-size:12px;color:#d0d0d0;}
