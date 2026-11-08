@@ -236,7 +236,8 @@ test("recorded meal can be resized and removed without rewriting earlier snapsho
   await addFood(page, "驗收雞肉", "100");
   await page.getByRole("button", {name:"確認加入 1 項食物"}).click();
   const breakfast = page.locator(".meal-section--b2").first();
-  await breakfast.locator(".meal-toggle").click();
+  if (await breakfast.locator(".meal-toggle").getAttribute("aria-expanded") === "false")
+    await breakfast.locator(".meal-toggle").click();
   await breakfast.locator(".meal-entry-menu summary").click();
   await breakfast.getByRole("button", {name:"編輯／移動餐次"}).click();
   await page.getByLabel("修改食用重量").fill("150");
