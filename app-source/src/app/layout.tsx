@@ -29,6 +29,8 @@ import "./training-v3.css";
 import "./today-v3.css";
 // The shared navigation owns final chrome geometry after legacy showcase styles.
 import "./app-shell-v3.css";
+// B2 Nutrition owns its responsive meal and logger surfaces after the legacy layers.
+import "./nutrition-ux-b2.css";
 
 export const metadata: Metadata = {
   title: "James · Fitness System",
