@@ -125,7 +125,7 @@ test("copy snapshot, remove selection, choose destination, weekly navigation", a
     .first()
     .click();
   await page.getByRole("button", { name: "選取整餐至清單" }).click();
-  await page.getByRole("button", {name:/昨日快照/}).click();
+  await page.locator(".logger-plate-item-main").first().click();
   await page.getByLabel("食用重量").fill("1");
   await page.getByRole("button", {name:"更新份量"}).click();
   await page.getByRole("button", {name:/2026-.*早餐/}).click();
