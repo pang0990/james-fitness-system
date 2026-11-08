@@ -20,6 +20,26 @@
     "version": 1
   },
   {
+    "id": "usda-172388",
+    "name": "熟去皮雞腿肉（熟重，烤熟參考）",
+    "nameEn": "Cooked chicken thigh, skinless (roasted reference)",
+    "category": "蛋白質",
+    "base": 100,
+    "unit": "g",
+    "p": 24.76,
+    "c": 0,
+    "f": 8.15,
+    "kcal": 179,
+    "source": "USDA",
+    "sourceId": "172388",
+    "sourceUrl": "https://fdc.nal.usda.gov/food-details/172388/nutrients",
+    "sourceDescription": "Chicken, broilers or fryers, thigh, meat only, cooked, roasted",
+    "license": "USDA public domain",
+    "preparation": "cooked",
+    "retrievedAt": "2026-11-08",
+    "version": 1
+  },
+  {
     "id": "usda-168250",
     "name": "豬里肌（瘦肉，烤熟）",
     "nameEn": "Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted",
