@@ -1,0 +1,50 @@
+name: JFS Nutrition UX B2 focused browser QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "app-source/src/components/daily.tsx"
+      - "app-source/src/components/food-logger.tsx"
+      - "app-source/src/app/nutrition-ux-b2.css"
+      - "app-source/tests/e2e/nutrition-logger.spec.ts"
+      - ".github/workflows/jfs-nutrition-ux-b2-qa.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  nutrition:
+    name: Nutrition multi-meal and logger Chromium QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app-source
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app-source/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Prepare screenshots folder
+        run: mkdir -p test-results/nutrition
+      - name: Exercise Nutrition UX at 390px and 1440px
+        run: npm run test:e2e -- tests/e2e/nutrition-logger.spec.ts --workers=1 --timeout=30000 --trace=retain-on-failure
+        env:
+          CI: "true"
+          NUTRITION_QA_DIR: test-results/nutrition
+      - name: Preserve Nutrition screenshots and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nutrition-ux-b2-screenshots-and-traces
+          path: |
+            app-source/test-results/
+            app-source/playwright-report/
+          retention-days: 7
+          if-no-files-found: warn
