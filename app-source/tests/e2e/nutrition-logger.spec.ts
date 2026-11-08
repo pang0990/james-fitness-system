@@ -228,3 +228,29 @@ test("B2 expands several meals independently, and logger keeps a compact search-
   await addFood(page, "驗收米飯", "175");
   await expect(page.locator(".logger-plate-item")).toContainText("175 g");
 });
+
+
+test("recorded meal can be resized and removed without rewriting earlier snapshots", async ({page}) => {
+  await open(page);
+  await addFood(page, "驗收雞肉", "100");
+  await page.getByRole("button", {name:"確認加入 1 項食物"}).click();
+  const breakfast = page.locator(".meal-section--b2").first();
+  await breakfast.locator(".meal-toggle").click();
+  await breakfast.locator(".meal-entry-menu summary").click();
+  await breakfast.getByRole("button", {name:"編輯／移動餐次"}).click();
+  await page.getByLabel("修改食用重量").fill("150");
+  await page.getByRole("button", {name:"保存修正"}).click();
+  const rows = (await stored(page)).meals;
+  expect(rows).toHaveLength(3);
+  expect(rows[1].kcal).toBe(118);
+  expect(rows[2]).toMatchObject({
+    supersedes:rows[1].id,quantity:150,unit:"g",foodId:"qa-chicken",kcal:177,
+  });
+  await breakfast.locator(".meal-entry-menu summary").click();
+  page.once("dialog",dialog=>dialog.accept());
+  await breakfast.getByRole("button", {name:"刪除此筆紀錄"}).click();
+  await expect(breakfast).toContainText("尚未記錄");
+  const after=(await stored(page)).meals;
+  expect(after).toHaveLength(4);
+  expect(after[3]).toMatchObject({supersedes:after[2].id,deleted:true});
+});
