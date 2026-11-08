@@ -119,6 +119,7 @@ test("multi-add, source-unit conversion, saved meal and no duplicate writes", as
 test("copy snapshot, remove selection, choose destination, weekly navigation", async ({
   page,
 }) => {
+  await page.locator(".meal-section--b2").first().locator(".meal-toggle").click();
   await page
     .getByRole("button", { name: /複製餐點至/ })
     .first()
@@ -191,7 +192,7 @@ for (const width of [390, 1440])
       ["脂肪 g", "10"],
     ])
       await page.getByLabel(k, { exact: true }).fill(v);
-    await page.getByRole("button", { name: "加入 Quick Macro 至清單" }).click();
+    await page.getByRole("button", { name: "加入待確認清單" }).click();
     await expect(page.locator(".food-plate-confirm")).toContainText("290 kcal");
     expect(
       await page.evaluate(
