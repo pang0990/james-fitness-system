@@ -89,6 +89,23 @@ export function Sheet({
       prev?.focus();
     };
   }, []);
+  useEffect(() => {
+    if (mode !== "nutrition-logger") return;
+    const viewport = window.visualViewport;
+    const el = ref.current;
+    if (!viewport || !el) return;
+    const fit = () => {
+      el.style.setProperty("--nutrition-viewport-height", viewport.height + "px");
+      el.style.setProperty("--nutrition-viewport-top", viewport.offsetTop + "px");
+    };
+    fit();
+    viewport.addEventListener("resize", fit);
+    viewport.addEventListener("scroll", fit);
+    return () => {
+      viewport.removeEventListener("resize", fit);
+      viewport.removeEventListener("scroll", fit);
+    };
+  }, [mode]);
   return (
     <dialog
       ref={ref}
