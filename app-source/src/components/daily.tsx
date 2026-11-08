@@ -2,6 +2,7 @@
 import { FoodLogger, NutritionWeek } from "./food-logger";
 import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
 import { validateNewMealInput } from "@/lib/nutrition-input";
+import type { MealSnapshot } from "@/lib/food-plate";
 import { GlassCard, GlassButton } from "./ui/glass-system";
 import Link from "next/link";
 import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
@@ -38,11 +39,15 @@ import {
   Heart,
   Search,
   BookOpen,
+  CalendarDays,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import {
   activePlan,
   dateInZone,
+  addDays,
   dayNames,
   mealTotals,
   syncMealCompletion,
@@ -67,10 +72,12 @@ export function Sheet({
   title,
   children,
   onClose,
+  mode = "standard",
 }: {
   title: string;
   children: ReactNode;
   onClose: () => void;
+  mode?: "standard" | "nutrition-logger";
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -85,7 +92,7 @@ export function Sheet({
   return (
     <dialog
       ref={ref}
-      className="sheet"
+      className={mode === "nutrition-logger" ? "sheet sheet--nutrition-logger" : "sheet"}
       onCancel={(e)=>{e.preventDefault();onClose();}}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
@@ -491,18 +498,22 @@ export type LibraryFood = Food & {
 };
 export function FoodPicker({
   onSelect,
+  onRecipeSelect,
   addToPlate = false,
   mine = false,
 }: {
   mine?: boolean;
   addToPlate?: boolean;
   onSelect: (f: LibraryFood) => void;
+  onRecipeSelect?: (recipe: MealSnapshot) => void;
 }) {
   const { state, save } = useStore();
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
   const [source, setSource] = useState("all");
   const [limit, setLimit] = useState(30);
+  const [focused, setFocused] = useState(false);
+  const [resultType, setResultType] = useState<"all" | "food" | "recipe">("all");
   const foods = (
     mine ? state.foods : [...master, ...cooked, ...official, ...state.foods]
   ) as LibraryFood[];
@@ -518,7 +529,8 @@ export function FoodPicker({
     (f) =>
       (source === "all" ||
         (source === "favorites" && state.favoriteFoods?.includes(f.id)) ||
-        (["recent", "frequent"].includes(source) && counts.has(f.id))) &&
+        (["recent", "frequent"].includes(source) && counts.has(f.id)) ||
+        (source === "mine" && f.source === "User")) &&
       (!category || f.category === category) &&
       `${f.name} ${f.nameEn ?? ""}`
         .toLowerCase()
@@ -530,87 +542,88 @@ export function FoodPicker({
     filtered.sort((a, b) =>
       (recent.get(b.id) ?? "").localeCompare(recent.get(a.id) ?? ""),
     );
+  const recipeResults = onRecipeSelect && (focused || search.trim()) ?
+    [...builtInRecipes, ...(state.recipes ?? [])].filter((r) =>
+      r.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()) &&
+      [r.p, r.c, r.f, r.kcal].every((value) => typeof value === "number" && Number.isFinite(value) && value >= 0)
+    ).slice(0, limit) : [];
   return (
-    <div className="food-picker">
-      <Field label="食物清單">
-        <select value={source} onChange={(e) => setSource(e.target.value)}>
-          <option value="all">所有食物</option>
-          <option value="recent">Recent · 最近</option>
-          <option value="favorites">Favorites · 收藏</option>
-          <option value="frequent">Frequent · 常吃</option>
-        </select>
+    <div className="food-picker food-picker--compact">
+      <Field label="搜尋食物">
+        <input
+          type="search"
+          value={search}
+          onFocus={() => setFocused(true)}
+          onChange={(e) => { setSearch(e.target.value); setLimit(30); setFocused(true); }}
+          placeholder={onRecipeSelect ? "搜尋食物或食譜..." : "中文或 English"}
+        />
       </Field>
-      <Field label="食物分類">
-        <select
-          value={category}
-          onChange={(e) => {
-            setCategory(e.target.value);
-            setLimit(30);
-          }}
-        >
-          <option value="">所有分類</option>
-          {categories.map((c) => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
-      </Field>
-      {true && (
+      {(focused || !!search.trim()) && (
         <>
-          <div className="food-filter">
-            <Field label="搜尋食物">
-              <input
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setLimit(30);
-                }}
-                placeholder="中文或 English"
-              />
-            </Field>
+          <div className="food-picker-sources" role="group" aria-label="食物來源">
+            {([["all","全部"],["recent","最近"],["frequent","常吃"],["favorites","收藏"],["mine","我的食物"]] as const).map(([id,label]) => (
+              <button key={id} type="button" className="food-filter-chip" aria-pressed={source === id}
+                onClick={() => { setSource(id); setLimit(30); }}>{label}</button>
+            ))}
           </div>
-          <p className="muted food-count">{filtered.length} 項</p>
+          {onRecipeSelect && <div className="food-picker-types" role="group" aria-label="搜尋類型">
+            {([["all","全部結果"],["food","食物"],["recipe","食譜"]] as const).map(([id,label]) => (
+              <button key={id} type="button" aria-pressed={resultType === id}
+                onClick={() => setResultType(id)}>{label}</button>
+            ))}
+          </div>}
+          <details className="food-picker-categories">
+            <summary>分類篩選{category ? " · " + category : ""} <ChevronDown size={16} aria-hidden="true" /></summary>
+            <Field label="食物分類">
+              <select value={category} onChange={(e) => { setCategory(e.target.value); setLimit(30); }}>
+                <option value="">所有分類</option>
+                {categories.map((c) => <option key={c}>{c}</option>)}
+              </select>
+            </Field>
+          </details>
+        </>
+      )}
+      {resultType !== "recipe" && (
+        <>
+          <p className="muted food-count">{filtered.length} 項食物</p>
           <ul className="food-list">
             {filtered.slice(0, limit).map((f) => (
               <li key={f.id} className="food-with-favorite">
-                <button onClick={() => onSelect(f)}>
-                  <div>
+                <button type="button" onClick={() => onSelect(f)}
+                  aria-label={"選擇 " + f.name} className="food-result-select">
+                  <span className="food-result-text">
                     <strong>{f.name}</strong>
-                    <small lang="en">{f.nameEn}</small>
-                    <span>
-                      {f.base} {f.unit} · {f.kcal} kcal
-                    </span>
-                  </div>
-                  {addToPlate ? <Plus size={18} aria-label="加入清單" /> : <ChevronRight size={18} />}
-                </button>
-                <button
-                  className="favorite-food"
-                  aria-label={`${state.favoriteFoods?.includes(f.id) ? "取消收藏" : "收藏"} ${f.name}`}
-                  aria-pressed={state.favoriteFoods?.includes(f.id) ?? false}
-                  onClick={() =>
-                    save("更新收藏食物", (s) => {
-                      s.favoriteFoods = s.favoriteFoods?.includes(f.id)
-                        ? s.favoriteFoods.filter((id) => id !== f.id)
-                        : [...(s.favoriteFoods ?? []), f.id];
-                    })
-                  }
-                >
-                  {state.favoriteFoods?.includes(f.id) ? "已收藏" : "收藏"}
+                    {f.nameEn && <small lang="en">{f.nameEn}</small>}
+                    <span>{f.base} {f.unit} · {f.kcal} kcal</span>
+                  </span>
+                  {addToPlate ? <Plus size={22} aria-hidden="true" /> : <ChevronRight size={20} aria-hidden="true" />}
                 </button>
               </li>
             ))}
           </ul>
-          {!filtered.length && <p className="empty">找不到符合的食物</p>}
-          {filtered.length > limit && (
-            <button
-              className="button secondary"
-              onClick={() => setLimit(limit + 30)}
-            >
-              顯示更多
-            </button>
-          )}
+          {!filtered.length && <p className="empty">找不到符合的食物，請調整搜尋。</p>}
+          {filtered.length > limit && <button className="button secondary" type="button"
+            onClick={() => setLimit(limit + 30)}>顯示更多</button>}
         </>
       )}
+      {onRecipeSelect && resultType !== "food" && (focused || !!search.trim()) && (
+        <section className="food-search-recipes" aria-label="食譜搜尋結果">
+          <h3>食譜 · {recipeResults.length} 項符合</h3>
+          {recipeResults.map((r) => (
+            <button key={r.id} className="food-result-select" type="button"
+              onClick={() => onRecipeSelect({
+                name:r.name, quantity:1, unit:"份", foodId:r.id,
+                foodVersion:"version" in r ? r.version : 1,
+                p:r.p!, c:r.c!, f:r.f!, kcal:r.kcal!,
+              })}>
+              <span>{r.name}</span><Plus size={20} aria-hidden="true" />
+            </button>
+          ))}
+        </section>
+      )}
     </div>
+  );
+}
   );
 }
 /** A compact native modal for editing a meal name, not the full-height food Sheet. */
