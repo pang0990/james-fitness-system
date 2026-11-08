@@ -866,7 +866,7 @@ export function NutritionV2({
               value={selectedDate} max={date}
               onChange={(e) => { if(e.target.value) {setDate(e.target.value);setExpandedMeals([]);setDatePickerOpen(false);} }}/>}
           </div>
-          <NutritionWeek date={selectedDate} onChange={setDate} />
+          <NutritionWeek date={selectedDate} onChange={next => {setDate(next);setExpandedMeals([]);}} />
           {state.appearance?.visualStyle !== "cinematic" && !inlineClose ? (
             <NutritionDashboardV3 date={selectedDate}
               onAddMeal={() => { setSlot(state.mealSlots[0]); setSheet("add"); }} />
