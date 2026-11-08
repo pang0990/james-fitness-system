@@ -624,8 +624,6 @@ export function FoodPicker({
     </div>
   );
 }
-  );
-}
 /** A compact native modal for editing a meal name, not the full-height food Sheet. */
 function MealNameQuickEdit({
   name,
