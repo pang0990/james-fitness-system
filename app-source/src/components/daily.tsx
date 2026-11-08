@@ -559,7 +559,7 @@ export function FoodPicker({
     filtered.sort((a, b) =>
       (recent.get(b.id) ?? "").localeCompare(recent.get(a.id) ?? ""),
     );
-  const recipeResults = onRecipeSelect && (focused || search.trim()) ?
+  const recipeResults = onRecipeSelect && !!search.trim() ?
     [...builtInRecipes, ...(state.recipes ?? [])].filter((r) =>
       r.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()) &&
       [r.p, r.c, r.f, r.kcal].every((value) => typeof value === "number" && Number.isFinite(value) && value >= 0)
@@ -623,7 +623,7 @@ export function FoodPicker({
             onClick={() => setLimit(limit + 30)}>顯示更多</button>}
         </>
       )}
-      {onRecipeSelect && resultType !== "food" && (focused || !!search.trim()) && (
+      {onRecipeSelect && resultType !== "food" && !!search.trim() && (
         <section className="food-search-recipes" aria-label="食譜搜尋結果">
           <h3>食譜 · {recipeResults.length} 項符合</h3>
           {recipeResults.map((r) => (
