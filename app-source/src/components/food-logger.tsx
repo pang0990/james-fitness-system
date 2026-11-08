@@ -14,7 +14,6 @@ import {
   foodSnapshot,
   mealSnapshot,
   portion,
-  suggestedFoodIds,
   type PlateItem,
   type MealSnapshot,
 } from "@/lib/food-plate";
@@ -160,9 +159,6 @@ export function FoodLogger({
     navigate("plate");
   }
   const library = [...master, ...cooked, ...official, ...state.foods] as Food[];
-  const suggested = suggestedFoodIds(state, slot)
-    .map(id => library.find(f => f.id === id))
-    .filter((f): f is Food => !!f).slice(0, 6);
   const copyItems = /^\d{4}-\d{2}-\d{2}$/.test(sourceDate)
     ? visibleMeals(state, sourceDate).filter(m => m.slot === sourceSlot) : [];
   const availableSlots = Array.from(new Set([
@@ -295,13 +291,6 @@ export function FoodLogger({
                 onSelect={food => openPortion(foodSnapshot(food as Food))}
                 onRecipeSelect={snapshot => openPortion(snapshot)}
               />
-              {!!suggested.length && <details className="logger-suggestions">
-                <summary>{slot}常用食物</summary>
-                <div className="logger-suggestions-items">
-                  {suggested.map(food => <button className="button secondary" type="button" key={food.id}
-                    onClick={() => openPortion(foodSnapshot(food))}>{food.name}</button>)}
-                </div>
-              </details>}
             </div>
             {tab === "quick" && <form className="stack" onSubmit={e => {
               e.preventDefault();
