@@ -277,8 +277,8 @@ export function FoodLogger({
                 }}>儲存清單為套餐</button>
             </details>}
           </section>
-        ) : (
-          <>
+        ) : null}
+        <div hidden={view !== "search"}>
             <nav className="logger-tabs" aria-label="記錄方式">
               {([
                 ["food","搜尋食物"],["quick","Quick Macro"],["copy","複製餐點"],["saved","常吃套餐"],
@@ -341,8 +341,7 @@ export function FoodLogger({
               </div>)}
               {!state.savedMeals?.length && <p>尚無套餐；請先記錄食物再儲存。</p>}
             </div>}
-          </>
-        )}
+        </div>
         {message && <p className="logger-message" role="status">{message}</p>}
         {error && <p className="logger-validation" role="alert">{error}</p>}
       </div>
