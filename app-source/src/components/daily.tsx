@@ -2,6 +2,7 @@
 import { FoodLogger, NutritionWeek } from "./food-logger";
 import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
 import { validateNewMealInput } from "@/lib/nutrition-input";
+import type { MealSnapshot } from "@/lib/food-plate";
 import { GlassCard, GlassButton } from "./ui/glass-system";
 import Link from "next/link";
 import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
@@ -38,11 +39,15 @@ import {
   Heart,
   Search,
   BookOpen,
+  CalendarDays,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import {
   activePlan,
   dateInZone,
+  addDays,
   dayNames,
   mealTotals,
   syncMealCompletion,
@@ -67,10 +72,12 @@ export function Sheet({
   title,
   children,
   onClose,
+  mode = "standard",
 }: {
   title: string;
   children: ReactNode;
   onClose: () => void;
+  mode?: "standard" | "nutrition-logger";
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -82,10 +89,27 @@ export function Sheet({
       prev?.focus();
     };
   }, []);
+  useEffect(() => {
+    if (mode !== "nutrition-logger") return;
+    const viewport = window.visualViewport;
+    const el = ref.current;
+    if (!viewport || !el) return;
+    const fit = () => {
+      el.style.setProperty("--nutrition-viewport-height", viewport.height + "px");
+      el.style.setProperty("--nutrition-viewport-top", viewport.offsetTop + "px");
+    };
+    fit();
+    viewport.addEventListener("resize", fit);
+    viewport.addEventListener("scroll", fit);
+    return () => {
+      viewport.removeEventListener("resize", fit);
+      viewport.removeEventListener("scroll", fit);
+    };
+  }, [mode]);
   return (
     <dialog
       ref={ref}
-      className="sheet"
+      className={mode === "nutrition-logger" ? "sheet sheet--nutrition-logger" : "sheet"}
       onCancel={(e)=>{e.preventDefault();onClose();}}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
@@ -491,18 +515,22 @@ export type LibraryFood = Food & {
 };
 export function FoodPicker({
   onSelect,
+  onRecipeSelect,
   addToPlate = false,
   mine = false,
 }: {
   mine?: boolean;
   addToPlate?: boolean;
   onSelect: (f: LibraryFood) => void;
+  onRecipeSelect?: (recipe: MealSnapshot) => void;
 }) {
   const { state, save } = useStore();
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
   const [source, setSource] = useState("all");
   const [limit, setLimit] = useState(30);
+  const [focused, setFocused] = useState(false);
+  const [resultType, setResultType] = useState<"all" | "food" | "recipe">("all");
   const foods = (
     mine ? state.foods : [...master, ...cooked, ...official, ...state.foods]
   ) as LibraryFood[];
@@ -518,7 +546,8 @@ export function FoodPicker({
     (f) =>
       (source === "all" ||
         (source === "favorites" && state.favoriteFoods?.includes(f.id)) ||
-        (["recent", "frequent"].includes(source) && counts.has(f.id))) &&
+        (["recent", "frequent"].includes(source) && counts.has(f.id)) ||
+        (source === "mine" && f.source === "User")) &&
       (!category || f.category === category) &&
       `${f.name} ${f.nameEn ?? ""}`
         .toLowerCase()
@@ -530,85 +559,84 @@ export function FoodPicker({
     filtered.sort((a, b) =>
       (recent.get(b.id) ?? "").localeCompare(recent.get(a.id) ?? ""),
     );
+  const recipeResults = onRecipeSelect && !!search.trim() ?
+    [...builtInRecipes, ...(state.recipes ?? [])].filter((r) =>
+      r.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()) &&
+      [r.p, r.c, r.f, r.kcal].every((value) => typeof value === "number" && Number.isFinite(value) && value >= 0)
+    ).slice(0, limit) : [];
   return (
-    <div className="food-picker">
-      <Field label="食物清單">
-        <select value={source} onChange={(e) => setSource(e.target.value)}>
-          <option value="all">所有食物</option>
-          <option value="recent">Recent · 最近</option>
-          <option value="favorites">Favorites · 收藏</option>
-          <option value="frequent">Frequent · 常吃</option>
-        </select>
+    <div className="food-picker food-picker--compact">
+      <Field label="搜尋食物">
+        <input
+          type="search"
+          value={search}
+          onFocus={() => setFocused(true)}
+          onChange={(e) => { setSearch(e.target.value); setLimit(30); setFocused(true); }}
+          placeholder={onRecipeSelect ? "搜尋食物或食譜..." : "中文或 English"}
+        />
       </Field>
-      <Field label="食物分類">
-        <select
-          value={category}
-          onChange={(e) => {
-            setCategory(e.target.value);
-            setLimit(30);
-          }}
-        >
-          <option value="">所有分類</option>
-          {categories.map((c) => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
-      </Field>
-      {true && (
+      {(focused || !!search.trim()) && (
         <>
-          <div className="food-filter">
-            <Field label="搜尋食物">
-              <input
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setLimit(30);
-                }}
-                placeholder="中文或 English"
-              />
-            </Field>
+          <div className="food-picker-sources" role="group" aria-label="食物來源">
+            {([["all","全部"],["recent","最近"],["frequent","常吃"],["favorites","收藏"],["mine","我的食物"]] as const).map(([id,label]) => (
+              <button key={id} type="button" className="food-filter-chip" aria-pressed={source === id}
+                onClick={() => { setSource(id); setLimit(30); }}>{label}</button>
+            ))}
           </div>
-          <p className="muted food-count">{filtered.length} 項</p>
+          {onRecipeSelect && <div className="food-picker-types" role="group" aria-label="搜尋類型">
+            {([["all","全部結果"],["food","食物"],["recipe","食譜"]] as const).map(([id,label]) => (
+              <button key={id} type="button" aria-pressed={resultType === id}
+                onClick={() => setResultType(id)}>{label}</button>
+            ))}
+          </div>}
+          <details className="food-picker-categories">
+            <summary>分類篩選{category ? " · " + category : ""} <ChevronDown size={16} aria-hidden="true" /></summary>
+            <Field label="食物分類">
+              <select value={category} onChange={(e) => { setCategory(e.target.value); setLimit(30); }}>
+                <option value="">所有分類</option>
+                {categories.map((c) => <option key={c}>{c}</option>)}
+              </select>
+            </Field>
+          </details>
+        </>
+      )}
+      {resultType !== "recipe" && (
+        <>
+          <p className="muted food-count">{filtered.length} 項食物</p>
           <ul className="food-list">
             {filtered.slice(0, limit).map((f) => (
               <li key={f.id} className="food-with-favorite">
-                <button onClick={() => onSelect(f)}>
-                  <div>
+                <button type="button" onClick={() => onSelect(f)}
+                  aria-label={"選擇 " + f.name} className="food-result-select">
+                  <span className="food-result-text">
                     <strong>{f.name}</strong>
-                    <small lang="en">{f.nameEn}</small>
-                    <span>
-                      {f.base} {f.unit} · {f.kcal} kcal
-                    </span>
-                  </div>
-                  {addToPlate ? <Plus size={18} aria-label="加入清單" /> : <ChevronRight size={18} />}
-                </button>
-                <button
-                  className="favorite-food"
-                  aria-label={`${state.favoriteFoods?.includes(f.id) ? "取消收藏" : "收藏"} ${f.name}`}
-                  aria-pressed={state.favoriteFoods?.includes(f.id) ?? false}
-                  onClick={() =>
-                    save("更新收藏食物", (s) => {
-                      s.favoriteFoods = s.favoriteFoods?.includes(f.id)
-                        ? s.favoriteFoods.filter((id) => id !== f.id)
-                        : [...(s.favoriteFoods ?? []), f.id];
-                    })
-                  }
-                >
-                  {state.favoriteFoods?.includes(f.id) ? "已收藏" : "收藏"}
+                    {f.nameEn && <small lang="en">{f.nameEn}</small>}
+                    <span>{f.base} {f.unit} · {f.kcal} kcal</span>
+                  </span>
+                  {addToPlate ? <Plus size={22} aria-hidden="true" /> : <ChevronRight size={20} aria-hidden="true" />}
                 </button>
               </li>
             ))}
           </ul>
-          {!filtered.length && <p className="empty">找不到符合的食物</p>}
-          {filtered.length > limit && (
-            <button
-              className="button secondary"
-              onClick={() => setLimit(limit + 30)}
-            >
-              顯示更多
-            </button>
-          )}
+          {!filtered.length && <p className="empty">找不到符合的食物，請調整搜尋。</p>}
+          {filtered.length > limit && <button className="button secondary" type="button"
+            onClick={() => setLimit(limit + 30)}>顯示更多</button>}
         </>
+      )}
+      {onRecipeSelect && resultType !== "food" && !!search.trim() && (
+        <section className="food-search-recipes" aria-label="食譜搜尋結果">
+          <h3>食譜 · {recipeResults.length} 項符合</h3>
+          {recipeResults.map((r) => (
+            <button key={r.id} className="food-result-select" type="button"
+              onClick={() => onRecipeSelect({
+                name:r.name, quantity:1, unit:"份", foodId:r.id,
+                foodVersion:"version" in r ? r.version : 1,
+                p:r.p!, c:r.c!, f:r.f!, kcal:r.kcal!,
+              })}>
+              <span>{r.name}</span><Plus size={20} aria-hidden="true" />
+            </button>
+          ))}
+        </section>
       )}
     </div>
   );
@@ -667,6 +695,10 @@ export function NutritionV2({
 }) {
   const { state, save } = useStore();
   const [selectedDate, setDate] = useState(date);
+  const [expandedMeals, setExpandedMeals] = useState<string[]>([]);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [customFoodEdit, setCustomFoodEdit] = useState<Food | null>(null);
+  const [editAmountText, setEditAmountText] = useState("");
   const [loggerDirty,setLoggerDirty] = useState(false);
   const [loggerTab,setLoggerTab] = useState("food");
   const [sheet, setSheet] = useState<
@@ -697,24 +729,26 @@ export function NutritionV2({
     setSheet(null);
     setEdit(null);
     setFood(null);
+    setCustomFoodEdit(null);
     setMealError("");
   }
   function log(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setMealError("");
     const d = new FormData(e.currentTarget);
-    const factor = food ? quantity / food.base : 1;
-    const p = round(food ? food.p * factor : Number(d.get("p")));
-    const c = round(food ? food.c * factor : Number(d.get("c")));
-    const f = round(food ? food.f * factor : Number(d.get("f")));
+    const editQuantity = edit ? Number(editAmountText) : 1;
+    const factor = food ? quantity / food.base : edit && edit.quantity > 0 ? editQuantity / edit.quantity : 1;
+    const p = round(food ? food.p * factor : edit ? edit.p * factor : Number(d.get("p")));
+    const c = round(food ? food.c * factor : edit ? edit.c * factor : Number(d.get("c")));
+    const f = round(food ? food.f * factor : edit ? edit.f * factor : Number(d.get("f")));
     let meal;
     try {
       meal = validateNewMealInput({
         name: food?.name ?? String(d.get("name") ?? ""),
         slot: String(d.get("slot") ?? ""),
-        quantity: food ? quantity : 1,
+        quantity: food ? quantity : edit ? editQuantity : 1,
         p, c, f,
-        kcal: round(food ? food.kcal * factor : p * 4 + c * 4 + f * 9),
+        kcal: round(food ? food.kcal * factor : edit ? edit.kcal * factor : p * 4 + c * 4 + f * 9),
       });
     } catch (error) {
       setMealError(error instanceof Error ? error.message : "飲食數值無效");
@@ -726,9 +760,9 @@ export function NutritionV2({
         id: uid(),
         date: selectedDate,
         ...meal,
-        unit: food?.unit ?? "份",
-        foodId: food?.id,
-        foodVersion: food?.version,
+        unit: food?.unit ?? edit?.unit ?? "份",
+        foodId: food?.id ?? edit?.foodId,
+        foodVersion: food?.version ?? edit?.foodVersion,
         createdAt: stamp(),
         ...(edit ? { supersedes: edit.id } : {}),
       });
@@ -753,6 +787,29 @@ export function NutritionV2({
       </PageTitle>
       {isLibrary ? (
         <>
+          <section className="my-food-manager" aria-label="我的食物管理">
+            <div className="my-food-manager-header">
+              <h2>我的食物</h2>
+              <button type="button" className="button secondary" onClick={() => {
+                setCustomFoodEdit(null);setSheet("custom");
+              }}><Plus size={16}/> 新增食物</button>
+            </div>
+            {state.foods.length ? state.foods.map(item => (
+              <div className="my-food-row" key={item.id}>
+                <div><strong>{item.name}</strong><small>每 {item.base} {item.unit} · {item.kcal} kcal</small></div>
+                <button type="button" onClick={() => {
+                  setCustomFoodEdit(item);setSheet("custom");
+                }}>編輯</button>
+                <button type="button" onClick={() => {
+                  if(!window.confirm("從我的食物庫移除「" + item.name + "」？歷史飲食紀錄仍然保留。")) return;
+                  if(save("移除自訂食物",draft => {
+                    draft.foods = draft.foods.filter(food => food.id !== item.id);
+                    draft.favoriteFoods = draft.favoriteFoods?.filter(id => id !== item.id);
+                  })) notify("食物已從我的食物庫移除");
+                }}>移除</button>
+              </div>
+            )) : <p className="muted">尚未建立自訂食物。</p>}
+          </section>
           <FoodPicker
             onSelect={(f) => {
               setFood(f);
@@ -762,7 +819,7 @@ export function NutritionV2({
           />
           <button
             className="button secondary"
-            onClick={() => setSheet("custom")}
+            onClick={() => {setCustomFoodEdit(null);setSheet("custom");}}
           >
             <Plus size={16} />
             新增自訂食物
@@ -785,41 +842,31 @@ export function NutritionV2({
         </>
       ) : (
         <>
-          <div className="date-type">
-            <input
-              aria-label="紀錄日期"
-              type="date"
-              value={selectedDate}
-              max={date}
+          <div className="nutrition-datebar" aria-label="紀錄日期與日型">
+            <div className="nutrition-datebar-controls">
+              <button type="button" className="nutrition-date-arrow" aria-label="前一天"
+                onClick={() => { setDate(addDays(selectedDate, -1)); setExpandedMeals([]); }}>‹</button>
+              <button type="button" className="nutrition-date-open"
+                aria-expanded={datePickerOpen} aria-label="選擇紀錄日期"
+                onClick={() => setDatePickerOpen(v => !v)}>
+                <CalendarDays size={18} aria-hidden="true" />
+                {new Intl.DateTimeFormat("zh-TW", { month:"long", day:"numeric", weekday:"short" }).format(new Date(selectedDate + "T12:00:00"))}
+              </button>
+              <button type="button" className="nutrition-date-arrow" aria-label="後一天"
+                disabled={selectedDate >= date}
+                onClick={() => { setDate(addDays(selectedDate, 1)); setExpandedMeals([]); }}>›</button>
+            </div>
+            <select aria-label="日型" className="nutrition-daytype" value={day.dayType}
               onChange={(e) => {
-                if (e.target.value) setDate(e.target.value);
-              }}
-            />
-            <select
-              aria-label="日型"
-              value={day.dayType}
-              onChange={(e) => {
-                if (
-                  save("設定日型", (s) =>
-                    setDayType(s, selectedDate, e.target.value as DayType),
-                  )
-                )
-                  notify();
-              }}
-            >
-              {Object.entries(dayNames).map(([k, n]) => (
-                <option key={k} value={k}>
-                  {n}
-                </option>
-              ))}
+                if(save("設定日型", (draft) => setDayType(draft, selectedDate, e.target.value as DayType))) notify();
+              }}>
+              {Object.entries(dayNames).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
             </select>
+            {datePickerOpen && <input className="nutrition-date-picker" aria-label="跳至日期" type="date"
+              value={selectedDate} max={date}
+              onChange={(e) => { if(e.target.value) {setDate(e.target.value);setExpandedMeals([]);setDatePickerOpen(false);} }}/>}
           </div>
-          <NutritionWeek date={selectedDate} onChange={setDate} />
-          <nav className="nutrition-v3-tabs" aria-label="營養頁面區塊">
-            <a href="#nutrition-calories" className="active">Calories</a>
-            <a href="#nutrition-meals">Meals</a>
-            <Link href="/nutrition/recipes">Recipes</Link>
-          </nav>
+          <NutritionWeek date={selectedDate} onChange={next => {setDate(next);setExpandedMeals([]);}} />
           {state.appearance?.visualStyle !== "cinematic" && !inlineClose ? (
             <NutritionDashboardV3 date={selectedDate}
               onAddMeal={() => { setSlot(state.mealSlots[0]); setSheet("add"); }} />
@@ -828,109 +875,80 @@ export function NutritionV2({
               <NutritionSummary date={selectedDate} variant="full" />
             </section>
           )}
-          <div className="nutrition-v3-meal-icons" aria-label="快速選擇餐次">
-            {state.mealSlots.slice(0,4).map((name,index)=><GlassButton type="button" kind="secondary" className="nutrition-v3-meal-shortcut" key={name}
-              onClick={()=>{setSlot(name);setSheet("add");}}>
-              <span aria-hidden="true">{index===0?<Coffee size={20} strokeWidth={1.4}/>:
-                index===1?<Utensils size={20} strokeWidth={1.4}/>:
-                index===2?<Soup size={20} strokeWidth={1.4}/>:<Cookie size={20} strokeWidth={1.4}/>}</span>
-              <strong>{name}</strong>
-            </GlassButton>)}
-          </div>
-
-          <section className="meal-list" id="nutrition-meals">
-            {Array.from(
-              new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map((m) => m.slot)]),
-            ).map((name) => (
-              <GlassCard key={name} className="meal-section" aria-label={`${name}飲食紀錄`}>
-                <div className="meal-head">
-                  <h2>{state.mealSlots.includes(name) ? (
-                    <button type="button" className="meal-name-edit" title="點擊修改餐次名稱" aria-label={`修改餐次名稱：${name}`}
-                      onClick={() => {setRenameSlot(name);setSheet("rename");}}>{name}</button>
-                  ) : name}</h2>
-                  <div className="cinematic-meal-actions">
-                    <button type="button" className="text-link" aria-label={`複製餐點至${name}`}
-                      onClick={()=>{setSlot(name);setLoggerTab("copy");setSheet("add");}}>複製餐點</button>
-                    <button
-                      type="button"
-                      className="icon-button"
-                      aria-label={`新增食物至${name}`}
-                      onClick={() => { setSlot(name); setSheet("add"); }}
-                    >
-                      <Plus size={20} />
+          <section className="meal-list meal-list--b2" id="nutrition-meals">
+            <div className="meal-list-toolbar">
+              <h2>每日餐次</h2>
+              <button type="button" className="text-link"
+                onClick={() => setExpandedMeals(expandedMeals.length ===
+                  new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map(m => m.slot)]).size ?
+                  [] : Array.from(new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map(m => m.slot)])))}>
+                {expandedMeals.length === new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map(m => m.slot)]).size ? "全部收合" : "全部展開"}
+              </button>
+            </div>
+            {Array.from(new Set([...(state.mealSlotSnapshots?.[selectedDate] ?? state.mealSlots), ...meals.map(m => m.slot)])).map((name) => {
+              const entries = meals.filter(m => m.slot === name);
+              const expanded = expandedMeals.includes(name);
+              const kcal = round(entries.reduce((sum,m) => sum + m.kcal, 0));
+              return (
+                <section key={name} className="meal-section meal-section--b2" aria-label={name + "飲食紀錄"}>
+                  <div className="meal-head meal-head--b2">
+                    <button type="button" className="meal-toggle" aria-expanded={expanded}
+                      aria-controls={"meal-details-" + selectedDate + "-" + encodeURIComponent(name)}
+                      onClick={() => setExpandedMeals(old => old.includes(name) ? old.filter(n => n !== name) : [...old, name])}>
+                      <span className="meal-heading-text"><strong>{name}</strong>
+                        <small>{entries.length ? entries.length + " 項食物 · " + kcal + " kcal" : "尚無紀錄"}</small>
+                      </span>
+                      {expanded ? <ChevronUp size={20} aria-hidden="true"/> : <ChevronDown size={20} aria-hidden="true"/>}
+                    </button>
+                    <button className="meal-add-button" type="button" aria-label={"新增食物至" + name}
+                      onClick={() => {setSlot(name);setLoggerTab("food");setSheet("add");}}>
+                      <Plus size={21} aria-hidden="true" />
                     </button>
                   </div>
-                </div>
-                {meals.filter((m) => m.slot === name).length ? (
-                  meals
-                    .filter((m) => m.slot === name)
-                    .map((m) => (
-                      <div className="meal-entry" key={m.id}>
-                        <span className="nutrition-v3-food-thumb" aria-hidden="true"><Utensils size={20} strokeWidth={1.25}/></span>
-                        <div>
-                          <h3>{m.name}</h3>
-                          <p>
-                            {m.quantity} {m.unit} · {m.kcal} kcal
-                          </p>
-                          <small>
-                            P {m.p} C {m.c} F {m.f}
-                          </small>
+                  {expanded && <div id={"meal-details-" + selectedDate + "-" + encodeURIComponent(name)}
+                    className="meal-details">
+                    {entries.length ? entries.map(m => (
+                      <div className="meal-entry meal-entry--b2" key={m.id}>
+                        <div className="meal-entry-information">
+                          <strong>{m.name}</strong>
+                          <span>{m.quantity} {m.unit} · {m.kcal} kcal</span>
                         </div>
-                        <button
-                          className="text-link"
-                          onClick={() => {
-                            setEdit(m);
-                            setFood(null);
-                            setSheet("manual");
-                          }}
-                        >
-                          修正
-                        </button>
+                        <details className="meal-entry-menu">
+                          <summary aria-label={"管理 " + m.name + " 紀錄"}><Ellipsis size={20} aria-hidden="true"/></summary>
+                          <div className="meal-entry-actions">
+                            <button type="button" onClick={() => {setEdit(m);setEditAmountText(String(m.quantity));setFood(null);setSheet("manual");}}>編輯／移動餐次</button>
+                            <button type="button" onClick={() => {
+                              if (!window.confirm("刪除此筆飲食紀錄？其他紀錄不受影響。")) return;
+                              if(save("刪除飲食", draft => {
+                                draft.meals.push({...m,id:uid(),supersedes:m.id,deleted:true,createdAt:stamp()});
+                                syncMealCompletion(draft,selectedDate);
+                              })) notify("飲食紀錄已刪除");
+                            }}>刪除此筆紀錄</button>
+                          </div>
+                        </details>
                       </div>
-                    ))
-                ) : (
-                  <div className="meal-empty"><span className="muted">尚無紀錄</span></div>
-                )}
-              </GlassCard>
-            ))}
+                    )) : <p className="meal-empty">這一餐尚未記錄食物</p>}
+                    <div className="meal-details-actions">
+                      <button type="button" className="button secondary"
+                        onClick={()=>{setSlot(name);setLoggerTab("food");setSheet("add");}}>
+                        <Plus size={16}/> 新增食物
+                      </button>
+                      <button type="button" className="button secondary" aria-label={"複製餐點至" + name}
+                        onClick={()=>{setSlot(name);setLoggerTab("copy");setSheet("add");}}>複製餐點</button>
+                      {state.mealSlots.includes(name) && <button type="button" className="text-link"
+                        onClick={()=>{setRenameSlot(name);setSheet("rename");}}>修改餐次名稱</button>}
+                    </div>
+                  </div>}
+                </section>
+              );
+            })}
           </section>
+          <Link className="nutrition-manage-link" href="/nutrition/foods">管理我的食物</Link>
           {(state.appearance?.visualStyle === "cinematic" || inlineClose) && (
             <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
               <Plus size={18} /> 新增飲食
             </button>
           )}
-          <section className="nutrition-cookbook-section" aria-labelledby="nutrition-cookbook-heading">
-            <div className="nutrition-cookbook-section-title">
-              <span>DISCOVER</span>
-              <small>EXPLORE YOUR RECIPES</small>
-            </div>
-            <Link className="nutrition-cookbook-card" href="/nutrition/recipes" aria-label={`開啟我的食譜菜單，共 ${builtInRecipes.length} 道內建食譜`}>
-              <span className="cookbook-card-illumination" aria-hidden="true" />
-              <span className="cookbook-card-art" aria-hidden="true">
-                <span className="cookbook-card-halo" />
-                <span className="cookbook-card-plate"><span className="cookbook-card-food" /></span>
-              </span>
-              <span className="cookbook-card-topline">
-                <span className="cookbook-card-overline">JFS · PERSONAL COOKBOOK</span>
-                <BookOpen size={19} strokeWidth={1.35} aria-hidden="true" />
-              </span>
-              <span className="cookbook-card-content">
-                <strong id="nutrition-cookbook-heading">我的食譜菜單</strong>
-                <span className="cookbook-card-english">MY RECIPES</span>
-                <span className="cookbook-card-description">從收藏靈感到每日餐桌，挑選適合今天的料理。</span>
-              </span>
-              <span className="cookbook-card-bottom">
-                <span className="cookbook-card-count"><b>{builtInRecipes.length}</b> 道內建食譜</span>
-                <span className="cookbook-card-cta">探索食譜 <ArrowRight size={17} strokeWidth={1.6} /></span>
-              </span>
-            </Link>
-            <nav className="nutrition-cookbook-categories" aria-label="依食譜類型探索">
-              <Link href="/nutrition/recipes?category=Breakfast"><span>早餐</span><b>{builtInRecipes.filter(r=>r.category==="Breakfast").length}</b><ChevronRight size={13}/></Link>
-              <Link href="/nutrition/recipes?category=Main%20Meals"><span>正餐</span><b>{builtInRecipes.filter(r=>r.category==="Main Meals").length}</b><ChevronRight size={13}/></Link>
-              <Link href="/nutrition/recipes?category=Snacks"><span>點心</span><b>{builtInRecipes.filter(r=>r.category==="Snacks").length}</b><ChevronRight size={13}/></Link>
-            </nav>
-          </section>
-
         </>
       )}
       {sheet === "rename" && (
@@ -980,10 +998,11 @@ export function NutritionV2({
               manual: edit ? "修正飲食" : "Quick Macro",
               food: "選擇食物",
               portion: food?.name ?? "食用份量",
-              custom: "新增自訂食物",
+              custom: customFoodEdit ? "編輯我的食物" : "新增自訂食物",
             }[sheet]
           }
           onClose={close}
+          mode={sheet === "add" ? "nutrition-logger" : "standard"}
         >
           {sheet === "meal" ? (
             <div className="action-list">
@@ -1002,7 +1021,7 @@ export function NutritionV2({
             </div>
           ) : sheet === "add" ? (
             <FoodLogger date={selectedDate} slot={slot} onSlot={setSlot} initialTab={loggerTab}
-              onDirty={setLoggerDirty} onDone={()=>{setLoggerDirty(false);setLoggerTab("food");setSheet(null);inlineClose?.();notify("已加入飲食紀錄");}} />
+              onDirty={setLoggerDirty} onDone={()=>{setLoggerDirty(false);setLoggerTab("food");setSheet(null);setExpandedMeals(old=>old.includes(slot)?old:[...old,slot]);inlineClose?.();notify("已加入飲食紀錄");}} />
           ) : sheet === "food" || sheet === "myfood" ? (
             <>
               <button className="text-link" onClick={() => setSheet("add")}>
@@ -1033,37 +1052,40 @@ export function NutritionV2({
                 const p = Number(d.get("p")),
                   c = Number(d.get("c")),
                   f = Number(d.get("f"));
-                if (
-                  save("新增自訂食物", (s) =>
-                    s.foods.push({
-                      id: uid(),
-                      name: String(d.get("name")),
-                      nameEn: String(d.get("nameEn")),
-                      category: String(d.get("category")),
-                      base: 100,
-                      unit: "g",
-                      p,
-                      c,
-                      f,
-                      kcal: round(p * 4 + c * 4 + f * 9),
-                      source: "User",
-                      version: 1,
-                    }),
-                  )
-                ) {
+                const input = {
+                  name: String(d.get("name")).trim(),
+                  nameEn: String(d.get("nameEn")).trim(),
+                  category: String(d.get("category")),
+                  base: 100,
+                  unit: "g",
+                  p, c, f, kcal: round(p * 4 + c * 4 + f * 9),
+                  source: "User",
+                };
+                if(!input.name || [p,c,f].some(value => !Number.isFinite(value) || value < 0 || value > 100)) {
+                  notify("請輸入有效的食物名稱與每 100 g 營養素");
+                  return;
+                }
+                if (save(customFoodEdit ? "修改自訂食物" : "新增自訂食物", (draft) => {
+                  if(customFoodEdit) {
+                    draft.foods = draft.foods.map(item => item.id === customFoodEdit.id ?
+                      {...item, ...input, version:item.version + 1} : item);
+                  } else {
+                    draft.foods.push({...input,id:uid(),version:1});
+                  }
+                })) {
                   notify();
                   close();
                 }
               }}
             >
               <Field label="中文名稱">
-                <input name="name" required maxLength={80} />
+                <input name="name" required maxLength={80} defaultValue={customFoodEdit?.name} />
               </Field>
               <Field label="English name（選填）">
-                <input name="nameEn" maxLength={100} />
+                <input name="nameEn" maxLength={100} defaultValue={customFoodEdit?.nameEn} />
               </Field>
               <Field label="分類">
-                <select name="category">
+                <select name="category" defaultValue={customFoodEdit?.category ?? categories[0]}>
                   {categories.map((c) => (
                     <option key={c}>{c}</option>
                   ))}
@@ -1071,11 +1093,11 @@ export function NutritionV2({
               </Field>
               <p>每 100 g</p>
               <div className="form-grid">
-                <Num label="蛋白質 g" name="p" max={100} />
-                <Num label="碳水 g" name="c" max={100} />
-                <Num label="脂肪 g" name="f" max={100} />
+                <Num label="蛋白質 g" name="p" value={customFoodEdit?.p} max={100} />
+                <Num label="碳水 g" name="c" value={customFoodEdit?.c} max={100} />
+                <Num label="脂肪 g" name="f" value={customFoodEdit?.f} max={100} />
               </div>
-              <button className="button">保存食物</button>
+              <button className="button">{customFoodEdit ? "保存修改" : "保存食物"}</button>
             </form>
           ) : (
             <form onSubmit={log}>
@@ -1136,20 +1158,33 @@ export function NutritionV2({
                   </div>}
 
                 </>
+              ) : edit ? (
+                <div className="stack">
+                  <Field label={"食用重量（" + edit.unit + "）"}>
+                    <input type="number" min="0.1" max="10000" step="any"
+                      aria-label="修改食用重量" value={editAmountText}
+                      onChange={event => setEditAmountText(event.target.value)}/>
+                  </Field>
+                  <Field label="食物名稱">
+                    <input name="name" required maxLength={80} defaultValue={edit.name}/>
+                  </Field>
+                  <div className="logger-edit-summary">
+                    <strong>{Number(editAmountText) > 0 ?
+                      round(edit.kcal * Number(editAmountText) / edit.quantity) : "—"} kcal</strong>
+                    <span>蛋白質 {Number(editAmountText) > 0 ? round(edit.p * Number(editAmountText) / edit.quantity) : "—"} g</span>
+                    <span>碳水 {Number(editAmountText) > 0 ? round(edit.c * Number(editAmountText) / edit.quantity) : "—"} g</span>
+                    <span>脂肪 {Number(editAmountText) > 0 ? round(edit.f * Number(editAmountText) / edit.quantity) : "—"} g</span>
+                  </div>
+                </div>
               ) : (
                 <>
                   <Field label="這餐吃了什麼">
-                    <input
-                      name="name"
-                      required
-                      maxLength={80}
-                      defaultValue={edit?.name}
-                    />
+                    <input name="name" required maxLength={80}/>
                   </Field>
                   <div className="form-grid">
-                    <Num label="蛋白質 g" name="p" value={edit?.p} max={1000} />
-                    <Num label="碳水 g" name="c" value={edit?.c} max={1000} />
-                    <Num label="脂肪 g" name="f" value={edit?.f} max={1000} />
+                    <Num label="蛋白質 g" name="p" max={1000} />
+                    <Num label="碳水 g" name="c" max={1000} />
+                    <Num label="脂肪 g" name="f" max={1000} />
                   </div>
                 </>
               )}

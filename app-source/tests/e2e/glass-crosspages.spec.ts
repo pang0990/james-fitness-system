@@ -6,10 +6,10 @@ for(const width of [390,1440]) {
     await page.goto("/nutrition/");
     await expect(page.getByTestId("nutrition-v3b")).toHaveClass(/jfs-glass-card/);
     await expect(page.locator(".nutrition-v3b .jfs-glass-progress")).toHaveCount(3);
-    await expect(page.locator(".nutrition-v3-meal-icons .jfs-glass-button")).toHaveCount(4);
-    await expect(page.locator(".meal-list .meal-section.jfs-glass-card").first()).toBeVisible();
+    await expect(page.locator(".meal-list--b2 .meal-section--b2")).toHaveCount(4);
+    await expect(page.locator(".meal-list .meal-section--b2").first()).toBeVisible();
     await page.getByRole("button",{name:"加入飲食",exact:true}).click();
-    await expect(page.getByLabel("加入哪一餐")).toBeVisible();
+    await expect(page.getByRole("dialog").locator(".logger-context-button")).toBeVisible();
     const overflowing=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     expect(overflowing).toBeLessThanOrEqual(1);
     // Close modal before capture to show the redesigned page material.

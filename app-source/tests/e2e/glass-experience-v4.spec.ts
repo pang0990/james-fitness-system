@@ -161,9 +161,13 @@ test("Nutrition uses black line tabs with readable inactive and selected states"
   await page.goto("/nutrition/");
   await expect(page.locator(".nutrition-v3b")).toBeVisible();
   await expect(page.locator(".daily-page>.simple-heading h1")).toHaveCSS("color","rgb(255, 255, 255)");
-  const tab=page.locator(".nutrition-v3-tabs");
-  await expect(tab).toHaveCSS("background-color","rgb(0, 0, 0)");
-  await expect(tab).toHaveCSS("backdrop-filter","none");
-  await expect(page.locator(".nutrition-v3-meal-icons>button")).toHaveCount(4);
+  const meals=page.locator(".meal-list--b2 .meal-section--b2");
+  await expect(meals).toHaveCount(4);
+  await expect(meals.first()).toHaveCSS("background-color","rgb(0, 0, 0)");
+  await expect(meals.first()).toHaveCSS("backdrop-filter","none");
+  await meals.nth(0).locator(".meal-toggle").click();
+  await meals.nth(1).locator(".meal-toggle").click();
+  await expect(meals.nth(0).locator(".meal-details")).toBeVisible();
+  await expect(meals.nth(1).locator(".meal-details")).toBeVisible();
   await page.screenshot({path:"test-results/blackline-nutrition-readable-mobile.png",fullPage:true});
 });
