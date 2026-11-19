@@ -1,5 +1,17 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { REVIEW_STORAGE_KEY } from "../../src/lib/review-preview";
+async function failNextWrite(page: Page) {
+  await page.evaluate((k) => {
+    let original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      if (key === k) {
+        Storage.prototype.setItem = original;
+        throw Error("QA simulated write failure");
+      }
+      return original.call(this, key, value);
+    };
+  }, REVIEW_STORAGE_KEY);
+}
 test.skip(
   process.env.NEXT_PUBLIC_JFS_REVIEW_PREVIEW !== "1",
   "Requires isolated review build",
@@ -65,6 +77,13 @@ test("workout queue, timer, draft and finish review", async ({ page }) => {
     ok.push("pause reload resume");
     await page.getByRole("button", { name: "訓練回顧", exact: true }).click();
     await page.getByRole("radio", { name: /只保存本次/ }).check();
+    const beforeFinish = await read();
+    await failNextWrite(page);
+    await page.getByRole("button", { name: "完成訓練", exact: true }).click();
+    expect((await read()).sessions).toEqual(beforeFinish.sessions);
+    await expect(
+      page.getByRole("button", { name: "完成訓練", exact: true }),
+    ).toBeVisible();
     await page.getByRole("button", { name: "完成訓練", exact: true }).click();
     await page.getByRole("heading", { name: "訓練完成" }).waitFor();
     let done = (await read()).sessions.at(-1);
@@ -104,16 +123,7 @@ test("food retry, recent portion, batch and dated journal", async ({
     await grams.fill("137");
     await page.locator(".logger-favorite").click();
     let before = (await read()).meals.length;
-    await page.evaluate((k) => {
-      let original = Storage.prototype.setItem;
-      Storage.prototype.setItem = function (key, value) {
-        if (key === k) {
-          Storage.prototype.setItem = original;
-          throw Error("QA simulated write failure");
-        }
-        return original.call(this, key, value);
-      };
-    }, key);
+    await failNextWrite(page);
     await b("儲存至午餐").click();
     if (
       (await grams.inputValue()) !== "137" ||
@@ -151,7 +161,13 @@ test("food retry, recent portion, batch and dated journal", async ({
     if ((await grams.inputValue()) !== base) throw Error("base portion");
     passed.push("recent vs search portions");
     await b("加入待確認清單").click();
+    const beforeBatch = (await read()).meals.length;
+    await failNextWrite(page);
     await b("確認加入 1 項食物").click();
+    expect((await read()).meals).toHaveLength(beforeBatch);
+    await expect(b("確認加入 1 項食物")).toBeVisible();
+    await b("確認加入 1 項食物").click();
+    expect((await read()).meals).toHaveLength(beforeBatch + 1);
     await page.getByRole("dialog").waitFor({ state: "hidden" });
     passed.push("batch save");
     await page.goto("/nutrition/");

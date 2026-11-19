@@ -21,8 +21,8 @@
 - Today 繼續訓練，切換動作並保留各自草稿。完成工作組後只有重量預填，次數與 RIR 留白。模擬儲存失敗可重試，連點只產生一組。
 - Warm-up、Ramp-up、Drop、RP 分別記錄。Drop 與 RP 指向原工作組。編輯可撤銷，刪除母組後可還原母組與原有子組。
 - 間休延長、切換動作、暫停、重新載入與恢復。手動 RP 計時可啟動、延長、停止。測試曾重現底部 Dock 定位及 RP 控制重疊，修正後重測通過。
-- Finish Review 比對每個動作實際與計畫工作組，部分完成選 Keep，保存後進 Summary；草稿仍可追溯。同日第二場保留獨立 ID，歷史詳情可開啟，Cycle 事件未重複增加。
-- Today 單筆飲食儲存失敗保留克數，重試只產生一筆，返回來源。Recent 與一般搜尋帶入不同的正確份量，Batch Plate 可保存。Journal 飲水、體重與恢復依選定日期保存。
+- Finish Review 比對每個動作實際與計畫工作組，分別實測部分完成的 Keep 與 Count。Keep 保留待練日，Count 只增加一筆 Cycle 事件。模擬完成訓練寫入失敗，原 Session 與草稿保留，重試成功才進 Summary。同日第二場保留獨立 ID，歷史詳情可開啟，Cycle 事件未重複增加。
+- Today 單筆飲食儲存失敗保留克數，重試只產生一筆，返回來源。Recent 與一般搜尋帶入不同的正確份量，Batch Plate 寫入失敗後保留清單，重試僅增加一筆。Journal 飲水、體重與恢復依選定日期保存。
 - Training Plan 編輯後顯示版本差異，保存產生新版本，對照先前 Session Snapshot 未變動。刪除的 Day ID 不應讓 Today 誤開下一個待練日；原行事曆資料保留，需重新指派才可啟動。
 
 ## Mac 重跑
@@ -46,6 +46,6 @@ npx playwright test tests/e2e/phase-two-review.spec.ts tests/e2e/phase-two-integ
 ## 合併前仍需驗收
 
 - 在真機驗收軟鍵盤、Safe Area、背景計時、全站鍵盤與讀屏；補齊完整狀態與各畫面視覺驗收。
-- 補測訓練結束保存失敗重試、部分完成 Count、額外訓練、版本變更與行事曆重排的整合邊界，以及 Food Batch 失敗重試。
+- 補測額外訓練、跨日繼續、完整編修拖曳流程、行事曆重排與多項 Batch 同批保存的整合邊界。
 - 以專用測試帳號、可還原的測試資料，確認登入、登出、重新登入、不同帳戶與兩裝置同步範圍。
 - 原 Figma 檔新增 Design System，內含 18 個原生元件與 24 個 Light Variables。Dark Mode 受到檔案方案限制。元件實例綁定、Variants、Auto Layout 全面覆蓋、三條可點擊流程及設計驗收仍待完成。
