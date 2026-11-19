@@ -61,9 +61,9 @@ export function TodayMinimalV3({ date, notify }: Props) {
     <div className="today-reference-page today-v3" data-testid="today-v3">
       <div className="today-v3-heading">
         <div>
+          <span className="workspace-label">TODAY</span>
+          <h1>今日概覽</h1>
           <time dateTime={date}>{dateDisplay}</time>
-          <h1>今天</h1>
-          <p>你的訓練與日常紀錄</p>
         </div>
         {cycle && (
           <div className="today-v3-cycle" aria-label={"Cycle 第 " + cycleRound + " 輪"}>
@@ -72,7 +72,7 @@ export function TodayMinimalV3({ date, notify }: Props) {
         )}
       </div>
 
-      <div className="today-v3-grid">
+      <div className="today-v3-grid" id="today-action-queue">
         <GlassCard className="today-v3-focus jfs3-surface" raised aria-labelledby="today-v3-focus-title">
           <div className="jfs3-section-heading">
             <span className="jfs3-heading-label"><Dumbbell size={17} aria-hidden="true" /> 今日重點</span>

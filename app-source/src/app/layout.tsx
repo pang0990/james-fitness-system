@@ -31,6 +31,7 @@ import "./today-v3.css";
 import "./app-shell-v3.css";
 // B2 Nutrition owns its responsive meal and logger surfaces after the legacy layers.
 import "./nutrition-ux-b2.css";
+import "./fitness-system.css";
 
 export const metadata: Metadata = {
   title: "James · Fitness System",

@@ -22,9 +22,7 @@ export function AppearanceController() {
       document
         .querySelector('meta[name="theme-color"]')
         ?.setAttribute("content", visualStyle === "minimal"
-          // Minimal now uses a black canvas for both preferences; match the
-          // browser chrome to the actual page instead of the legacy light UI.
-          ? "#000000"
+          ? (light ? "#f8f8f6" : "#000000")
           : (light ? "#f5f3ee" : "#070708"));
     };
     apply();
@@ -71,7 +69,7 @@ export function AppearanceSettings({ notify }: { notify: (message: string) => vo
               checked={visualStyle === "minimal"}
               onChange={() => { setVisualStyle("minimal"); setMode("light"); }} />
             <span className="jfs-style-swatch jfs-style-swatch-minimal" aria-hidden="true"><i /><i /><i /></span>
-            <strong>Minimal</strong><small>純黑細線 · 緊湊、清晰、專注內容</small>
+            <strong>Minimal</strong><small>暖白與墨綠 · 支援深色模式</small>
           </label>
           <label className={`jfs-style-option ${visualStyle === "cinematic" ? "selected" : ""}`}>
             <input type="radio" name="visualStyle" value="cinematic"

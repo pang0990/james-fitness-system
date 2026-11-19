@@ -64,7 +64,7 @@ export function ProgressDirection({ date }: { date: string }) {
         : "OBSERVING";
   return (
     <div className="daily-page progress-direction">
-      <PageTitle title="Progress" />
+      <PageTitle title="長期趨勢" eyebrow="INSIGHTS" />
       <nav className="progress-v3-segments" aria-label="進度分頁">
         <span className="active">Overview</span>
         <Link href="/progress/body">Body</Link>

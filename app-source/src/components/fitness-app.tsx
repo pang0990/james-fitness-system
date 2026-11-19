@@ -93,9 +93,9 @@ const id = () => crypto.randomUUID();
 const now = () => new Date().toISOString();
 const labelMap: Record<string, string> = {
   today: "Today",
-  nutrition: "Nutrition",
+  nutrition: "Journal",
   training: "Training",
-  progress: "Progress",
+  progress: "Insights",
   learn: "Knowledge",
   profile: "Profile",
   settings: "Settings",
@@ -347,8 +347,8 @@ export function FitnessApp({ path }: { path: string }) {
           <div className="breadcrumb" aria-label="目前所在頁面">
             {section === "today" ? (
               <div className="today-header-brand">
-                <span className="wordmark">JAMES FITNESS</span>
-                <span className="today-header-subtitle">THE WANDERER</span>
+                <span className="wordmark">JAMES</span>
+                <span className="today-header-subtitle">FITNESS SYSTEM</span>
               </div>
             ) : (
               <>

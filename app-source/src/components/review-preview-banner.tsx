@@ -10,15 +10,15 @@ export function ReviewPreviewBanner() {
     <aside data-testid="jfs-review-banner" aria-label="獨立測試預覽環境"
       style={{
         position:"sticky",top:0,zIndex:9999,padding:"9px 14px",
-        color:"#fff",background:"#2a2534",
+        color:"#14382f",background:"#e6f1eb",
         display:"flex",alignItems:"center",justifyContent:"center",
         gap:12,flexWrap:"wrap",fontSize:12,lineHeight:1.5,
-        borderBottom:"1px solid #75678e",
+        borderBottom:"1px solid #cddad4",
       }}>
       <strong>JFS · TEST PREVIEW</strong>
-      <span>四頁測試版｜虛構初始資料｜請勿輸入個資｜僅儲存於本機，不連雲端</span>
+      <span>隔離預覽・虛構資料・僅存本機</span>
       <button type="button" aria-label="還原虛構測試資料"
-        style={{border:"1px solid #aca3be",borderRadius:6,color:"white",
+        style={{border:"1px solid #87a59a",borderRadius:8,color:"#14382f",
           background:"transparent",padding:"4px 9px",cursor:"pointer"}}
         onClick={()=>{
           if(!window.confirm("還原測試資料？會刪除這個預覽版的本機操作紀錄，不影響正式網站。"))return;

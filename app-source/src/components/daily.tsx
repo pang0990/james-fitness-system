@@ -54,6 +54,7 @@ import {
   syncMealCompletion,
   resolveDay,
   visibleMeals,
+  visibleMeasurements,
   waterTotal,
   pinDay,
   setDayType,
@@ -149,14 +150,16 @@ export function Menu({ items }: { items: [string, string][] }) {
 }
 export function PageTitle({
   title,
+  eyebrow,
   children,
 }: {
   title: string;
+  eyebrow?: string;
   children?: ReactNode;
 }) {
   return (
     <div className="simple-heading">
-      <h1>{title}</h1>
+      <div>{eyebrow && <span className="workspace-label">{eyebrow}</span>}<h1>{title}</h1></div>
       {children}
     </div>
   );
@@ -746,6 +749,8 @@ export function NutritionV2({
   const [mealError, setMealError] = useState("");
   const day = resolveDay(state, selectedDate);
   const meals = visibleMeals(state, selectedDate);
+  const dayWeight = visibleMeasurements(state).filter(m => m.date === selectedDate && m.weight != null).at(-1)?.weight;
+  const recoveryCount = latestRecovery(state, selectedDate).length;
   const isLibrary = path === "nutrition/foods";
   function close() {
     if(loggerDirty && !window.confirm("離開並放棄待確認食物？已儲存的紀錄不受影響。")) return;
@@ -802,7 +807,7 @@ export function NutritionV2({
   }
   return (
     <div className={inlineClose ? "inline-nutrition" : "daily-page"}>
-      <PageTitle title={isLibrary ? "食物庫" : "Nutrition"}>
+      <PageTitle title={isLibrary ? "食物庫" : "每日紀錄"} eyebrow={isLibrary ? "FOOD LIBRARY" : "DAILY JOURNAL"}>
         <Menu
           items={[
             ["/nutrition/plan", "營養計畫"],
@@ -893,6 +898,7 @@ export function NutritionV2({
               onChange={(e) => { if(e.target.value) {setDate(e.target.value);setExpandedMeals([]);setDatePickerOpen(false);} }}/>}
           </div>
           <NutritionWeek date={selectedDate} onChange={next => {setDate(next);setExpandedMeals([]);}} />
+          <div className="journal-columns"><div className="journal-nutrition">
           {state.appearance?.visualStyle !== "cinematic" && !inlineClose ? (
             <NutritionDashboardV3 date={selectedDate}
               onAddMeal={() => { setSlot(state.mealSlots[0]); setSheet("add"); }} />
@@ -971,11 +977,14 @@ export function NutritionV2({
               );
             })}
           </section>
+          </div>
           <section className="journal-health" aria-label="每日健康紀錄">
-            <button type="button" onClick={() => setHealth("water")}>飲水 · {waterTotal(state, selectedDate)} mL</button>
-            <button type="button" onClick={() => setHealth("weight")}>紀錄體重</button>
-            <button type="button" onClick={() => setHealth("sleep")}>紀錄恢復狀態</button>
+            <h2>每日健康紀錄</h2>
+            <button type="button" onClick={() => setHealth("water")}>飲水<strong>{waterTotal(state, selectedDate)} mL</strong></button>
+            <button type="button" onClick={() => setHealth("weight")} aria-label="紀錄體重">體重<strong>{dayWeight == null ? "尚無紀錄" : dayWeight + " kg"}</strong></button>
+            <button type="button" onClick={() => setHealth("sleep")} aria-label="紀錄恢復狀態">恢復<strong>{recoveryCount ? recoveryCount + " 筆紀錄" : "尚無紀錄"}</strong></button>
           </section>
+          </div>
           {health === "water" && <Sheet title={selectedDate + " · 新增飲水"} onClose={() => setHealth(null)}>
             <form onSubmit={event => {
               event.preventDefault();

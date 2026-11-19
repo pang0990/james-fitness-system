@@ -331,23 +331,24 @@ export function TrainingFlow({
   if (path === "training/calendar")
     return (
       <div className="daily-page">
-        <PageTitle title="Training Calendar" />
+        <PageTitle title="訓練排程" eyebrow="CALENDAR" />
         <TrainingCalendar date={date} />
       </div>
     );
   if (path === "training/history")
     return (
       <div className="daily-page">
-        <PageTitle title="Workout History" />
+        <PageTitle title="訓練歷史" eyebrow="WORKOUT HISTORY" />
         {state.sessions
           .filter((s) => s.status !== "in_progress")
           .slice()
           .reverse()
           .map((s) => (
-            <details className="card" key={s.id}>
+            <details className="card history-session" key={s.id}>
               <summary>
-                {s.workoutDate ?? s.date} · {s.name} ·{" "}
-                {s.status === "discarded" ? "已放棄" : "已完成"} · {s.parentSessionId ? "第二場" : s.isExtra ? "額外訓練" : "第一場"}
+                <small>{s.workoutDate ?? s.date} · {s.parentSessionId || s.sessionPart==="second" ? "第二場" : s.isExtra ? "額外訓練" : "第一場"}</small>
+                <strong>{s.name}</strong>
+                <span>{s.status === "discarded" ? "已放棄" : "已完成"}</span>
                 <small> · {s.exercises.length} 個動作 · {workoutProgress(s).working} 個 Working Sets
                   {s.activeDuration != null && " · " + Math.round(s.activeDuration / 60000) + " 分鐘"}</small>
               </summary>
@@ -431,7 +432,7 @@ export function TrainingFlow({
     );
   return (
     <div className={`daily-page ${workout ? "workout-page training-v3" : ""}`}>
-      <PageTitle title={workout ? "Active Workout" : "Training"}>
+      <PageTitle title={workout ? (review ? "結束前確認" : current.name) : "訓練首頁"} eyebrow={workout ? (review ? "FINISH REVIEW" : "ACTIVE WORKOUT") : "TRAINING"}>
         {workout ? (
           <Link href="/training" className="text-link">
             離開畫面（繼續計時）
@@ -813,8 +814,8 @@ export function TrainingFlow({
         </>
       ) : (
         <div className="training-home training-v3">
-          <GlassCard className="training-today card" aria-label="今日訓練計畫">
-            <span className="eyebrow">{current?"RESUME WORKOUT":isRest?"REST DAY":"TODAY’S WORKOUT"}</span>
+          <GlassCard className="training-today card" aria-label={current ? "進行中的訓練" : "目前與下一次訓練"}>
+            <span className="eyebrow">{current?"RESUME WORKOUT":isRest?"REST DAY":planned.id || state.weeklySchedule!==undefined?"今日排程":"下一個待練日"}</span>
             <p className="muted">{current?.cycleId?state.cycles?.find(c=>c.id===current.cycleId)?.name??"當次訓練計畫":cycle?.name??"建立你的訓練節奏"}{cycle&&!current?` · 第 ${cycle.round??1} 輪`:""}</p>
             {!current&&isRest&&<p>今天排定休息。你仍可自行選擇開始下方待練課表。</p>}
             {current&&<p className="training-resume-progress" role="status">{current.pausedAt?"已暫停":current.phase==="warmup"?"暖身中":"訓練中"} · 已完成 {completedWorking} / {plannedWorking||"未設定"} 工作組</p>}
@@ -887,7 +888,7 @@ export function TrainingFlow({
               {completedToday.map((s,index)=> (
                 <Link className="training-daily-session" href="/training/history" key={s.id}>
                   <span><strong>{String(index+1).padStart(2,"0")} · {s.name}</strong>
-                    <small>{s.isExtra ? "額外訓練" : "課表訓練"} ·
+                    <small>{s.parentSessionId || s.sessionPart==="second" ? "第二場" : s.isExtra ? "額外訓練" : "第一場"} ·
                       {Math.round((s.activeDuration ??
                         Math.max(0,Date.parse(s.completedAt??s.createdAt)-Date.parse(s.createdAt))) / 60000)} 分鐘</small>
                   </span>

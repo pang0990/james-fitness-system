@@ -57,7 +57,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
   }
   return (
     <div className={"daily-page plan-workspace"+(mobileEditor?" day-focused":"")}>
-      <PageTitle title="Training Plan" />
+      <PageTitle title={mobileEditor ? "編輯訓練日" : "訓練計畫"} eyebrow={mobileEditor ? "DAY EDITOR" : "TRAINING PLAN"} />
       <section className="cycle-overview"><h2>{name}</h2>
         <a href={(process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/training/calendar/"}>訓練行事曆</a>
         <nav aria-label="週期訓練日">{days.map((day,i) =>
