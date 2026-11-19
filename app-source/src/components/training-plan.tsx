@@ -22,6 +22,8 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
       })) ?? [],
   );
   const ongoing = state.sessions.find((s) => s.status === "in_progress");
+  const [query, setQuery] = useState("");
+  const [dragged, setDragged] = useState<number | null>(null);
   const [template, setTemplate] = useState("");
   const [planSource, setPlanSource] = useState<"custom" | "template">(
     startBlank || current?.source === "custom" ? "custom" : "template",
@@ -33,6 +35,16 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
   const selectDay = (index: number) => {
     if (index >= 0 && index < days.length) setActiveDayId(days[index].id ?? null);
   };
+
+  function moveExercise(from: number, to: number) {
+    setDays(previous => previous.map((day, index) => {
+      if (index !== selectedIndex || !day.exercises || from < 0 || to < 0 ||
+          from >= day.exercises.length || to >= day.exercises.length) return day;
+      const exercises = [...day.exercises];
+      exercises.splice(to, 0, exercises.splice(from, 1)[0]);
+      return { ...day, exercises };
+    }));
+  }
 
   function preset(selected:string) {
     if (days.length && !window.confirm("依選擇的分化帶入課表？未儲存的修改會被新的分化取代，已完成的訓練紀錄不受影響。")) return;
@@ -53,6 +65,12 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
   return (
     <div className="daily-page">
       <PageTitle title="Training Plan" />
+      <section className="cycle-overview"><h2>{name}</h2>
+        <a href={(process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/training/calendar/"}>訓練行事曆</a>
+        <nav aria-label="週期訓練日">{days.map((day,i) =>
+          <button type="button" key={day.id} aria-pressed={i === selectedIndex} onClick={() => selectDay(i)}>
+            Day {i+1} · {day.name}</button>)}</nav>
+      </section>
 
       <Field label="選擇訓練分化（選取後直接帶入，可自行修改或刪除動作）">
         <select aria-label="選擇分化" value={template} onChange={e=>preset(e.target.value)}>
@@ -138,7 +156,11 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                       })))} />
                   </Field>
                   {(day.secondSession.exercises ?? []).map((ex,j) => (
-                    <div className="plan-exercise" key={j}>
+                    <div className="plan-exercise" key={j} onDragOver={event => event.preventDefault()}
+              onDrop={event => { event.preventDefault(); if (dragged !== null) moveExercise(dragged, j); setDragged(null); }}>
+              <span draggable onDragStart={() => setDragged(j)} onDragEnd={() => setDragged(null)}>拖曳排序</span>
+              <button type="button" disabled={j === 0} onClick={() => moveExercise(j,j-1)}>上移動作</button>
+              <button type="button" disabled={j+1 >= (day.exercises?.length ?? 0)} onClick={() => moveExercise(j,j+1)}>下移動作</button>
                       <strong>{ex.name}</strong>
                       <div className="form-grid">
                         {(["sets","reps","restSeconds"] as const).map((key,k) => (
@@ -230,8 +252,26 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
             </button>
           </div>
           {(day.exercises ?? []).map((ex, j) => (
-            <div className="plan-exercise" key={j}>
+            <div className="plan-exercise" key={j} onDragOver={event => event.preventDefault()}
+              onDrop={event => { event.preventDefault(); if (dragged !== null) moveExercise(dragged, j); setDragged(null); }}>
+              <span draggable onDragStart={() => setDragged(j)} onDragEnd={() => setDragged(null)}>拖曳排序</span>
+              <button type="button" disabled={j === 0} onClick={() => moveExercise(j,j-1)}>上移動作</button>
+              <button type="button" disabled={j+1 >= (day.exercises?.length ?? 0)} onClick={() => moveExercise(j,j+1)}>下移動作</button>
               <h3>{ex.name}</h3>
+              <Field label="目標 RIR"><input type="number" min="0" max="10" value={ex.targetRir ?? ""}
+                onChange={event => {
+                  const value = event.target.value;
+                  if (value && (!Number.isInteger(Number(value)) || Number(value) < 0 || Number(value) > 10)) return;
+                  setDays(days.map((d,n) => n !== i ? d : { ...d, exercises: d.exercises?.map((x,m) =>
+                    m === j ? { ...x, targetRir: value === "" ? undefined : Number(value) } : x) }));
+                }} /></Field>
+              <Field label="原位替換動作"><select value="" onChange={event => {
+                const item = library.find(x => x.id === event.target.value);
+                if (!item) return;
+                setDays(days.map((d,n) => n !== i ? d : { ...d, exercises: d.exercises?.map((x,m) =>
+                  m !== j ? x : { ...x, exerciseLibraryId: item.id, name: item.name, muscle: item.muscle,
+                    allowDropSet: item.allowDropSet, allowRestPause: item.allowRestPause }) }));
+              }}><option value="">選擇替換動作</option>{library.map(item => <option value={item.id} key={item.id}>{item.nameZh} · {item.name}</option>)}</select></Field>
               <div className="form-grid">
                 {(["sets", "reps", "restSeconds"] as const).map(
                   (key, k) => (
@@ -290,6 +330,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
               </button>
             </div>
           ))}
+          <Field label="搜尋新增動作"><input type="search" value={query} onChange={event => setQuery(event.target.value)} /></Field>
           <select
             aria-label={`加入動作 ${i + 1}`}
             value=""
@@ -320,7 +361,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
             }}
           >
             <option value="">＋加入動作</option>
-            {library.map((e) => (
+            {library.filter(e => (e.nameZh + " " + e.name).toLowerCase().includes(query.toLowerCase())).map((e) => (
               <option key={e.id} value={e.id}>
                 {e.nameZh} · {e.name}
               </option>
@@ -338,6 +379,8 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
               (!d.secondSession.name.trim() || !d.secondSession.exercises?.length)))
         }
         onClick={() => {
+          const summary = days.map((d,i) => "Day " + (i+1) + " · " + d.name + " · " + (d.exercises?.length ?? 0) + " 個動作" + (d.secondSession ? " · 含第二場" : "")).join("\n");
+          if (!window.confirm("確認建立新週期版本？\n" + name + "\n" + summary)) return;
           if (
             save("儲存 Training Plan 新版本", (s) => {
               const old = activeCycle(s);

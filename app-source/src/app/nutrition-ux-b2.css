@@ -227,3 +227,20 @@ html[data-visual-style="minimal"] body:has(.app) .sheet--nutrition-logger .logge
 .logger-edit-summary {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid #626262;padding:16px 0;}
 .logger-edit-summary strong {grid-column:1/-1;font-size:28px;}
 .logger-edit-summary span {font-size:12px;color:#d0d0d0;}
+
+html[data-visual-style="minimal"]:not([data-theme="dark"]) {
+  --jfs3-canvas:#f8f8f6;
+  --jfs3-paper:#fff;
+  --jfs3-ink:#14382f;
+  --jfs3-ink-secondary:#536d63;
+  --jfs3-action:#087f60;
+  --jfs3-action-text:#fff;
+  --jfs4-glass-surface:#fff;
+}
+.journal-health,.cycle-overview nav,.logger-shortcuts {display:flex;flex-wrap:wrap;gap:10px;margin-block:16px}
+.logger-shortcuts h3 {flex-basis:100%}
+.journal-health button,.cycle-overview button {min-height:44px;padding:8px 14px;border-radius:12px;border:1px solid var(--jfs3-line-strong);background:var(--jfs3-paper);color:var(--jfs3-ink)}
+.cycle-overview button[aria-pressed="true"] {background:#087f60;color:white}
+@media(min-width:768px) {
+  .page-nutrition .sheet[open] {margin:0 0 0 auto;left:auto;right:0;top:0;bottom:0;width:min(510px,100vw);height:100dvh;max-height:100dvh}
+}

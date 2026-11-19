@@ -440,3 +440,15 @@ html[data-visual-style="minimal"] .training-review-evidence small {display:block
 @media(min-width:900px){.training-quick-links{grid-template-columns:repeat(3,minmax(0,1fr))}}
 html[data-visual-style="minimal"] .app.jfs3-shell .training-home .training-today .training-v3-heading h2 { color:#f5f5f5!important; -webkit-text-fill-color:#f5f5f5!important; }
 html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .training-home :is(.training-today,.training-week,.training-pending) { background:var(--jfs-depth-gradient)!important; border-radius:var(--jfs-depth-panel-radius,14px)!important; box-shadow:var(--jfs-depth-shadow)!important; }
+
+.training-workspaces,.exercise-queue {display:flex;gap:8px;flex-wrap:wrap;margin-block:12px}
+.training-workspaces select {display:none}
+.training-workspaces a,.exercise-queue button {padding:10px 14px;border-radius:12px;min-height:44px}
+.training-workspaces [aria-current="page"],.exercise-queue [aria-pressed="true"] {background:#087f60;color:white}
+.workout-active .training-v3-grid:has(.rest-dock) {padding-bottom:180px}
+.workout-active .training-v3-grid .rest-dock:not(.rp-short-rest) {position:fixed;z-index:8;bottom:max(8px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(calc(100% - 24px),640px);max-height:30dvh;overflow:auto;background:var(--jfs3-paper,#fff)}
+@media(max-width:767px) {
+  .training-workspaces a {display:none}
+  .training-workspaces select {display:block;width:100%;min-height:44px}
+  .workout-active .training-v3-grid:has(input:focus) .rest-dock:not(.rp-short-rest) {position:static;width:auto;transform:none}
+}

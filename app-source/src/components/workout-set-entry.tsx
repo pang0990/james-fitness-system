@@ -7,9 +7,9 @@ import { appendWorkoutSet } from "@/lib/workout-sets";
 import { startRestInterval, endRestInterval } from "@/lib/rest-intervals";
 import { Field } from "./daily";
 
-const emptyDraft = (): SetDraft => ({
+const emptyDraft = (weight = ""): SetDraft => ({
   id: crypto.randomUUID(),
-  weight: "",
+  weight,
   reps: "",
   rir: "",
   type: "working",
@@ -26,8 +26,10 @@ export function WorkoutSetEntry({
   onSaved: (id: string) => void;
 }) {
   const { state, save, error } = useStore();
+  const lastWorking=exercise.sets.filter(s=>s.type==="working").at(-1);
+  const suggestedWeight = lastWorking ? String(lastWorking.weight) : "";
   const [draft, setDraft] = useState<SetDraft>(
-    () => session.setDrafts?.[exercise.id] ?? emptyDraft(),
+    () => session.setDrafts?.[exercise.id] ?? emptyDraft(suggestedWeight),
   );
   const [draftFailed, setDraftFailed] = useState(false);
   const lock = useRef(false);
@@ -53,10 +55,10 @@ export function WorkoutSetEntry({
       document.removeEventListener("click", navigate, true);
     };
   }, [draftFailed]);
-  const lastWorking=exercise.sets.filter(s=>s.type==="working").at(-1);
+
   const previous=previousWorkingSets(state.sessions,exercise)?.[exercise.sets.filter(s=>s.type==="working").length];
   const hasDraft = !!(
-    draft.weight ||
+    (draft.weight !== suggestedWeight && draft.weight) ||
     draft.reps ||
     draft.parentId ||
     draft.rir ||
@@ -132,7 +134,7 @@ export function WorkoutSetEntry({
           });
           if (ok) {
             onSaved(draft.id);
-            setDraft(emptyDraft());
+            setDraft(emptyDraft(draft.type === "working" ? draft.weight : suggestedWeight));
             setDraftFailed(false);
           } else setDraftFailed(true);
         } finally {
@@ -164,7 +166,7 @@ export function WorkoutSetEntry({
                   "放棄尚未保存的輸入並回到最後已保存草稿？已記錄組次不會刪除。",
                 )
               ) {
-                setDraft(session.setDrafts?.[exercise.id] ?? emptyDraft());
+                setDraft(session.setDrafts?.[exercise.id] ?? emptyDraft(suggestedWeight));
                 setDraftFailed(false);
               }
             }}

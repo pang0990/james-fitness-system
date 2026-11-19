@@ -336,7 +336,9 @@ export function TrainingFlow({
             <details className="card" key={s.id}>
               <summary>
                 {s.workoutDate ?? s.date} · {s.name} ·{" "}
-                {s.status === "discarded" ? "已放棄" : "已完成"}
+                {s.status === "discarded" ? "已放棄" : "已完成"} · {s.parentSessionId ? "第二場" : s.isExtra ? "額外訓練" : "第一場"}
+                <small> · {s.exercises.length} 個動作 · {workoutProgress(s).working} 個 Working Sets
+                  {s.activeDuration != null && " · " + Math.round(s.activeDuration / 60000) + " 分鐘"}</small>
               </summary>
               <div className="workout-history-actions">
                 <Link className="text-link" href={`/training/history/session?id=${encodeURIComponent(s.id)}`}>查看單次訓練詳情 →</Link>
@@ -714,7 +716,7 @@ export function TrainingFlow({
                     }}>撤銷編輯</button>
                   </div>}
                   {lastSavedId && <div className="set-undo-banner" role="status">
-                    <span>已新增組次，下方是空白的下一組</span>
+                    <span>已儲存組次，請輸入下一組的實際次數</span>
                     <button type="button" className="text-link" onClick={()=>{
                       if(save("撤銷誤存組次",draft=>{
                         const target=draft.sessions.find(s=>s.id===current.id)!.exercises.find(e=>e.id===ex.id)!;
@@ -735,6 +737,11 @@ export function TrainingFlow({
                   </button>
                 </section>
               )}
+              <nav className="exercise-queue" aria-label="動作清單">
+                {current.exercises.map((item,index) => <button type="button" key={item.id}
+                  aria-pressed={exercise === index} onClick={() => setExercise(index)}>
+                  {item.name} · {item.sets.filter(set => set.type === "working").length} 組</button>)}
+              </nav>
               <div className="two-actions">
                 <button
                   className="button secondary"
@@ -789,10 +796,6 @@ export function TrainingFlow({
         </>
       ) : (
         <div className="training-home training-v3">
-          <div className="training-v3-segments" role="navigation" aria-label="訓練頁面">
-            <span className="active">Plan</span>
-            <Link href="/training/history">History</Link>
-          </div>
           <GlassCard className="training-today card" aria-label="今日訓練計畫">
             <span className="eyebrow">{current?"RESUME WORKOUT":isRest?"REST DAY":"TODAY’S WORKOUT"}</span>
             <p className="muted">{current?.cycleId?state.cycles?.find(c=>c.id===current.cycleId)?.name??"當次訓練計畫":cycle?.name??"建立你的訓練節奏"}{cycle&&!current?` · 第 ${cycle.round??1} 輪`:""}</p>
@@ -875,7 +878,7 @@ export function TrainingFlow({
                 </Link>
               ))}
               {!current && plannedSecond && <button type="button"
-                className="button" onClick={startPlannedSecond}>
+                className="button" id="planned-second" onClick={startPlannedSecond}>
                 開始自訂課表第二場 · {plannedSecond.name} <ArrowRight size={16}/>
               </button>}
             </GlassCard>

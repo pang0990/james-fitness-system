@@ -108,6 +108,7 @@ export function FoodLogger({
   const [weightText, setWeightText] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const lock = useRef(false);
+  const portionId = useRef("");
 
   useEffect(() => {
     if (!plate.length) return;
@@ -129,6 +130,7 @@ export function FoodLogger({
     navigate("plate");
   }
   function openPortion(snapshot: MealSnapshot, plateId: string | null = null) {
+    portionId.current = plateId ?? uid();
     setSelected(mealSnapshot(snapshot));
     setEditingPlateId(plateId);
     setWeightText(String(plateId ? plate.find(item => item.id === plateId)?.quantity ?? snapshot.quantity : snapshot.quantity));
@@ -288,7 +290,10 @@ export function FoodLogger({
             </nav>
             <div hidden={tab !== "food"} className="logger-search-section">
               <FoodPicker addToPlate
-                onSelect={food => openPortion(foodSnapshot(food as Food))}
+                onSelect={(food, recentQuantity) => {
+                  openPortion(foodSnapshot(food as Food));
+                  if (recentQuantity !== undefined) setWeightText(String(recentQuantity));
+                }}
                 onRecipeSelect={snapshot => openPortion(snapshot)}
               />
             </div>
@@ -346,7 +351,19 @@ export function FoodLogger({
         {error && <p className="logger-validation" role="alert">{error}</p>}
       </div>
       {view === "portion" ? <div className="logger-footer">
-        <button type="button" className="button" disabled={!portionPreview} onClick={savePortion}>
+        {!editingPlateId && !plate.length && <button type="button" className="button"
+          disabled={!portionPreview || !targetDate} onClick={() => {
+            if (lock.current || !selected || !portionPreview) return;
+            lock.current = true;
+            const item = { id: portionId.current, snapshot: selected, quantity: grams };
+            try {
+              if (save("新增飲食", draft => commitPlate(draft, [item], targetDate, slot, stamp()))) {
+                onDirty(false);
+                onDone();
+              } else setMessage("儲存失敗，份量已保留，請重試");
+            } finally { lock.current = false; }
+          }}>儲存至{slot}</button>}
+        <button type="button" className="button secondary" disabled={!portionPreview} onClick={savePortion}>
           {editingPlateId ? "更新份量" : "加入待確認清單"}
         </button>
       </div> : view === "plate" ? <div className="logger-footer food-plate-confirm">

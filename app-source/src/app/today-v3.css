@@ -657,3 +657,9 @@ html[data-visual-style="minimal"]:has(.app.page-today.jfs3-shell)
   html[data-visual-style="minimal"] .app.page-today.jfs3-shell:not(.workout-active)
     .today-v3 .today-v3-quick-grid {grid-template-columns:repeat(3,minmax(0,1fr));}
 }
+
+/* The approved dashboard has one focus, one nutrition summary and two health cards. */
+.today-v3 .today-v3-grid {grid-template-areas:"focus nutrition" "wellness wellness";}
+@media(max-width:760px) {
+  .today-v3 .today-v3-grid {grid-template-columns:minmax(0,1fr);grid-template-areas:"focus" "nutrition" "wellness";}
+}

@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { activeCycle } from "@/lib/training-model";
-import { nextDayIndex } from "@/lib/training-queue";
+import { todayFocus } from "@/lib/today-focus";
 import { latestRecovery } from "@/lib/recovery";
 import {
   mealTotals, resolveDay, round, waterTotal, type RecoveryEntry,
@@ -33,31 +33,9 @@ export function TodayMinimalV3({ date, notify }: Props) {
   const [quick, setQuick] = useState<{ date: string; kind: QuickKind } | null>(null);
   const [foodOpen, setFoodOpen] = useState(false);
   const [waterEdit, setWaterEdit] = useState(false);
-  const current = state.sessions.find((session) => session.status === "in_progress");
-  const completedToday = state.sessions.filter((session) =>
-    session.status === "completed" && (session.workoutDate ?? session.date) === date
-  );
-  const completedMinutes = Math.round(completedToday.reduce((sum, session) =>
-    sum + (session.activeDuration ?? Math.max(
-      0,
-      Date.parse(session.completedAt ?? session.createdAt) - Date.parse(session.createdAt),
-    )) / 60000, 0,
-  ));
+  const focus = todayFocus(state, date);
   const cycle = activeCycle(state);
-  // Round is distinct from the number of completed Cycle Days.
   const cycleRound = cycle?.round ?? 1;
-  const day = cycle?.days[Math.max(0, nextDayIndex(state, cycle))];
-
-  const isDone = !current && completedToday.length > 0;
-  const focusName = current?.name ||
-    (isDone ? "今日訓練已完成" : day?.name || "建立你的訓練計畫");
-  const focusMeta = isDone
-    ? String(completedToday.length) + " 場訓練 · " + completedMinutes + " 分鐘"
-    : String(current?.exercises?.length ?? day?.exercises?.length ?? 0) +
-      " 個動作" + (current ? " · 進行中" : day ? " · 準備開始" : "");
-  const trainingHref = current ? "/training/session" : isDone ? "/training/history" : day ? "/training" : "/training/plan";
-  const actionLabel = current
-    ? "繼續訓練" : isDone ? "查看訓練紀錄" : day ? "開始訓練" : "建立課表";
 
   const target = resolveDay(state, date).target;
   const nutrition = mealTotals(state, date);
@@ -66,14 +44,6 @@ export function TodayMinimalV3({ date, notify }: Props) {
   const hydrationTarget = state.profile?.waterTarget ?? 0;
   const waterPercentage = pct(hydration, hydrationTarget);
   const recovery = latestRecovery(state, date);
-  const recoveryKinds = recovery.filter((entry) => entry.type !== "pain").map((entry) => entry.type);
-  const quicks: Array<{ label: string; kind: QuickKind; icon: typeof Scale }> = [
-    { label: "體重", kind: "weight", icon: Scale },
-    { label: "睡眠", kind: "sleep", icon: Moon },
-    { label: "壓力", kind: "stress", icon: HeartPulse },
-    { label: "疲勞", kind: "fatigue", icon: Zap },
-    { label: "痠痛", kind: "soreness", icon: Activity },
-  ];
   const dateObj = new Date(date + "T12:00:00");
   const dateDisplay = dateObj.toLocaleDateString("zh-TW", {
     month: "long", day: "numeric", weekday: "long",
@@ -102,30 +72,23 @@ export function TodayMinimalV3({ date, notify }: Props) {
         )}
       </div>
 
-      <div className="today-v3-notice" id="today-action-queue">
-        <span className="today-v3-notice-marker" aria-hidden="true"><Sparkles size={17}/></span>
-        <div className="today-v3-notice-content">
-          <NoticeCarousel date={date} onLog={(d) => setQuick({ kind: "sleep", date: d })}/>
-        </div>
-      </div>
-
       <div className="today-v3-grid">
         <GlassCard className="today-v3-focus jfs3-surface" raised aria-labelledby="today-v3-focus-title">
           <div className="jfs3-section-heading">
             <span className="jfs3-heading-label"><Dumbbell size={17} aria-hidden="true" /> 今日重點</span>
-            <span className="today-v3-focus-state">{current ? "進行中" : isDone ? "已完成" : day ? "已排定" : "尚未設定"}</span>
+            <span className="today-v3-focus-state">{focus.status}</span>
           </div>
           <div className="today-v3-focus-content">
             <div>
-              <h2 id="today-v3-focus-title">{focusName}</h2>
-              <p>{focusMeta}</p>
+              <h2 id="today-v3-focus-title">{focus.title}</h2>
+
             </div>
-            <div className={"today-v3-focus-glyph" + (isDone ? "" : " equipment")} aria-hidden="true">
-              {isDone ? <Check size={38} strokeWidth={1.35}/> : <FitnessEquipmentVisual/>}
+            <div className={"today-v3-focus-glyph" + (focus.status === "已完成" ? "" : " equipment")} aria-hidden="true">
+              {focus.status === "已完成" ? <Check size={38} strokeWidth={1.35}/> : <FitnessEquipmentVisual/>}
             </div>
           </div>
-          <UiActionLink className="jfs3-primary today-v3-focus-action" href={trainingHref}>
-            {actionLabel}<ArrowRight size={19} aria-hidden="true"/>
+          <UiActionLink className="jfs3-primary today-v3-focus-action" href={focus.href}>
+            {focus.action}<ArrowRight size={19} aria-hidden="true"/>
           </UiActionLink>
         </GlassCard>
 
@@ -159,16 +122,6 @@ export function TodayMinimalV3({ date, notify }: Props) {
           <GlassButton kind="secondary" className="jfs3-secondary today-v3-food-add" onClick={() => setFoodOpen(true)}>
             <Plus size={17} aria-hidden="true"/> 加入飲食
           </GlassButton>
-        </GlassCard>
-
-        <GlassCard className="today-v3-training jfs3-surface" aria-labelledby="today-v3-training-title">
-          <div className="jfs3-section-heading">
-            <h2 id="today-v3-training-title"><Dumbbell size={17} aria-hidden="true" /> 今日訓練</h2>
-            <Link href="/training" className="jfs3-icon-link" aria-label="查看訓練課表"><ChevronRight size={18}/></Link>
-          </div>
-          <strong>{isDone ? "訓練完成" : current?.name || day?.name || "尚未安排課表"}</strong>
-          <p>{isDone ? focusMeta : current ? "訓練進行中" : day ?
-            String(day.exercises?.length ?? 0) + " 個動作" : "前往 Training 建立訓練計畫"}</p>
         </GlassCard>
 
         <div className="today-v3-wellness">
@@ -207,29 +160,7 @@ export function TodayMinimalV3({ date, notify }: Props) {
           </GlassCard>
         </div>
 
-        <GlassCard className="today-v3-quick jfs3-surface" aria-labelledby="today-v3-quick-title">
-          <div className="jfs3-section-heading">
-            <h2 id="today-v3-quick-title"><Plus size={18} aria-hidden="true"/> 快速紀錄</h2>
-            <Link href="/progress" className="jfs3-see-all">更多 <ChevronRight size={16}/></Link>
-          </div>
-          <div className="today-v3-quick-grid">
-            {quicks.map(({ label, kind, icon: Icon }) => (
-              <GlassButton kind="secondary" key={kind} className="today-v3-quick-item"
-                aria-label={"記錄" + label} onClick={() => setQuick({ date, kind })}>
-                <Icon size={19} strokeWidth={1.7} aria-hidden="true" />
-                <span>{label}</span>
-                {(kind !== "weight" && recoveryKinds.includes(kind))
-                  ? <Check size={16} strokeWidth={2} aria-hidden="true"/>
-                  : <Plus size={15} strokeWidth={1.8} aria-hidden="true"/>}
-              </GlassButton>
-            ))}
-          </div>
-        </GlassCard>
-
-        <div className="today-v3-activity">
-          <DailyActivity date={date} notify={notify}/>
-        </div>
-      </div>
+              </div>
 
       {quick && (
         <RecoveryQuickLog

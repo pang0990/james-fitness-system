@@ -15,7 +15,6 @@ import { ActivityReviewContext } from "./activity-trend";
 import { WeeklyCheckin } from "./weekly-checkin";
 import Link from "next/link";
 import { NutritionV2 } from "./daily";
-import { TodayReference } from "./today-reference";
 import { TodayMinimalV3 } from "./today-minimal-v3";
 import { AppSidebar, AppBottomNavigation } from "./ui/app-navigation";
 import { GoogleLogin, GoogleCallback, LegacyDataOffer, GuestDataOffer } from "./auth-pages";
@@ -312,6 +311,7 @@ function ProgressLinks({ path }: { path: string }) {
 }
 
 export function FitnessApp({ path }: { path: string }) {
+  const router = useRouter();
   const { state, ready, error, saving } = useStore();
   const { user, ready: authReady, signOut, isGuest } = useAuth();
   const section = path.split("/")[0];
@@ -400,6 +400,16 @@ export function FitnessApp({ path }: { path: string }) {
           </div>
         ) : (
           <div key={path}>
+            {["training", "training/plan", "training/history", "training/calendar"].includes(path) &&
+              <nav className="training-workspaces" aria-label="訓練工作區">
+                <select aria-label="切換訓練工作區" value={path === "training/calendar" ? "training/plan" : path}
+                  onChange={event => router.push("/" + event.target.value)}>
+                  <option value="training">Training Home</option><option value="training/plan">Training Plan</option>
+                  <option value="training/history">Workout History</option>
+                </select>
+                {[["training","Training Home"], ["training/plan","Training Plan"], ["training/history","Workout History"]].map(([href,label]) =>
+                  <Link key={href} href={"/"+href} aria-current={path === href ? "page" : undefined}>{label}</Link>)}
+              </nav>}
             {path.includes("/") && path !== "training/session" && (
               <Link className="text-link" href={"/" + section}>
                 ← {section === "settings" ? "Settings" : section}
@@ -412,11 +422,7 @@ export function FitnessApp({ path }: { path: string }) {
             ) : section === "login" || section === "signup" ? (
               <Login />
             ) : section === "today" ? (
-              state.appearance?.visualStyle === "cinematic" ? (
-                <TodayReference date={date} notify={notify} />
-              ) : (
-                <TodayMinimalV3 date={date} notify={notify} />
-              )
+              <TodayMinimalV3 date={date} notify={notify} />
             ) : section === "nutrition" ? (
               path === "nutrition/meals" ? (
                 <MealSettings notify={notify} />

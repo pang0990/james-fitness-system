@@ -82,11 +82,11 @@ export function Sheet({
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const el = ref.current;
-    el?.showModal();
     const prev = document.activeElement as HTMLElement;
+    el?.showModal();
     return () => {
       el?.close();
-      prev?.focus();
+      prev?.focus({ preventScroll: true });
     };
   }, []);
   useEffect(() => {
@@ -521,7 +521,7 @@ export function FoodPicker({
 }: {
   mine?: boolean;
   addToPlate?: boolean;
-  onSelect: (f: LibraryFood) => void;
+  onSelect: (f: LibraryFood, recentQuantity?: number) => void;
   onRecipeSelect?: (recipe: MealSnapshot) => void;
 }) {
   const { state, save } = useStore();
@@ -534,10 +534,15 @@ export function FoodPicker({
   const foods = (
     mine ? state.foods : [...master, ...cooked, ...official, ...state.foods]
   ) as LibraryFood[];
+  const recentPortions = new Map<string, { at: string; quantity: number; unit: string }>();
   const counts = new Map<string, number>(),
     recent = new Map<string, string>();
   for (const m of visibleMeals(state)) {
     if (m.foodId) {
+      if (Number.isFinite(m.quantity) && m.quantity > 0 && m.quantity <= 10000 &&
+          (recentPortions.get(m.foodId)?.at ?? "") <= m.createdAt) {
+        recentPortions.set(m.foodId, { at: m.createdAt, quantity: m.quantity, unit: m.unit });
+      }
       counts.set(m.foodId, (counts.get(m.foodId) ?? 0) + 1);
       recent.set(m.foodId, (recent.get(m.foodId)??"") > m.createdAt ? recent.get(m.foodId)! : m.createdAt);
     }
@@ -575,6 +580,23 @@ export function FoodPicker({
           placeholder={onRecipeSelect ? "搜尋食物或食譜..." : "中文或 English"}
         />
       </Field>
+      {addToPlate && !search && !focused && ["最近使用", "我的收藏"].map(label => {
+        const recentOnly = label === "最近使用";
+        const ids = recentOnly
+          ? [...recentPortions].sort((a,b) => b[1].at.localeCompare(a[1].at)).map(([id]) => id)
+          : state.favoriteFoods ?? [];
+        return <section key={label} className="logger-shortcuts"><h3>{label}</h3>
+          {ids.length === 0 && <p className="muted">尚無紀錄</p>}
+          {ids.slice(0,8).map(id => {
+            const item = foods.find(food => food.id === id);
+            if (!item) return null;
+            const last = recentPortions.get(id);
+            const amount = recentOnly && last?.unit === item.unit ? last.quantity : item.base;
+            return <button type="button" className="button secondary" key={id}
+              onClick={() => onSelect(item, amount)}>{item.name} · {amount} {item.unit}</button>;
+          })}
+        </section>;
+      })}
       {(focused || !!search.trim()) && (
         <>
           <div className="food-picker-sources" role="group" aria-label="食物來源">
@@ -600,13 +622,13 @@ export function FoodPicker({
           </details>
         </>
       )}
-      {resultType !== "recipe" && (
+      {resultType !== "recipe" && (!addToPlate || focused || !!search.trim()) && (
         <>
           <p className="muted food-count">{filtered.length} 項食物</p>
           <ul className="food-list">
             {filtered.slice(0, limit).map((f) => (
               <li key={f.id} className="food-with-favorite">
-                <button type="button" onClick={() => onSelect(f)}
+                <button type="button" onClick={() => onSelect(f, source === "recent" && recentPortions.get(f.id)?.unit === f.unit ? recentPortions.get(f.id)?.quantity : undefined)}
                   aria-label={"選擇 " + f.name} className="food-result-select">
                   <span className="food-result-text">
                     <strong>{f.name}</strong>
@@ -695,6 +717,7 @@ export function NutritionV2({
 }) {
   const { state, save } = useStore();
   const [selectedDate, setDate] = useState(date);
+  const [health, setHealth] = useState<"water" | "weight" | "sleep" | null>(null);
   const [expandedMeals, setExpandedMeals] = useState<string[]>([]);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [customFoodEdit, setCustomFoodEdit] = useState<Food | null>(null);
@@ -896,6 +919,8 @@ export function NutritionV2({
                       aria-controls={"meal-details-" + selectedDate + "-" + encodeURIComponent(name)}
                       onClick={() => setExpandedMeals(old => old.includes(name) ? old.filter(n => n !== name) : [...old, name])}>
                       <span className="meal-heading-text"><strong>{name}</strong>
+                        <small>{(["p","c","f"] as const).map(key =>
+                          key.toUpperCase() + " " + round(entries.reduce((total, meal) => total + meal[key], 0)) + " g").join(" · ")}</small>
                         <small>{entries.length ? entries.length + " 項食物 · " + kcal + " kcal" : "尚無紀錄"}</small>
                       </span>
                       {expanded ? <ChevronUp size={20} aria-hidden="true"/> : <ChevronDown size={20} aria-hidden="true"/>}
@@ -943,6 +968,25 @@ export function NutritionV2({
               );
             })}
           </section>
+          <section className="journal-health" aria-label="每日健康紀錄">
+            <button type="button" onClick={() => setHealth("water")}>飲水 · {waterTotal(state, selectedDate)} mL</button>
+            <button type="button" onClick={() => setHealth("weight")}>紀錄體重</button>
+            <button type="button" onClick={() => setHealth("sleep")}>紀錄恢復狀態</button>
+          </section>
+          {health === "water" && <Sheet title={selectedDate + " · 新增飲水"} onClose={() => setHealth(null)}>
+            <form onSubmit={event => {
+              event.preventDefault();
+              const ml = Number(new FormData(event.currentTarget).get("ml"));
+              if (ml > 0 && ml <= 10000 && save("新增飲水", draft => {
+                draft.waters.push({ id: uid(), date: selectedDate, ml, createdAt: stamp() });
+              })) setHealth(null);
+            }}>
+              <Field label="飲水量 mL"><input required autoFocus name="ml" type="number" min="1" max="10000" /></Field>
+              <button className="button">儲存</button>
+            </form>
+          </Sheet>}
+          {(health === "sleep" || health === "weight") && <RecoveryQuickLog date={selectedDate}
+            initialKind={health} notify={notify} close={() => setHealth(null)} />}
           <Link className="nutrition-manage-link" href="/nutrition/foods">管理我的食物</Link>
           {(state.appearance?.visualStyle === "cinematic" || inlineClose) && (
             <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
