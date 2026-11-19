@@ -27,3 +27,10 @@ test("resume precedes completion and a second session is offered once", () => {
   state.sessions.push({...first,id:"evening",parentSessionId:first.id,isExtra:true});
   assert.equal(todayFocus(state,date).status, "已完成");
 });
+
+test("a removed scheduled day leads to the calendar, not another queued day", () => {
+  const state=trainingFixture(), date="2026-10-21";
+  state.sessions=[];
+  state.schedule=[{id:"calendar",date,kind:"train",trainingDayId:"retired",createdAt:date+"T08:00:00Z"}];
+  assert.equal(todayFocus(state,date).href,"/training/calendar");
+});

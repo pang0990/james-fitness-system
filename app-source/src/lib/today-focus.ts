@@ -22,6 +22,7 @@ export function todayFocus(state: AppState, date: string) {
     if (schedule.kind !== "train") return { title: "今天是休息日", status: "休息日", action: "開啟每日紀錄", href: "/nutrition" };
     if (plan?.days.length) {
       const day = plan.days.find((_, i) => dayId(plan, i) === schedule.trainingDayId);
+      if (schedule.trainingDayId && !day) return { title: "排程的訓練日已移除", status: "待調整", action: "查看訓練行事曆", href: "/training/calendar" };
       return { title: day?.name ?? "今日有訓練安排", status: "已排定", action: "開始訓練", href: "/training" };
     }
   }

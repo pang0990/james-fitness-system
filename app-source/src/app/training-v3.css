@@ -87,7 +87,7 @@ html[data-visual-style="minimal"] .training-v3 {
   flex-wrap: wrap;
 }
 .training-v3 .rest-dock {
-  position: static !important;
+  position: static;
   margin-top: 16px;
   display: flex;
   flex-wrap: wrap;
@@ -450,5 +450,25 @@ html[data-visual-style="minimal"] .app.jfs3-shell:not(.workout-active) .training
 @media(max-width:767px) {
   .training-workspaces a {display:none}
   .training-workspaces select {display:block;width:100%;min-height:44px}
-  .workout-active .training-v3-grid:has(input:focus) .rest-dock:not(.rp-short-rest) {position:static;width:auto;transform:none}
+  .workout-active .training-v3-grid[data-keyboard="open"] .rest-dock:not(.rp-short-rest) {position:static;width:auto;transform:none}
+}
+.plan-diff {width:100%;table-layout:fixed;border-collapse:collapse}
+.plan-diff :is(td,th) {vertical-align:top;padding:10px;border:1px solid var(--jfs3-line-strong);overflow-wrap:anywhere}
+.plan-diff ul {padding-inline-start:1em}
+.plan-workspace .day-back {display:none}
+@media(min-width:850px) {
+  .daily-page.plan-workspace {display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,2.5fr);align-items:start}
+  .plan-workspace > * {grid-column:2}
+  .plan-workspace > .cycle-overview {grid-column:1;grid-row:2 / span 6;position:sticky;top:75px}
+  .cycle-overview nav {flex-direction:column}
+}
+@media(max-width:849px) {
+  .plan-workspace:not(.day-focused) .plan-day-editor {display:none}
+  .plan-workspace.day-focused > :is(.cycle-overview,.field,.plan-day-navigation) {display:none}
+  .plan-workspace .day-back {display:block;min-height:44px}
+}
+.workout-active .training-v3-grid:has(.rp-short-rest[data-active="true"]) .rest-dock:not(.rp-short-rest) {display:none}
+.workout-active .rp-short-rest[data-active="true"] {position:fixed;z-index:8;bottom:max(8px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(calc(100% - 24px),640px);max-height:30dvh;overflow:auto;background:var(--jfs3-paper,#fff)}
+@media(max-width:767px) {
+  .workout-active .training-v3-grid[data-keyboard="open"] .rp-short-rest[data-active="true"] {position:static;width:auto;transform:none}
 }

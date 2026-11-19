@@ -14,6 +14,7 @@ import { NoticeCarousel } from "./notices";
 import { CityAtmosphere } from "./city-atmosphere";
 import {
   useEffect,
+  useId,
   useRef,
   useState,
   type ReactNode,
@@ -79,6 +80,7 @@ export function Sheet({
   onClose: () => void;
   mode?: "standard" | "nutrition-logger";
 }) {
+  const titleId = useId();
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -109,6 +111,7 @@ export function Sheet({
   return (
     <dialog
       ref={ref}
+      aria-labelledby={titleId}
       className={mode === "nutrition-logger" ? "sheet sheet--nutrition-logger" : "sheet"}
       onCancel={(e)=>{e.preventDefault();onClose();}}
       onClick={(e) => {
@@ -117,7 +120,7 @@ export function Sheet({
     >
       <div className="sheet-body">
         <header>
-          <h2>{title}</h2>
+          <h2 id={titleId}>{title}</h2>
           <button className="icon-button" onClick={onClose} aria-label="關閉">
             <X />
           </button>

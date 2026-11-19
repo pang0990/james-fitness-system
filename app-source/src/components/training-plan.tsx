@@ -3,10 +3,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { activeCycle } from "@/lib/training-model";
-import { dayId, pendingIds } from "@/lib/training-queue";
-import { type Cycle } from "@/lib/domain";
-import { PageTitle, Field, Num, uid, stamp } from "./daily";
+import { dayId } from "@/lib/training-queue";
+import { dateInZone, type Cycle } from "@/lib/domain";
+import { PageTitle, Field, uid, stamp } from "./daily";
 import templates from "@/content/training-templates.json";
+import { PlanExercises } from "./plan-exercises";
+import { PlanReview } from "./plan-review";
+import { versionReview } from "@/lib/plan-version-review";
 import {exerciseLibrary} from "@/lib/exercise-library";
 export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: string) => void; startBlank?: boolean }) {
   const { state, save } = useStore();
@@ -21,9 +24,9 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
         id: current ? dayId(current, i) : uid(),
       })) ?? [],
   );
-  const ongoing = state.sessions.find((s) => s.status === "in_progress");
-  const [query, setQuery] = useState("");
-  const [dragged, setDragged] = useState<number | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [baseVersion] = useState(current?.id);
+  const [mobileEditor,setMobileEditor] = useState(false);
   const [template, setTemplate] = useState("");
   const [planSource, setPlanSource] = useState<"custom" | "template">(
     startBlank || current?.source === "custom" ? "custom" : "template",
@@ -33,18 +36,8 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
   const activeIndex = days.findIndex((day) => day.id === activeDayId);
   const selectedIndex = activeIndex < 0 ? 0 : activeIndex;
   const selectDay = (index: number) => {
-    if (index >= 0 && index < days.length) setActiveDayId(days[index].id ?? null);
+    if (index >= 0 && index < days.length) {setActiveDayId(days[index].id ?? null);setMobileEditor(true);}
   };
-
-  function moveExercise(from: number, to: number) {
-    setDays(previous => previous.map((day, index) => {
-      if (index !== selectedIndex || !day.exercises || from < 0 || to < 0 ||
-          from >= day.exercises.length || to >= day.exercises.length) return day;
-      const exercises = [...day.exercises];
-      exercises.splice(to, 0, exercises.splice(from, 1)[0]);
-      return { ...day, exercises };
-    }));
-  }
 
   function preset(selected:string) {
     if (days.length && !window.confirm("依選擇的分化帶入課表？未儲存的修改會被新的分化取代，已完成的訓練紀錄不受影響。")) return;
@@ -63,7 +56,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
     setActiveDayId(imported[0]?.id ?? null);
   }
   return (
-    <div className="daily-page">
+    <div className={"daily-page plan-workspace"+(mobileEditor?" day-focused":"")}>
       <PageTitle title="Training Plan" />
       <section className="cycle-overview"><h2>{name}</h2>
         <a href={(process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/training/calendar/"}>訓練行事曆</a>
@@ -116,11 +109,12 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
           onClick={() => {
             const id = uid();
             setDays([...days, {id, name: "自訂訓練日", exercises: []}]);
-            setActiveDayId(id);
+            setActiveDayId(id);setMobileEditor(true);
           }}>＋ 新增訓練日</button>
       </section>
       {days.map((day, i) => ({day, i})).filter(({i}) => i === selectedIndex).map(({day, i}) => (
         <section className="card stack plan-day-editor" key={day.id}>
+          <button className="day-back" type="button" onClick={()=>setMobileEditor(false)}>返回週期總覽</button>
           <Field label={`訓練日 ${i + 1}`}>
             <input
               value={day.name}
@@ -155,57 +149,8 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                         ...d, secondSession:{...d.secondSession!,name:e.target.value},
                       })))} />
                   </Field>
-                  {(day.secondSession.exercises ?? []).map((ex,j) => (
-                    <div className="plan-exercise" key={j} onDragOver={event => event.preventDefault()}
-              onDrop={event => { event.preventDefault(); if (dragged !== null) moveExercise(dragged, j); setDragged(null); }}>
-              <span draggable onDragStart={() => setDragged(j)} onDragEnd={() => setDragged(null)}>拖曳排序</span>
-              <button type="button" disabled={j === 0} onClick={() => moveExercise(j,j-1)}>上移動作</button>
-              <button type="button" disabled={j+1 >= (day.exercises?.length ?? 0)} onClick={() => moveExercise(j,j+1)}>下移動作</button>
-                      <strong>{ex.name}</strong>
-                      <div className="form-grid">
-                        {(["sets","reps","restSeconds"] as const).map((key,k) => (
-                          <Field key={key} label={["組數","次數範圍","休息秒數"][k]}>
-                            <input type={key==="reps" ? "text" : "number"}
-                              min={1}
-                              max={key==="restSeconds" ? 3600 : 100}
-                              value={ex[key]}
-                              onChange={e => setDays(days.map((d,n) => n !== i ? d : ({
-                                ...d, secondSession:{
-                                  ...d.secondSession!,
-                                  exercises:d.secondSession!.exercises!.map((x,m) => m!==j ? x : ({
-                                    ...x,[key]:key==="reps" ? e.target.value : Number(e.target.value),
-                                  })),
-                                },
-                              })))} />
-                          </Field>
-                        ))}
-                      </div>
-                      <button type="button" className="text-link"
-                        onClick={() => setDays(days.map((d,n) => n!==i ? d : ({
-                          ...d,secondSession:{...d.secondSession!,
-                            exercises:d.secondSession!.exercises!.filter((_,m)=>m!==j)},
-                        })))}>移除動作</button>
-                    </div>
-                  ))}
-                  <select aria-label="第二場加入動作" value=""
-                    onChange={e => {
-                      const item=library.find(x=>x.id===e.target.value);
-                      if(!item)return;
-                      setDays(days.map((d,j)=>j!==i ? d : ({
-                        ...d,
-                        secondSession:{
-                          ...d.secondSession!,
-                          exercises:[...(d.secondSession!.exercises??[]),{
-                            exerciseLibraryId:item.id,name:item.name,muscle:item.muscle,sets:3,reps:"8–12",
-                            restSeconds:120,allowRestPause:item.allowRestPause,
-                            allowDropSet:item.allowDropSet,
-                          }],
-                        },
-                      })));
-                    }}>
-                    <option value="">＋ 第二場加入動作</option>
-                    {library.map(ex=><option key={ex.id} value={ex.id}>{ex.nameZh} · {ex.name}</option>)}
-                  </select>
+                  <PlanExercises label="第二場" items={library} rows={day.secondSession.exercises ?? []}
+                    change={exercises => setDays(days.map((d,n) => n===i ? {...d,secondSession:{...d.secondSession!,exercises}} : d))}/>
                   {!day.secondSession.exercises?.length && (
                     <p className="muted" role="status">請先為第二場加入至少一個動作才能儲存。</p>
                   )}
@@ -251,122 +196,8 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
               刪除訓練日
             </button>
           </div>
-          {(day.exercises ?? []).map((ex, j) => (
-            <div className="plan-exercise" key={j} onDragOver={event => event.preventDefault()}
-              onDrop={event => { event.preventDefault(); if (dragged !== null) moveExercise(dragged, j); setDragged(null); }}>
-              <span draggable onDragStart={() => setDragged(j)} onDragEnd={() => setDragged(null)}>拖曳排序</span>
-              <button type="button" disabled={j === 0} onClick={() => moveExercise(j,j-1)}>上移動作</button>
-              <button type="button" disabled={j+1 >= (day.exercises?.length ?? 0)} onClick={() => moveExercise(j,j+1)}>下移動作</button>
-              <h3>{ex.name}</h3>
-              <Field label="目標 RIR"><input type="number" min="0" max="10" value={ex.targetRir ?? ""}
-                onChange={event => {
-                  const value = event.target.value;
-                  if (value && (!Number.isInteger(Number(value)) || Number(value) < 0 || Number(value) > 10)) return;
-                  setDays(days.map((d,n) => n !== i ? d : { ...d, exercises: d.exercises?.map((x,m) =>
-                    m === j ? { ...x, targetRir: value === "" ? undefined : Number(value) } : x) }));
-                }} /></Field>
-              <Field label="原位替換動作"><select value="" onChange={event => {
-                const item = library.find(x => x.id === event.target.value);
-                if (!item) return;
-                setDays(days.map((d,n) => n !== i ? d : { ...d, exercises: d.exercises?.map((x,m) =>
-                  m !== j ? x : { ...x, exerciseLibraryId: item.id, name: item.name, muscle: item.muscle,
-                    allowDropSet: item.allowDropSet, allowRestPause: item.allowRestPause }) }));
-              }}><option value="">選擇替換動作</option>{library.map(item => <option value={item.id} key={item.id}>{item.nameZh} · {item.name}</option>)}</select></Field>
-              <div className="form-grid">
-                {(["sets", "reps", "restSeconds"] as const).map(
-                  (key, k) => (
-                    <Field
-                      key={key}
-                      label={["組數", "次數範圍", "休息秒數"][k]}
-                    >
-                      <input
-                        type={key === "reps" ? "text" : "number"}
-                        min={1}
-                        max={key === "restSeconds" ? 3600 : 100}
-                        value={ex[key]}
-                        onChange={(e) =>
-                          setDays(
-                            days.map((d, n) =>
-                              n !== i
-                                ? d
-                                : {
-                                    ...d,
-                                    exercises: d.exercises!.map((x, m) =>
-                                      m !== j
-                                        ? x
-                                        : {
-                                            ...x,
-                                            [key]:
-                                              key === "reps"
-                                                ? e.target.value
-                                                : Number(e.target.value),
-                                          },
-                                    ),
-                                  },
-                            ),
-                          )
-                        }
-                      />
-                    </Field>
-                  ),
-                )}
-              </div>
-              <button
-                className="text-link"
-                onClick={() =>
-                  setDays(
-                    days.map((d, n) =>
-                      n !== i
-                        ? d
-                        : {
-                            ...d,
-                            exercises: d.exercises!.filter((_, m) => m !== j),
-                          },
-                    ),
-                  )
-                }
-              >
-                移除動作
-              </button>
-            </div>
-          ))}
-          <Field label="搜尋新增動作"><input type="search" value={query} onChange={event => setQuery(event.target.value)} /></Field>
-          <select
-            aria-label={`加入動作 ${i + 1}`}
-            value=""
-            onChange={(e) => {
-              const item = library.find((x) => x.id === e.target.value)!;
-              setDays(
-                days.map((d, j) =>
-                  j !== i
-                    ? d
-                    : {
-                        ...d,
-                        exercises: [
-                          ...(d.exercises ?? []),
-                          {
-                            exerciseLibraryId: item.id,
-                            name: item.name,
-                            muscle: item.muscle,
-                            sets: 3,
-                            reps: "8–12",
-                            restSeconds: 120,
-                            allowRestPause: item.allowRestPause,
-                            allowDropSet: item.allowDropSet,
-                          },
-                        ],
-                      },
-                ),
-              );
-            }}
-          >
-            <option value="">＋加入動作</option>
-            {library.filter(e => (e.nameZh + " " + e.name).toLowerCase().includes(query.toLowerCase())).map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.nameZh} · {e.name}
-              </option>
-            ))}
-          </select>
+          <PlanExercises label="第一場" items={library} rows={day.exercises ?? []}
+            change={exercises=>setDays(days.map((d,n)=>n===i?{...d,exercises}:d))}/>
         </section>
       ))}
 
@@ -378,19 +209,25 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
             !d.name.trim() || (d.secondSession &&
               (!d.secondSession.name.trim() || !d.secondSession.exercises?.length)))
         }
-        onClick={() => {
-          const summary = days.map((d,i) => "Day " + (i+1) + " · " + d.name + " · " + (d.exercises?.length ?? 0) + " 個動作" + (d.secondSession ? " · 含第二場" : "")).join("\n");
-          if (!window.confirm("確認建立新週期版本？\n" + name + "\n" + summary)) return;
+        onClick={() => setReviewOpen(true)}>
+        檢閱變更
+      </button>
+      {reviewOpen && <PlanReview state={state} days={days} name={name} close={()=>setReviewOpen(false)} confirm={()=> {
           if (
             save("儲存 Training Plan 新版本", (s) => {
               const old = activeCycle(s);
-              const oldPending = old ? pendingIds(s, old) : [];
-              const oldIds = old?.days.map((_, i) => dayId(old, i)) ?? [];
-              const pending = days
-                .filter(
-                  (d) => !oldIds.includes(d.id!) || oldPending.includes(d.id!),
-                )
-                .map((d) => d.id!);
+              for (const day of days) {
+                for (const exercise of [...(day.exercises ?? []), ...(day.secondSession?.exercises ?? [])]) {
+                  if (!exercise.reps.trim() || !Number.isInteger(exercise.sets) || exercise.sets < 1 ||
+                      exercise.sets > 100 || !Number.isInteger(exercise.restSeconds) ||
+                      exercise.restSeconds < 1 || exercise.restSeconds > 3600 ||
+                      (exercise.targetRir !== undefined && (!Number.isInteger(exercise.targetRir) ||
+                        exercise.targetRir < 0 || exercise.targetRir > 10)))
+                    throw Error(day.name + " · " + exercise.name + " 的訓練目標無效，請返回編輯。");
+                }
+              }
+              if (old?.id !== baseVersion) throw Error("課表已有新版本，請重新開啟編輯器並比對變更。");
+              const review = versionReview(s,days,dateInZone(s.profile?.timezone));
               (s.cycles ??= []).push({
                 id: uid(),
                 name: name.trim(),
@@ -403,8 +240,9 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
                     exercises:day.secondSession.exercises?.map(({rir,...exercise})=>exercise),
                   }:undefined,
                 })),
-                pending: pending.length ? pending : days.map((d) => d.id!),
-                round: (old?.round ?? 1) + (pending.length ? 0 : 1),
+                pending: review.pending,
+                round: review.nextRound,
+                muscleTargets: old?.muscleTargets ? structuredClone(old.muscleTargets) : undefined,
                 previousId: old?.id,
                 stage: old?.stage ?? "Intensity",
                 createdAt: stamp(),
@@ -412,10 +250,7 @@ export function TrainingPlan({ notify, startBlank = false }: { notify: (s?: stri
             })
           )
             { notify("課表已儲存"); router.push("/training"); }
-        }}
-      >
-        儲存計畫版本
-      </button>
+      }}/>}
       {current && (
         <p className="muted">
           目前版本 {current.createdAt.slice(0, 16).replace("T", " ")} ·{" "}
