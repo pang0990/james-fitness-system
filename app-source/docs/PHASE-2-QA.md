@@ -35,9 +35,10 @@ cd app-source
 npm ci
 npm run typecheck
 npm test
-NEXT_PUBLIC_JFS_REVIEW_PREVIEW=1 NEXT_PUBLIC_JFS_REVIEW_ID=phase2 npm run build
+export NEXT_PUBLIC_JFS_REVIEW_PREVIEW=1 NEXT_PUBLIC_JFS_REVIEW_ID=phase2
+npm run build
 npx playwright install chromium
-npx playwright test tests/e2e/phase-two-review.spec.ts tests/e2e/review-preview.spec.ts
+npx playwright test tests/e2e/phase-two-review.spec.ts tests/e2e/phase-two-integrity.spec.js tests/e2e/review-preview.spec.ts
 ~~~
 
 單獨預覽可在 build 後執行 npm run start，開啟 http://127.0.0.1:3100/today/。下載版解壓後於終端執行 zsh Preview.command，使用 Python 3 的隨機 loopback 埠。預覽使用範例資料；重新啟動若換埠，瀏覽器會使用另一個儲存空間。Ctrl-C 結束預覽。
