@@ -1,3 +1,5 @@
+> 歷史紀錄。現行樣式入口為 `src/styles/index.css`。舊外觀僅供版本追溯。
+
 # Visual Direction v2.0
 
 Luxury Cyber Minimalism. Data is quiet; interaction creates light; important moments create depth.

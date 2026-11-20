@@ -1,3 +1,5 @@
+> 歷史紀錄。現行樣式入口為 `src/styles/index.css`。舊外觀僅供版本追溯。
+
 # JFS Visual Styles — 2026-10-14
 
 The existing 2077 / Cinematic artwork, CSS, and screen structure are kept intact.

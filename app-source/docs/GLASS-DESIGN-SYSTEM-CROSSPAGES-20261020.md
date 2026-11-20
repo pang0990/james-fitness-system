@@ -1,3 +1,5 @@
+> 歷史紀錄。現行樣式入口為 `src/styles/index.css`。舊外觀僅供版本追溯。
+
 # Glass Design System 2.0 — three-page migration
 Date: 2026-10-20 | Status: Draft review (not published).
 

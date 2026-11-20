@@ -26,7 +26,7 @@ export function makeReviewSeed(date = dateInZone("Asia/Taipei")): AppState {
     },
   };
   state.profile = profile;
-  state.appearance = { theme: "dark", visualStyle: "minimal", showCompanion: false };
+  state.appearance = { theme: "light", visualStyle: "minimal", showCompanion: false };
   state.versions = [{
     id: "review-nutrition-plan", number: 1, createdAt: todayAt,
     effectiveDate: addDays(date, -60), previousId: null,

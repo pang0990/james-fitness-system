@@ -1,132 +1,52 @@
 "use client";
-import { FoodLogger, NutritionWeek } from "./food-logger";
+import { FoodLogger,NutritionWeek } from "./food-logger";
 import { NutritionDashboardV3 } from "./nutrition-dashboard-v3";
 import { validateNewMealInput } from "@/lib/nutrition-input";
 import type { MealSnapshot } from "@/lib/food-plate";
-import { GlassCard, GlassButton } from "./ui/glass-system";
 import Link from "next/link";
-import { RecoveryQuickLog, RecoveryEntryPoints } from "./recovery-log";
-import { DailyActivity } from "./daily-activity";
+import { RecoveryQuickLog } from "./recovery-log";
 import { latestRecovery } from "@/lib/recovery";
-import { nextDayIndex } from "@/lib/training-queue";
-import { Companion, type CompanionState as PetState } from "./companion";
-import { NoticeCarousel } from "./notices";
-import { CityAtmosphere } from "./city-atmosphere";
+
+
 import {
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-  type FormEvent,
-  type CSSProperties,
+useEffect,useRef,
+useState,
+type ReactNode,
+type FormEvent,
+type CSSProperties
 } from "react";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  ChevronRight,
-  Droplet,
-  Dumbbell,
-  Ellipsis,
-  Plus,
-  Utensils,
-  Coffee,
-  Soup,
-  Cookie,
-  X,
-  Undo2,
-  Activity,
-  Heart,
-  Search,
-  BookOpen,
-  CalendarDays,
-  ChevronDown,
-  ChevronUp,
+ArrowRight,ChevronRight,Ellipsis,
+Plus,CalendarDays,
+ChevronDown,
+ChevronUp
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import {
-  activePlan,
-  dateInZone,
-  addDays,
-  dayNames,
-  mealTotals,
-  syncMealCompletion,
-  resolveDay,
-  visibleMeals,
-  waterTotal,
-  pinDay,
-  setDayType,
-  round,
-  type DayType,
-  type Food,
-  type Meal,
+dateInZone,
+addDays,
+dayNames,
+mealTotals,
+syncMealCompletion,
+resolveDay,
+visibleMeals,
+visibleMeasurements,
+waterTotal,
+pinDay,
+setDayType,
+round,
+type DayType,
+type Food,
+type Meal
 } from "@/lib/domain";
-import { activeCycle, scheduleKind } from "@/lib/training-model";
 import master from "@/content/foods.json";
 import cooked from "@/content/cooked-foods.json";
 import official from "@/content/fda-foods.json";
 import builtInRecipes from "@/content/recipes-seed.json";
+import { Sheet } from "./ui/sheet";
 export const uid = () => crypto.randomUUID();
 export const stamp = () => new Date().toISOString();
-export function Sheet({
-  title,
-  children,
-  onClose,
-  mode = "standard",
-}: {
-  title: string;
-  children: ReactNode;
-  onClose: () => void;
-  mode?: "standard" | "nutrition-logger";
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    el?.showModal();
-    const prev = document.activeElement as HTMLElement;
-    return () => {
-      el?.close();
-      prev?.focus();
-    };
-  }, []);
-  useEffect(() => {
-    if (mode !== "nutrition-logger") return;
-    const viewport = window.visualViewport;
-    const el = ref.current;
-    if (!viewport || !el) return;
-    const fit = () => {
-      el.style.setProperty("--nutrition-viewport-height", viewport.height + "px");
-      el.style.setProperty("--nutrition-viewport-top", viewport.offsetTop + "px");
-    };
-    fit();
-    viewport.addEventListener("resize", fit);
-    viewport.addEventListener("scroll", fit);
-    return () => {
-      viewport.removeEventListener("resize", fit);
-      viewport.removeEventListener("scroll", fit);
-    };
-  }, [mode]);
-  return (
-    <dialog
-      ref={ref}
-      className={mode === "nutrition-logger" ? "sheet sheet--nutrition-logger" : "sheet"}
-      onCancel={(e)=>{e.preventDefault();onClose();}}
-      onClick={(e) => {
-        if (e.target === ref.current) onClose();
-      }}
-    >
-      <div className="sheet-body">
-        <header>
-          <h2>{title}</h2>
-          <button className="icon-button" onClick={onClose} aria-label="關閉">
-            <X />
-          </button>
-        </header>
-        {children}
-      </div>
-    </dialog>
-  );
-}
+export { Sheet } from "./ui/sheet";
 export function Menu({ items }: { items: [string, string][] }) {
   return (
     <details className="overflow-menu">
@@ -146,14 +66,16 @@ export function Menu({ items }: { items: [string, string][] }) {
 }
 export function PageTitle({
   title,
+  eyebrow,
   children,
 }: {
   title: string;
+  eyebrow?: string;
   children?: ReactNode;
 }) {
   return (
     <div className="simple-heading">
-      <h1>{title}</h1>
+      <div>{eyebrow && <span className="workspace-label">{eyebrow}</span>}<h1>{title}</h1></div>
       {children}
     </div>
   );
@@ -218,7 +140,7 @@ export function NutritionSummary({ date, variant = "compact" }: { date: string; 
       <div className="nutrition-v3-energy">
         <div className="nutrition-v3-calorie-ring" role="img"
           aria-label={`已攝取 ${recorded?total.kcal:"尚未記錄"}，目標 ${calorieTarget||"未設定"} kcal`}
-          style={{background:`conic-gradient(#46c4e8 0% ${pct*.62}%, #56c7ac ${pct*.62}% ${pct}%, #caad73 ${pct}% ${Math.min(100,pct+2)}%, var(--jfs-ring-track-calorie,#26272a) ${Math.min(100,pct+2)}% 100%)`, "--jfs2-fill":`${pct}%`} as CSSProperties}>
+          style={{"--jfs2-fill":`${pct}%`} as CSSProperties}>
           <div className="nutrition-v3-ring-inner">
             <strong>{recorded?Math.round(total.kcal).toLocaleString("en-US"):"—"}</strong>
             <small>/ {calorieTarget?calorieTarget.toLocaleString("en-US"):"—"} kcal</small>
@@ -233,10 +155,9 @@ export function NutritionSummary({ date, variant = "compact" }: { date: string; 
         {(["p","c","f"] as const).map((key,i)=>{
           const target=d.target?.[key]??0;
           const percent=target>0?Math.min(100,Math.max(0,total[key]/target*100)):0;
-          const color=["#679fe8","#48cfcb","#e2b969"][i];
           const label=["Protein","Carbs","Fat"][i];
           return <div className="nutrition-v3-macro" key={key}>
-            <div className="nutrition-v3-mini-ring" style={{background:`conic-gradient(${color} 0 ${percent}%,var(--jfs-ring-track,#292c31) ${percent}% 100%)`, "--jfs2-fill":`${percent}%`} as CSSProperties}>
+            <div className="nutrition-v3-mini-ring" style={{"--jfs2-fill":`${percent}%`} as CSSProperties}>
               <span>{Math.round(percent)}%</span>
             </div>
             <strong>{label}</strong>
@@ -291,222 +212,6 @@ export function NutritionSummary({ date, variant = "compact" }: { date: string; 
     </>
   );
 }
-export function TodayV2({
-  date,
-  notify,
-}: {
-  date: string;
-  notify: (s?: string) => void;
-}) {
-  const { state, save } = useStore();
-  const [pet, setPet] = useState<PetState>(() =>
-    state.sessions.some(
-      (s) =>
-        s.date === date &&
-        s.completedAt &&
-        Date.now() - Date.parse(s.completedAt) < 60000,
-    )
-      ? "celebrating"
-      : "idle",
-  );
-  const [adjust, setAdjust] = useState(false);
-  const [quickFood, setQuickFood] = useState(false);
-  const [quickDate, setQuickDate] = useState<string | null>(null);
-  const current = state.sessions.find((s) => s.status === "in_progress");
-  const cycle = activeCycle(state);
-  const completed = cycle
-    ? (state.cycleEvents?.filter(
-        (e) =>
-          e.cycleId === cycle.id && ["completed", "skipped"].includes(e.type),
-      ).length ?? 0)
-    : 0;
-  const day = cycle?.days[Math.max(0, nextDayIndex(state, cycle))];
-  const rec = state.recommendations.find((r) => r.status === "pending");
-  const target = resolveDay(state, date).target;
-  const latest = latestRecovery(state, date);
-  const sleep = latest.find((r) => r.type === "sleep");
-  const fatigue = latest.find((r) => r.type === "fatigue");
-  const recovery =
-    sleep || fatigue
-      ? {
-          sleep: sleep ? Math.round((sleep.value / 60) * 10) / 10 : null,
-          fatigue: fatigue?.value ?? null,
-        }
-      : null;
-  const water = waterTotal(state, date);
-  const hasWater = state.waters.some((w) => w.date === date);
-  useEffect(() => {
-    if (pet === "idle") return;
-    const t = setTimeout(() => setPet("idle"), 2200);
-    return () => clearTimeout(t);
-  }, [pet]);
-  function add(ml: number) {
-    if (
-      save("新增飲水", (s) =>
-        s.waters.push({ id: uid(), date, ml, createdAt: stamp() }),
-      )
-    ) {
-      setPet("drinking");
-      notify();
-    }
-  }
-  return (
-    <div className="daily-page">
-      <section className="cinematic-hero" aria-label="今日進度與角色視覺"
-        style={{backgroundImage: "linear-gradient(180deg,rgba(4,6,10,.33) 0%,rgba(3,5,10,.03) 24%,rgba(3,4,7,.13) 57%,rgba(2,3,6,.78) 100%),var(--jfs-hero)"}}>
-        <CityAtmosphere />
-        <div className="cinematic-hero-heading">
-          <div>
-            <span className="cinematic-kicker">GOOD MORNING</span>
-            <strong className="cinematic-name">{state.profile?.name || "WANDERER"}</strong>
-          </div>
-          <div className="cinematic-day-label"><small>CYCLE DAY</small><b>{cycle ? completed + 1 : "—"}</b></div>
-        </div>
-        <div className="cinematic-character-control">
-          <button type="button" onClick={() => setPet(pet === "reading" ? "idle" : "reading")} className="cinematic-tap">◇ TAP TO INTERACT</button>
-          <span>{pet === "reading" ? "TURN AROUND · 轉身" : pet === "drinking" ? "DRINKING · 喝水" : pet === "celebrating" ? "CELEBRATE · 慶祝" : "WALKING · 行走"}</span>
-        </div>
-        <div className="cinematic-marquee">
-          <span className="cinematic-kicker">✦ TODAY ACTION QUEUE</span>
-          <NoticeCarousel date={date} onLog={setQuickDate} />
-        </div>
-        {quickDate && (
-          <RecoveryQuickLog
-            date={quickDate}
-            close={() => setQuickDate(null)}
-            notify={notify}
-          />
-        )}
-      </section>
-      <section className="card">
-        <div className="card-head">
-          <h2>
-            <Dumbbell size={19} />
-            TRAIN
-          </h2>
-          <Link href="/training" aria-label="開啟訓練">
-            <ChevronRight />
-          </Link>
-        </div>
-        <p className="today-training">
-          {current?.name ?? (day ? day.name : "尚未設定 Training Plan")}
-        </p>
-        <Link
-          className="button secondary"
-          href={current ? "/training/session" : "/training"}
-        >
-          {current ? "繼續訓練" : day ? "開始訓練" : "設定訓練"}
-          <ArrowRight size={16} />
-        </Link>
-      </section>
-      <section className="card">
-        <div className="card-head">
-          <h2>
-            <Utensils size={19} />
-            EAT
-          </h2>
-          <Link href="/nutrition" aria-label="開啟營養">
-            <ChevronRight />
-          </Link>
-        </div>
-        <NutritionSummary date={date} />
-        <button className="button" onClick={() => setQuickFood(true)}>
-          <Plus size={16} />
-          記錄飲食
-        </button>
-        {quickFood && (
-          <NutritionV2
-            path="nutrition/log"
-            date={date}
-            notify={notify}
-            inlineClose={() => setQuickFood(false)}
-          />
-        )}
-      </section>
-      <section className="daily-status">
-        <p className="eyebrow">DAILY STATUS</p>
-        <div className="daily-status-block">
-          <div className="card-head">
-            <h2>
-              <Droplet size={19} />
-              Water
-            </h2>
-            <button
-              className="icon-button"
-              aria-label="修正飲水"
-              onClick={() => setAdjust(true)}
-            >
-              <Undo2 size={19} />
-            </button>
-          </div>
-          <p className="water-number">
-            {hasWater ? round(water / 1000, 2) : "尚未紀錄"}{" "}
-            <small>
-              /{" "}
-              {state.profile?.waterTarget
-                ? round(state.profile.waterTarget / 1000, 2)
-                : "—"}{" "}
-              L
-            </small>
-          </p>
-          <div className="two-actions">
-            <button
-              className="button secondary"
-              onClick={() => add(Number(state.preferences?.waterQuick1 ?? 250))}
-            >
-              +{Number(state.preferences?.waterQuick1 ?? 250)} ml
-            </button>
-            <button
-              className="button secondary"
-              onClick={() => add(Number(state.preferences?.waterQuick2 ?? 500))}
-            >
-              +{Number(state.preferences?.waterQuick2 ?? 500)} ml
-            </button>
-          </div>
-        </div>
-        <div className="daily-status-block">
-          <div className="card-head">
-            <h2>
-              <Heart size={19} />
-              Recovery
-            </h2>
-            <button onClick={() => setQuickDate(date)} aria-label="記錄恢復">
-              <Plus />
-            </button>
-          </div>
-          <RecoveryEntryPoints date={date} />
-        </div>
-      </section>
-      <DailyActivity date={date} notify={notify}/>
-      {adjust && (
-        <Sheet title="修正飲水" onClose={() => setAdjust(false)}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const ml = Number(new FormData(e.currentTarget).get("ml"));
-              if (
-                save("修正飲水總量", (s) =>
-                  s.waters.push({
-                    id: uid(),
-                    date,
-                    ml: ml - waterTotal(s, date),
-                    createdAt: stamp(),
-                  }),
-                )
-              ) {
-                notify();
-                setAdjust(false);
-              }
-            }}
-          >
-            <Num name="ml" label="今日總飲水量 ml" value={water} step="50" />
-            <button className="button">保存修正</button>
-          </form>
-        </Sheet>
-      )}
-    </div>
-  );
-}
 const categories = ["碳水化合物", "蛋白質", "脂肪", "蔬菜", "水果", "自訂"];
 export type LibraryFood = Food & {
   nameEn?: string;
@@ -521,7 +226,7 @@ export function FoodPicker({
 }: {
   mine?: boolean;
   addToPlate?: boolean;
-  onSelect: (f: LibraryFood) => void;
+  onSelect: (f: LibraryFood, recentQuantity?: number) => void;
   onRecipeSelect?: (recipe: MealSnapshot) => void;
 }) {
   const { state, save } = useStore();
@@ -534,10 +239,15 @@ export function FoodPicker({
   const foods = (
     mine ? state.foods : [...master, ...cooked, ...official, ...state.foods]
   ) as LibraryFood[];
+  const recentPortions = new Map<string, { at: string; quantity: number; unit: string }>();
   const counts = new Map<string, number>(),
     recent = new Map<string, string>();
   for (const m of visibleMeals(state)) {
     if (m.foodId) {
+      if (Number.isFinite(m.quantity) && m.quantity > 0 && m.quantity <= 10000 &&
+          (recentPortions.get(m.foodId)?.at ?? "") <= m.createdAt) {
+        recentPortions.set(m.foodId, { at: m.createdAt, quantity: m.quantity, unit: m.unit });
+      }
       counts.set(m.foodId, (counts.get(m.foodId) ?? 0) + 1);
       recent.set(m.foodId, (recent.get(m.foodId)??"") > m.createdAt ? recent.get(m.foodId)! : m.createdAt);
     }
@@ -575,6 +285,23 @@ export function FoodPicker({
           placeholder={onRecipeSelect ? "搜尋食物或食譜..." : "中文或 English"}
         />
       </Field>
+      {addToPlate && !search && !focused && ["最近使用", "我的收藏"].map(label => {
+        const recentOnly = label === "最近使用";
+        const ids = recentOnly
+          ? [...recentPortions].sort((a,b) => b[1].at.localeCompare(a[1].at)).map(([id]) => id)
+          : state.favoriteFoods ?? [];
+        return <section key={label} className="logger-shortcuts"><h3>{label}</h3>
+          {ids.length === 0 && <p className="muted">尚無紀錄</p>}
+          {ids.slice(0,8).map(id => {
+            const item = foods.find(food => food.id === id);
+            if (!item) return null;
+            const last = recentPortions.get(id);
+            const amount = recentOnly && last?.unit === item.unit ? last.quantity : item.base;
+            return <button type="button" className="button secondary" key={id}
+              onClick={() => onSelect(item, amount)}>{item.name} · {amount} {item.unit}</button>;
+          })}
+        </section>;
+      })}
       {(focused || !!search.trim()) && (
         <>
           <div className="food-picker-sources" role="group" aria-label="食物來源">
@@ -600,13 +327,13 @@ export function FoodPicker({
           </details>
         </>
       )}
-      {resultType !== "recipe" && (
+      {resultType !== "recipe" && (!addToPlate || focused || !!search.trim()) && (
         <>
           <p className="muted food-count">{filtered.length} 項食物</p>
           <ul className="food-list">
             {filtered.slice(0, limit).map((f) => (
               <li key={f.id} className="food-with-favorite">
-                <button type="button" onClick={() => onSelect(f)}
+                <button type="button" onClick={() => onSelect(f, source === "recent" && recentPortions.get(f.id)?.unit === f.unit ? recentPortions.get(f.id)?.quantity : undefined)}
                   aria-label={"選擇 " + f.name} className="food-result-select">
                   <span className="food-result-text">
                     <strong>{f.name}</strong>
@@ -695,6 +422,7 @@ export function NutritionV2({
 }) {
   const { state, save } = useStore();
   const [selectedDate, setDate] = useState(date);
+  const [health, setHealth] = useState<"water" | "weight" | "sleep" | null>(null);
   const [expandedMeals, setExpandedMeals] = useState<string[]>([]);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [customFoodEdit, setCustomFoodEdit] = useState<Food | null>(null);
@@ -720,6 +448,8 @@ export function NutritionV2({
   const [mealError, setMealError] = useState("");
   const day = resolveDay(state, selectedDate);
   const meals = visibleMeals(state, selectedDate);
+  const dayWeight = visibleMeasurements(state).filter(m => m.date === selectedDate && m.weight != null).at(-1)?.weight;
+  const recoveryCount = latestRecovery(state, selectedDate).length;
   const isLibrary = path === "nutrition/foods";
   function close() {
     if(loggerDirty && !window.confirm("離開並放棄待確認食物？已儲存的紀錄不受影響。")) return;
@@ -776,7 +506,7 @@ export function NutritionV2({
   }
   return (
     <div className={inlineClose ? "inline-nutrition" : "daily-page"}>
-      <PageTitle title={isLibrary ? "食物庫" : "Nutrition"}>
+      <PageTitle title={isLibrary ? "食物庫" : "每日紀錄"} eyebrow={isLibrary ? "FOOD LIBRARY" : "DAILY JOURNAL"}>
         <Menu
           items={[
             ["/nutrition/plan", "營養計畫"],
@@ -867,7 +597,8 @@ export function NutritionV2({
               onChange={(e) => { if(e.target.value) {setDate(e.target.value);setExpandedMeals([]);setDatePickerOpen(false);} }}/>}
           </div>
           <NutritionWeek date={selectedDate} onChange={next => {setDate(next);setExpandedMeals([]);}} />
-          {state.appearance?.visualStyle !== "cinematic" && !inlineClose ? (
+          <div className="journal-columns"><div className="journal-nutrition">
+          {!inlineClose ? (
             <NutritionDashboardV3 date={selectedDate}
               onAddMeal={() => { setSlot(state.mealSlots[0]); setSheet("add"); }} />
           ) : (
@@ -896,6 +627,8 @@ export function NutritionV2({
                       aria-controls={"meal-details-" + selectedDate + "-" + encodeURIComponent(name)}
                       onClick={() => setExpandedMeals(old => old.includes(name) ? old.filter(n => n !== name) : [...old, name])}>
                       <span className="meal-heading-text"><strong>{name}</strong>
+                        <small>{(["p","c","f"] as const).map(key =>
+                          key.toUpperCase() + " " + round(entries.reduce((total, meal) => total + meal[key], 0)) + " g").join(" · ")}</small>
                         <small>{entries.length ? entries.length + " 項食物 · " + kcal + " kcal" : "尚無紀錄"}</small>
                       </span>
                       {expanded ? <ChevronUp size={20} aria-hidden="true"/> : <ChevronDown size={20} aria-hidden="true"/>}
@@ -943,8 +676,30 @@ export function NutritionV2({
               );
             })}
           </section>
+          </div>
+          <section className="journal-health" aria-label="每日健康紀錄">
+            <h2>每日健康紀錄</h2>
+            <button type="button" onClick={() => setHealth("water")}>飲水<strong>{waterTotal(state, selectedDate)} mL</strong></button>
+            <button type="button" onClick={() => setHealth("weight")} aria-label="紀錄體重">體重<strong>{dayWeight == null ? "尚無紀錄" : dayWeight + " kg"}</strong></button>
+            <button type="button" onClick={() => setHealth("sleep")} aria-label="紀錄恢復狀態">恢復<strong>{recoveryCount ? recoveryCount + " 筆紀錄" : "尚無紀錄"}</strong></button>
+          </section>
+          </div>
+          {health === "water" && <Sheet title={selectedDate + " · 新增飲水"} onClose={() => setHealth(null)}>
+            <form onSubmit={event => {
+              event.preventDefault();
+              const ml = Number(new FormData(event.currentTarget).get("ml"));
+              if (ml > 0 && ml <= 10000 && save("新增飲水", draft => {
+                draft.waters.push({ id: uid(), date: selectedDate, ml, createdAt: stamp() });
+              })) setHealth(null);
+            }}>
+              <Field label="飲水量 mL"><input required autoFocus name="ml" type="number" min="1" max="10000" /></Field>
+              <button className="button">儲存</button>
+            </form>
+          </Sheet>}
+          {(health === "sleep" || health === "weight") && <RecoveryQuickLog date={selectedDate}
+            initialKind={health} notify={notify} close={() => setHealth(null)} />}
           <Link className="nutrition-manage-link" href="/nutrition/foods">管理我的食物</Link>
-          {(state.appearance?.visualStyle === "cinematic" || inlineClose) && (
+          {inlineClose && (
             <button className="button add-meal" onClick={() => { setSlot(state.mealSlots[0]); setSheet("add"); }}>
               <Plus size={18} /> 新增飲食
             </button>

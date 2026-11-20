@@ -1,3 +1,5 @@
+> 歷史紀錄。現行樣式入口為 `src/styles/index.css`。舊外觀僅供版本追溯。
+
 # Glass System 3.0 — Quality Gate / Batch 1
 Date: 2026-10-20 · Review branch only (not deployed).
 

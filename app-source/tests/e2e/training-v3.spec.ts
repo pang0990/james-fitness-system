@@ -1,3 +1,4 @@
+import { textContrast } from "./text-contrast";
 import { test, expect, DATA_KEY } from "./authenticated";
 import { trainingFixture, segment } from "../fixtures/training-v3";
 import type { AppState } from "../../src/lib/domain";
@@ -17,7 +18,7 @@ async function seed(page: Page, state = trainingFixture()) {
   );
   await page.goto("/training/session/");
   await expect(
-    page.getByRole("heading", { name: "Active Workout", exact: true }),
+    page.getByRole("heading", { name: state.sessions.find(s=>s.status==="in_progress")!.name, exact: true }),
   ).toBeVisible({ timeout: 10000 });
 }
 async function stored(page: Page): Promise<AppState> {
@@ -137,7 +138,7 @@ test("rest survives pause/reload; edit, delete and restore; partial Cycle confir
   expect(state.sessions[1].status).toBe("completed");
   expect(state.cycles![0].pending).toEqual(["day-a", "day-b"]);
   expect(state.cycleEvents).toHaveLength(0);
-  await expect(page.getByRole("link",{name:"查看下一個訓練日 →",exact:true})).toHaveCSS("color","rgb(255, 255, 255)");
+  expect(await textContrast(page.getByRole("link",{name:"查看下一個訓練日 →",exact:true}))).toBeGreaterThanOrEqual(4.5);
   await shot(page, "training-v3-complete-summary", info);
 });
 
@@ -327,7 +328,7 @@ test("corrupt local Session stops writes and preserves the raw snapshot", async 
 });
 
 for (const width of [375, 390, 430, 768, 1024, 1440])
-  test(`viewport ${width}: meaningful glass UI, no overflow or error, keyboard input and focus`, async ({
+  test(`viewport ${width}: workout controls, no overflow or error, keyboard input and focus`, async ({
     page,
   }, info) => {
     await page.setViewportSize({ width, height: 900 });
@@ -352,11 +353,7 @@ for (const width of [375, 390, 430, 768, 1024, 1440])
         () => document.documentElement.scrollWidth - innerWidth,
       ),
     ).toBeLessThanOrEqual(1);
-    expect(
-      await page
-        .locator(".exercise-focus")
-        .evaluate((el) => getComputedStyle(el).backgroundColor),
-    ).not.toBe("rgb(34, 34, 37)");
+    expect(await textContrast(page.locator(".exercise-focus h2").first())).toBeGreaterThanOrEqual(4.5);
     const inputBox = await page
       .locator('.workout-set-entry input[name="reps"]')
       .boundingBox();
@@ -547,10 +544,7 @@ test("warm-up: labels are readable when Active Workout starts in warm-up phase",
   fixture.sessions[1].phase="warmup";
   await seed(page,fixture);
   await expect(page.getByLabel("從動作庫加入暖身")).toBeVisible();
-  const color=await page.locator(".warmup-editor .muted").first().evaluate(el=>getComputedStyle(el).color);
-  const rgb=color.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
-  expect(rgb).toHaveLength(3);
-  expect(Math.min(...rgb)).toBeGreaterThanOrEqual(150);
+  expect(await textContrast(page.locator(".warmup-editor .muted").first())).toBeGreaterThanOrEqual(4.5);
 });
 
 test("Training autosave is silent but failed saves stay visible", async ({page}) => {

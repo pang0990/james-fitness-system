@@ -1,3 +1,4 @@
+import { textContrast } from "./text-contrast";
 import { test, expect } from "@playwright/test";
 import { initialState, dateInZone, addDays } from "../../src/lib/domain";
 const key = "james-fitness-user-v1:jfs-local-guest-v1";
@@ -204,7 +205,7 @@ for (const width of [390, 1440])
     expect(
       await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth + 1),
     ).toBe(true);
-    await expect.poll(()=>page.getByRole("button",{name:"確認加入 1 項食物"}).evaluate(el=>({color:getComputedStyle(el).color,background:getComputedStyle(el).backgroundColor}))).toEqual({color:"rgb(10, 10, 10)",background:"rgb(245, 245, 245)"});
+    expect(await textContrast(page.getByRole("button",{name:"確認加入 1 項食物"}))).toBeGreaterThanOrEqual(4.5);
     if (process.env.NUTRITION_QA_DIR)
       await page.screenshot({
         path: process.env.NUTRITION_QA_DIR + `/nutrition-logger-${width}.png`,

@@ -24,7 +24,7 @@ export function WorkoutHistoryDetail() {
       {session ? (
         <>
           <section className="card stack">
-            <small>{session.workoutDate ?? session.date}</small>
+            <small>{session.workoutDate ?? session.date} · {session.parentSessionId || session.sessionPart==="second" ? "第二場" : session.isExtra ? "額外訓練" : "第一場"} · {session.exercises.length} 個動作</small>
             <strong>{session.status === "discarded" ? "已放棄" : "已完成"}</strong>
             <p className="muted">依當次 Session 保存的實際紀錄呈現，不使用現在的 Plan 自動補齊組數。</p>
             <p>實際完成組數：{session.exercises.reduce((a, e) => a + e.sets.filter(t => t.type === "working").length, 0)}</p>
@@ -38,7 +38,8 @@ export function WorkoutHistoryDetail() {
               {ex.sets.length ? ex.sets.map((set, i) => (
                 <div className="simple-row" key={set.id}>
                   <span>{i+1}. {set.type}</span>
-                  <span>{set.weight} kg × {set.reps}</span>
+                  <span>{set.weight} kg × {set.reps} · RIR {set.rir ?? "—"}
+                    {set.parentId && " · 延伸自第 " + (ex.sets.findIndex(parent=>parent.id===set.parentId)+1) + " 組"}</span>
                   {session.status==="completed" && <button type="button" className="text-link"
                     onClick={()=>setEditing({exerciseId:ex.id,setId:set.id})}>更正</button>}
                 </div>
