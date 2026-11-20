@@ -22,10 +22,10 @@ test("Today uses the Cycle round and completed workout CTA opens History", async
   }, {key: DATA_KEY, date: today});
   await page.reload();
   await expect(page.locator(".today-v3-cycle")).toContainText("Cycle 03");
-  const action = page.getByRole("link", { name: /查看訓練紀錄/ });
-  await expect(action).toHaveAttribute("href", /\/training\/history\/?$/);
+  const action = page.getByRole("link", { name: /查看訓練摘要/ });
+  await expect(action).toHaveAttribute("href", /\/training\/history\/session\/?\?id=completed-ui-test$/);
   await action.click();
-  await expect(page).toHaveURL(/\/training\/history\/?$/);
+  await expect(page).toHaveURL(/\/training\/history\/session\/?\?id=completed-ui-test$/);
 });
 
 test("Progress period controls the workout comparisons and step average, not Review window", async ({ page }) => {
@@ -63,17 +63,18 @@ test("Progress period controls the workout comparisons and step average, not Rev
 
 test("Nutrition rejects out-of-range single meal without writing a record", async ({ page }) => {
   await page.goto("/nutrition/");
-  await page.getByRole("button", { name: "加入飲食", exact: true }).click();
+  await page.getByRole("button", { name: /新增食物至早餐/ }).click();
   await page.getByRole("button", { name: /Quick Macro/ }).click();
   await page.getByRole("textbox", { name: "這餐吃了什麼" }).fill("測試餐");
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("1001");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("30");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("10");
-  await page.getByRole("button", { name: "加入紀錄" }).click();
+  await page.getByRole("button", { name: "加入待確認清單" }).click();
   expect(await page.getByRole("spinbutton", { name: "蛋白質 g" }).evaluate(input => (input as HTMLInputElement).validity.rangeOverflow)).toBe(true);
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key) || "{}").meals.length, DATA_KEY)).toBe(0);
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("20");
-  await page.getByRole("button", { name: "加入紀錄" }).click();
+  await page.getByRole("button", { name: "加入待確認清單" }).click();
+  await page.getByRole("button", {name:"確認加入 1 項食物"}).click();
   await expect(page.getByTestId("nutrition-v3b")).toContainText("290");
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key) || "{}").meals.length, DATA_KEY)).toBe(1);
 });

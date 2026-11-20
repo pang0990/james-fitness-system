@@ -138,7 +138,7 @@ test("rest survives pause/reload; edit, delete and restore; partial Cycle confir
   expect(state.sessions[1].status).toBe("completed");
   expect(state.cycles![0].pending).toEqual(["day-a", "day-b"]);
   expect(state.cycleEvents).toHaveLength(0);
-  await expect(page.getByRole("link",{name:"查看下一個訓練日 →",exact:true})).toHaveCSS("color","rgb(255, 255, 255)");
+  expect(await textContrast(page.getByRole("link",{name:"查看下一個訓練日 →",exact:true}))).toBeGreaterThanOrEqual(4.5);
   await shot(page, "training-v3-complete-summary", info);
 });
 
@@ -353,11 +353,7 @@ for (const width of [375, 390, 430, 768, 1024, 1440])
         () => document.documentElement.scrollWidth - innerWidth,
       ),
     ).toBeLessThanOrEqual(1);
-    expect(
-      await page
-        .locator(".exercise-focus")
-        .evaluate((el) => getComputedStyle(el).backgroundColor),
-    ).not.toBe("rgb(34, 34, 37)");
+    expect(await textContrast(page.locator(".exercise-focus h2").first())).toBeGreaterThanOrEqual(4.5);
     const inputBox = await page
       .locator('.workout-set-entry input[name="reps"]')
       .boundingBox();

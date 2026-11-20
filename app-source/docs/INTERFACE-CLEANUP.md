@@ -8,7 +8,7 @@
 | CSS 原始檔數 / bytes |25 / 577,922|5 / 52,920|
 | 匯出 CSS 檔數 / bytes |7 / 539,807|1 / 42,524|
 | public 檔案數 / bytes |5 / 982,511|3 / 16,508|
-| 測試檔案數 / bytes |54 / 249,128|50 / 210,711|
+| 測試檔案數 / bytes |54 / 249,128|50 / 211,065|
 | 匯出檔案數 / bytes |435 / 6,151,551|421 / 4,233,092|
 | lockfile 套件數，扣除根項目 |269|204|
 | fitness-app.tsx 行數 |2,503|332|
@@ -47,6 +47,8 @@
 ## GitHub Actions 複驗
 
 提交 cb0e0f3 的標準 Chromium runner 已實際跑完核心套件，10/10 Passed。一般 UI build／unit、原生 bundle、離線 lab 及 PostgreSQL 協定檢查也已通過。另有工作流程失敗，包含 Food Logger 的舊黑白按鈕斷言、Preview 測試使用舊標籤與舊儲存鍵，以及全套 E2E 收集時找不到 IndexedDB 測試套件。後續修正改驗按鈕對比、使用現行 Journal／Insights 與餐次操作，並在測試載入時以已鎖定的 esbuild 直接編譯虛構測試 fixture。可在乾淨目錄收集 83 個瀏覽器案例；完整結果以 PR checks 為準。
+
+93d7985 的 GitHub Chromium 核心 10 案、獨立 Food Logger 7 案與隔離預覽流程通過。全套 Chromium 及 WebKit 仍抓到固定黑白色值、舊按鈕文字、舊課表保存入口等斷言。第三批更正這些測試，繼續檢查同一筆 Session、餐食實際寫入與 Cycle 版本關係；最新執行結果另見 PR #70 的 Checks 及說明。
 
 ## 重跑與剩餘工作
 
