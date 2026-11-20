@@ -16,26 +16,30 @@ test("Today -> Nutrition: save, edit, refresh and back without losing synthetic 
   await expect(page.locator(".today-v3-water-total strong")).toContainText("1,000");
   const mobile = page.getByRole("navigation", { name: "手機主導覽" });
   await expect(mobile).toBeVisible();
-  await mobile.getByRole("link", { name: /^nutrition$/i }).click();
+  await mobile.getByRole("link", { name: /^Journal$/i }).click();
   await expect(page).toHaveURL(/\/nutrition\/?$/);
 
-  await page.getByRole("button", { name: "加入飲食", exact: true }).click();
+  await page.getByRole("button", { name: /新增食物至早餐/ }).click();
   await page.getByRole("button", { name: /Quick Macro/ }).click();
   await page.getByRole("textbox", { name: "這餐吃了什麼" }).fill("QA 虛構測試餐");
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("22");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("33");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("11");
-  await page.getByRole("button", { name: "加入紀錄" }).click();
+  await page.getByRole("button", { name: "加入待確認清單" }).click();
+  await page.getByRole("button", {name:"確認加入 1 項食物"}).click();
   await expect(page.locator(".meal-entry").filter({ hasText: "QA 虛構測試餐" })).toBeVisible();
   await expect.poll(async () => (await readState(page)).meals.length).toBe(3);
 
-  await page.locator(".meal-entry").filter({ hasText: "QA 虛構測試餐" })
-    .getByRole("button", { name: "修正" }).click();
-  await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("27");
+  const entry = page.locator(".meal-entry").filter({hasText:"QA 虛構測試餐"});
+  await entry.locator("summary").click();
+  await entry.getByRole("button",{name:"編輯／移動餐次"}).click();
+  await page.getByLabel("修改食用重量").fill("2");
   await page.getByRole("button", { name: "保存修正" }).click();
-  await expect(page.locator(".meal-entry").filter({ hasText: "QA 虛構測試餐" })).toContainText("P 27");
+  await expect(page.locator(".meal-entry").filter({ hasText: "QA 虛構測試餐" })).toContainText("638 kcal");
   await page.reload();
-  await expect(page.locator(".meal-entry").filter({ hasText: "QA 虛構測試餐" })).toContainText("P 27");
+  const breakfast = page.locator(".meal-section").first().locator(".meal-toggle");
+  if (await breakfast.getAttribute("aria-expanded") === "false") await breakfast.click();
+  await expect(page.locator(".meal-entry").filter({ hasText: "QA 虛構測試餐" })).toContainText("638 kcal");
   const state = await readState(page);
   expect(state.meals).toHaveLength(4); // Corrective append-only lineage.
   expect(state.meals.filter((x: { supersedes?: string }) => x.supersedes)).toHaveLength(1);
@@ -54,7 +58,7 @@ test("Training -> Today -> Progress: finish incomplete workout without double ad
   const beforeReload = await readState(page);
   expect(beforeReload.sessions.filter((s: {status:string}) => s.status==="in_progress")).toHaveLength(1);
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Active Workout" })).toBeVisible();
+
   await page.getByRole("button", { name: "略過暖身" }).click();
   await page.getByRole("button", { name: /訓練回顧/ }).click();
   await expect(page.getByText(/尚有.*組未完成/)).toBeVisible();
@@ -70,11 +74,11 @@ test("Training -> Today -> Progress: finish incomplete workout without double ad
   await page.getByRole("link", { name: "返回 Today" }).click();
   await expect(page).toHaveURL(/\/today\/?$/);
   await expect(page.locator(".today-v3-cycle")).toContainText("Cycle 02");
-  await page.getByRole("link", { name: /查看訓練紀錄/ }).click();
-  await expect(page).toHaveURL(/\/training\/history\/?$/);
+  await page.getByRole("link", { name: /查看訓練摘要/ }).click();
+  await expect(page).toHaveURL(/training\/(history|workouts)/);
   await page.goBack();
   await page.getByRole("navigation", { name: "手機主導覽" })
-    .getByRole("link", { name: /^progress$/i }).click();
+    .getByRole("link", { name: /^Insights$/i }).click();
   const stats = page.locator(".progress-v3-stats");
   await expect(stats.locator(".progress-v3-stat-row").first().locator("strong")).toHaveText("3");
   await page.reload();

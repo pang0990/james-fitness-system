@@ -1,3 +1,4 @@
+import { textContrast } from "./text-contrast";
 import { test, expect, DATA_KEY } from "./authenticated";
 import { trainingFixture, segment } from "../fixtures/training-v3";
 import type { AppState } from "../../src/lib/domain";
@@ -17,7 +18,7 @@ async function seed(page: Page, state = trainingFixture()) {
   );
   await page.goto("/training/session/");
   await expect(
-    page.getByRole("heading", { name: "Active Workout", exact: true }),
+    page.getByRole("heading", { name: state.sessions.find(s=>s.status==="in_progress")!.name, exact: true }),
   ).toBeVisible({ timeout: 10000 });
 }
 async function stored(page: Page): Promise<AppState> {
@@ -547,10 +548,7 @@ test("warm-up: labels are readable when Active Workout starts in warm-up phase",
   fixture.sessions[1].phase="warmup";
   await seed(page,fixture);
   await expect(page.getByLabel("從動作庫加入暖身")).toBeVisible();
-  const color=await page.locator(".warmup-editor .muted").first().evaluate(el=>getComputedStyle(el).color);
-  const rgb=color.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
-  expect(rgb).toHaveLength(3);
-  expect(Math.min(...rgb)).toBeGreaterThanOrEqual(150);
+  expect(await textContrast(page.locator(".warmup-editor .muted").first())).toBeGreaterThanOrEqual(4.5);
 });
 
 test("Training autosave is silent but failed saves stay visible", async ({page}) => {

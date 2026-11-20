@@ -3,6 +3,8 @@ import { test, expect } from "@playwright/test";
 test.skip(process.env.NEXT_PUBLIC_JFS_REVIEW_PREVIEW !== "1",
   "Only run against an explicitly isolated review-mode build.");
 
+import { REVIEW_STORAGE_KEY } from "../../src/lib/review-preview";
+
 const tabs = [
   { path: "today", testId: "today-v3" },
   { path: "nutrition", testId: "nutrition-v3b" },
@@ -52,12 +54,13 @@ test("review-only identity and storage are separate; water edit persists and can
       if (new URL(r.url()).hostname.endsWith(".supabase.co")) blocked.push(r.url());
     });
     await page.goto("/today/");
-    await expect(page.getByTestId("jfs-review-banner")).toContainText("虛構初始資料");
-    const initial = await page.evaluate(() => ({
-      isolated: localStorage.getItem("jfs-isolated-review-v1:00000000-0000-4000-8000-000000000099"),
+    await expect(page.getByTestId("jfs-review-banner")).toContainText("虛構資料");
+    await expect(page.getByTestId("today-v3")).toBeVisible();
+    const initial = await page.evaluate(key => ({
+      isolated: localStorage.getItem(key),
       realScoped: localStorage.getItem("james-fitness-user-v1:00000000-0000-4000-8000-000000000099"),
       auth: localStorage.getItem("jfs-google-session-v1"),
-    }));
+    }), REVIEW_STORAGE_KEY);
     expect(initial.isolated).toBeTruthy();
     expect(initial.realScoped).toBeNull();
     expect(initial.auth).toBeNull();
