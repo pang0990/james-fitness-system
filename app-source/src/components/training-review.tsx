@@ -23,7 +23,7 @@ export function TrainingReview({ date }: { date: string }) {
         ? "訓練表現尚未提升，先確認恢復與執行情況。"
         : "Consider Frequency · 可先檢視 Training Days 的安排。";
   return (
-    <section className="review-glass">
+    <section className="review-panel">
       <p className="eyebrow">
         JAMES TRAINING REVIEW · {plan.stage ?? "Intensity"}
       </p>

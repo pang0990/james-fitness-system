@@ -327,7 +327,7 @@ test("corrupt local Session stops writes and preserves the raw snapshot", async 
 });
 
 for (const width of [375, 390, 430, 768, 1024, 1440])
-  test(`viewport ${width}: meaningful glass UI, no overflow or error, keyboard input and focus`, async ({
+  test(`viewport ${width}: workout controls, no overflow or error, keyboard input and focus`, async ({
     page,
   }, info) => {
     await page.setViewportSize({ width, height: 900 });

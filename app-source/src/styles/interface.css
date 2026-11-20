@@ -1,0 +1,341 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font:
+    16px/1.5 system-ui,
+    "PingFang TC",
+    sans-serif;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1 {
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  line-height: 1.18;
+}
+h2 {
+  font-size: 1.35rem;
+}
+small,
+.muted,
+.eyebrow,
+.workspace-label {
+  color: var(--muted);
+}
+a {
+  color: var(--brand);
+  text-decoration: none;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button,
+select,
+summary {
+  cursor: pointer;
+}
+button,
+.button,
+.jfs-ui-action,
+input:not([type="range"], [type="checkbox"], [type="radio"]),
+textarea,
+select {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  padding: 0.5rem 0.75rem;
+  min-height: 44px;
+  max-width: 100%;
+}
+.button,
+.jfs-ui-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+}
+.button:not(.secondary, .tertiary, .danger),
+.jfs-ui-action--primary,
+[aria-pressed="true"],
+.nav-item.active,
+.bottom-nav a.active {
+  background: var(--brand);
+  color: var(--on-brand);
+  border-color: var(--brand);
+}
+:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+:is(.notice.error, .danger, [role="alert"]) {
+  color: var(--error);
+}
+.card,
+.jfs-ui-surface,
+.stat,
+.rest-dock,
+.meal-section,
+.nutrition-v3b,
+.exercise-focus,
+.cycle-overview,
+.plan-day-editor,
+.plan-day-navigation,
+.direction-hero,
+.progress-v3-stats,
+.progress-v3-photos,
+.history-list details {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--gap);
+  min-width: 0;
+}
+.jfs-ui-surface--flat {
+  border: 0;
+}
+.stack,
+.field,
+.jfs-field,
+.journal-nutrition,
+.journal-health,
+.jfs-ui-empty {
+  display: grid;
+  gap: 0.75rem;
+}
+.stack {
+  gap: var(--gap);
+}
+input,
+textarea,
+select {
+  min-width: 0;
+}
+.jfs-ui-progress,
+.jfs3-track,
+.nutrition-v3b-macro-track {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--line);
+}
+.jfs-ui-progress span,
+.jfs3-track i,
+.nutrition-v3b-macro-track i {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+}
+.sidebar,
+.bottom-nav,
+.topbar,
+.overflow-menu > div,
+.account-menu > div,
+.toast,
+.save-indicator {
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.sidebar,
+.bottom-nav {
+  z-index: var(--z-nav);
+}
+.bottom-nav a,
+.nav-item {
+  color: var(--ink);
+  border-radius: var(--control-radius);
+}
+.nav-item.active .rail-label,
+.today-v3-focus small {
+  color: inherit;
+}
+.today-v3-focus {
+  background: var(--brand);
+  color: var(--on-brand);
+  padding: var(--gap);
+}
+.today-v3-focus a {
+  color: inherit;
+}
+.today-v3-focus .today-v3-focus-action {
+  color: var(--ink);
+  background: var(--surface);
+}
+.today-v3-grid {
+  display: grid;
+  grid-template-areas: "focus wellness" "nutrition wellness";
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+}
+.today-v3-wellness,
+.journal-columns {
+  display: grid;
+  gap: var(--gap);
+  align-content: start;
+}
+.today-v3-wellness {
+  grid-template-columns: 1fr;
+}
+.journal-health {
+  align-self: start;
+}
+.journal-health button,
+.sheet-body > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.sheet {
+  padding: 0;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  width: min(540px, 95vw);
+  max-height: 90dvh;
+}
+.sheet:not([open]) {
+  display: none;
+}
+.sheet::backdrop {
+  background: rgb(8 24 16 / 48%);
+}
+.sheet-body {
+  padding: var(--gap);
+}
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+.workout-active :is(.sidebar, .bottom-nav) {
+  display: none;
+}
+@media (min-width: 960px) {
+  .journal-columns {
+    grid-template-columns: minmax(0, 1.6fr) minmax(220px, 1fr);
+  }
+}
+@media (min-width: 768px) {
+  .page-nutrition .sheet[open],
+  .sheet--nutrition-logger[open] {
+    inset: 0 0 0 auto;
+    margin: 0;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: var(--radius) 0 0 var(--radius);
+  }
+}
+@media (max-width: 767px) {
+  .today-v3-grid {
+    grid-template-areas: "focus" "nutrition" "wellness";
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sheet[open] {
+    inset: auto 0 0;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .sheet--nutrition-logger[open] {
+    inset: var(--nutrition-viewport-top, 0px) 0 auto;
+    height: var(--nutrition-viewport-height, 100dvh);
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation-duration: 0s;
+  }
+}
+
+.today-header-brand,
+.today-header-actions,
+.nutrition-v3b-topline,
+.nutrition-v3b-energy,
+.nutrition-v3b-macro-top {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.nutrition-v3b-topline,
+.nutrition-v3b-macro-top {
+  justify-content: space-between;
+}
+.nutrition-v3b-upper,
+.nutrition-v3b-macros {
+  display: grid;
+  gap: var(--gap);
+  margin-block: var(--gap);
+}
+.nutrition-v3b-energy-ring,
+.jfs3-ring {
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(
+    var(--brand) var(--nutrition-v3b-percent, var(--jfs3-fill, 0%)),
+    var(--line) 0
+  );
+}
+.nutrition-v3b-energy-ring {
+  width: 7rem;
+  height: 7rem;
+  flex: none;
+}
+.jfs3-ring-center,
+.nutrition-v3b-ring-inner {
+  border-radius: 50%;
+  background: var(--surface);
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+.nutrition-v3b-ring-inner {
+  width: 6rem;
+  height: 6rem;
+}
+.nutrition-week-days button[aria-pressed="true"] small {
+  color: inherit;
+}
+.bottom-nav {
+  border-radius: var(--radius);
+}
+.plan-exercise {
+  border-block-start: 1px solid var(--line);
+}
+.plan-exercise [draggable="true"] {
+  display: inline-flex;
+  padding: 0.6rem;
+  cursor: grab;
+  user-select: none;
+}
+@media (max-width: 1023px) {
+  .app.jfs3-shell > .main > div > .daily-page,
+  .app.jfs3-shell > .main > div > .today-v3 {
+    width: calc(100% - 32px);
+    margin-inline: auto;
+  }
+}
+.nutrition-v3-calorie-ring,
+.nutrition-v3-mini-ring {
+  background: conic-gradient(var(--brand) var(--jfs2-fill), var(--line) 0);
+  border-radius: 50%;
+}

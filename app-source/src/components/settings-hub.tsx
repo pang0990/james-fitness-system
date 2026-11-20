@@ -124,7 +124,7 @@ export function SettingsHub({
         </div>
       </div>
     );
-  if (key === "appearance") return <div className="daily-page"><PageTitle title="外觀" /><AppearanceSettings notify={notify} /><Link className="text-link" href="/settings/companion">2077 角色與城市進階設定 →</Link></div>;
+  if (key === "appearance" || key === "companion") return <div className="daily-page"><PageTitle title="外觀" /><AppearanceSettings notify={notify} /></div>;
   if (key === "data-privacy")
     return (
       <div className="daily-page">
@@ -132,27 +132,6 @@ export function SettingsHub({
         <p className="muted">目前紀錄只儲存在這個瀏覽器，尚未啟用雲端同步。</p>
         <Link className="simple-row" href="/settings/data">備份、匯出與資料管理 <span>›</span></Link>
         <Link className="simple-row" href="/settings/privacy">隱私說明 <span>›</span></Link>
-      </div>
-    );
-  if (key === "companion")
-    return (
-      <div className="daily-page">
-        <PageTitle title="Companion" />
-        <form className="card stack" onSubmit={e => {
-          e.preventDefault();
-          const data = new FormData(e.currentTarget);
-          if (save("更新角色設定", draft => {
-            draft.appearance = { theme: draft.appearance?.theme ?? "light", visualStyle: draft.appearance?.visualStyle ?? "minimal", showCompanion: data.get("character") === "on" };
-            (draft.preferences ??= {}).companionAnimation = data.get("animation") === "on";
-            (draft.preferences ??= {}).cityAnimation = data.get("cityAnimation") === "on";
-          })) notify("角色偏好已儲存");
-        }}>
-          <label className="check"><input name="character" type="checkbox" defaultChecked={state.appearance?.showCompanion !== false} />顯示角色</label>
-          <label className="check"><input name="animation" type="checkbox" defaultChecked={state.preferences?.companionAnimation !== false} />持續動畫（減少動態設定優先）</label>
-          <label className="check"><input name="cityAnimation" type="checkbox" defaultChecked={state.preferences?.cityAnimation !== false} />Today 動態城市（霓虹、空中交通、雨霧）</label>
-          <p className="muted">城市動畫僅用於 2077 風格，減少動態設定會優先生效。</p>
-          <button className="button">儲存偏好</button>
-        </form>
       </div>
     );
   if (key === "health")

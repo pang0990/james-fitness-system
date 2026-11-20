@@ -63,12 +63,15 @@ test("resume an overnight extra session without advancing the cycle", async ({
   equal(after.cycleEvents, before.cycleEvents, "created cycle event");
 });
 test("drag an exercise, review and save its new position", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/training/plan/");
-  await page.getByRole("button", { name: /Day 1 ·/ }).click();
+  await page.getByRole("button", { name: /Day 1 ·/ }).first().click();
   const before = await read(page);
   const rows = page.locator(".plan-exercise");
   const previous = await rows.nth(1).locator("h4").innerText();
-  await rows.nth(1).locator("[draggable=true]").dragTo(rows.first());
+  const handle = rows.nth(1).locator("[draggable=true]");
+  await handle.evaluate(el => el.scrollIntoView({block: "center"}));
+  await handle.dragTo(rows.first().getByRole("button", {name:"移除動作"}), {steps: 12});
   equal(
     (await rows.first().locator("h4").innerText()).replace(/^\d+\. /, ""),
     previous.replace(/^\d+\. /, ""),

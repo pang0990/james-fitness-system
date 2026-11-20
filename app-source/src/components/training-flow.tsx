@@ -1,51 +1,44 @@
 "use client";
 import Link from "next/link";
-import {TrainingOverviewDetails} from "./training-overview";
-import {workoutProgress, remainingWorkingSets} from "@/lib/training-overview";
+import { TrainingOverviewDetails } from "./training-overview";
+import { workoutProgress,remainingWorkingSets } from "@/lib/training-overview";
 import { WorkoutSetEntry } from "./workout-set-entry";
 import { TrainingPlan } from "./training-plan";
 import {
-  dayId,
-  pendingIds,
-  nextDayIndex,
-  consumeDay,
-  completeSession,
+dayId,
+pendingIds,
+nextDayIndex,
+consumeDay,
+completeSession,
 } from "@/lib/training-queue";
 import { navigateWithMotion } from "./navigation-motion";
 import {
-  TrainingCalendar,
-  MuscleProgress,
-  MuscleEditor,
-  WarmupPicker,
+TrainingCalendar,
+MuscleProgress,WarmupPicker
 } from "./training-planning";
 import {
-  activeCycle,
-  type MuscleTarget,
-  stages,
-  scheduleEntry,
-  cycleProgressEvents,
+activeCycle,scheduleEntry,
+cycleProgressEvents
 } from "@/lib/training-model";
-import { Companion } from "./companion";
-import { exerciseLibrary, searchExercises } from "@/lib/exercise-library";
-import {removeWorkoutSet,restoreWorkoutSets,replaceWorkoutSet,previousWorkingSets} from "@/lib/workout-sets";
-import { startRestInterval, endRestInterval } from "@/lib/rest-intervals";
+
+import { exerciseLibrary,searchExercises } from "@/lib/exercise-library";
+import { removeWorkoutSet,restoreWorkoutSets,replaceWorkoutSet,previousWorkingSets } from "@/lib/workout-sets";
+import { startRestInterval,endRestInterval } from "@/lib/rest-intervals";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect,useState,type FormEvent } from "react";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  ChevronRight,
-  Dumbbell,
-  Plus,
-  Timer,
-  Pause,
-  Play,
+ArrowLeft,
+ArrowRight,
+Check,
+ChevronRight,
+Dumbbell,
+Plus,
+Timer
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { addDays, type Segment } from "@/lib/domain";
-import { PageTitle, Sheet, Field, Num, uid, stamp } from "./daily";
-import { GlassCard, GlassButton } from "./ui/glass-system";
+import { type Segment } from "@/lib/domain";
+import { PageTitle,Sheet,Field,Num,uid,stamp } from "./daily";
+import { UiSurface,UiButton } from "./ui/design-system";
 function formatWorkoutSeconds(total:number) {
   const hours=Math.floor(total/3600),min=Math.floor(total%3600/60),sec=total%60;
   return [hours,min,sec].map(n=>String(n).padStart(2,"0")).join(":");
@@ -393,7 +386,7 @@ export function TrainingFlow({
     );
     return (
       <div className="daily-page workout-page training-v3 workout-success">
-        <GlassCard className="training-v3-summary">
+        <UiSurface className="training-v3-summary">
         <p className="eyebrow">WORKOUT COMPLETE</p>
         <h1>訓練完成</h1>
         <h2>{finished.name}</h2>
@@ -409,7 +402,7 @@ export function TrainingFlow({
         <Link href="/training" className="text-link">
           查看下一個訓練日 →
         </Link>
-        </GlassCard>
+        </UiSurface>
       </div>
     );
   }
@@ -441,7 +434,7 @@ export function TrainingFlow({
       </PageTitle>
       {workout ? (
         <>
-          <GlassCard className="training-v3-status" aria-label="訓練狀態">
+          <UiSurface className="training-v3-status" aria-label="訓練狀態">
             <div><p className="eyebrow">TRAINING 3.0</p><strong>{current.pausedAt?"已暫停":review?"完成確認":restStart!==null||rpStart!==null?"休息中":"訓練中"}</strong></div>
             <span>{completedWorking} / {plannedWorking || "—"} 工作組</span>
             <span>{progress?.completedExercises} / {current.exercises.length} 動作達到計畫組數</span>
@@ -449,7 +442,7 @@ export function TrainingFlow({
               <p role="status">{!online ? "離線 · 紀錄仍保存於此裝置" : "正在保存…"}</p>
             )}
             {error && <p role="alert">保存失敗：{error}</p>}
-          </GlassCard>
+          </UiSurface>
           <div className="workout-heading">
             <button
               className="button secondary"
@@ -608,7 +601,7 @@ export function TrainingFlow({
           ) : (
             <div className="training-v3-grid" data-keyboard={keyboardOpen?"open":"closed"}>
               {ex ? (
-                <GlassCard className="card exercise-focus">
+                <UiSurface className="card exercise-focus">
                   <div className="exercise-nav">
                     <button
                       className="icon-button"
@@ -742,7 +735,7 @@ export function TrainingFlow({
                       })){setLastSavedId(null);notify("已撤銷上一筆保存");}
                     }}>復原上一組</button>
                   </div>}
-                </GlassCard>
+                </UiSurface>
               ) : (
                 <section className="card">
                   <h2>新增第一個動作</h2>
@@ -814,7 +807,7 @@ export function TrainingFlow({
         </>
       ) : (
         <div className="training-home training-v3">
-          <GlassCard className="training-today card" aria-label={current ? "進行中的訓練" : "目前與下一次訓練"}>
+          <UiSurface className="training-today card" aria-label={current ? "進行中的訓練" : "目前與下一次訓練"}>
             <span className="eyebrow">{current?"RESUME WORKOUT":isRest?"REST DAY":planned.id || state.weeklySchedule!==undefined?"今日排程":"下一個待練日"}</span>
             <p className="muted">{current?.cycleId?state.cycles?.find(c=>c.id===current.cycleId)?.name??"當次訓練計畫":cycle?.name??"建立你的訓練節奏"}{cycle&&!current?` · 第 ${cycle.round??1} 輪`:""}</p>
             {!current&&isRest&&<p>今天排定休息。你仍可自行選擇開始下方待練課表。</p>}
@@ -838,7 +831,7 @@ export function TrainingFlow({
             </div>}
             {current ? (
               <>
-                <Link className="jfs-glass-nav-link training-v3-start" href="/training/session">繼續訓練 <ArrowRight size={16}/></Link>
+                <Link className="jfs-nav-link training-v3-start" href="/training/session">繼續訓練 <ArrowRight size={16}/></Link>
                 <details className="training-other-actions">
                   <summary>其他操作</summary>
                   <div className="stack">
@@ -860,7 +853,7 @@ export function TrainingFlow({
               </>
             ) : day ? (
               <>
-                <GlassButton kind="primary" className="training-v3-start" onClick={start}>{isRest?"仍要開始訓練":"開始訓練"} <ArrowRight size={16}/></GlassButton>
+                <UiButton tone="primary" className="training-v3-start" onClick={start}>{isRest?"仍要開始訓練":"開始訓練"} <ArrowRight size={16}/></UiButton>
                 <details className="training-other-actions">
                   <summary>其他操作</summary>
                   <div className="stack">
@@ -874,12 +867,12 @@ export function TrainingFlow({
                 </details>
               </>
             ) : (
-              <Link className="jfs-glass-nav-link training-v3-start" href={missingScheduleDay?"/training/calendar":"/training/plan"}>{missingScheduleDay?"重新指定排程訓練日":"建立訓練課表"} <ArrowRight size={16}/></Link>
+              <Link className="jfs-nav-link training-v3-start" href={missingScheduleDay?"/training/calendar":"/training/plan"}>{missingScheduleDay?"重新指定排程訓練日":"建立訓練課表"} <ArrowRight size={16}/></Link>
             )}
-          </GlassCard>
+          </UiSurface>
           <TrainingOverviewDetails date={date} />
           {(completedToday.length > 0 || !!plannedSecond) && (
-            <GlassCard className="card stack training-daily-sessions" aria-label="今天完成的訓練">
+            <UiSurface className="card stack training-daily-sessions" aria-label="今天完成的訓練">
               <div className="training-daily-sessions-heading">
                 <h2>今日訓練 · {completedToday.length} 場已完成</h2>
                 <small>共 {Math.round(completedToday.reduce((sum,s) => sum +
@@ -899,11 +892,11 @@ export function TrainingFlow({
                 className="button" id="planned-second" onClick={startPlannedSecond}>
                 開始自訂課表第二場 · {plannedSecond.name} <ArrowRight size={16}/>
               </button>}
-            </GlassCard>
+            </UiSurface>
           )}
           {!current && (
-            <GlassButton kind="secondary" className="training-add-session"
-              onClick={() => setExtraOpen(true)}>＋ 新增一場訓練</GlassButton>
+            <UiButton tone="secondary" className="training-add-session"
+              onClick={() => setExtraOpen(true)}>＋ 新增一場訓練</UiButton>
           )}
           {cycle && <Link className="training-plan-summary" href="/training/plan">
             <span><small>目前課表</small><strong>{cycle.name}</strong><small>{cycle.days.length} 個訓練日 · 本輪尚有 {pendingIds(state,cycle).length} 天</small></span>

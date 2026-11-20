@@ -1,3 +1,5 @@
+> 歷史紀錄。現行樣式入口為 `src/styles/index.css`。舊外觀僅供版本追溯。
+
 # James Fitness — Glass Experience V4
 **Status:** Review-only PR; do not ship to main before screenshot approval.
 

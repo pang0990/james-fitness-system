@@ -58,7 +58,7 @@ test("Progress period controls the workout comparisons and step average, not Rev
   await range.getByRole("button", { name: "7D" }).click();
   await expect(stats.locator(".progress-v3-stat-row").nth(2).locator("strong")).toHaveText("1,000");
   await expect(page.locator(".training-evidence .performance-row")).toHaveCount(0);
-  await expect(page.locator(".review-glass")).toContainText(/10.*天完整飲食紀錄/);
+  await expect(page.locator(".review-panel")).toContainText(/10.*天完整飲食紀錄/);
 });
 
 test("Nutrition rejects out-of-range single meal without writing a record", async ({ page }) => {

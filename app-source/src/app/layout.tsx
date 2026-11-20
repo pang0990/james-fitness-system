@@ -1,37 +1,11 @@
+import "@/styles/index.css";
 import type { Metadata, Viewport } from "next";
 import { StoreProvider } from "@/lib/store";
 import { AuthProvider } from "@/lib/auth-context";
-import "./globals.css";
-import "./cinematic.css";
-import "./blueprint.css";
-import "./polish.css";
-import "./city-atmosphere.css";
-import "./reference-v3.css";
-import "./cookbook-city-v4.css";
-import "./city-recipes-v5.css";
-import "./today-reference.css";
-import "./today-motion.css";
-import "./today-fullbleed.css";
-import "./auth.css";
-import "./minimal-theme.css";
-import "./monochrome-experience-v2.css";
-import "./glass-system-v2.css";
-import "./tokens-v3.css";
-import "./components-v3.css";
-import "./nutrition-v3b.css";
-import "./glass-experience-v4.css";
 import { AppearanceController } from "@/components/appearance";
 import { NavigationMotion } from "@/components/navigation-motion";
 import { AppInstall } from "@/components/app-install";
 import { ReviewPreviewBanner } from "@/components/review-preview-banner";
-import "./training-v3.css";
-// Today is migrated first; load its scoped black-line overrides after legacy Glass CSS.
-import "./today-v3.css";
-// The shared navigation owns final chrome geometry after legacy showcase styles.
-import "./app-shell-v3.css";
-// B2 Nutrition owns its responsive meal and logger surfaces after the legacy layers.
-import "./nutrition-ux-b2.css";
-import "./fitness-system.css";
 
 export const metadata: Metadata = {
   title: "James · Fitness System",
@@ -44,7 +18,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#000000",
+  themeColor: "#f8f8f6",
   viewportFit: "cover",
 };
 export default function RootLayout({
