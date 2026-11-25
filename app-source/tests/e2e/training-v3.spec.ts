@@ -339,7 +339,7 @@ for (const width of [375, 390, 430, 768, 1024, 1440])
     });
     await seed(page);
     await expect(page).toHaveURL(/\/training\/session\/$/);
-    await expect(page).toHaveTitle(/Fitness/);
+    await expect(page).toHaveTitle(/JAMES.*Premium Health Intelligence/);
     await expect(page.locator(".exercise-focus")).toBeVisible();
     await page.locator('.workout-set-entry input[name="weight"]').focus();
     await page.keyboard.type("25");
@@ -500,9 +500,10 @@ test("Cardio: optional distance, heart rate and source persist without nutrition
   await expect(page.getByText(/不加回可吃熱量/)).toBeVisible();
 });
 
-test("Black Line: workout text labels retain readable contrast on black cards",async({page})=>{
+test("Premium Light: workout labels retain readable WCAG contrast",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await seed(page);
+  await expect(page.locator("html")).toHaveAttribute("data-theme","light");
   const targets=[
     ".workout-set-entry .field > span",
     ".exercise-focus > .muted",
@@ -511,10 +512,7 @@ test("Black Line: workout text labels retain readable contrast on black cards",a
   for(const selector of targets) {
     const el=page.locator(selector).first();
     await expect(el).toBeVisible();
-    const actual=await el.evaluate(element=>getComputedStyle(element).color);
-    const channels=actual.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
-    expect(channels.length,selector).toBe(3);
-    expect(Math.min(...channels),selector+" readable RGB").toBeGreaterThanOrEqual(150);
+    expect(await textContrast(el),selector+" WCAG contrast").toBeGreaterThanOrEqual(4.5);
   }
   await expect(page.locator(".workout-set-entry .field > span").first()).toContainText("組型");
 });

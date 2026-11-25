@@ -1,7 +1,7 @@
 import { textContrast } from "./text-contrast";
-import { test, expect } from "@playwright/test";
+import { test, expect, DATA_KEY } from "./authenticated";
 import { initialState, dateInZone, addDays } from "../../src/lib/domain";
-const key = "james-fitness-user-v1:jfs-local-guest-v1";
+const key = DATA_KEY;
 const today = dateInZone();
 test.beforeEach(async ({ page }) => {
   const s = initialState();
@@ -57,9 +57,9 @@ test.beforeEach(async ({ page }) => {
   ];
   await page.addInitScript(
     ({ key, s }) => {
-      if (!localStorage.getItem(key)) {
+      if (!localStorage.getItem("jfs-nutrition-qa-seeded")) {
         localStorage.setItem(key, JSON.stringify(s));
-        localStorage.setItem("jfs-guest-mode-v1", "active");
+        localStorage.setItem("jfs-nutrition-qa-seeded", "true");
       }
     },
     { key, s },

@@ -1,13 +1,13 @@
 import { textContrast } from "./text-contrast";
-import {test,expect} from '@playwright/test';
+import {test,expect,DATA_KEY} from './authenticated';
 import {trainingFixture,segment} from '../fixtures/training-v3';
 import {dateInZone} from '../../src/lib/domain';
-const key='james-fitness-user-v1:jfs-local-guest-v1';
+const key=DATA_KEY;
 test.beforeEach(async({page})=>{
  const state=trainingFixture(),session=state.sessions.find(s=>s.status==='in_progress')!;
  session.workoutDate=dateInZone();session.exercises[0].sets=[segment()];
  state.cycles![0].days[0].name='新的課表名稱';
- await page.addInitScript(({state,key})=>{if(!localStorage.getItem(key)){localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('jfs-guest-mode-v1','active');}}, {state,key});
+ await page.addInitScript(({state,key})=>{if(!localStorage.getItem('jfs-training-overview-qa-seeded')){localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('jfs-training-overview-qa-seeded','true');}}, {state,key});
  await page.route('https://*.supabase.co/**',r=>r.abort());
 });
 test('resume shows session snapshot and does not create another session',async({page})=>{
