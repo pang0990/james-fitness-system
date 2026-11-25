@@ -309,7 +309,7 @@
     margin-top: 14px;
   }
   .today-v3 .today-v3-wellness {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 10px;
   }
   .today-v3 .today-v3-wellness > .jfs3-surface {
@@ -321,14 +321,6 @@
   .today-v3 .today-v3-water-actions button {
     padding: 7px 2px;
   }
-}
-@media (max-width: 374px) {
-  .today-v3 .today-v3-wellness {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 760px) {
 }
 .nutrition-week {
   margin-block: 20px;
