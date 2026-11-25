@@ -2,57 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/lib/auth-context";
-import { REVIEW_PREVIEW } from "@/lib/review-preview";
-import { GUEST_DATA_KEY, GUEST_MODE_KEY } from "@/lib/guest-mode";
+import { GUEST_MODE_KEY } from "@/lib/guest-mode";
 import { appHref, supabase } from "@/lib/supabase-browser";
-import { scopedStorageKey, STORAGE_KEY, useLegacyData, useGuestData } from "@/lib/store";
-
-export function GoogleLogin() {
-  const { user, ready, error, signInGoogle, continueAsGuest, isGuest } = useAuth();
-  const [busy, setBusy] = useState(false);
-  const signedIn = !!user && !isGuest && !REVIEW_PREVIEW;
-
-  return (
-    <main className="jfs-auth-screen">
-      <div className="jfs-auth-backdrop" aria-hidden="true" />
-      <section className="jfs-auth-panel" aria-label="開始使用 James Fitness System">
-        <div className="jfs-auth-mark" aria-hidden="true">J</div>
-        <h1>{signedIn ? "歡迎回來。" : "訓練，由你開始。"}</h1>
-        <p className="jfs-auth-support">
-          {signedIn ? user?.email : "保持專注。記錄每一次訓練與日常進步。"}
-        </p>
-        {signedIn ? (
-          <Link className="jfs-auth-button" href="/today">繼續使用 <span aria-hidden="true">→</span></Link>
-        ) : (
-          <div className="jfs-auth-actions">
-            <button className="jfs-auth-button" type="button" disabled={!ready}
-              onClick={continueAsGuest}>
-              {REVIEW_PREVIEW ? "開始測試體驗" : isGuest ? "繼續訪客模式" : "不登入，直接開始"}
-              <span aria-hidden="true">→</span>
-            </button>
-            {!REVIEW_PREVIEW && (
-              <button className="jfs-auth-button jfs-auth-button-secondary" disabled={!ready || busy}
-                onClick={async () => {
-                  setBusy(true);
-                  try { await signInGoogle(); }
-                  finally { setBusy(false); }
-                }}>
-                {busy ? "正在連線…" : "使用 Google 帳號登入"}
-              </button>
-            )}
-          </div>
-        )}
-        {error && <p className="jfs-auth-error" role="alert">{error}</p>}
-        <p className="jfs-auth-footnote">
-          {REVIEW_PREVIEW
-            ? "測試版本使用虛構資料，不連接正式帳戶。"
-            : "訪客資料只保存在這台裝置，不會自動上傳。登入後可自行選擇是否轉移，原始紀錄不會自動覆寫。"}
-        </p>
-      </section>
-    </main>
-  );
-}
+import { useLegacyData, useGuestData } from "@/lib/store";
 
 /** Static GitHub Pages callback for Supabase Google OAuth PKCE. */
 export function GoogleCallback() {
@@ -78,13 +30,10 @@ export function GoogleCallback() {
       }
       // Remove OAuth code from browser history before leaving callback.
       window.history.replaceState(null, "", window.location.pathname);
-      const key = scopedStorageKey(data.user.id);
-      const hasAccountData = Boolean(localStorage.getItem(key));
-      const hasLegacyData = Boolean(localStorage.getItem(STORAGE_KEY));
-      const hasGuestData = Boolean(localStorage.getItem(GUEST_DATA_KEY));
+      // Preserve all account/legacy/guest snapshots for explicit migration.
+      // Cloud loading determines whether this account already has data.
       localStorage.removeItem(GUEST_MODE_KEY);
-      // Never automatically assign old browser records to a new Google user.
-      window.location.replace(appHref(hasAccountData || hasLegacyData || hasGuestData ? "today" : "onboarding"));
+      window.location.replace(appHref("today"));
     }).catch(() => setError("登入驗證時網路中斷，請重試。"));
   }, []);
 
@@ -96,7 +45,7 @@ export function GoogleCallback() {
         {error ? (
           <>
             <p className="jfs-auth-error" role="alert">{error}</p>
-            <Link className="jfs-auth-button" href="/login">RETRY GOOGLE SIGN IN</Link>
+            <Link className="jfs-auth-button" href="/">RETRY GOOGLE SIGN IN</Link>
           </>
         ) : <p className="jfs-auth-support" role="status">正在確認 Google 帳號</p>}
       </section>
@@ -111,7 +60,7 @@ export function LegacyDataOffer() {
   return (
     <aside className="jfs-legacy-notice" aria-label="舊版紀錄轉移">
       <p>這台裝置有舊版健身紀錄。要將它保留到目前的 Google 帳號嗎？</p>
-      <small>此操作只會複製到本機帳號資料，尚未上傳雲端。舊紀錄不會刪除。</small>
+      <small>原始紀錄不會刪除。複製到目前 Google 帳號後，待安全的雲端同步連線成功才會上傳。</small>
       <div>
         <button onClick={() => {
           if (window.confirm("確認將舊版紀錄複製至目前的 Google 帳號？請先確認這些資料屬於你。"))
@@ -131,7 +80,7 @@ export function GuestDataOffer() {
   return (
     <aside className="jfs-legacy-notice" aria-label="訪客訓練紀錄轉移">
       <p>這台裝置有訪客訓練紀錄，要複製到目前登入的帳號嗎？</p>
-      <small>只複製到此裝置的帳號資料。訪客原始紀錄不刪除，也不會自動上傳雲端或覆蓋已有帳號資料。</small>
+      <small>訪客原始紀錄不刪除，也不覆蓋已有帳號資料。複製後待安全的雲端同步連線成功才會上傳。</small>
       <div>
         <button type="button" onClick={()=>{
           if(window.confirm("確認複製訪客紀錄到這個空白帳號的本機資料？原訪客紀錄將完整保留。"))

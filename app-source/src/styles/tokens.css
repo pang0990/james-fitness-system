@@ -1,28 +1,36 @@
 :root {
   color-scheme: light;
-  --canvas: #f8f8f6;
-  --surface: #fff;
-  --ink: #14382f;
-  --muted: #536d63;
-  --line: #cddad4;
-  --brand: #087f60;
-  --on-brand: #fff;
+  --canvas: #f7f8f5;
+  --surface: #ffffff;
+  --ink: #153b32;
+  --muted: #5e716a;
+  --line: #dbe3dc;
+  --brand: #0e735b;
+  --on-brand: #ffffff;
+  --signal: #d7e99a;
   --error: #a73530;
-  --radius: 16px;
-  --control-radius: 10px;
-  --gap: 16px;
+  --radius: 12px;
+  --control-radius: 8px;
+  --gap: 20px;
+  --type-display: Georgia, "Times New Roman", serif;
+  --type-ui: "Inter", "Helvetica Neue", "PingFang TC", system-ui, sans-serif;
+  --motion-fast: 140ms;
+  --motion-base: 220ms;
+  --motion-reveal: 640ms;
+  --ease-premium: cubic-bezier(.22, 1, .36, 1);
   --z-nav: 30;
   --z-menu: 50;
   --z-toast: 80;
 }
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --canvas: #17241f;
-  --surface: #22332c;
-  --ink: #f0f6f1;
-  --muted: #b2c5b9;
-  --line: #53695d;
-  --brand: #81dbb4;
-  --on-brand: #123828;
-  --error: #ffb3ab;
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-reveal: 0ms;
+  }
+}
+:root[data-reduce-motion="true"] {
+  --motion-fast: 0ms;
+  --motion-base: 0ms;
+  --motion-reveal: 0ms;
 }

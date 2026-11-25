@@ -1,5 +1,6 @@
 "use client";
 import { AppearanceSettings } from "@/components/appearance";
+import { CloudSyncPanel } from "@/components/cloud-status";
 import { DataTools } from "@/components/data-tools";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -65,30 +66,29 @@ export function SettingsPage({
         {path === "settings/appearance" ? (
           <AppearanceSettings notify={notify} />
         ) : path === "settings/privacy" ? (
-          <Card title="本機版隱私說明" icon={ShieldCheck}>
+          <Card title="個人資料與雲端同步" icon={ShieldCheck}>
             <div className="stack">
               <p>
-                本版本使用 Supabase Google
-                帳號登入，但健身紀錄尚未上傳雲端。資料仍保存在目前瀏覽器，並按登入帳號分開儲存。
+                本版本使用 Google 帳號登入，個人紀錄在瀏覽器保留離線副本；雲端已啟用且狀態為「雲端已同步」時，才代表遠端備份完成。
               </p>
               <p>
-                本機紀錄沒有加密。共用裝置的其他使用者可能透過瀏覽器資料取得紀錄，請避免在共用裝置輸入敏感資訊；跨裝置尚未同步。
+                本機紀錄沒有加密。共用裝置的其他使用者可能透過瀏覽器資料取得紀錄，請避免在共用裝置輸入敏感資訊；跨裝置同步是否完成，請以帳號頁狀態為準。
               </p>
               <p>
                 網站託管平台仍可能處理一般連線紀錄，例如 IP
                 與請求網址；這不等於健身紀錄已上傳。
               </p>
               <p>
-                原始紀錄與修訂保存在本機，直到你主動刪除。匯出的備份檔也包含這些資訊，請自行妥善保管。
+                原始紀錄與修訂會保存在本機，已同步的版本也會保存在雲端。匯出的備份檔包含健康相關資訊，請自行妥善保管。
               </p>
               <p>
-                Supabase Google 登入已接通；雲端個人資料表、RLS
-                與跨裝置同步仍未完成。登入不等於已備份。
+                雲端資料按 Google 使用者 ID 套用 RLS 隔離。若顯示離線、尚未啟用或衝突，請勿將登入視為已備份。
               </p>
             </div>
           </Card>
         ) : path === "settings/data" ? (
           <>
+            <CloudSyncPanel />
             <DataTools notify={notify} />
             <Card title="匯出與備份" icon={Download}>
               <p className="muted">
@@ -109,8 +109,7 @@ export function SettingsPage({
             </Card>
             <Card title="清除這個瀏覽器的資料" icon={Trash2}>
               <p className="muted">
-                此操作無法在 App
-                內復原。請先下載備份。雲端尚未啟用，因此不涉及刪除雲端帳號。
+                這只清除此裝置的本機副本，不刪除雲端帳號與雲端備份。若已有雲端版本，下次連線仍會重新下載。請先匯出備份。
               </p>
               <div className="form-actions">
                 <button
@@ -118,19 +117,19 @@ export function SettingsPage({
                   onClick={() => {
                     if (
                       window.confirm(
-                        "已匯出備份嗎？確定刪除這個瀏覽器內所有 James Fitness 紀錄？",
+                        "已匯出備份嗎？確定清除這個瀏覽器內的 James Fitness 副本？雲端紀錄不受影響。",
                       ) &&
                       window.confirm(
-                        "第二次確認：所有本機 Profile、Nutrition、Training、Progress 與 History 都會刪除。確定繼續？",
+                        "第二次確認：本機副本將暫時清空；若已同步至雲端，下次連線可能重新下載。確定繼續？",
                       )
                     ) {
                       reset();
                       router.push("/today");
-                      notify("已清除本機資料");
+                      notify("已清除本機副本");
                     }
                   }}
                 >
-                  刪除本機資料
+                  清除本機副本
                 </button>
               </div>
             </Card>

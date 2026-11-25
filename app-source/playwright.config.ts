@@ -6,6 +6,9 @@ export default defineConfig({
     viewport: { width: 1440, height: 1000 },
     headless: true,
     channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
+    launchOptions: process.env.PLAYWRIGHT_EXECUTABLE_PATH
+      ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH }
+      : undefined,
   },
   webServer: {
     command: "npm run start",

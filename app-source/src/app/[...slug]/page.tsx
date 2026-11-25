@@ -1,5 +1,7 @@
 import { FitnessApp } from "@/components/fitness-app";
 import { LegacyRoute } from "@/components/legacy-route";
+import type { Metadata } from "next";
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 export const dynamicParams = false;
 export function generateStaticParams() {
   return [
@@ -91,11 +93,12 @@ export default async function Page({
     "training/templates": "training/plan",
     "progress/weekly": "progress/check-in",
     "progress/recommendations": "progress/review",
-    signup: "login",
+    signup: "",
+    login: "",
     "nutrition/log": "nutrition",
   };
   const target = aliases[slug.join("/")];
-  if (target) return <LegacyRoute target={"/" + target} />;
+  if (target !== undefined) return <LegacyRoute target={"/" + target} />;
   const requested = slug.join("/");
   const resolved: Record<string, string> = {
     profile: "settings/profile",

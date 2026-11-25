@@ -20,11 +20,12 @@ import { NutritionV2 } from "./daily";
 import { TodayMinimalV3 } from "./today-minimal-v3";
 import { AppSidebar, AppBottomNavigation } from "./ui/app-navigation";
 import {
-  GoogleLogin,
   GoogleCallback,
   LegacyDataOffer,
   GuestDataOffer,
 } from "./auth-pages";
+import { BrandHome } from "./brand-home";
+import { CloudSyncBadge } from "./cloud-status";
 import { useAuth } from "@/lib/auth-context";
 import { TrainingFlow } from "./training-flow";
 import { Knowledge } from "./knowledge";
@@ -55,7 +56,7 @@ const labelMap: Record<string, string> = {
 export function FitnessApp({ path }: { path: string }) {
   const router = useRouter();
   const { state, ready, error, saving } = useStore();
-  const { user, ready: authReady, signOut, isGuest } = useAuth();
+  const { user, ready: authReady, signOut } = useAuth();
   const section = path.split("/")[0];
   const [toast, setToast] = useState("");
   useEffect(() => {
@@ -90,7 +91,7 @@ export function FitnessApp({ path }: { path: string }) {
     section === "signup" ||
     path === "auth/error"
   )
-    return <GoogleLogin />;
+    return <BrandHome />;
   return (
     <div
       className={
@@ -121,6 +122,7 @@ export function FitnessApp({ path }: { path: string }) {
             )}
           </div>
           <div className={section === "today" ? "today-header-actions" : ""}>
+            <CloudSyncBadge />
             {section === "today" && (
               <a
                 className="today-header-bell"
@@ -143,15 +145,12 @@ export function FitnessApp({ path }: { path: string }) {
                 <Link href="/knowledge">Knowledge · 知識庫</Link>
                 <Link href="/data">Data & Backup · 資料管理</Link>
                 <Link href="/settings">Settings · 系統設定</Link>
-                {isGuest && (
-                  <Link href="/login">登入 Google 帳號（訪客資料保留）</Link>
-                )}
                 <button
                   className="jfs-account-logout"
                   type="button"
                   onClick={() => void signOut()}
                 >
-                  {isGuest ? "退出訪客模式" : "Sign out · 登出"}
+                  Sign out · 登出
                 </button>
               </div>
             </details>
@@ -290,24 +289,6 @@ export function FitnessApp({ path }: { path: string }) {
               )
             ) : section === "learn" || section === "knowledge" ? (
               <Knowledge path={path.replace(/^knowledge/, "learn")} />
-            ) : section === "auth" ? (
-              <div className="daily-page">
-                <Heading
-                  eyebrow="ACCOUNT"
-                  title={
-                    path === "auth/error"
-                      ? "登入發生問題"
-                      : "Google 登入尚未接通"
-                  }
-                />
-                <p className="muted">
-                  目前這個 GitHub Pages 版本沒有連接 Google OAuth 與雲端
-                  Session。請不要在這裡輸入帳號密碼。
-                </p>
-                <Link className="button secondary" href="/settings/account">
-                  查看帳號系統狀態
-                </Link>
-              </div>
             ) : section === "settings" ? (
               ["settings/data", "settings/privacy"].includes(path) ? (
                 <SettingsPage path={path} notify={notify} />

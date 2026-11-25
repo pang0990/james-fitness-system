@@ -4,6 +4,7 @@ import { useStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth-context";
 import { frequencies, profileSchema } from "@/lib/domain";
 import { AppearanceSettings } from "./appearance";
+import { CloudSyncPanel } from "./cloud-status";
 import { PageTitle, Field } from "./daily";
 import pkg from "../../package.json";
 const pages = {
@@ -129,7 +130,7 @@ export function SettingsHub({
     return (
       <div className="daily-page">
         <PageTitle title="Data & Privacy" />
-        <p className="muted">目前紀錄只儲存在這個瀏覽器，尚未啟用雲端同步。</p>
+        <p className="muted">以 Google 帳號同步資料；離線時仍在此裝置保存。請至 Account & Sync 確認實際同步狀態。</p>
         <Link className="simple-row" href="/settings/data">備份、匯出與資料管理 <span>›</span></Link>
         <Link className="simple-row" href="/settings/privacy">隱私說明 <span>›</span></Link>
       </div>
@@ -152,9 +153,10 @@ export function SettingsHub({
         <section className="card">
           <h2>Google 帳號</h2>
           <p>{user?.email ?? "尚未登入"}</p>
-          <p className="muted">已登入。健身紀錄仍儲存在本機，尚未跨裝置同步。</p>
+          <p className="muted">登入不代表雲端同步已成功，請確認下方同步狀態。</p>
           <button className="button secondary" type="button" onClick={() => void signOut()}>登出 Google 帳號</button>
         </section>
+        <CloudSyncPanel />
       </div>
     );
   if (key === "about")

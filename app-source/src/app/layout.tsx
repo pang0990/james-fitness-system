@@ -8,17 +8,17 @@ import { AppInstall } from "@/components/app-install";
 import { ReviewPreviewBanner } from "@/components/review-preview-banner";
 
 export const metadata: Metadata = {
-  title: "James · Fitness System",
-  description: "Nutrition · Training · Progress",
+  title: "JAMES — Premium Health Intelligence",
+  description: "Training, nutrition and recovery — in one thoughtful place.",
   manifest: (process.env.NEXT_PUBLIC_BASE_PATH || "") + "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "James" },
   icons: { apple: (process.env.NEXT_PUBLIC_BASE_PATH || "") + "/icon-192.png" },
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 };
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f8f8f6",
+  themeColor: "#f7f8f5",
   viewportFit: "cover",
 };
 export default function RootLayout({

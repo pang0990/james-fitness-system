@@ -5,31 +5,15 @@
   place-items: center;
   padding: clamp(24px, 5vw, 48px) 20px calc(28px + env(safe-area-inset-bottom));
 }
-.jfs-auth-backdrop {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-}
 .jfs-auth-panel {
   width: min(100%, 430px);
   padding: clamp(28px, 6vw, 48px);
-}
-.jfs-auth-mark {
-  display: grid;
-  place-items: center;
-  width: 54px;
-  height: 54px;
-  margin: 0 0 42px;
 }
 .jfs-auth-panel h1 {
   margin: 0;
 }
 .jfs-auth-support {
   margin: 16px 0 32px;
-}
-.jfs-auth-actions {
-  display: grid;
-  gap: 10px;
 }
 .jfs-auth-button {
   display: flex;
@@ -41,17 +25,11 @@
   padding: 13px 18px;
   width: 100%;
 }
-.jfs-auth-button-secondary {
-  justify-content: center;
-}
 .jfs-auth-button:not(:disabled):hover {
   transform: translateY(-1px);
 }
 .jfs-auth-error {
   margin: 17px 0;
-}
-.jfs-auth-footnote {
-  margin: 28px 0 0;
 }
 @media (prefers-reduced-motion: reduce) {
   .jfs-auth-button:not(:disabled):hover {
