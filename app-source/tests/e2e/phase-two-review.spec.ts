@@ -131,9 +131,9 @@ test("food retry, recent portion, batch and dated journal", async ({
     )
       throw Error("lost failed portion");
     passed.push("failed direct save retains grams");
-    await b("儲存至午餐")
-      .dblclick({ timeout: 3000 })
-      .catch(() => {});
+    // A real retry is a single new submission. dblclick() can fire its
+    // second click through a dismissed sheet onto an unrelated control.
+    await b("儲存至午餐").click();
     await page.getByRole("dialog").waitFor({ state: "hidden" });
     let row = (await read()).meals.at(-1);
     if (

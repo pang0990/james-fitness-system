@@ -11,6 +11,11 @@ test("brand homepage is the single public gateway, responsive and motion-safe", 
     await image.scrollIntoViewIfNeeded();
     await expect.poll(() => image.evaluate(el => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   }
+  // fullPage screenshots do not scroll the viewport, so reveal the final
+  // editorial block first to capture the same design users see while scrolling.
+  await page.locator(".brand-reveal").last().scrollIntoViewIfNeeded();
+  await expect(page.locator(".brand-reveal").last()).toHaveClass(/is-visible/);
+  await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({ path: "test-results/brand-desktop.png", fullPage: true });
 
   await page.setViewportSize({ width: 390, height: 844 });
