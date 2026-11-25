@@ -160,6 +160,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           updateMeta({ cloudRevision: remote.cloudRevision, localRevision: remote.state.revision });
           ref.current = remote.state;
           setState(remote.state);
+          setGuestAvailable(false);
+          setLegacyAvailable(false);
         }
         if (decision === "upload" && local) {
           const expected = meta?.cloudRevision ?? 0;
@@ -280,6 +282,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       // Deleting an account's local data never deletes the unowned legacy
       // snapshot or another Google account's records on this device.
       localStorage.removeItem(key);
+      // Resetting this device is not permission to overwrite a cloud backup.
+      // Clear the sync baseline: if new offline edits are made before the
+      // remote snapshot returns they must be treated as a conflict.
+      localStorage.removeItem(cloudMetaKey(userId));
       const next = initialState();
       ref.current = next;
       setState(next);
