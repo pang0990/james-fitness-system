@@ -9,6 +9,10 @@ test.beforeEach(async({page})=>{
  state.cycles![0].days[0].name='新的課表名稱';
  await page.addInitScript(({state,key})=>{if(!localStorage.getItem('jfs-training-overview-qa-seeded')){localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('jfs-training-overview-qa-seeded','true');}}, {state,key});
  await page.route('https://*.supabase.co/**',r=>r.abort());
+ await page.goto('/training/');
+ // This isolated account has no reachable cloud backend; its local copy
+ // becomes available after the non-destructive cloud-check timeout.
+ await expect(page.getByRole('region',{name:'本週訓練狀態'})).toBeVisible({timeout:14000});
 });
 test('resume shows session snapshot and does not create another session',async({page})=>{
  await page.goto('/training/');const hero=page.getByRole('region',{name:'進行中的訓練'});

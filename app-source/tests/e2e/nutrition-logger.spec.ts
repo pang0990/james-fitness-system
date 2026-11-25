@@ -66,7 +66,9 @@ test.beforeEach(async ({ page }) => {
   );
   await page.route("https://*.supabase.co/**", (r) => r.abort());
   await page.goto("/nutrition/");
-  await expect(page.getByTestId("nutrition-v3b")).toBeVisible();
+  // Browser-only QA intentionally blocks Supabase. Wait for the guarded
+  // cloud-version check to time out before exercising offline local storage.
+  await expect(page.getByTestId("nutrition-v3b")).toBeVisible({ timeout: 14000 });
 });
 async function open(page: import("@playwright/test").Page) {
   await page
