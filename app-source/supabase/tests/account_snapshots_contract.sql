@@ -21,6 +21,13 @@ begin
   if not has_table_privilege('authenticated','public.jfs_account_snapshots','SELECT') then
     raise exception 'Authenticated account cannot read own snapshot';
   end if;
+  if exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'jfs_account_snapshots'
+      and cmd in ('INSERT', 'UPDATE', 'ALL')
+  ) then
+    raise exception 'Account snapshot must have no direct-write policies';
+  end if;
   if has_function_privilege('anon','public.jfs_save_account_snapshot(bigint,jsonb)','EXECUTE') or
      not has_function_privilege('authenticated','public.jfs_save_account_snapshot(bigint,jsonb)','EXECUTE') then
     raise exception 'Sync RPC permissions are not restricted to signed-in users';

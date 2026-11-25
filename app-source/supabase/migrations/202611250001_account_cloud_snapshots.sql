@@ -18,13 +18,6 @@ grant select on public.jfs_account_snapshots to authenticated;
 create policy "jfs_account_snapshots_read_own"
   on public.jfs_account_snapshots for select to authenticated
   using (owner_id = (select auth.uid()));
-create policy "jfs_account_snapshots_insert_own"
-  on public.jfs_account_snapshots for insert to authenticated
-  with check (owner_id = (select auth.uid()));
-create policy "jfs_account_snapshots_update_own"
-  on public.jfs_account_snapshots for update to authenticated
-  using (owner_id = (select auth.uid()))
-  with check (owner_id = (select auth.uid()));
 
 -- Compare-and-swap saves: no last-writer-wins overwrite on two devices.
 -- SECURITY DEFINER allows this one narrow CAS write without granting
