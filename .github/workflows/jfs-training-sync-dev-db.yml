@@ -46,6 +46,12 @@ jobs:
           sudo apt-get install -y postgresql-client
       - name: Install isolated auth.uid() stub
         run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/bootstrap_auth_stub.sql
+      - name: Install disposable auth.users shim
+        run: psql -X -v ON_ERROR_STOP=1 -c "create table auth.users (id uuid primary key);"
+      - name: Verify account snapshot RLS and compare-and-swap
+        run: |
+          psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/migrations/202611250001_account_cloud_snapshots.sql
+          psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/account_snapshots_contract.sql
       - name: Run dev-only schema and RPC migration
         run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/migrations/202610220001_training_dev_foundation.sql
       - name: Test tenant isolation, RLS, idempotency, version conflicts, rollback
