@@ -335,7 +335,13 @@ for (const width of [375, 390, 430, 768, 1024, 1440])
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("console", (msg) => {
-      if (msg.type() === "error") errors.push(msg.text());
+      if (msg.type() !== "error") return;
+      // Browser-only QA uses an unsigned cached identity and deliberately
+      // blocks remote Supabase. Keep every unrelated console error visible.
+      const expectedIsolatedAuthResource =
+        msg.location().url.includes(".supabase.co/") &&
+        /^(?:Failed to load resource: (?:net::ERR_FAILED|the server responded with a status of 401 \(Unauthorized\)))$/.test(msg.text());
+      if (!expectedIsolatedAuthResource) errors.push(msg.text());
     });
     await seed(page);
     await expect(page).toHaveURL(/\/training\/session\/$/);

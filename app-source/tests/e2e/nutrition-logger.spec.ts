@@ -184,7 +184,15 @@ for (const width of [390, 1440])
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    page.on("console",m=>{if(m.type()==="error")errors.push(m.text());});
+    page.on("console", m => {
+      if (m.type() !== "error") return;
+      // This isolated fixture deliberately aborts Supabase requests. Ignore
+      // only that known blocked resource, not JavaScript or local asset errors.
+      const expectedBlockedCloudResource =
+        m.location().url.includes(".supabase.co/") &&
+        m.text() === "Failed to load resource: net::ERR_FAILED";
+      if (!expectedBlockedCloudResource) errors.push(m.text());
+    });
     await open(page);
     await page
       .getByRole("button", { name: "Quick Macro", exact: true })
