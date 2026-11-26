@@ -64,10 +64,9 @@ test.beforeEach(async ({ page }) => {
     },
     { key, s },
   );
-  await page.route("https://*.supabase.co/**", (r) => r.abort());
+  // The shared synthetic-account fixture denies cloud access immediately.
+  // Do not abort it a second time: that triggers a 7-second guard timeout.
   await page.goto("/nutrition/");
-  // Browser-only QA intentionally blocks Supabase. Wait for the guarded
-  // cloud-version check to time out before exercising offline local storage.
   await expect(page.getByTestId("nutrition-v3b")).toBeVisible({ timeout: 14000 });
 });
 async function open(page: import("@playwright/test").Page) {
