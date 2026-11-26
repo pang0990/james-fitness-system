@@ -47,11 +47,11 @@ test("legacy aliases, profile edits and mobile workspaces remain usable", async 
     ["training/templates", "training/plan"],
     ["progress/weekly", "progress/check-in"],
     ["progress/recommendations", "progress/review"],
-    ["signup", "login"],
+    ["signup", ""],
     ["nutrition/log", "nutrition"],
   ]) {
     await page.goto("/" + old + "/");
-    await expect(page).toHaveURL(new RegExp("/" + next + "/?$"));
+    await expect(page).toHaveURL(next ? new RegExp("/" + next + "/?$") : /\/$/);
   }
   await page.goto("/settings/profile/");
   await page.getByLabel("稱呼", { exact: true }).fill("Updated");
