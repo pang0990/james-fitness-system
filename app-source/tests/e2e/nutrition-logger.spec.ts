@@ -187,10 +187,10 @@ for (const width of [390, 1440])
       if (m.type() !== "error") return;
       // This isolated fixture deliberately aborts Supabase requests. Ignore
       // only that known blocked resource, not JavaScript or local asset errors.
-      const expectedBlockedCloudResource =
+      const expectedIsolatedCloudResource =
         m.location().url.includes(".supabase.co/") &&
-        m.text() === "Failed to load resource: net::ERR_FAILED";
-      if (!expectedBlockedCloudResource) errors.push(m.text());
+        /^(?:Failed to load resource: (?:net::ERR_FAILED|the server responded with a status of 401 \\(Unauthorized\\)))$/.test(m.text());
+      if (!expectedIsolatedCloudResource) errors.push(m.text());
     });
     await open(page);
     await page
