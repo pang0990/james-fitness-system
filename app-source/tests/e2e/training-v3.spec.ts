@@ -41,11 +41,15 @@ async function shot(page: Page, name: string, testInfo: any) {
   await testInfo.attach(name, { path: file, contentType: "image/png" });
 }
 test.beforeEach(async ({ page }) => {
-  await page.route("**/*", (route) =>
-    new URL(route.request().url()).hostname === "127.0.0.1"
-      ? route.continue()
-      : route.abort(),
-  );
+  await page.route("**/*", (route) => {
+    const host = new URL(route.request().url()).hostname;
+    if (host === "127.0.0.1") return route.continue();
+    // Let the common authenticated fixture immediately reject cloud access.
+    // Aborting here would override the fixture and reintroduce a 7s guard
+    // timeout on each navigation. Other external traffic remains blocked.
+    if (host.endsWith(".supabase.co")) return route.fallback();
+    return route.abort();
+  });
 });
 
 test("mobile: drafts recover across exercises and reload, stable history, duplicate submit and undo", async ({

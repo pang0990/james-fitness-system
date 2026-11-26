@@ -40,8 +40,23 @@ const session = {
 
 export const test = base.extend({
   page: async ({ page }, use) => {
-    // Do not contact production auth in browser-only tests.
-    await page.route("https://*.supabase.co/**", route => route.abort());
+    // Never contact a real Supabase service in synthetic-account tests.
+    // A deterministic, immediate 401 avoids waiting seven seconds for the
+    // cloud guard on every full-page navigation. This is NOT a valid token
+    // and deliberately does not simulate successful cloud synchronization.
+    // Explicit offline tests can override this route with route.abort().
+    await page.route("https://*.supabase.co/**", route =>
+      route.fulfill({
+        status: 401,
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: "PGRST301",
+          message: "Isolated browser test: synthetic identity has no cloud access",
+          details: null,
+          hint: null,
+        }),
+      }),
+    );
     await page.addInitScript(({ session, initial, dataKey }) => {
       if (!window.localStorage.getItem("jfs-google-session-v1")) {
         window.localStorage.setItem("jfs-google-session-v1", JSON.stringify(session));
