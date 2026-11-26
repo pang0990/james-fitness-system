@@ -189,7 +189,7 @@ for (const width of [390, 1440])
       // only that known blocked resource, not JavaScript or local asset errors.
       const expectedIsolatedCloudResource =
         m.location().url.includes(".supabase.co/") &&
-        /^(?:Failed to load resource: (?:net::ERR_FAILED|the server responded with a status of 401 \\(Unauthorized\\)))$/.test(m.text());
+        /^(?:Failed to load resource: (?:net::ERR_FAILED|the server responded with a status of 401 \(Unauthorized\)))$/.test(m.text());
       if (!expectedIsolatedCloudResource) errors.push(m.text());
     });
     await open(page);
