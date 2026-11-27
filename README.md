@@ -1,29 +1,29 @@
-# James Fitness System
+# James Fitness System 2.0
 
-本 Repository 以 **main 為唯一開發主線**。網站原始碼以 PR #63 為基礎，包含 #62 訓練功能，並整合獨立的離線同步與 Expo PoC。整理日期：2026-10-27。
+此 Repository 使用 **`main` 作為正式程式主線**；JFS 2.0 目前位於 `redesign/jfs-2-20261119` 的 **Draft PR #70**，尚未合併或部署。正式站：[James Fitness System](https://pang0990.github.io/james-fitness-system/)。
 
-網站以 `app-source/` 建置並經 GitHub Actions 手動發布。根目錄舊靜態成品保留作歷史參考；正式線上版本以網站 `release.json` 的 SHA 與成功的 Pages deployment 為準。推送 main 不會自動部署。
+## 唯一正式介面與程式來源
 
-## 程式位置
+- **`app-source/`**：Next.js 16 / React 19 / TypeScript 的唯一 Web App 原始碼。
+- **`app-source/src/styles/index.css`**：唯一正式 CSS 入口；按序載入 `tokens.css`、`layout.css`、`workspaces.css`、`interface.css`、`brand.css`。
+- **`app-source/docs/JFS-2-FINAL-DIRECTION.md`**：唯一正式視覺與 UX 規範，Premium Health Intelligence × Premium Light × Editorial Design。
+- **`/`**：公開品牌網站／Google 登入入口；`/today`、`/nutrition`（Journal）、`/training`、`/progress`（Insights）、`/settings`：主要產品工作區。
+- 舊 Cinematic、2077、Glass、Black Line、Monochrome、Companion 等視覺版本已退出正式 UI。舊的 `/login`、`/signup` 只保留相容轉址。
 
-- `app-source/`：Next.js 16.4 / React 19 / TypeScript Web App。
-- `app-source/src/lib/training-core/`：共用訓練規則與 Cycle 狀態轉移。
-- `app-source/src/lib/training-offline/`：IndexedDB、SQLite Adapter、Outbox 與同步協定。
-- `app-source/supabase/`：隔離開發資料庫 Migration 與 RLS / RPC 測試；未套用正式環境。
-- `native-poc/`：Expo iOS / Android 概念驗證；不是已發布原生 App。
-- `branch-history.json`：原 66 個分支的名稱、SHA 與整理處置。舊版歷史可由 main 的 Git 歷史取回。
+## 使用者資料與歷史相容性
 
-## 目前功能與界線
+- **不刪除或重設任何使用者資料**：`AppState`、帳號專屬本機資料、舊訪客資料、訓練 Session/Cycle/History、營養紀錄、備份、匯入路徑與歷史版本都保留。
+- 外觀欄位即使來自舊版，也只做**資料相容讀取**，不啟用已淘汰的樣式。
+- 不因清理程式碼而修改正式 Supabase；舊資料遷移必須經使用者確認，不得靜默覆寫。
+- `branch-history.json`、`app-source/docs/evidence/`、`app-source/supabase/` 與 `native-poc/` 保留以維護歷史、測試及後續技術相容性。
 
-Web 包含 Today、Nutrition、Training、Progress、Settings、Knowledge；#63 的訪客入口與 Google 登入並存。正式 Web 紀錄仍使用帳戶／訪客隔離的本機儲存，登入不等於雲端備份。
+## 雲端同步與安全界線
 
-Training 包含 Active Workout 草稿、組次編修／撤銷、休息與暫停、Cycle、日曆、訓練表現、恢復證據與 Cardio。離線 Outbox、開發資料庫及 Native PoC 已保留，但尚未接成正式三平台同步。
+`app-source/src/lib/cloud-sync.ts` 與帳號專屬快照的 SQL migration 已實作，並通過隔離 PostgreSQL 合約測試；**真實 Google OAuth 雙帳號、隔離 Supabase Staging、兩裝置同步與衝突還原尚待驗收**。瀏覽器 E2E 使用不可授權的模擬帳號，不能當作真實雲端驗收證據。
 
-較舊的 `codex/v0.4-platform-content` 雲端密碼登入、整份狀態同步與 Capacitor 路線保存在 Git 歷史，未與目前 Google / Expo 路線同時啟用。舊視覺替代方案亦保留歷史，不覆蓋 #63。
+## 驗證方式
 
-## 本機驗證
-
-```sh
+```bash
 cd app-source
 npm ci
 npm run typecheck
@@ -32,23 +32,13 @@ npm run build
 npm run test:e2e -- --workers=1
 ```
 
-原生與資料庫驗證方式見 `native-poc/README.md`、`app-source/docs/THREE-PLATFORM-SYNC-POC-20261022.md`。真實 OAuth、正式雲端同步及真機驗收仍需獨立完成。
+PR #70 在清理前的提交 `0a47316` 已完成 **14/14 CI 成功、154/154 單元測試、78/78 靜態頁面**；清理提交必須重新驗收，以當次 GitHub Check 為準。一般 E2E 對隔離實驗室案例會有設計上預期的跳過，不能把它們算成通過。
 
-## 發布與維護
+## 發布與歷史靜態產物
 
-GitHub Pages 現有網站：https://pang0990.github.io/james-fitness-system/
+- 發布由 `.github/workflows/publish-jfs-pages.yml` 管理，**僅可在 `main` 手動勾選 `confirm_release=true`** 後執行；合併與 CI 全綠本身不會部署。
+- 根目錄 `_next/`、歷史 HTML、`.pages-files.json` 等**舊 Pages 靜態輸出目前暫留**，避免在未完成正式發布與引用核對前破壞歷史頁面；它們不是 Web App 原始碼。
+- 舊 PR #62 的 `pr-preview/pr-62/` 及舊 Cinematic 的 `ui-preview/` 已從 JFS 2.0 開發分支清除，不屬正式產品；需要時可從先前 Git commit 取回。日後發布不應重新提交這些舊輸出。
+- **正式發布前還需要：** 真實 Google OAuth、隔離 Supabase 雙裝置測試、iPhone Safari 實機、最終 Figma／無障礙驗收、發布安全與資料備份核對。
 
-`publish-jfs-pages.yml` 只接受 main 上的手動 `confirm_release=true`。流程執行套件安全檢查、TypeScript、單元測試與 Nutrition/Guest 操作測試，再以 `/james-fitness-system` base path 建置、移除開發頁、上傳 Pages artifact 並部署。正式發布需等待 deploy 成功，再核對線上 `release.json`；合併或建置成功本身不等於已發布。
-
-不要把舊 PR 描述中的測試數量當成整合後的測試結果。不要直接執行舊雲端 Migration，或以舊版資料格式覆寫目前帳戶資料。
-
-## 整理時驗證（2026-10-27）
-
-- TypeScript：通過。
-- Domain / SQLite / Offline protocol 單元測試：132/132 通過。
-- Next.js 靜態建置：通過；首次建置因依賴安全提示中止，原樣重跑成功。
-- 全庫 Chromium：104 通過、3 失敗、6 依模式跳過；原樣重跑失敗項目後 2 通過、1 仍失敗。不是全綠。
-- 未解：1024px 四工作區測試停在「正在確認帳號」。另外兩項逾時重跑通過，保留首次失敗證據。
-- Review Preview / Offline Lab 專用測試在一般建置中跳過，未算作通過。
-- Nutrition Batch 1 發布準備：Next.js 更新至 16.4.3、Zod 至 4.6.6；重新執行套件安全檢查與回歸測試。
-- 真實 OAuth、Supabase DEV 整合與 iOS/Android 真機未完成本次驗收；不可將本機保存視為雲端同步。
+參考：`app-source/docs/JFS-2-FINAL-DIRECTION.md` 與 `app-source/docs/REPOSITORY-CLEANUP-20261127.md`。
