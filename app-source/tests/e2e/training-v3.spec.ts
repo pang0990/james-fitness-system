@@ -1,3 +1,4 @@
+import { textContrast } from "./text-contrast";
 import { test, expect, DATA_KEY } from "./authenticated";
 import { trainingFixture, segment } from "../fixtures/training-v3";
 import type { AppState } from "../../src/lib/domain";
@@ -17,7 +18,7 @@ async function seed(page: Page, state = trainingFixture()) {
   );
   await page.goto("/training/session/");
   await expect(
-    page.getByRole("heading", { name: "Active Workout", exact: true }),
+    page.getByRole("heading", { name: state.sessions.find(s=>s.status==="in_progress")!.name, exact: true }),
   ).toBeVisible({ timeout: 10000 });
 }
 async function stored(page: Page): Promise<AppState> {
@@ -40,11 +41,15 @@ async function shot(page: Page, name: string, testInfo: any) {
   await testInfo.attach(name, { path: file, contentType: "image/png" });
 }
 test.beforeEach(async ({ page }) => {
-  await page.route("**/*", (route) =>
-    new URL(route.request().url()).hostname === "127.0.0.1"
-      ? route.continue()
-      : route.abort(),
-  );
+  await page.route("**/*", (route) => {
+    const host = new URL(route.request().url()).hostname;
+    if (host === "127.0.0.1") return route.continue();
+    // Let the common authenticated fixture immediately reject cloud access.
+    // Aborting here would override the fixture and reintroduce a 7s guard
+    // timeout on each navigation. Other external traffic remains blocked.
+    if (host.endsWith(".supabase.co")) return route.fallback();
+    return route.abort();
+  });
 });
 
 test("mobile: drafts recover across exercises and reload, stable history, duplicate submit and undo", async ({
@@ -137,7 +142,7 @@ test("rest survives pause/reload; edit, delete and restore; partial Cycle confir
   expect(state.sessions[1].status).toBe("completed");
   expect(state.cycles![0].pending).toEqual(["day-a", "day-b"]);
   expect(state.cycleEvents).toHaveLength(0);
-  await expect(page.getByRole("link",{name:"查看下一個訓練日 →",exact:true})).toHaveCSS("color","rgb(255, 255, 255)");
+  expect(await textContrast(page.getByRole("link",{name:"查看下一個訓練日 →",exact:true}))).toBeGreaterThanOrEqual(4.5);
   await shot(page, "training-v3-complete-summary", info);
 });
 
@@ -327,18 +332,24 @@ test("corrupt local Session stops writes and preserves the raw snapshot", async 
 });
 
 for (const width of [375, 390, 430, 768, 1024, 1440])
-  test(`viewport ${width}: meaningful glass UI, no overflow or error, keyboard input and focus`, async ({
+  test(`viewport ${width}: workout controls, no overflow or error, keyboard input and focus`, async ({
     page,
   }, info) => {
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("console", (msg) => {
-      if (msg.type() === "error") errors.push(msg.text());
+      if (msg.type() !== "error") return;
+      // Browser-only QA uses an unsigned cached identity and deliberately
+      // blocks remote Supabase. Keep every unrelated console error visible.
+      const expectedIsolatedAuthResource =
+        msg.location().url.includes(".supabase.co/") &&
+        /^(?:Failed to load resource: (?:net::ERR_FAILED|the server responded with a status of 401 \(Unauthorized\)))$/.test(msg.text());
+      if (!expectedIsolatedAuthResource) errors.push(msg.text());
     });
     await seed(page);
     await expect(page).toHaveURL(/\/training\/session\/$/);
-    await expect(page).toHaveTitle(/Fitness/);
+    await expect(page).toHaveTitle(/JAMES.*Premium Health Intelligence/);
     await expect(page.locator(".exercise-focus")).toBeVisible();
     await page.locator('.workout-set-entry input[name="weight"]').focus();
     await page.keyboard.type("25");
@@ -352,11 +363,7 @@ for (const width of [375, 390, 430, 768, 1024, 1440])
         () => document.documentElement.scrollWidth - innerWidth,
       ),
     ).toBeLessThanOrEqual(1);
-    expect(
-      await page
-        .locator(".exercise-focus")
-        .evaluate((el) => getComputedStyle(el).backgroundColor),
-    ).not.toBe("rgb(34, 34, 37)");
+    expect(await textContrast(page.locator(".exercise-focus h2").first())).toBeGreaterThanOrEqual(4.5);
     const inputBox = await page
       .locator('.workout-set-entry input[name="reps"]')
       .boundingBox();
@@ -503,9 +510,10 @@ test("Cardio: optional distance, heart rate and source persist without nutrition
   await expect(page.getByText(/不加回可吃熱量/)).toBeVisible();
 });
 
-test("Black Line: workout text labels retain readable contrast on black cards",async({page})=>{
+test("Premium Light: workout labels retain readable WCAG contrast",async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await seed(page);
+  await expect(page.locator("html")).toHaveAttribute("data-theme","light");
   const targets=[
     ".workout-set-entry .field > span",
     ".exercise-focus > .muted",
@@ -514,10 +522,7 @@ test("Black Line: workout text labels retain readable contrast on black cards",a
   for(const selector of targets) {
     const el=page.locator(selector).first();
     await expect(el).toBeVisible();
-    const actual=await el.evaluate(element=>getComputedStyle(element).color);
-    const channels=actual.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
-    expect(channels.length,selector).toBe(3);
-    expect(Math.min(...channels),selector+" readable RGB").toBeGreaterThanOrEqual(150);
+    expect(await textContrast(el),selector+" WCAG contrast").toBeGreaterThanOrEqual(4.5);
   }
   await expect(page.locator(".workout-set-entry .field > span").first()).toContainText("組型");
 });
@@ -547,10 +552,7 @@ test("warm-up: labels are readable when Active Workout starts in warm-up phase",
   fixture.sessions[1].phase="warmup";
   await seed(page,fixture);
   await expect(page.getByLabel("從動作庫加入暖身")).toBeVisible();
-  const color=await page.locator(".warmup-editor .muted").first().evaluate(el=>getComputedStyle(el).color);
-  const rgb=color.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
-  expect(rgb).toHaveLength(3);
-  expect(Math.min(...rgb)).toBeGreaterThanOrEqual(150);
+  expect(await textContrast(page.locator(".warmup-editor .muted").first())).toBeGreaterThanOrEqual(4.5);
 });
 
 test("Training autosave is silent but failed saves stay visible", async ({page}) => {

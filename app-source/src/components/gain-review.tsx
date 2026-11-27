@@ -108,7 +108,7 @@ export function GainReview({
           </label>
         ))}
       </details>
-      <section className="review-glass">
+      <section className="review-panel">
         <h2>
           {review.actionable
             ? review.delta

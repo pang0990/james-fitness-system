@@ -61,7 +61,8 @@ test("backup: invalid JSON is rejected without changing account records", async 
     mimeType: "application/json",
     buffer: Buffer.from("{}"),
   });
-  await expect(page.locator("p[role=alert]")).toContainText("備份格式無效");
+  // Sync connectivity has its own alert; select the backup validation error.
+  await expect(page.getByText("備份格式無效，未更動任何紀錄。", { exact: true })).toBeVisible();
   const after = await page.evaluate(key => localStorage.getItem(key), DATA_KEY);
   expect(after).toEqual(before);
 });

@@ -1,6 +1,7 @@
-import { test, expect } from "@playwright/test";
+import { textContrast } from "./text-contrast";
+import { test, expect, DATA_KEY } from "./authenticated";
 import { initialState, dateInZone, addDays } from "../../src/lib/domain";
-const key = "james-fitness-user-v1:jfs-local-guest-v1";
+const key = DATA_KEY;
 const today = dateInZone();
 test.beforeEach(async ({ page }) => {
   const s = initialState();
@@ -56,16 +57,17 @@ test.beforeEach(async ({ page }) => {
   ];
   await page.addInitScript(
     ({ key, s }) => {
-      if (!localStorage.getItem(key)) {
+      if (!localStorage.getItem("jfs-nutrition-qa-seeded")) {
         localStorage.setItem(key, JSON.stringify(s));
-        localStorage.setItem("jfs-guest-mode-v1", "active");
+        localStorage.setItem("jfs-nutrition-qa-seeded", "true");
       }
     },
     { key, s },
   );
-  await page.route("https://*.supabase.co/**", (r) => r.abort());
+  // The shared synthetic-account fixture denies cloud access immediately.
+  // Do not abort it a second time: that triggers a 7-second guard timeout.
   await page.goto("/nutrition/");
-  await expect(page.getByTestId("nutrition-v3b")).toBeVisible();
+  await expect(page.getByTestId("nutrition-v3b")).toBeVisible({ timeout: 14000 });
 });
 async function open(page: import("@playwright/test").Page) {
   await page
@@ -181,7 +183,15 @@ for (const width of [390, 1440])
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    page.on("console",m=>{if(m.type()==="error")errors.push(m.text());});
+    page.on("console", m => {
+      if (m.type() !== "error") return;
+      // This isolated fixture deliberately aborts Supabase requests. Ignore
+      // only that known blocked resource, not JavaScript or local asset errors.
+      const expectedIsolatedCloudResource =
+        m.location().url.includes(".supabase.co/") &&
+        /^(?:Failed to load resource: (?:net::ERR_FAILED|the server responded with a status of 401 \(Unauthorized\)))$/.test(m.text());
+      if (!expectedIsolatedCloudResource) errors.push(m.text());
+    });
     await open(page);
     await page
       .getByRole("button", { name: "Quick Macro", exact: true })
@@ -204,7 +214,7 @@ for (const width of [390, 1440])
     expect(
       await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth + 1),
     ).toBe(true);
-    await expect.poll(()=>page.getByRole("button",{name:"確認加入 1 項食物"}).evaluate(el=>({color:getComputedStyle(el).color,background:getComputedStyle(el).backgroundColor}))).toEqual({color:"rgb(10, 10, 10)",background:"rgb(245, 245, 245)"});
+    expect(await textContrast(page.getByRole("button",{name:"確認加入 1 項食物"}))).toBeGreaterThanOrEqual(4.5);
     if (process.env.NUTRITION_QA_DIR)
       await page.screenshot({
         path: process.env.NUTRITION_QA_DIR + `/nutrition-logger-${width}.png`,

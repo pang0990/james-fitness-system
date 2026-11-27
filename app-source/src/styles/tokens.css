@@ -1,0 +1,36 @@
+:root {
+  color-scheme: light;
+  --canvas: #f7f8f5;
+  --surface: #ffffff;
+  --ink: #153b32;
+  --muted: #5e716a;
+  --line: #dbe3dc;
+  --brand: #0e735b;
+  --on-brand: #ffffff;
+  --signal: #d7e99a;
+  --error: #a73530;
+  --radius: 12px;
+  --control-radius: 8px;
+  --gap: 20px;
+  --type-display: Georgia, "Times New Roman", serif;
+  --type-ui: "Inter", "Helvetica Neue", "PingFang TC", system-ui, sans-serif;
+  --motion-fast: 140ms;
+  --motion-base: 220ms;
+  --motion-reveal: 640ms;
+  --ease-premium: cubic-bezier(.22, 1, .36, 1);
+  --z-nav: 30;
+  --z-menu: 50;
+  --z-toast: 80;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-reveal: 0ms;
+  }
+}
+:root[data-reduce-motion="true"] {
+  --motion-fast: 0ms;
+  --motion-base: 0ms;
+  --motion-reveal: 0ms;
+}

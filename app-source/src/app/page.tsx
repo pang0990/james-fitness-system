@@ -1,4 +1,4 @@
-import { FitnessApp } from "@/components/fitness-app";
+import { BrandHome } from "@/components/brand-home";
 export default function Page() {
-  return <FitnessApp path="today" />;
+  return <BrandHome />;
 }

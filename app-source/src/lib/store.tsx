@@ -12,6 +12,11 @@ import { initialState, validateState, type AppState } from "./domain";
 import { useAuth } from "./auth-context";
 import { REVIEW_PREVIEW, REVIEW_STORAGE_KEY, makeReviewSeed } from "./review-preview";
 import { GUEST_USER_ID, GUEST_DATA_KEY, GUEST_IMPORT_SKIPPED } from "./guest-mode";
+import {
+  cloudBackupKey, cloudErrorMessage, cloudMetaKey, decideCloudSync,
+  pushCloudSnapshot, readCloudMeta, readCloudSnapshot,
+  type CloudMeta,
+} from "./cloud-sync";
 
 /** Original version is preserved until user confirms a manual import. */
 export const STORAGE_KEY = "james-fitness-v1";
@@ -33,6 +38,9 @@ type Store = {
   importLegacy: () => boolean;
   dismissLegacy: () => void;
   storageKey: string | null;
+  syncStatus: "preview" | "checking" | "synced" | "offline" | "unavailable" | "conflict";
+  syncError: string;
+  resolveCloudConflict: (source: "local" | "cloud") => Promise<boolean>;
 };
 
 const Context = createContext<Store | null>(null);
@@ -46,6 +54,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<Store["syncStatus"]>("checking");
+  const [syncError, setSyncError] = useState("");
+  const [cloudReady, setCloudReady] = useState(REVIEW_PREVIEW);
   const [legacyAvailable, setLegacyAvailable] = useState(false);
   const [guestAvailable, setGuestAvailable] = useState(false);
   const blocked = useRef(false);
@@ -59,6 +70,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setError("");
     setLegacyAvailable(false);
     setGuestAvailable(false);
+    setCloudReady(REVIEW_PREVIEW);
+    setSyncStatus(REVIEW_PREVIEW ? "preview" : "checking");
+    setSyncError("");
     blocked.current = false;
     if (!authReady || !userId || !key) return;
 
@@ -101,6 +115,130 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", sync);
   }, [authReady, userId, key]);
 
+  // Local storage is the offline working copy. The cloud provides a
+  // per-account CAS snapshot, not blind last-writer-wins synchronization.
+  useEffect(() => {
+    if (!authReady || !userId || !key || !ready || loadedFor.current !== userId) return;
+    if (REVIEW_PREVIEW) {
+      setCloudReady(true);
+      setSyncStatus("preview");
+      return;
+    }
+    let disposed = false;
+    let running = false;
+    let queued = false;
+    const metaKey = cloudMetaKey(userId);
+    const updateMeta = (meta: CloudMeta) =>
+      localStorage.setItem(metaKey, JSON.stringify(meta));
+    async function reconcile() {
+      if (disposed) return;
+      if (running) { queued = true; return; }
+      running = true;
+      try {
+        if (!navigator.onLine) {
+          setSyncStatus("offline");
+          return;
+        }
+        setSyncStatus("checking");
+        const remote = await Promise.race([
+          readCloudSnapshot(userId!),
+          new Promise<never>((_, reject) => setTimeout(() => reject(Error("SYNC_TIMEOUT")), 7000)),
+        ]);
+        if (disposed) return;
+        const raw = localStorage.getItem(key!);
+        const local = raw ? validateState(JSON.parse(raw)) : null;
+        const meta = readCloudMeta(localStorage.getItem(metaKey));
+        const decision = decideCloudSync(local, remote, meta);
+        if (decision === "conflict") {
+          setSyncStatus("conflict");
+          setSyncError("這部裝置與雲端都有不同版本。兩份資料已保留，請在資料管理中選擇。");
+          return;
+        }
+        if (decision === "download" && remote) {
+          if (localStorage.getItem(key!) !== raw) { queued = true; return; }
+          localStorage.setItem(key!, JSON.stringify(remote.state));
+          updateMeta({ cloudRevision: remote.cloudRevision, localRevision: remote.state.revision });
+          ref.current = remote.state;
+          setState(remote.state);
+          setGuestAvailable(false);
+          setLegacyAvailable(false);
+        }
+        if (decision === "upload" && local) {
+          const expected = meta?.cloudRevision ?? 0;
+          const nextRevision = await pushCloudSnapshot(expected, local);
+          if (disposed) return;
+          updateMeta({ cloudRevision: nextRevision, localRevision: local.revision });
+          if (localStorage.getItem(key!) !== raw) queued = true;
+        }
+        if (decision === "synced" && remote && local)
+          updateMeta({ cloudRevision: remote.cloudRevision, localRevision: local.revision });
+        setSyncStatus("synced");
+        setSyncError("");
+      } catch (err) {
+        if (disposed) return;
+        const message = cloudErrorMessage(err);
+        setSyncError(message);
+        setSyncStatus(message.includes("版本不同") ? "conflict" :
+          message.includes("資料庫尚未") ? "unavailable" : "offline");
+      } finally {
+        running = false;
+        if (!disposed) {
+          setCloudReady(true);
+          if (queued) { queued = false; void reconcile(); }
+        }
+      }
+    }
+    const onSync = () => { void reconcile(); };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void reconcile();
+    };
+    window.addEventListener("jfs-cloud-sync", onSync);
+    window.addEventListener("online", onSync);
+    document.addEventListener("visibilitychange", onVisible);
+    const interval = window.setInterval(onSync, 30000);
+    void reconcile();
+    return () => {
+      disposed = true;
+      window.removeEventListener("jfs-cloud-sync", onSync);
+      window.removeEventListener("online", onSync);
+      document.removeEventListener("visibilitychange", onVisible);
+      clearInterval(interval);
+    };
+  }, [authReady, userId, key, ready]);
+
+  async function resolveCloudConflict(source: "local" | "cloud"): Promise<boolean> {
+    if (REVIEW_PREVIEW || !userId || !key || loadedFor.current !== userId) return false;
+    try {
+      const remote = await readCloudSnapshot(userId);
+      const localRaw = localStorage.getItem(key);
+      if (source === "cloud") {
+        if (!remote) throw Error("雲端沒有可還原的紀錄。");
+        if (localRaw) localStorage.setItem(cloudBackupKey(userId), localRaw);
+        localStorage.setItem(key, JSON.stringify(remote.state));
+        localStorage.setItem(cloudMetaKey(userId), JSON.stringify({
+          cloudRevision: remote.cloudRevision, localRevision: remote.state.revision,
+        }));
+        ref.current = remote.state;
+        setState(remote.state);
+      } else {
+        if (!localRaw) throw Error("本機沒有可同步的紀錄。");
+        if (remote) localStorage.setItem(cloudBackupKey(userId), JSON.stringify(remote.state));
+        const local = validateState(JSON.parse(localRaw));
+        const revision = await pushCloudSnapshot(remote?.cloudRevision ?? 0, local);
+        localStorage.setItem(cloudMetaKey(userId), JSON.stringify({
+          cloudRevision: revision, localRevision: local.revision,
+        }));
+      }
+      setSyncStatus("synced");
+      setSyncError("");
+      return true;
+    } catch (err) {
+      setSyncError(cloudErrorMessage(err));
+      setSyncStatus("conflict");
+      return false;
+    }
+  }
+
   function save(action: string, change: (s: AppState) => void) {
     if (!ready || !key || !userId ||
       loadedFor.current !== userId || blocked.current) return false;
@@ -127,6 +265,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(key, JSON.stringify(next));
       ref.current = next;
       setState(next);
+      window.dispatchEvent(new Event("jfs-cloud-sync"));
       setError("");
       return true;
     } catch (e) {
@@ -143,6 +282,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       // Deleting an account's local data never deletes the unowned legacy
       // snapshot or another Google account's records on this device.
       localStorage.removeItem(key);
+      // Resetting this device is not permission to overwrite a cloud backup.
+      // Clear the sync baseline: if new offline edits are made before the
+      // remote snapshot returns they must be treated as a conflict.
+      localStorage.removeItem(cloudMetaKey(userId));
       const next = initialState();
       ref.current = next;
       setState(next);
@@ -150,6 +293,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setError("");
       setLegacyAvailable(false);
       setGuestAvailable(false);
+      window.dispatchEvent(new Event("jfs-cloud-sync"));
     } catch {
       setError("無法刪除本機資料");
     }
@@ -167,6 +311,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setState(guestData);
       setGuestAvailable(false);
       setError("");
+      window.dispatchEvent(new Event("jfs-cloud-sync"));
       return true;
     } catch {
       setError("訪客資料無法匯入。原始資料仍保存在本機，請先匯出備份。");
@@ -192,6 +337,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setState(previous);
       setLegacyAvailable(false);
       setError("");
+      window.dispatchEvent(new Event("jfs-cloud-sync"));
       // Keep old backup untouched until cloud migration is verified.
       return true;
     } catch {
@@ -208,8 +354,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <Context.Provider value={{
-      state, ready, error, saving, save, reset,
+      state, ready: ready && cloudReady, error, saving, save, reset,
       legacyAvailable, guestAvailable, importGuest, dismissGuest, importLegacy, dismissLegacy, storageKey: key,
+      syncStatus, syncError, resolveCloudConflict,
     }}>
       {children}
     </Context.Provider>

@@ -31,8 +31,9 @@ async function stored(page: Page) {
 async function createPplPlan(page: Page) {
   await page.goto("/training/plan/");
   await page.getByRole("combobox", { name: "選擇分化" }).selectOption("PPL");
-  await expect(page.getByText("Bench Press", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "儲存計畫版本" }).click();
+  await expect(page.locator(".plan-exercise h4").filter({hasText:/Bench Press/i}).first()).toBeVisible();
+  await page.getByRole("button", { name: "檢閱變更" }).click();
+  await page.getByRole("button", {name: "確認建立新版本"}).click();
   await expect.poll(async () => (await stored(page)).cycles?.length ?? 0).toBe(1);
 }
 
@@ -46,11 +47,11 @@ test("legacy aliases, profile edits and mobile workspaces remain usable", async 
     ["training/templates", "training/plan"],
     ["progress/weekly", "progress/check-in"],
     ["progress/recommendations", "progress/review"],
-    ["signup", "login"],
+    ["signup", ""],
     ["nutrition/log", "nutrition"],
   ]) {
     await page.goto("/" + old + "/");
-    await expect(page).toHaveURL(new RegExp("/" + next + "/?$"));
+    await expect(page).toHaveURL(next ? new RegExp("/" + next + "/?$") : /\/$/);
   }
   await page.goto("/settings/profile/");
   await page.getByLabel("稱呼", { exact: true }).fill("Updated");
@@ -107,20 +108,21 @@ test("PPL template, pause, discard and completion advance only the intended Cycl
 
 test("Today recovery quick-log and Nutrition macro persist without leaving stale sheets", async ({ page }) => {
   await seed(page);
-  await page.getByRole("button", { name: "記錄睡眠" }).click();
+  await page.locator(".today-v3-recovery").getByRole("button").click();
   await page.getByRole("radio", { name: "3", exact: true }).check();
   await page.getByRole("button", { name: "儲存並關閉" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect((await stored(page)).recoveryEntries.some((r: { type: string; value: number }) =>
     r.type === "sleep" && r.value === 3)).toBe(true);
   await page.goto("/nutrition/");
-  await page.getByRole("button", { name: "加入飲食", exact: true }).click();
+  await page.getByRole("button", { name: /新增食物至早餐/ }).click();
   await page.getByRole("button", { name: /Quick Macro/ }).click();
   await page.getByRole("textbox", { name: "這餐吃了什麼" }).fill("測試早餐");
   await page.getByRole("spinbutton", { name: "蛋白質 g" }).fill("30");
   await page.getByRole("spinbutton", { name: "碳水 g" }).fill("40");
   await page.getByRole("spinbutton", { name: "脂肪 g" }).fill("10");
-  await page.getByRole("button", { name: "加入紀錄" }).click();
+  await page.getByRole("button", {name:"加入待確認清單"}).click();
+  await page.getByRole("button", {name:"確認加入 1 項食物"}).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.reload();
   expect((await stored(page)).meals).toHaveLength(1);
@@ -161,7 +163,8 @@ test("editing a plan creates a new version without overwriting the active sessio
   const before = (await stored(page)).sessions.find((s: { status: string }) => s.status === "in_progress");
   await page.goto("/training/plan/");
   await page.getByLabel("訓練日 1", { exact: true }).fill("Updated Upper");
-  await page.getByRole("button", { name: "儲存計畫版本" }).click();
+  await page.getByRole("button", { name: "檢閱變更" }).click();
+  await page.getByRole("button", {name: "確認建立新版本"}).click();
   await expect.poll(async () => (await stored(page)).cycles?.length).toBe(2);
   const current = await stored(page);
   expect(current.sessions.find((s: { status: string }) => s.status === "in_progress")).toEqual(before);

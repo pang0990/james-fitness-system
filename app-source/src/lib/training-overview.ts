@@ -6,6 +6,12 @@ export function workoutProgress(session:Session){
  const completedExercises=session.exercises.filter(e=>e.plannedSets&&e.sets.filter(s=>s.type==='working').length>=e.plannedSets).length;
  return {working,planned,completedExercises};
 }
+export function remainingWorkingSets(session:Session) {
+  return session.exercises.reduce((sum, exercise) => {
+    const done = exercise.sets.filter(set => set.type === "working").length;
+    return sum + Math.max(0, (exercise.plannedSets ?? 0) - done);
+  }, 0);
+}
 export function trainingWeek(state:AppState,date:string){
  const offset=(new Date(date+'T12:00:00Z').getUTCDay()+6)%7;
  return Array.from({length:7},(_,i)=>{

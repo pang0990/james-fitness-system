@@ -10,9 +10,9 @@ export const primaryNavigation: ReadonlyArray<{
   icon: LucideIcon;
 }> = [
   { path: "today", label: "Today", zh: "今日", icon: Home },
-  { path: "nutrition", label: "Nutrition", zh: "飲食", icon: Utensils },
+  { path: "nutrition", label: "Journal", zh: "每日紀錄", icon: Utensils },
   { path: "training", label: "Training", zh: "訓練", icon: Dumbbell },
-  { path: "progress", label: "Progress", zh: "進度", icon: Activity },
+  { path: "progress", label: "Insights", zh: "長期趨勢", icon: Activity },
 ];
 
 export function AppSidebar({ section }: { section: string }) {

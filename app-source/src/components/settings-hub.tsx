@@ -4,6 +4,7 @@ import { useStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth-context";
 import { frequencies, profileSchema } from "@/lib/domain";
 import { AppearanceSettings } from "./appearance";
+import { CloudSyncPanel } from "./cloud-status";
 import { PageTitle, Field } from "./daily";
 import pkg from "../../package.json";
 const pages = {
@@ -124,35 +125,14 @@ export function SettingsHub({
         </div>
       </div>
     );
-  if (key === "appearance") return <div className="daily-page"><PageTitle title="外觀" /><AppearanceSettings notify={notify} /><Link className="text-link" href="/settings/companion">2077 角色與城市進階設定 →</Link></div>;
+  if (key === "appearance" || key === "companion") return <div className="daily-page"><PageTitle title="外觀" /><AppearanceSettings notify={notify} /></div>;
   if (key === "data-privacy")
     return (
       <div className="daily-page">
         <PageTitle title="Data & Privacy" />
-        <p className="muted">目前紀錄只儲存在這個瀏覽器，尚未啟用雲端同步。</p>
+        <p className="muted">以 Google 帳號同步資料；離線時仍在此裝置保存。請至 Account & Sync 確認實際同步狀態。</p>
         <Link className="simple-row" href="/settings/data">備份、匯出與資料管理 <span>›</span></Link>
         <Link className="simple-row" href="/settings/privacy">隱私說明 <span>›</span></Link>
-      </div>
-    );
-  if (key === "companion")
-    return (
-      <div className="daily-page">
-        <PageTitle title="Companion" />
-        <form className="card stack" onSubmit={e => {
-          e.preventDefault();
-          const data = new FormData(e.currentTarget);
-          if (save("更新角色設定", draft => {
-            draft.appearance = { theme: draft.appearance?.theme ?? "light", visualStyle: draft.appearance?.visualStyle ?? "minimal", showCompanion: data.get("character") === "on" };
-            (draft.preferences ??= {}).companionAnimation = data.get("animation") === "on";
-            (draft.preferences ??= {}).cityAnimation = data.get("cityAnimation") === "on";
-          })) notify("角色偏好已儲存");
-        }}>
-          <label className="check"><input name="character" type="checkbox" defaultChecked={state.appearance?.showCompanion !== false} />顯示角色</label>
-          <label className="check"><input name="animation" type="checkbox" defaultChecked={state.preferences?.companionAnimation !== false} />持續動畫（減少動態設定優先）</label>
-          <label className="check"><input name="cityAnimation" type="checkbox" defaultChecked={state.preferences?.cityAnimation !== false} />Today 動態城市（霓虹、空中交通、雨霧）</label>
-          <p className="muted">城市動畫僅用於 2077 風格，減少動態設定會優先生效。</p>
-          <button className="button">儲存偏好</button>
-        </form>
       </div>
     );
   if (key === "health")
@@ -173,9 +153,10 @@ export function SettingsHub({
         <section className="card">
           <h2>Google 帳號</h2>
           <p>{user?.email ?? "尚未登入"}</p>
-          <p className="muted">已登入。健身紀錄仍儲存在本機，尚未跨裝置同步。</p>
+          <p className="muted">登入不代表雲端同步已成功，請確認下方同步狀態。</p>
           <button className="button secondary" type="button" onClick={() => void signOut()}>登出 Google 帳號</button>
         </section>
+        <CloudSyncPanel />
       </div>
     );
   if (key === "about")

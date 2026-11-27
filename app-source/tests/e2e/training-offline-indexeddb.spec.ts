@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { buildSync } from "esbuild";
 
-const bundle = resolve(process.cwd(), "test-output", "jfs-offline-harness.js");
-const script = readFileSync(bundle, "utf8");
+const script = buildSync({
+  entryPoints: ["tests/fixtures/offline-browser-harness.ts"],
+  bundle: true, format: "iife", platform: "browser", target: "es2022", write: false,
+}).outputFiles[0].text;
 
 type Harness = {
   WebIndexedDbTrainingDatabase: new () => {

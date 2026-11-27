@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Plus, Utensils } from "lucide-react";
+import { ArrowRight,Plus,Utensils } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { dayNames, mealTotals, resolveDay, visibleMeals } from "@/lib/domain";
+import { dayNames,mealTotals,resolveDay,visibleMeals } from "@/lib/domain";
 import { UiEmptyState } from "./ui/design-system";
-import { GlassCard, GlassButton, GlassProgress } from "./ui/glass-system";
+import { UiSurface,UiButton } from "./ui/design-system";
+import { ProgressTrack } from "./ui/controls";
 import type { CSSProperties } from "react";
 
 const num = (n: number) => Math.round(n).toLocaleString("en-US");
@@ -30,7 +31,7 @@ export function NutritionDashboardV3({
     {key: "f" as const, label:"脂肪", abbr:"F"},
   ];
 
-  return <GlassCard className="nutrition-v3b" id="nutrition-calories" aria-label="今日營養摘要" data-testid="nutrition-v3b">
+  return <UiSurface className="nutrition-v3b" id="nutrition-calories" aria-label="今日營養摘要" data-testid="nutrition-v3b">
     <div className="nutrition-v3b-topline">
       <div>
         <span className="nutrition-v3b-eyebrow">NUTRITION OVERVIEW</span>
@@ -64,7 +65,7 @@ export function NutritionDashboardV3({
               <span><b>{abbr}</b> {label}</span>
               <strong>{num(amount)} <small>/ {goal !== null ? num(goal) : "—"} g</small></strong>
             </div>
-            <GlassProgress label={label+"攝取進度"} value={amount} target={goal} />
+            <ProgressTrack label={label+"攝取進度"} value={amount} target={goal} />
             {exceeded && <small className="nutrition-v3b-over">超出 {num(amount-goal)} g</small>}
           </div>;
         })}
@@ -75,14 +76,14 @@ export function NutritionDashboardV3({
         <Utensils size={15} aria-hidden="true" />
         {meals.length ? `今日 ${meals.length} 筆飲食紀錄` : "今天尚未記錄飲食"}
       </div>
-      <GlassButton kind="primary" className="nutrition-v3b-add" onClick={onAddMeal}>
+      <UiButton tone="primary" className="nutrition-v3b-add" onClick={onAddMeal}>
         <Plus size={17} aria-hidden="true" /> 加入飲食
-      </GlassButton>
+      </UiButton>
     </div>
     {!target && (
       <UiEmptyState title="尚未設定營養目標" description="設定目標後，這裡會呈現實際攝取與剩餘熱量。"
         action={<Link href="/onboarding" className="jfs-ui-action jfs-ui-action--secondary">設定營養目標 <ArrowRight size={15} /></Link>}
       />
     )}
-  </GlassCard>;
+  </UiSurface>;
 }

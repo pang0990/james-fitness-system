@@ -7,9 +7,9 @@ import { appendWorkoutSet } from "@/lib/workout-sets";
 import { startRestInterval, endRestInterval } from "@/lib/rest-intervals";
 import { Field } from "./daily";
 
-const emptyDraft = (): SetDraft => ({
-  id: crypto.randomUUID(),
-  weight: "",
+const emptyDraft = (id:string, weight:string): SetDraft => ({
+  id,
+  weight,
   reps: "",
   rir: "",
   type: "working",
@@ -26,9 +26,12 @@ export function WorkoutSetEntry({
   onSaved: (id: string) => void;
 }) {
   const { state, save, error } = useStore();
-  const [draft, setDraft] = useState<SetDraft>(
-    () => session.setDrafts?.[exercise.id] ?? emptyDraft(),
-  );
+  const lastWorking=exercise.sets.filter(s=>s.type==="working").at(-1);
+  const suggestedWeight = lastWorking ? String(lastWorking.weight) : "";
+  const [localDraft, setDraft] = useState<SetDraft | null>(null);
+  const [freshId, setFreshId] = useState(() => crypto.randomUUID());
+  const storedDraft = session.setDrafts?.[exercise.id];
+  const draft = localDraft ?? storedDraft ?? emptyDraft(freshId,suggestedWeight);
   const [draftFailed, setDraftFailed] = useState(false);
   const lock = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -53,10 +56,10 @@ export function WorkoutSetEntry({
       document.removeEventListener("click", navigate, true);
     };
   }, [draftFailed]);
-  const lastWorking=exercise.sets.filter(s=>s.type==="working").at(-1);
+
   const previous=previousWorkingSets(state.sessions,exercise)?.[exercise.sets.filter(s=>s.type==="working").length];
   const hasDraft = !!(
-    draft.weight ||
+    (draft.weight !== suggestedWeight && draft.weight) ||
     draft.reps ||
     draft.parentId ||
     draft.rir ||
@@ -132,7 +135,8 @@ export function WorkoutSetEntry({
           });
           if (ok) {
             onSaved(draft.id);
-            setDraft(emptyDraft());
+            setDraft(null);
+            setFreshId(crypto.randomUUID());
             setDraftFailed(false);
           } else setDraftFailed(true);
         } finally {
@@ -164,7 +168,7 @@ export function WorkoutSetEntry({
                   "放棄尚未保存的輸入並回到最後已保存草稿？已記錄組次不會刪除。",
                 )
               ) {
-                setDraft(session.setDrafts?.[exercise.id] ?? emptyDraft());
+                setDraft(null);
                 setDraftFailed(false);
               }
             }}
@@ -276,7 +280,8 @@ export function WorkoutSetEntry({
                 if (target.setDrafts) delete target.setDrafts[exercise.id];
               })
             ) {
-              setDraft(emptyDraft());
+              setDraft(null);
+              setFreshId(crypto.randomUUID());
               setDraftFailed(false);
             }
           }}
