@@ -40,25 +40,25 @@ jobs:
       PGPASSWORD: synthetic-ci-only
     steps:
       - uses: actions/checkout@v4
-      - name: Install PostgreSQL psql client (CI disposable DB only)
+      - name: Verify account and Training RLS/RPC using service PostgreSQL client
+        env:
+          PG_CONTAINER: ${{ job.services.postgres.id }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-      - name: Install isolated auth.uid() stub
-        run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/bootstrap_auth_stub.sql
-      - name: Install disposable auth.users shim
-        run: psql -X -v ON_ERROR_STOP=1 -c "create table auth.users (id uuid primary key);"
-      - name: Verify account snapshot RLS and compare-and-swap
-        run: |
-          psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/migrations/202611250001_account_cloud_snapshots.sql
-          psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/account_snapshots_contract.sql
-      - name: Run dev-only schema and RPC migration
-        run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/migrations/202610220001_training_dev_foundation.sql
-      - name: Test tenant isolation, RLS, idempotency, version conflicts, rollback
-        run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/session_rpc_isolation.sql
-      - name: Confirm private schema remains inaccessible to client roles
-        run: |
-          test "$(psql -X -v ON_ERROR_STOP=1 -Atc "select has_schema_privilege('authenticated','jfs_training_dev','USAGE');")" = "f"
+          set -euo pipefail
+          test -n "$PG_CONTAINER"
+          db() {
+            docker exec -i -e PGPASSWORD="$PGPASSWORD" "$PG_CONTAINER" \
+              psql -X -h 127.0.0.1 -U postgres -d jfs_ci -v ON_ERROR_STOP=1 "$@"
+          }
+          # Use the client shipped with postgres:16. No apt or external
+          # runner package mirrors, and no live Supabase access.
+          db < app-source/supabase/tests/bootstrap_auth_stub.sql
+          db -c "create table auth.users (id uuid primary key);"
+          db < app-source/supabase/migrations/202611250001_account_cloud_snapshots.sql
+          db < app-source/supabase/tests/account_snapshots_contract.sql
+          db < app-source/supabase/migrations/202610220001_training_dev_foundation.sql
+          db < app-source/supabase/tests/session_rpc_isolation.sql
+          test "$(db -Atc "select has_schema_privilege('authenticated','jfs_training_dev','USAGE');")" = "f"
   web-safety:
     name: Shared Training Core unchanged and Web builds
     runs-on: ubuntu-latest

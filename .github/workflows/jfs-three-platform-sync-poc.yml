@@ -56,15 +56,22 @@ jobs:
       PGPASSWORD: synthetic-ci-only
     steps:
       - uses: actions/checkout@v4
-      - name: Install PostgreSQL client
+      - name: Verify development Training RPC contract using service PostgreSQL client
+        env:
+          PG_CONTAINER: ${{ job.services.postgres.id }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/bootstrap_auth_stub.sql
-      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/migrations/202610220001_training_dev_foundation.sql
-      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/session_rpc_isolation.sql
-      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/migrations/202610220002_training_dev_read_session.sql
-      - run: psql -X -v ON_ERROR_STOP=1 -f app-source/supabase/tests/session_rpc_read_isolation.sql
+          set -euo pipefail
+          test -n "$PG_CONTAINER"
+          db() {
+            docker exec -i -e PGPASSWORD="$PGPASSWORD" "$PG_CONTAINER" \
+              psql -X -h 127.0.0.1 -U postgres -d jfs_ci -v ON_ERROR_STOP=1 "$@"
+          }
+          # Use disposable postgres:16 service; no host apt or production DB.
+          db < app-source/supabase/tests/bootstrap_auth_stub.sql
+          db < app-source/supabase/migrations/202610220001_training_dev_foundation.sql
+          db < app-source/supabase/tests/session_rpc_isolation.sql
+          db < app-source/supabase/migrations/202610220002_training_dev_read_session.sql
+          db < app-source/supabase/tests/session_rpc_read_isolation.sql
   native-bundle:
     runs-on: ubuntu-latest
     timeout-minutes: 35

@@ -36,3 +36,9 @@
 ## 再驗收與發布
 
 提交後，必須檢查 GitHub CI 14 項全部完成且通過，並核對 PR 仍為 Draft、沒有正式部署。完整的真實 Google OAuth、Supabase Staging 雙帳戶與雙裝置、iPhone Safari 實機以及 Figma 最終核准仍屬發布前阻擋條件；不得用程式清理或 CI 全綠取代。
+
+## CI Runner 套件來源故障與隔離修正
+
+- 第一次清理後檢查中，GitHub `ubuntu-latest` Runner 的外部 Microsoft APT 套件來源回應 403，造成隔離 Postgres 作業在安裝 `postgresql-client` 時失敗，**與資料庫 schema／使用者紀錄無關**。
+- 改由既有 `postgres:16` CI service container 內建的 `psql` 經 `docker exec` 執行相同 SQL 檔與負面權限測試；避免安裝主機套件，保留 `ON_ERROR_STOP=1` 與獨立資料庫。
+- 這只更動測試 workflow，沒有修改 SQL migration、帳戶紀錄或正式 Supabase。新一輪 CI 結果仍須以 GitHub check-runs 為準。
